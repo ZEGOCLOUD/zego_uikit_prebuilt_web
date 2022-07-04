@@ -1,0 +1,38 @@
+import React from "react";
+import APP from "./App.module.scss";
+import ZegoCloudRTCKit from "./sdk";
+import { generateToken, randomID } from "./util";
+export class App extends React.Component {
+  myMeeting: (element: HTMLDivElement) => Promise<void>;
+
+  constructor(props: Readonly<{}>) {
+    super(props);
+    this.myMeeting = async (element: HTMLDivElement) => {
+      const { token } = await generateToken(
+        "https://choui-prebuilt.herokuapp.com",
+        randomID(5),
+        "choui2",
+        randomID(5)
+      );
+      const zgc = ZegoCloudRTCKit.init(token);
+      zgc.joinRoom({ container: element });
+    };
+  }
+
+  render(): React.ReactNode {
+    return (
+      <div className={APP.app}>
+        <div className={APP.nav}>
+          <div className={APP.LOGO}></div>
+          <div className={APP.link}>
+            <a className={APP.doc}>Documentation</a>
+            <a className={APP.sample}>View demo code</a>
+          </div>
+        </div>
+        <div ref={this.myMeeting} className={APP.myMeeting}></div>
+      </div>
+    );
+  }
+}
+
+export default App;

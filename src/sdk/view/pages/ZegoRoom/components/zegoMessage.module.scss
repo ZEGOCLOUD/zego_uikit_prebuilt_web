@@ -1,0 +1,16 @@
+.listHeader{
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
+}
+.listContent{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.listFooter{
+  height: 40px;
+  display: flex;
+  align-items: center;
+}

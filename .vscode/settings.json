@@ -1,0 +1,21 @@
+{
+  "eslint.options": {
+    "extensions": [".js", ".jsx", ".vue", ".ts", ".tsx"]
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "vue",
+    "html",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.formatOnSave": true,
+  "editor.formatOnType": false,
+  "i18n-ally.localesPaths": [
+    "lang"
+  ],
+  "cSpell.words": [
+    "devdependencies"
+  ]
+}

@@ -1,0 +1,70 @@
+.ZegoBrowserCheckNotSupport {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .image {
+    background-image: "";
+    background-size: contain;
+  }
+  .content {
+    font-size: 12px;
+  }
+}
+
+.ZegoBrowserCheckSupport {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .videoScree {
+    width: 55%;
+    height: 80%;
+    position: relative;
+    .settings {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      z-index: 99;
+    }
+    .video {
+      width: 100%;
+      height: 100%;
+    }
+    .handler {
+      position: absolute;
+      bottom: 15px;
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      a {
+        margin-right: 30px;
+      }
+    }
+  }
+  .joinScreen {
+    width: 35%;
+    height: 80%;
+    flex-direction: column;
+    display: flex;
+    .title {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .userName {
+      width: 80%;
+      height: 45px;
+    }
+    .joinRoom {
+      width: 80%;
+      height: 45px;
+    }
+    .inviteLink {
+      width: 80%;
+      height: 45px;
+    }
+  }
+}

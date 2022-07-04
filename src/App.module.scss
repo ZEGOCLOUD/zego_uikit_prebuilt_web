@@ -1,0 +1,35 @@
+ .app {
+   width: 100vw;
+   height: 100vh;
+    .nav{
+      height: 45px;
+      top: 0;
+      width: 100vw;
+      background: #edf0f3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(0, 0, 0, 0);
+      .LOGO{
+         width: 133px;
+         height: 18px;
+         background-size: contain;
+         background-image: url(./assets/logo_zego.png);;
+      }
+      .link{
+        width: 15vw;
+        display: flex;
+        justify-content: space-between;
+      }
+      .doc{
+          border-right: 1px solid black;
+          padding-right: 20px;
+      }
+      .sample{
+        
+      }
+    }
+    .myMeeting{
+      height: calc(100vh - 45px);
+    }
+ }
