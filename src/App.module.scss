@@ -1,35 +1,64 @@
- .app {
-   width: 100vw;
-   height: 100vh;
-    .nav{
-      height: 45px;
-      top: 0;
-      width: 100vw;
-      background: #edf0f3;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: rgba(0, 0, 0, 0);
-      .LOGO{
-         width: 133px;
-         height: 18px;
-         background-size: contain;
-         background-image: url(./assets/logo_zego.png);;
+.app {
+  width: 100vw;
+  height: 100vh;
+  .nav {
+    height: 64px;
+    top: 0;
+    width: 100vw;
+    background: #edf0f3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(0, 0, 0, 0);
+    padding: 14px 20px;
+    box-sizing: border-box;
+  }
+  .myMeeting {
+    height: calc(100vh - 64px);
+  }
+  .LOGO {
+    width: 182px;
+    height: 37px;
+    background-size: contain;
+    background-image: url(./assets/logo_zegocloud@2x.png);
+  }
+  .link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .link_item {
+    font-size: 14px;
+    font-weight: 400;
+    color: #666666;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    margin-left: 4px;
+    text-decoration: none;
+    span {
+      width: 20px;
+      height: 20px;
+      margin-right: 6px;
+    }
+    &:hover {
+      color: #0055ff;
+      .icon__doc {
+        background-image: url("./assets/icon_doc_hover.png");
       }
-      .link{
-        width: 15vw;
-        display: flex;
-        justify-content: space-between;
-      }
-      .doc{
-          border-right: 1px solid black;
-          padding-right: 20px;
-      }
-      .sample{
-        
+      .icon__github {
+        background-image: url("./assets/icon_github_hover.png");
       }
     }
-    .myMeeting{
-      height: calc(100vh - 45px);
-    }
- }
+  }
+  .icon__doc {
+    background: url("./assets/icon_doc.png") no-repeat center/cover;
+  }
+  .icon__github {
+    background: url("./assets/icon_github.png") no-repeat center/cover;
+  }
+  .sample {
+  }
+}

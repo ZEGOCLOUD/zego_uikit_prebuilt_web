@@ -159,10 +159,13 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     if (!this.state.isSupportWebRTC) {
       page = (
         <div className={ZegoBrowserCheckCss.ZegoBrowserCheckNotSupport}>
-          <div className={ZegoBrowserCheckCss.image}></div>
           <div className={ZegoBrowserCheckCss.content}>
-            The current browser does not support this function, please change
-            the chrome to use
+            <p className={ZegoBrowserCheckCss.tipsHeader}>
+              Browser not supported
+            </p>
+            <p className={ZegoBrowserCheckCss.tipsText}>
+              The current browser is not available for you to join the room.
+            </p>
           </div>
         </div>
       );
