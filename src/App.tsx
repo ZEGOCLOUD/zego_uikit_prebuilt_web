@@ -25,8 +25,12 @@ export class App extends React.Component {
         <div className={APP.nav}>
           <div className={APP.LOGO}></div>
           <div className={APP.link}>
-            <a className={APP.doc}>Documentation</a>
-            <a className={APP.sample}>View demo code</a>
+            <a href="void()" className={APP.link_item}>
+              <span className={APP.icon__doc}></span> Documentation
+            </a>
+            <a href="void()" className={APP.link_item}>
+              <span className={APP.icon__github}></span> View demo code
+            </a>
           </div>
         </div>
         <div ref={this.myMeeting} className={APP.myMeeting}></div>
