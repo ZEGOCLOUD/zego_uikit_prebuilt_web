@@ -3,6 +3,7 @@ import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
+import { ZegoSupports } from "../../components/zegoSupports";
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: false,
@@ -43,7 +44,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         this.state.audioOpen
       );
       this.setState({
-        isSupportWebRTC: res,
+        isSupportWebRTC: false,
         userName: this.props.core._expressConfig.userName,
       });
     }
@@ -213,18 +214,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   render(): React.ReactNode {
     let page;
     if (!this.state.isSupportWebRTC) {
-      page = (
-        <div className={ZegoBrowserCheckCss.notSupport}>
-          <div className={ZegoBrowserCheckCss.content}>
-            <p className={ZegoBrowserCheckCss.tipsHeader}>
-              Browser not supported
-            </p>
-            <p className={ZegoBrowserCheckCss.tipsText}>
-              The current browser is not available for you to join the room.
-            </p>
-          </div>
-        </div>
-      );
+      page = <ZegoSupports></ZegoSupports>;
     } else {
       page = (
         <div className={ZegoBrowserCheckCss.support}>

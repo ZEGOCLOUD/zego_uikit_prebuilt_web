@@ -1,0 +1,95 @@
+.ZegoRoom {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .header {
+    width: 100%;
+    height: 45px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .brand {
+      width: 133px;
+      height: 18px;
+      margin-left: 20px;
+      background-size: contain;
+      background-image: url(../../../sdkAssets/logo_zego.png);
+    }
+    .timer {
+      margin-right: 20px;
+    }
+  }
+  .content {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    .contentLeft {
+      width: 70%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      background-color: black;
+      border-radius: 19px;
+      .notification {
+        position: absolute;
+        left: 5px;
+        bottom: 5px;
+        width: 40%;
+        height: 30%;
+        flex-direction: column;
+        display: flex;
+        color: red;
+      }
+    }
+    .contentRight {
+      width: 30%;
+      border-radius: 19px;
+      display: flex;
+      flex-direction: column;
+      margin: 0px 20px 0px 50px;
+      background-color: aliceblue;
+      .listHeader {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        padding-left: 40px;
+      }
+      .listContent {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .listFooter {
+        height: 40px;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+  .footer {
+    width: 100%;
+    height: 45px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .handlerLeft {
+      width: 40px;
+    }
+    .handlerMiddle {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      a {
+        margin-right: 20px;
+      }
+    }
+    .handlerRight {
+      a {
+        margin-right: 20px;
+      }
+    }
+  }
+}
