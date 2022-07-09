@@ -18,6 +18,10 @@ export interface ZegoCloudRoomConfig {
   cameraEnabled?: boolean; // 是否开启自己的摄像头 ,默认开启
   userCanToggleSelfCamera?: boolean; // 是否可以控制自己的麦克风,默认开启
   userCanToggleSelfMic?: boolean; // 是否可以控制体自己的摄像头,默认开启
+  deviceSettings?: {
+    audio: boolean; // 是否显示音频设置
+    video: boolean; // 是否显示视频设置
+  };
 
   chatEnabled?: boolean; // 是否开启聊天，默认开启   joinScreen: boolean，// 通话前检测页面是否需要，默认需要
   userListEnabled?: boolean; //是否显示成员列表，默认不展示
