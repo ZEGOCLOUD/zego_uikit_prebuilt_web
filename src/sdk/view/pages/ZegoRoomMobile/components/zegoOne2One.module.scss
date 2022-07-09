@@ -1,0 +1,36 @@
+ .bigVideo,
+ .smallVideo {
+   background-color: black;
+   position: relative;
+
+   .name {
+     position: absolute;
+     bottom: 15px;
+     left: 15px;
+   }
+
+   video {
+     height: 100%;
+   }
+ }
+
+ .bigVideo {
+   width: auto;
+   height: 100%;
+ }
+
+ .smallVideo {
+   position: absolute;
+   top: 5px;
+   right: 5px;
+   width: auto;
+   height: 30%;
+ }
+
+ .notification {
+   position: absolute;
+   left: 5px;
+   bottom: 5px;
+   width: 40%;
+   height: 30%;
+ }

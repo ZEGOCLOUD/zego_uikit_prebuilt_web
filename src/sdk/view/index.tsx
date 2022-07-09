@@ -1,10 +1,13 @@
 import React from "react";
 import { ZegoCloudRTCCore } from "../modules";
 import { ZegoBrowserCheck } from "./pages/ZegoBrowserCheck";
+import { ZegoBrowserCheckMobile } from "./pages/ZegoBrowserCheckMobile";
 import { ZegoRoom } from "./pages/ZegoRoom";
+import { ZegoRoomMobile } from "./pages/ZegoRoomMobile";
 import { IntlProvider } from "react-intl";
 import index from "./index.module.scss";
 import { ZegoRejoinRoom } from "./pages/ZegoRejoinRoom";
+import { isPc } from "../util";
 
 export class ZegoCloudRTCKitComponent extends React.Component<{
   core: ZegoCloudRTCCore;
@@ -24,16 +27,23 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
   render(): React.ReactNode {
     let page;
     if (this.state.step === 0 && this.props.core) {
-      page = (
+      page = isPc() ? (
         <ZegoBrowserCheck
           core={this.props.core}
           joinRoom={() => {
             this.nextPage();
           }}
         ></ZegoBrowserCheck>
+      ) : (
+        <ZegoBrowserCheckMobile
+          core={this.props.core}
+          joinRoom={() => {
+            this.nextPage();
+          }}
+        ></ZegoBrowserCheckMobile>
       );
     } else if (this.state.step === 1 && this.props.core) {
-      page = (
+      page = isPc() ? (
         <ZegoRoom
           core={this.props.core}
           leaveRoom={() => {
@@ -42,6 +52,15 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
               this.props.core._config.leaveRoomCallback();
           }}
         ></ZegoRoom>
+      ) : (
+        <ZegoRoomMobile
+          core={this.props.core}
+          leaveRoom={() => {
+            this.props.core._config.leftScreen && this.nextPage();
+            this.props.core._config.leaveRoomCallback &&
+              this.props.core._config.leaveRoomCallback();
+          }}
+        ></ZegoRoomMobile>
       );
     } else {
       page = (
