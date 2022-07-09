@@ -1,48 +1,13 @@
-.ZegoBrowserCheckNotSupport {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10000;
-  background: rgba($color: #2a2a2a, $alpha: 0.5);
-  .content {
-    width: 302px;
-    box-sizing: border-box;
-    background: #ffffff;
-    box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.2);
-    border-radius: 4px;
-    padding: 26px;
-  }
-  .tipsHeader {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2a2a2a;
-    line-height: 16px;
-    margin-bottom: 18px;
-  }
-  .tipsText {
-    font-size: 14px;
-    font-weight: 400;
-    color: #2a2a2a;
-    line-height: 20px;
-  }
-}
-
 .ZegoBrowserCheckSupport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   .videoScree {
+    position: relative;
     width: 55%;
     height: 80%;
-    position: relative;
     .settings {
       position: absolute;
       top: 5px;
@@ -57,21 +22,21 @@
       position: absolute;
       bottom: 15px;
       display: flex;
-      width: 100%;
       justify-content: center;
+      width: 100%;
       a {
         margin-right: 30px;
       }
     }
   }
   .joinScreen {
+    display: flex;
+    flex-direction: column;
     width: 35%;
     height: 80%;
-    flex-direction: column;
-    display: flex;
     .title {
-      font-size: 14px;
       font-weight: 500;
+      font-size: 14px;
     }
     .userName {
       width: 80%;

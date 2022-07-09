@@ -4,18 +4,20 @@ import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoSupports } from "../../components/zegoSupports";
-export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
+export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: false,
     localStream: undefined,
     localVideoStream: undefined,
     localAudioStream: undefined,
     userName: "xxx",
+    videoOpen: true,
+    audioOpen: true,
+    copied: false,
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
-  videoOpen = true;
-  audioOpen = true;
+
   audioRefuse = false;
   videoRefuse = false;
 
@@ -27,13 +29,17 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
   async componentDidMount() {
     const res = await this.props.core.checkWebRTC();
-    this.videoOpen = !!this.props.core._config.cameraEnabled;
-    this.audioOpen = !!this.props.core._config.micEnabled;
+    const videoOpen = !!this.props.core._config.cameraEnabled;
+    const audioOpen = !!this.props.core._config.micEnabled;
     let localStream: MediaStream | undefined = undefined;
-    if (res && (this.videoOpen || this.audioOpen)) {
-      localStream = await this.createStream(this.videoOpen, this.audioOpen);
+    this.setState({
+      videoOpen,
+      audioOpen,
+    });
+    if (res && (videoOpen || audioOpen)) {
+      localStream = await this.createStream(videoOpen, audioOpen);
       this.setState({
-        isSupportWebRTC: false,
+        isSupportWebRTC: res,
         userName: this.props.core._expressConfig.userName,
       });
     }
@@ -52,6 +58,12 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           camera: {
             video: true,
             audio: false,
+            facingMode: "user",
+            videoQuality: 4,
+            width: 480,
+            height: 640,
+            bitrate: 500,
+            frameRate: 15,
           },
         });
         localVideoStream?.getVideoTracks().map((track) => {
@@ -108,10 +120,9 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
   async toggleStream(type: "video" | "audio") {
     if (type === "video" && !this.videoRefuse) {
-      this.videoOpen = !this.videoOpen;
+      const videoOpen = !this.state.videoOpen;
       if (!this.state.localVideoStream) {
-        const res = await this.createStream(this.videoOpen, false);
-        res.getVideoTracks().length > 0 && (this.videoOpen = !this.videoOpen);
+        const res = await this.createStream(videoOpen, false);
       } else {
         (this.state.localVideoStream as MediaStream)
           .getTracks()
@@ -119,21 +130,24 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           .forEach((track) => track.stop());
         this.setState({ localVideoStream: undefined });
       }
+      this.setState({ videoOpen });
     } else if (type === "audio" && !this.audioRefuse) {
-      this.audioOpen = !this.audioOpen;
+      const audioOpen = !this.state.audioOpen;
       if (!this.state.localAudioStream) {
-        const res = await this.createStream(this.videoOpen, this.audioOpen);
-        res.getAudioTracks().length > 0 && (this.audioOpen = !this.audioOpen);
+        const res = await this.createStream(this.state.videoOpen, audioOpen);
       } else {
-        this.props.core.muteMicrophone(this.audioOpen);
+        this.props.core.muteMicrophone(audioOpen);
       }
+      this.setState({ audioOpen });
     }
   }
 
   async joinRoom() {
     this.props.core._expressConfig.userName = this.state.userName;
-    this.props.core._config.micEnabled = this.audioOpen && !this.audioRefuse;
-    this.props.core._config.cameraEnabled = this.videoOpen && !this.videoRefuse;
+    this.props.core._config.micEnabled =
+      this.state.audioOpen && !this.audioRefuse;
+    this.props.core._config.cameraEnabled =
+      this.state.videoOpen && !this.videoRefuse;
     const loginRsp = await this.props.core.enterRoom();
     if (loginRsp) {
       this.props.joinRoom && this.props.joinRoom();
@@ -149,28 +163,14 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     this.setState({ userName: event.target.value });
   }
 
-  openSettings() {
-    ZegoSettingsAlert({
-      core: this.props.core,
-      closeCallBack: () => {},
-    });
-  }
   render(): React.ReactNode {
     let page;
     if (!this.state.isSupportWebRTC) {
-      page = <ZegoSupports></ZegoSupports>;
+      page = page = <ZegoSupports></ZegoSupports>;
     } else {
       page = (
         <div className={ZegoBrowserCheckCss.ZegoBrowserCheckSupport}>
           <div className={ZegoBrowserCheckCss.videoScree}>
-            <a
-              className={ZegoBrowserCheckCss.settings}
-              onClick={() => {
-                this.openSettings();
-              }}
-            >
-              settings
-            </a>
             <video
               className={ZegoBrowserCheckCss.video}
               autoPlay
@@ -180,60 +180,74 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             <div className={ZegoBrowserCheckCss.handler}>
               {this.props.core._config.userCanToggleSelfMic && (
                 <a
+                  className={
+                    this.state.audioOpen
+                      ? ZegoBrowserCheckCss.micOpen
+                      : ZegoBrowserCheckCss.micClose
+                  }
                   onClick={() => {
                     this.toggleStream("audio");
                   }}
-                >
-                  mic
-                </a>
+                ></a>
               )}
               {this.props.core._config.userCanToggleSelfCamera && (
                 <a
+                  className={
+                    this.state.videoOpen
+                      ? ZegoBrowserCheckCss.cameraOpen
+                      : ZegoBrowserCheckCss.cameraClose
+                  }
                   onClick={() => {
                     this.toggleStream("video");
                   }}
-                >
-                  camera
-                </a>
+                ></a>
               )}
             </div>
           </div>
           <div className={ZegoBrowserCheckCss.joinScreen}>
-            <div className={ZegoBrowserCheckCss.title}>
-              {this.props.core._config.joinScreen?.title}
+            <div
+              className={`${ZegoBrowserCheckCss.joinRoom} ${ZegoBrowserCheckCss.focus}`}
+            >
+              {this.state.userName && <label>Your Name</label>}
+              <input
+                placeholder="Your Name"
+                value={this.state.userName}
+                onChange={(ev: ChangeEvent<HTMLInputElement>) => {
+                  this.handleChange(ev);
+                }}
+              ></input>
+              <button
+                className={this.state.userName && ZegoBrowserCheckCss.active}
+                onClick={() => {
+                  this.joinRoom();
+                }}
+              >
+                Join
+              </button>
             </div>
-            <input
-              className={ZegoBrowserCheckCss.userName}
-              placeholder="enter userName"
-              value={this.state.userName}
-              onChange={(ev: ChangeEvent<HTMLInputElement>) => {
-                this.handleChange(ev);
-              }}
-            ></input>
-            <button
-              className={ZegoBrowserCheckCss.joinRoom}
-              onClick={() => {
-                this.joinRoom();
-              }}
-            >
-              joinRoom
-            </button>
-            <input
-              className={ZegoBrowserCheckCss.inviteLink}
-              placeholder="inviteLink"
-              readOnly
-              value={this.props.core._config.joinScreen?.inviteURL}
-              ref={this.inviteRef}
-            ></input>
-            <button
-              className={ZegoBrowserCheckCss.copyLink}
-              onClick={() => {
-                this.inviteRef.current &&
-                  copy(this.inviteRef.current.value, this.inviteRef.current);
-              }}
-            >
-              copyLink
-            </button>
+            <div className={ZegoBrowserCheckCss.inviteLink}>
+              <input
+                placeholder="inviteLink"
+                readOnly
+                value={this.props.core._config.joinScreen?.inviteURL}
+                ref={this.inviteRef}
+              ></input>
+              <button
+                className={this.state.copied ? ZegoBrowserCheckCss.copied : ""}
+                onClick={() => {
+                  this.inviteRef.current &&
+                    copy(this.inviteRef.current.value, this.inviteRef.current);
+                  this.setState({
+                    copied: true,
+                  });
+                  setTimeout(() => {
+                    this.setState({
+                      copied: false,
+                    });
+                  }, 5000);
+                }}
+              ></button>
+            </div>
           </div>
         </div>
       );
