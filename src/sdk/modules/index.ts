@@ -63,14 +63,17 @@ export class ZegoCloudRTCCore {
     container: undefined, // 挂载容器
     joinScreen: {
       visible: true, // 是否显示娱乐检测页面，默认显示
-      title: "EnterRoom", // 标题设置，默认enter Room
+      title: "Join Room", // 标题设置，默认join Room
       inviteURL: window.location.href, // 邀请链接，空则不显示，默认空
     },
     micEnabled: true, // 是否开启自己的麦克风,默认开启
     cameraEnabled: true, // 是否开启自己的摄像头 ,默认开启
     userCanToggleSelfCamera: true, // 是否可以控制自己的麦克风,默认开启
     userCanToggleSelfMic: true, // 是否可以控制体自己的摄像头,默认开启
-
+    deviceSettings: {
+      audio: true, // 是否显示音频设置
+      video: true, // 是否显示视频设置
+    },
     chatEnabled: true, // 是否开启聊天，默认开启   joinScreen: boolean，// 通话前检测页面是否需要，默认需要
     userListEnabled: true, //是否显示成员列表，默认不展示
     notification: {
