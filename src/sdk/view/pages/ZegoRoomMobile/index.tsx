@@ -19,7 +19,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     userList: ZegoUser[];
     messageList: ZegoBroadcastMessageInfo[];
     notificationList: string[];
+    micOpen: boolean;
+    cameraOpen: boolean;
   } = {
+    micOpen: !!this.props.core._config.micEnabled,
+    cameraOpen: !!this.props.core._config.cameraEnabled,
     localStream: undefined,
     remoteStreamInfo: undefined,
     layOutStatus: "ONE_VIDEO",
@@ -27,10 +31,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     messageList: [],
     notificationList: [],
   };
-
-  micOpen = this.props.core._config.micEnabled;
-  cameraOpen = this.props.core._config.cameraEnabled;
-
+  micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
+  cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
+  faceModel: 0 | 1 | -1 = 0;
   componentDidMount() {
     this.initSDK();
   }
@@ -144,13 +147,23 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       );
   }
 
-  async createStream(video: boolean, audio: boolean): Promise<boolean> {
+  async createStream(
+    video: boolean,
+    audio: boolean,
+    facingMode = true
+  ): Promise<boolean> {
     if (video || audio) {
       try {
         const localStream = await this.props.core.createStream({
           camera: {
             video,
             audio,
+            facingMode: facingMode ? "user" : "environment",
+            videoQuality: 4,
+            width: 480,
+            height: 640,
+            bitrate: 500,
+            frameRate: 15,
           },
         });
 
@@ -172,26 +185,67 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async toggleMic() {
-    this.micOpen = !this.micOpen;
+    if (this.micStatus === -1) return;
+    this.micStatus = -1;
+
+    let result;
     if (this.state.localStream) {
-      this.props.core.muteMicrophone(this.micOpen);
+      result = await this.props.core.muteMicrophone(!this.state.micOpen);
     } else {
-      const res = await this.createStream(!!this.cameraOpen, !!this.micOpen);
-      !res && (this.micOpen = !this.micOpen);
+      result = await this.createStream(
+        !!this.state.cameraOpen,
+        !!this.state.micOpen
+      );
+    }
+
+    if (result) {
+      this.micStatus = !this.state.micOpen ? 1 : 0;
+      result &&
+        this.setState({
+          micOpen: !!this.micStatus,
+        });
     }
   }
 
   async toggleCamera() {
-    this.cameraOpen = !this.cameraOpen;
+    if (this.cameraStatus === -1) return;
+    this.cameraStatus = -1;
+
+    let result;
     if (this.state.localStream) {
-      this.props.core.enableVideoCaptureDevice(
+      result = await this.props.core.enableVideoCaptureDevice(
         this.state.localStream,
-        this.cameraOpen
+        !this.state.cameraOpen
       );
     } else {
-      const res = await this.createStream(!!this.cameraOpen, !!this.micOpen);
-      !res && (this.cameraOpen = !this.cameraOpen);
+      const res = await this.createStream(
+        !!this.state.cameraOpen,
+        !!this.state.micOpen
+      );
     }
+    if (result) {
+      this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
+      result &&
+        this.setState({
+          cameraOpen: !!this.cameraStatus,
+        });
+    }
+  }
+
+  async switchCamera() {
+    let targetModel = false;
+    if (this.faceModel === -1) {
+      return;
+    } else if (this.faceModel === 0) {
+      targetModel = true;
+    }
+    this.faceModel = -1;
+    const res = await this.createStream(
+      !!this.state.cameraOpen,
+      !!this.state.micOpen,
+      targetModel
+    );
+    this.faceModel = targetModel ? 1 : 0;
   }
 
   toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE") {
@@ -277,112 +331,56 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   render(): React.ReactNode {
     return (
       <div className={ZegoRoomCss.ZegoRoom}>
-        <div className={ZegoRoomCss.header}>
-          {this.props.core._config.branding?.logoURL && (
-            <div className={ZegoRoomCss.brand}></div>
-          )}
-          {this.props.core._config.roomTimerDisplayed && (
-            <ZegoTimer></ZegoTimer>
-          )}
-        </div>
-        <div className={ZegoRoomCss.content}>
-          <div
-            className={ZegoRoomCss.contentLeft}
-            style={{
-              width: this.state.layOutStatus !== "ONE_VIDEO" ? "70%" : "100%",
-            }}
-          >
-            <ZegoOne2One
-              localStream={this.state.localStream}
-              remoteStreamInfo={this.state.remoteStreamInfo}
-            ></ZegoOne2One>
-            {(this.props.core._config.notification?.unreadMessageTips ||
-              this.props.core._config.notification?.userOnlineOfflineTips) && (
-              <div className={ZegoRoomCss.notification}>
-                {this.state.notificationList.map(
-                  (not: string, index: number) => (
-                    <a key={index}>{not}</a>
-                  )
-                )}
-              </div>
-            )}
-          </div>
-          <div
-            className={ZegoRoomCss.contentRight}
-            style={{
-              display:
-                this.state.layOutStatus !== "ONE_VIDEO" ? "flex" : "none",
-            }}
-          >
-            {this.getListScreen()}
-          </div>
-        </div>
+        <ZegoOne2One
+          localStream={this.state.localStream}
+          remoteStreamInfo={this.state.remoteStreamInfo}
+        ></ZegoOne2One>
         <div className={ZegoRoomCss.footer}>
-          {this.props.core._config.joinScreen?.inviteURL && (
-            <div
-              className={ZegoRoomCss.handlerLeft}
+          {this.props.core._config.userCanToggleSelfMic && (
+            <a
+              className={ZegoRoomCss.switchCamera}
               onClick={() => {
-                this.toggleLayOut("INVITE");
+                this.switchCamera();
               }}
-            >
-              邀请
-            </div>
+            ></a>
           )}
 
-          <div className={ZegoRoomCss.handlerMiddle}>
-            {this.props.core._config.userCanToggleSelfMic && (
-              <a
-                onClick={() => {
-                  this.toggleMic();
-                }}
-              >
-                mic
-              </a>
-            )}
-            {this.props.core._config.userCanToggleSelfCamera && (
-              <a
-                onClick={() => {
-                  this.toggleCamera();
-                }}
-              >
-                camera
-              </a>
-            )}
+          {this.props.core._config.userCanToggleSelfMic && (
             <a
+              className={
+                this.state.micOpen
+                  ? ZegoRoomCss.toggleMic
+                  : ZegoRoomCss.cameraClose
+              }
               onClick={() => {
-                this.openSettings();
+                this.toggleMic();
               }}
-            >
-              more
-            </a>
+            ></a>
+          )}
+          {this.props.core._config.userCanToggleSelfCamera && (
             <a
+              className={
+                this.state.cameraOpen
+                  ? ZegoRoomCss.toggleCamera
+                  : ZegoRoomCss.cameraClose
+              }
               onClick={() => {
-                this.leaveRoom();
+                this.toggleCamera();
               }}
-            >
-              leave
-            </a>
-          </div>
-          <div className={ZegoRoomCss.handlerRight}>
-            {this.props.core._config.userListEnabled && (
-              <a
-                onClick={() => {
-                  this.toggleLayOut("USER_LIST");
-                }}
-              >
-                user
-              </a>
-            )}
-            {this.props.core._config.chatEnabled && (
-              <a
-                onClick={() => {
-                  this.toggleLayOut("MESSAGE");
-                }}
-              >
-                message
-              </a>
-            )}
-          </div>
+            ></a>
+          )}
+          <a
+            className={ZegoRoomCss.leaveRoom}
+            onClick={() => {
+              this.leaveRoom();
+            }}
+          ></a>
+          <a
+            className={ZegoRoomCss.more}
+            onClick={() => {
+              this.openSettings();
+            }}
+          ></a>
         </div>
       </div>
     );

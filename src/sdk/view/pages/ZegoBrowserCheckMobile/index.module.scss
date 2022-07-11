@@ -30,19 +30,19 @@
         border-radius: 23px;
       }
       .micOpen {
-        background: url(../../../sdkAssets/mic_open@2x.png);
+        background: url(../../../sdkMobileAssets/mic_open@2x.png);
         background-size: contain;
       }
       .micClose {
-        background: url(../../../sdkAssets/mic_close@2x.png);
+        background: url(../../../sdkMobileAssets/mic_close@2x.png);
         background-size: contain;
       }
       .cameraOpen {
-        background: url(../../../sdkAssets/camera_open@2x.png);
+        background: url(../../../sdkMobileAssets/camera_open@2x.png);
         background-size: contain;
       }
       .cameraClose {
-        background: url(../../../sdkAssets/camera_close@2x.png);
+        background: url(../../../sdkMobileAssets/camera_close@2x.png);
         background-size: contain;
       }
     }
@@ -128,13 +128,13 @@
         height: 30px;
         margin-left: 13px;
         background: #f5f7fa;
-        background-image: url(../../../sdkAssets/icon_conpy@2x.png);
+        background-image: url(../../../sdkMobileAssets/icon_conpy@2x.png);
         background-size: contain;
         border: 0;
         border-radius: 9px;
       }
       .copied {
-        background-image: url(../../../sdkAssets/icon_copied@2x.png);
+        background-image: url(../../../sdkMobileAssets/icon_copied@2x.png);
       }
     }
   }
