@@ -5,12 +5,12 @@ import {
   ZegoUser,
   ZegoBroadcastMessageInfo,
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-
-import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import { randomID } from "../../../util";
-import { ZegoSettingsAlert } from "../../components/zegoSetting";
+import { ZegoConfirm } from "../../components/zegoConfirm";
+import { copy } from "../../../modules/util";
+import { ZegoToast } from "../../components/zegoToast";
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -21,6 +21,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     notificationList: string[];
     micOpen: boolean;
     cameraOpen: boolean;
+    showMore: boolean;
   } = {
     micOpen: !!this.props.core._config.micEnabled,
     cameraOpen: !!this.props.core._config.cameraEnabled,
@@ -30,6 +31,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     userList: [],
     messageList: [],
     notificationList: [],
+    showMore: false,
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
@@ -252,10 +254,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     this.setState(
       (state: {
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
+        showMore: boolean;
       }) => {
         return {
           layOutStatus:
             state.layOutStatus === layOutStatus ? "ONE_VIDEO" : layOutStatus,
+          showMore: false,
         };
       }
     );
@@ -282,46 +286,98 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     });
   }
 
-  openSettings() {
-    ZegoSettingsAlert({
-      core: this.props.core,
-      closeCallBack: () => {},
-      localAudioStream: this.state.localStream,
-      localVideoStream: this.state.localStream,
+  openMore() {
+    this.setState((state: { showMore: boolean }) => {
+      return { showMore: !state.showMore };
     });
   }
 
   leaveRoom() {
-    this.props.core.leaveRoom();
-    this.props.leaveRoom && this.props.leaveRoom();
+    ZegoConfirm({
+      title: "Leave the room",
+      content: "Are you sure to leave the room?",
+      closeCallBack: (confirm: boolean) => {
+        if (confirm) {
+          this.props.core.leaveRoom();
+          this.props.leaveRoom && this.props.leaveRoom();
+        }
+      },
+    });
   }
 
   getListScreen() {
     if (this.state.layOutStatus === "INVITE") {
       return (
-        <>
-          <div className={ZegoRoomCss.listHeader}>房间详情</div>
-          <div className={ZegoRoomCss.listContent}></div>
-        </>
+        <div className={ZegoRoomCss.roomDetails}>
+          <div className={ZegoRoomCss.inviteHeader}>Room details</div>
+          <div className={ZegoRoomCss.inviteURL}>
+            {this.props.core._config.joinScreen?.inviteURL}
+          </div>
+          <div
+            className={ZegoRoomCss.inviteCopy}
+            onClick={(ev) => {
+              ev.stopPropagation();
+              this.props.core._config.joinScreen?.inviteURL &&
+                copy(this.props.core._config.joinScreen?.inviteURL);
+
+              ZegoToast({
+                content: "Copy successfully",
+                duration: 3,
+              });
+              this.setState({
+                layOutStatus: "ONE_VIDEO",
+              });
+            }}
+          >
+            <i></i>
+            <span>Copy the link</span>
+          </div>
+        </div>
       );
     } else if (this.state.layOutStatus === "USER_LIST") {
       return (
-        <>
-          <div className={ZegoRoomCss.listHeader}>成员列表</div>
-          <div className={ZegoRoomCss.listContent}>
-            <a>{this.props.core._expressConfig.userName}(You)</a>
+        <div className={ZegoRoomCss.memberList}>
+          <div className={ZegoRoomCss.memberListHeader}>
+            <div
+              className={ZegoRoomCss.memberHide}
+              onClick={(ev) => {
+                ev.stopPropagation();
+                this.setState({
+                  layOutStatus: "ONE_VIDEO",
+                });
+              }}
+            ></div>
+            Member
+          </div>
+          <div className={ZegoRoomCss.memberListContent}>
+            <div>
+              <i>{this.props.core._expressConfig.userName.substring(0, 1)}</i>
+              <a>{this.props.core._expressConfig.userName}(You)</a>
+            </div>
+
             {this.state.userList.map((user) => {
-              return <a>{user.userName}</a>;
+              return (
+                <div>
+                  <i>{user.userName?.substring(0, 1)}</i>
+                  <a key={user.userID}>{user.userName}</a>{" "}
+                </div>
+              );
             })}
           </div>
-        </>
+        </div>
       );
     } else if (this.state.layOutStatus === "MESSAGE") {
       return (
         <ZegoMessage
+          userID={this.props.core._expressConfig.userID}
           messageList={this.state.messageList}
           sendMessage={(msg: string) => {
             this.sendMessage(msg);
+          }}
+          closeCallBac={() => {
+            this.setState({
+              layOutStatus: "ONE_VIDEO",
+            });
           }}
         ></ZegoMessage>
       );
@@ -335,53 +391,94 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           localStream={this.state.localStream}
           remoteStreamInfo={this.state.remoteStreamInfo}
         ></ZegoOne2One>
-        <div className={ZegoRoomCss.footer}>
-          {this.props.core._config.userCanToggleSelfMic && (
-            <a
-              className={ZegoRoomCss.switchCamera}
-              onClick={() => {
-                this.switchCamera();
-              }}
-            ></a>
-          )}
 
-          {this.props.core._config.userCanToggleSelfMic && (
+        <div className={ZegoRoomCss.footer}>
+          <div className={ZegoRoomCss.footerContent}>
+            {this.props.core._config.userCanToggleSelfMic && (
+              <a
+                className={ZegoRoomCss.switchCamera}
+                onClick={() => {
+                  this.switchCamera();
+                }}
+              ></a>
+            )}
+
+            {this.props.core._config.userCanToggleSelfMic && (
+              <a
+                className={
+                  this.state.micOpen
+                    ? ZegoRoomCss.toggleMic
+                    : ZegoRoomCss.cameraClose
+                }
+                onClick={() => {
+                  this.toggleMic();
+                }}
+              ></a>
+            )}
+            {this.props.core._config.userCanToggleSelfCamera && (
+              <a
+                className={
+                  this.state.cameraOpen
+                    ? ZegoRoomCss.toggleCamera
+                    : ZegoRoomCss.cameraClose
+                }
+                onClick={() => {
+                  this.toggleCamera();
+                }}
+              ></a>
+            )}
+
             <a
-              className={
-                this.state.micOpen
-                  ? ZegoRoomCss.toggleMic
-                  : ZegoRoomCss.cameraClose
-              }
+              className={ZegoRoomCss.leaveRoom}
               onClick={() => {
-                this.toggleMic();
+                this.leaveRoom();
               }}
             ></a>
-          )}
-          {this.props.core._config.userCanToggleSelfCamera && (
+
             <a
-              className={
-                this.state.cameraOpen
-                  ? ZegoRoomCss.toggleCamera
-                  : ZegoRoomCss.cameraClose
-              }
+              className={ZegoRoomCss.more}
               onClick={() => {
-                this.toggleCamera();
+                this.openMore();
               }}
-            ></a>
-          )}
-          <a
-            className={ZegoRoomCss.leaveRoom}
-            onClick={() => {
-              this.leaveRoom();
-            }}
-          ></a>
-          <a
-            className={ZegoRoomCss.more}
-            onClick={() => {
-              this.openSettings();
-            }}
-          ></a>
+            >
+              {this.state.showMore && (
+                <div className={ZegoRoomCss.popMore}>
+                  <div className={ZegoRoomCss.popMoreContent}>
+                    <div
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        this.toggleLayOut("INVITE");
+                      }}
+                    >
+                      <i className={ZegoRoomCss.details}></i>
+                      <span>Room details</span>
+                    </div>
+                    <div
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        this.toggleLayOut("USER_LIST");
+                      }}
+                    >
+                      <i className={ZegoRoomCss.member}></i>
+                      <span>Member</span>
+                    </div>
+                    <div
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        this.toggleLayOut("MESSAGE");
+                      }}
+                    >
+                      <i className={ZegoRoomCss.chat}></i>
+                      <span>Chat</span>
+                    </div>
+                  </div>
+                  <div className={ZegoRoomCss.popMoreArray}></div>
+                </div>
+              )}
+            </a>
+          </div>
         </div>
+        {this.getListScreen()}
       </div>
     );
   }

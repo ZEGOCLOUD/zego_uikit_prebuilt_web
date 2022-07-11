@@ -26,11 +26,11 @@ export function getConfig(token: string) {
 
 export function copy(
   text: string,
-  dom: HTMLTextAreaElement | HTMLInputElement
+  dom?: HTMLTextAreaElement | HTMLInputElement
 ) {
   if (navigator && navigator.clipboard) {
     navigator && navigator.clipboard && navigator.clipboard.writeText(text);
-  } else {
+  } else if (dom) {
     dom.select();
     document.execCommand("copy");
   }

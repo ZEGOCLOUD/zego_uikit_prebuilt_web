@@ -9,45 +9,220 @@
   .footer {
     position: absolute;
     bottom: 0px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+    box-sizing: border-box;
     width: 100%;
-    height: 63px;
+    padding: 0 45px;
     background: #1c1f2e;
-    a {
-      width: 40px;
-      height: 40px;
-      background: #2c2f3e;
-      border-radius: 9px;
+    .footerContent {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 63px;
+      a {
+        width: 40px;
+        height: 40px;
+        background: #2c2f3e;
+        border-radius: 9px;
+      }
+      .switchCamera {
+        background-image: url(../../../sdkMobileAssets/Room_camera_switch@2x.png);
+        background-size: contain;
+      }
+      .toggleCamera {
+        background-image: url(../../../sdkMobileAssets/Room_camera_open@2x.png);
+        background-size: contain;
+      }
+      .cameraClose {
+        background-image: url(../../../sdkMobileAssets/Room_camera_close@2x.png);
+        background-size: contain;
+      }
+      .toggleMic {
+        background-image: url(../../../sdkMobileAssets/Room_mic_open@2x.png);
+        background-size: contain;
+      }
+      .micClose {
+        background-image: url(../../../sdkMobileAssets/Room_mic_close@2x.png);
+        background-size: contain;
+      }
+      .leaveRoom {
+        background-image: url(../../../sdkMobileAssets/Room_leaveRoom@2x.png);
+        background-size: contain;
+      }
+      .more {
+        position: relative;
+        background-image: url(../../../sdkMobileAssets/Room_more@2x.png);
+        background-size: contain;
+        .popMore {
+          position: absolute;
+          bottom: 66px;
+          left: -199px;
+          box-sizing: border-box;
+          width: 241px;
+          height: 89px;
+          padding: 17px 29px;
+          background-color: #1c1f2e;
+          border: 1px solid #3d4054;
+          border-radius: 9px;
+          box-shadow: 0px 2px 3px 0px rgba(23, 24, 33, 0.35);
+          .popMoreContent {
+            display: flex;
+            justify-content: space-between;
+            div {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              i {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 10px;
+                background: #2c2f3e;
+                border-radius: 9px;
+              }
+              .details {
+                background-image: url(../../../sdkMobileAssets/Room_more_details@2x.png);
+                background-size: contain;
+              }
+              .member {
+                background-image: url(../../../sdkMobileAssets/Room_more_members@2x.png);
+                background-size: contain;
+              }
+              .chat {
+                background-image: url(../../../sdkMobileAssets/Room_more_chat@2x.png);
+                background-size: contain;
+              }
+              span {
+                color: #ffffff;
+                font-weight: 400;
+                font-size: 10px;
+                font-family: PingFangSC-Regular, PingFang SC;
+              }
+            }
+          }
+          .popMoreArray {
+            position: absolute;
+            right: 17px;
+            bottom: -4px;
+            width: 10px;
+            height: 10px;
+            background-color: #1c1f2e;
+            transform: rotate(45deg);
+          }
+        }
+      }
     }
-    .switchCamera {
-      background-image: url(../../../sdkMobileAssets/Room_camera_switch@2x.png);
-      background-size: contain;
+  }
+  .roomDetails {
+    position: absolute;
+    bottom: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: 199px;
+    background: #242736;
+    border-radius: 24px 24px 0px 0px;
+    .inviteHeader {
+      padding: 12px 0px;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: 19px;
     }
-    .toggleCamera {
-      background-image: url(../../../sdkMobileAssets/Room_camera_open@2x.png);
-      background-size: contain;
+    .inviteURL {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 359px;
+      height: 67px;
+      padding: 8px 15px;
+      color: #a4a4a4;
+      font-weight: 400;
+      font-size: 16px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      background: #303341;
+      border-radius: 6px;
+      opacity: 0.7;
     }
-    .cameraClose {
-      background-image: url(../../../sdkMobileAssets/Room_camera_close@2x.png);
-      background-size: contain;
+    .inviteCopy {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      i {
+        display: inline-block;
+        width: 23px;
+        height: 23px;
+        background-image: url(../../../sdkMobileAssets/Room_details_conpy@2x.png);
+        background-size: contain;
+        border: 0px;
+      }
+      span {
+        margin-left: 6px;
+        color: #ffb763;
+        font-weight: 500;
+        font-size: 16px;
+        font-family: PingFangSC-Medium, PingFang SC;
+      }
     }
-    .toggleMic {
-      background-image: url(../../../sdkMobileAssets/Room_mic_open@2x.png);
-      background-size: contain;
+  }
+  .memberList {
+    position: absolute;
+    bottom: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    box-sizing: border-box;
+    width: 100%;
+    height: 643px;
+    background: #242736;
+    border-radius: 24px 24px 0px 0px;
+    .memberListHeader {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px 7px 12px;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: 19px;
+      .memberHide {
+        width: 36px;
+        height: 36px;
+        margin-right: 11px;
+        background-image: url(../../../sdkMobileAssets/Room_member_hide@2x.png);
+        background-size: contain;
+      }
     }
-    .micClose {
-      background-image: url(../../../sdkMobileAssets/Room_mic_close@2x.png);
-      background-size: contain;
-    }
-    .leaveRoom {
-      background-image: url(../../../sdkMobileAssets/Room_leaveRoom@2x.png);
-      background-size: contain;
-    }
-    .more {
-      background-image: url(../../../sdkMobileAssets/Room_more@2x.png);
-      background-size: contain;
+    .memberListContent {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      div {
+        display: flex;
+        align-items: center;
+        margin-top: 19px;
+        i {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 37px;
+          height: 37px;
+          margin-right: 10px;
+          margin-left: 19px;
+          color: #557bff;
+          font-weight: 600;
+          font-size: 17px;
+          font-family: PingFangSC-Semibold, PingFang SC;
+          background: rgba(216, 216, 216, 1);
+          border-radius: 19px;
+        }
+        a {
+          color: #ffffff;
+          font-weight: 500;
+          font-size: 17px;
+          font-family: PingFangSC-Medium, PingFang SC;
+        }
+      }
     }
   }
 }
