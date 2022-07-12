@@ -31,7 +31,6 @@ export function DateFormat(date: number, fmt: string) {
 
   Object.entries(o).forEach(([k, v]) => {
     if (new RegExp("(" + k + ")").test(fmt)) {
-      console.error(k, RegExp.$1, v);
       fmt = fmt.replace(
         RegExp.$1,
         RegExp.$1.length == 1 ? v : ("00" + v).substr(("" + v).length)
@@ -40,4 +39,32 @@ export function DateFormat(date: number, fmt: string) {
   });
 
   return fmt;
+}
+
+const userColorMap: {
+  [index: string]: string;
+} = {};
+export function userNameColor(userName: string): string {
+  const colorArr = [
+    "#557BFF",
+    "#1FAD40",
+    "#06A1E5",
+    "#E9473A",
+    "#BB9B21",
+    "#B755FF",
+    "#10BD8E",
+    "#FF2F5F",
+  ];
+  if (!userColorMap[userName]) {
+    userColorMap[userName] =
+      colorArr[Object.keys(userColorMap).length % colorArr.length];
+  }
+  return userColorMap[userName];
+}
+
+export function getUrlParams(url: string) {
+  let urlStr = url.split("?")[1];
+  const urlSearchParams = new URLSearchParams(urlStr);
+  const result = Object.fromEntries(urlSearchParams.entries());
+  return result;
 }

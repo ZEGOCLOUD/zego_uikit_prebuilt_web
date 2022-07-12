@@ -9,8 +9,8 @@ import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import { randomID } from "../../../util";
 import { ZegoConfirm } from "../../components/zegoConfirm";
-import { copy } from "../../../modules/util";
-import { ZegoToast } from "../../components/zegoToast";
+import { ZegoUserList } from "./components/zegoUserList";
+import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -36,8 +36,37 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
   faceModel: 0 | 1 | -1 = 0;
+  notifyTimer!: NodeJS.Timeout;
+
   componentDidMount() {
     this.initSDK();
+  }
+
+  componentDidUpdate(
+    preProps: ZegoBrowserCheckProp,
+    preState: {
+      localStream: undefined | MediaStream;
+      remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
+      layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
+      userList: ZegoUser[];
+      messageList: ZegoBroadcastMessageInfo[];
+      notificationList: string[];
+      micOpen: boolean;
+      cameraOpen: boolean;
+      showMore: boolean;
+    }
+  ) {
+    if (
+      preState.notificationList[preState.notificationList.length - 1] !=
+      this.state.notificationList[this.state.notificationList.length - 1]
+    ) {
+      this.notifyTimer && clearTimeout(this.notifyTimer);
+      this.notifyTimer = setTimeout(() => {
+        this.setState({
+          notificationList: [],
+        });
+      }, 3000);
+    }
   }
 
   async initSDK() {
@@ -58,11 +87,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         if (this.props.core._config.notification?.userOnlineOfflineTips) {
           if (updateType === "ADD") {
             notificationList = userList.map<string>(
-              (u) => u.userName + ": enter room"
+              (u) => u.userName + " enter the room"
             );
           } else if (updateType === "DELETE") {
             notificationList = [
-              ...userList.map((u) => u.userName + ": leave room"),
+              ...userList.map((u) => u.userName + " quit the room"),
             ];
           }
         }
@@ -308,63 +337,26 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   getListScreen() {
     if (this.state.layOutStatus === "INVITE") {
       return (
-        <div className={ZegoRoomCss.roomDetails}>
-          <div className={ZegoRoomCss.inviteHeader}>Room details</div>
-          <div className={ZegoRoomCss.inviteURL}>
-            {this.props.core._config.joinScreen?.inviteURL}
-          </div>
-          <div
-            className={ZegoRoomCss.inviteCopy}
-            onClick={(ev) => {
-              ev.stopPropagation();
-              this.props.core._config.joinScreen?.inviteURL &&
-                copy(this.props.core._config.joinScreen?.inviteURL);
-
-              ZegoToast({
-                content: "Copy successfully",
-                duration: 3,
-              });
-              this.setState({
-                layOutStatus: "ONE_VIDEO",
-              });
-            }}
-          >
-            <i></i>
-            <span>Copy the link</span>
-          </div>
-        </div>
+        <ZegoRoomInvite
+          core={this.props.core}
+          closeCallBack={() => {
+            this.setState({
+              layOutStatus: "ONE_VIDEO",
+            });
+          }}
+        ></ZegoRoomInvite>
       );
     } else if (this.state.layOutStatus === "USER_LIST") {
       return (
-        <div className={ZegoRoomCss.memberList}>
-          <div className={ZegoRoomCss.memberListHeader}>
-            <div
-              className={ZegoRoomCss.memberHide}
-              onClick={(ev) => {
-                ev.stopPropagation();
-                this.setState({
-                  layOutStatus: "ONE_VIDEO",
-                });
-              }}
-            ></div>
-            Member
-          </div>
-          <div className={ZegoRoomCss.memberListContent}>
-            <div>
-              <i>{this.props.core._expressConfig.userName.substring(0, 1)}</i>
-              <a>{this.props.core._expressConfig.userName}(You)</a>
-            </div>
-
-            {this.state.userList.map((user) => {
-              return (
-                <div>
-                  <i>{user.userName?.substring(0, 1)}</i>
-                  <a key={user.userID}>{user.userName}</a>{" "}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <ZegoUserList
+          core={this.props.core}
+          userList={this.state.userList}
+          closeCallBack={() => {
+            this.setState({
+              layOutStatus: "ONE_VIDEO",
+            });
+          }}
+        ></ZegoUserList>
       );
     } else if (this.state.layOutStatus === "MESSAGE") {
       return (
@@ -385,6 +377,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   render(): React.ReactNode {
+    const startIndex =
+      this.state.notificationList.length < 4
+        ? 0
+        : this.state.notificationList.length - 2;
+
     return (
       <div className={ZegoRoomCss.ZegoRoom}>
         <ZegoOne2One
@@ -479,6 +476,24 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           </div>
         </div>
         {this.getListScreen()}
+        <div className={ZegoRoomCss.notify}>
+          {this.state.notificationList.slice(startIndex).map((notify) => {
+            if (notify.indexOf(":") > -1) {
+              return (
+                <div key={notify} className={ZegoRoomCss.notifyContent}>
+                  <h5>{notify.split(":")[0]}</h5>
+                  <span>{notify.split(":")[1]}</span>
+                </div>
+              );
+            } else {
+              return (
+                <div key={notify} className={ZegoRoomCss.notifyContent}>
+                  {notify}
+                </div>
+              );
+            }
+          })}
+        </div>
       </div>
     );
   }
