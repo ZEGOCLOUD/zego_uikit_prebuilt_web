@@ -2,7 +2,6 @@ import React, { ChangeEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
-import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoSupports } from "../../components/zegoSupports";
 export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
