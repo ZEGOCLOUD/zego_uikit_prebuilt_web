@@ -25,12 +25,14 @@
 }
 .body {
   width: 478px;
-  min-height: 346px;
+  height: 346px;
   background: var(--bgColor);
   box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.2);
   border-radius: 8px;
   border: 1px solid var(--borderColor);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 .header {
   height: 44px;
@@ -44,6 +46,7 @@
   font-weight: 600;
   color: var(--titleColor);
   line-height: 16px;
+  flex: 0 0 auto;
 }
 .closeIcon {
   width: 18px;
@@ -55,8 +58,10 @@
 .content {
   flex: 1;
   display: flex;
+  height: 100%;
 }
 .left {
+  flex: 0 0 auto;
   box-sizing: border-box;
   width: 118px;
   height: 100%;
@@ -71,22 +76,56 @@
     font-size: 14px;
     font-weight: 400;
     color: var(--tabTextColor);
-    line-height: 36px;
+    line-height: 20px;
     margin-bottom: 6px;
     position: relative;
+    cursor: pointer;
+    &::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+    }
+  }
+  .tabActive {
+    color: var(--activeColor);
+    &::after {
+      content: "";
+      width: 2px;
+      height: 16px;
+      background-color: var(--activeColor);
+      position: absolute;
+      right: 0;
+      top: 10px;
+    }
+    &.leftAudioTab::before {
+      background: url("../../../sdkAssets/icon_settings_audio_active.png")
+        no-repeat center/cover;
+    }
+    &.leftVideoTab::before {
+      background: url("../../../sdkAssets/icon_settings_video_active.png")
+        no-repeat center/cover;
+    }
   }
 }
-.tabActive {
-  color: var(--activeColor);
+
+.leftAudioTab::before {
+  background: url("../../../sdkAssets/icon_settings_audio.png") no-repeat
+    center/cover;
 }
-.leftAudioTab {
+.leftVideoTab::before {
+  background: url("../../../sdkAssets/icon_settings_video.png") no-repeat
+    center/cover;
+}
+.right {
+  flex: 1;
 }
 .rightAudio,
 .rightVideo {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  padding: 18px 48px 0;
 }
 .preview {
   flex: 1;

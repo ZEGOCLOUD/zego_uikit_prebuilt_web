@@ -1,0 +1,105 @@
+.whiteTheme {
+  --labelColor: #666666;
+  --inputColor: #2a2a2a;
+  --placeholderColor: #bbbbbb;
+  --hoverBgColor: #f5f7fa;
+  --selectedColor: #0055ff;
+  --bgColor: #fff;
+}
+
+.selectWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.selectLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--labelColor);
+  line-height: 17px;
+  margin-bottom: 6px;
+  padding-top: 2px;
+}
+.selectInputWrapper {
+  width: 264px;
+  height: 40px;
+  border-radius: 4px;
+  border: 2px solid #a4a4a4;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+  & > p {
+    width: 208px;
+    height: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--inputColor);
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  & > span {
+    width: 18px;
+    height: 18px;
+    background: url("../../../sdkAssets/icon_settings_arrow.png") no-repeat
+      center/cover;
+    margin-left: 8px;
+  }
+  .noOptions {
+    color: var(--placeholderColor);
+  }
+  &.inputActived {
+    border-color: var(--selectedColor);
+    & > span {
+      background: url("../../../sdkAssets/icon_settings_arrow_active.png")
+        no-repeat center/cover;
+    }
+  }
+}
+.optionsWrapper {
+  position: absolute;
+  top: 69px;
+  left: 0;
+  z-index: 10;
+  width: 264px;
+  height: 182px;
+  background: var(--bgColor);
+  box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.1);
+  border-radius: 4px;
+  border: 1px solid #dde0e3;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px;
+  box-sizing: border-box;
+  flex-direction: column;
+  display: none;
+  &.showList {
+    display: flex;
+  }
+}
+.option {
+  width: 252px;
+  height: 34px;
+  background-color: #ffffff0d;
+  border-radius: 4px;
+  padding: 7px 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--labelColor);
+  line-height: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  &:hover {
+    background-color: var(--hoverBgColor);
+  }
+  &.optionSelected {
+    color: var(--selectedColor);
+  }
+}

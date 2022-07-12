@@ -6,6 +6,7 @@ import {
 } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 import { ZegoCloudRTCCore } from "../../../modules";
 import ZegoSettingsCss from "./index.module.scss";
+import { ZegoSelect } from "../../components/zegoSelect";
 export class ZegoSettings extends React.Component<{
   core: ZegoCloudRTCCore;
   theme?: string;
@@ -60,9 +61,9 @@ export class ZegoSettings extends React.Component<{
     const speakerDevices = await this.props.core.getSpeakers();
     const cameraDevices = await this.props.core.getCameras();
     this.setState({
-      micDevices,
-      speakerDevices,
-      cameraDevices,
+      micDevices: micDevices.filter((device) => device.deviceID),
+      speakerDevices: speakerDevices.filter((device) => device.deviceID),
+      cameraDevices: cameraDevices.filter((device) => device.deviceID),
       seletMic: sessionStorage.getItem("seletMic") || undefined,
       seletSpeaker: sessionStorage.getItem("seletSpeaker") || undefined,
       seletCamera: sessionStorage.getItem("seletCamera") || undefined,
@@ -203,7 +204,8 @@ export class ZegoSettings extends React.Component<{
           <div className={ZegoSettingsCss.content}>
             <div className={ZegoSettingsCss.left}>
               <div
-                className={ZegoSettingsCss.leftAudioTab}
+                className={`${ZegoSettingsCss.leftAudioTab} ${this.state
+                  .seletTab === "AUDIO" && ZegoSettingsCss.tabActive}`}
                 onClick={() => {
                   this.setState({
                     seletTab: "AUDIO",
@@ -213,7 +215,8 @@ export class ZegoSettings extends React.Component<{
                 Audio
               </div>
               <div
-                className={ZegoSettingsCss.leftVideoTab}
+                className={`${ZegoSettingsCss.leftVideoTab} ${this.state
+                  .seletTab === "VIDEO" && ZegoSettingsCss.tabActive}`}
                 onClick={() => {
                   this.setState({
                     seletTab: "VIDEO",
@@ -227,19 +230,15 @@ export class ZegoSettings extends React.Component<{
               {this.state.seletTab === "AUDIO" && (
                 <div className={ZegoSettingsCss.rightAudio}>
                   <div className={ZegoSettingsCss.device}>
-                    mic:
-                    <select
-                      value={this.state.seletMic}
-                      onChange={(el: ChangeEvent<HTMLSelectElement>) => {
-                        this.toggleMic(el.target.value);
-                      }}
-                    >
-                      {this.state.micDevices.map((device, index) => (
-                        <option value={device.deviceID} key={index}>
-                          {device.deviceName}
-                        </option>
-                      ))}
-                    </select>
+                    <ZegoSelect
+                      label="Microphone"
+                      options={this.state.micDevices.map((device) => ({
+                        name: device.deviceName,
+                        value: device.deviceID,
+                      }))}
+                      onChange={this.toggleMic}
+                      placeholder="No equipment"
+                    ></ZegoSelect>
                   </div>
                   <div className={ZegoSettingsCss.device}>
                     speaker:
