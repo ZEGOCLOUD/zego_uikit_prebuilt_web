@@ -11,7 +11,7 @@ export class App extends React.Component {
       const { token } = await generateToken(
         "https://choui-prebuilt.herokuapp.com",
         randomID(5),
-        "choui2",
+        "choui3",
         randomID(5)
       );
       const zgc = ZegoCloudRTCKit.init(token);

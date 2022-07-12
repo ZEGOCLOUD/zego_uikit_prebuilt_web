@@ -1,36 +1,41 @@
- .bigVideo,
- .smallVideo {
-   background-color: black;
-   position: relative;
+.bigVideo,
+.smallVideo {
+  position: relative;
+  background-color: black;
 
-   .name {
-     position: absolute;
-     bottom: 15px;
-     left: 15px;
-   }
+  .name {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+  }
 
-   video {
-     height: 100%;
-   }
- }
+  video {
+    height: 100%;
+  }
+}
 
- .bigVideo {
-   width: auto;
-   height: 100%;
- }
+.bigVideo {
+  width: auto;
+  height: 100%;
+}
 
- .smallVideo {
-   position: absolute;
-   top: 5px;
-   right: 5px;
-   width: auto;
-   height: 30%;
- }
+.smallVideo {
+  position: absolute;
+  top: 47px;
+  right: 12px;
+  width: 99px;
+  height: 176px;
+  border: 1px solid #a4a4a4;
+  border-radius: 9px;
+  video {
+    width: 100%;
+  }
+}
 
- .notification {
-   position: absolute;
-   left: 5px;
-   bottom: 5px;
-   width: 40%;
-   height: 30%;
- }
+.notification {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  width: 40%;
+  height: 30%;
+}

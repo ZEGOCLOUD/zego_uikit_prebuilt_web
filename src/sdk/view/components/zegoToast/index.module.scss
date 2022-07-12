@@ -1,0 +1,29 @@
+.ZegoToast {
+  position: fixed;
+  top: 100vh;
+  left: 0;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: rgba($color: #2a2a2a, $alpha: 0);
+  transition: top 0.5s ease-in-out;
+  // animation: name duration timing-function delay iteration-count direction fill-mode;
+  .content {
+    box-sizing: border-box;
+    max-width: 302px;
+    padding: 7px 16px;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 12px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    line-height: 17px;
+    background: #2a2a2a;
+    border-radius: 6px;
+    opacity: 0.6;
+  }
+}
+.show {
+  top: 15px;
+}
