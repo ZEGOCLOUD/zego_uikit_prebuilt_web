@@ -32,3 +32,30 @@
     line-height: 20px;
   }
 }
+.buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 24px;
+  .okButton,
+  .cancelButton {
+    min-width: 74px;
+    box-sizing: border-box;
+    padding: 4px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  .okButton {
+    color: #fff;
+    background-color: #0055ff;
+  }
+  .cancelButton {
+    color: #0055ff;
+    background-color: #fff;
+  }
+}
