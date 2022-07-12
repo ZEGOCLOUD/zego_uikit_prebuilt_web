@@ -8,6 +8,7 @@ import { ZegoCloudRTCCore } from "../../../modules";
 import ZegoSettingsCss from "./index.module.scss";
 export class ZegoSettings extends React.Component<{
   core: ZegoCloudRTCCore;
+  theme?: string;
   localVideoStream?: MediaStream;
   localAudioStream?: MediaStream;
   closeCallBack?: () => void;
@@ -181,150 +182,157 @@ export class ZegoSettings extends React.Component<{
   render(): React.ReactNode {
     return (
       <div
-        className={
+        className={`${
           this.state.visible ? ZegoSettingsCss.frame : ZegoSettingsCss.noFrame
-        }
+        } ${
+          this.props.theme === "black"
+            ? ZegoSettingsCss.blackTheme
+            : ZegoSettingsCss.whiteTheme
+        }`}
       >
         <div className={ZegoSettingsCss.body}>
           <div className={ZegoSettingsCss.header}>
-            <div>Header</div>
+            <div>Settings</div>
             <div
               onClick={() => {
                 this.close();
               }}
-            >
-              close
-            </div>
+              className={ZegoSettingsCss.closeIcon}
+            ></div>
           </div>
           <div className={ZegoSettingsCss.content}>
             <div className={ZegoSettingsCss.left}>
-              <button
+              <div
+                className={ZegoSettingsCss.leftAudioTab}
                 onClick={() => {
                   this.setState({
                     seletTab: "AUDIO",
                   });
                 }}
               >
-                音频
-              </button>
-              <button
+                Audio
+              </div>
+              <div
+                className={ZegoSettingsCss.leftVideoTab}
                 onClick={() => {
                   this.setState({
                     seletTab: "VIDEO",
                   });
                 }}
               >
-                视频
-              </button>
-            </div>
-            {this.state.seletTab === "AUDIO" && (
-              <div className={ZegoSettingsCss.rightAudio}>
-                <div className={ZegoSettingsCss.device}>
-                  mic:
-                  <select
-                    value={this.state.seletMic}
-                    onChange={(el: ChangeEvent<HTMLSelectElement>) => {
-                      this.toggleMic(el.target.value);
-                    }}
-                  >
-                    {this.state.micDevices.map((device, index) => (
-                      <option value={device.deviceID} key={index}>
-                        {device.deviceName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className={ZegoSettingsCss.device}>
-                  speaker:
-                  <select
-                    value={this.state.seletSpeaker}
-                    onChange={(el: ChangeEvent<HTMLSelectElement>) => {
-                      this.toggleSpeaker(el.target.value);
-                    }}
-                  >
-                    {this.state.speakerDevices.map((device, index) => (
-                      <option value={device.deviceID} key={index}>
-                        {device.deviceName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <audio
-                  style={{ width: "1px", height: "1px" }}
-                  ref={(el: HTMLAudioElement | null) => {
-                    if (
-                      el &&
-                      this.state.localAudioStream &&
-                      el.srcObject !== this.state.localAudioStream
-                    ) {
-                      el.srcObject = this.state.localAudioStream;
-                    }
-
-                    if (
-                      el &&
-                      this.state.localAudioStream &&
-                      el.srcObject &&
-                      // @ts-ignore
-                      el.sinkId &&
-                      // @ts-ignore
-                      el.sinkId !== this.state.seletSpeaker
-                    ) {
-                      // @ts-ignore
-                      el.sinkId = this.state.seletSpeaker;
-                    }
-                  }}
-                ></audio>
+                Video
               </div>
-            )}
-            {this.state.seletTab === "VIDEO" && (
-              <div className={ZegoSettingsCss.rightVideo}>
-                <div className={ZegoSettingsCss.device}>
-                  camera:
-                  <select
-                    value={this.state.seletCamera}
-                    onChange={(el: ChangeEvent<HTMLSelectElement>) => {
-                      this.toggleCamera(el.target.value);
-                    }}
-                  >
-                    {this.state.cameraDevices.map((device, index) => (
-                      <option value={device.deviceID} key={index}>
-                        {device.deviceName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className={ZegoSettingsCss.preview}>
-                  <video
-                    controls
-                    muted
-                    autoPlay
-                    ref={(el: HTMLVideoElement | null) => {
+            </div>
+            <div className={ZegoSettingsCss.right}>
+              {this.state.seletTab === "AUDIO" && (
+                <div className={ZegoSettingsCss.rightAudio}>
+                  <div className={ZegoSettingsCss.device}>
+                    mic:
+                    <select
+                      value={this.state.seletMic}
+                      onChange={(el: ChangeEvent<HTMLSelectElement>) => {
+                        this.toggleMic(el.target.value);
+                      }}
+                    >
+                      {this.state.micDevices.map((device, index) => (
+                        <option value={device.deviceID} key={index}>
+                          {device.deviceName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={ZegoSettingsCss.device}>
+                    speaker:
+                    <select
+                      value={this.state.seletSpeaker}
+                      onChange={(el: ChangeEvent<HTMLSelectElement>) => {
+                        this.toggleSpeaker(el.target.value);
+                      }}
+                    >
+                      {this.state.speakerDevices.map((device, index) => (
+                        <option value={device.deviceID} key={index}>
+                          {device.deviceName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <audio
+                    style={{ width: "1px", height: "1px" }}
+                    ref={(el: HTMLAudioElement | null) => {
                       if (
                         el &&
-                        this.state.localVideoStream &&
-                        el.srcObject !== this.state.localVideoStream
+                        this.state.localAudioStream &&
+                        el.srcObject !== this.state.localAudioStream
                       ) {
-                        el.srcObject = this.state.localVideoStream;
+                        el.srcObject = this.state.localAudioStream;
+                      }
+
+                      if (
+                        el &&
+                        this.state.localAudioStream &&
+                        el.srcObject &&
+                        // @ts-ignore
+                        el.sinkId &&
+                        // @ts-ignore
+                        el.sinkId !== this.state.seletSpeaker
+                      ) {
+                        // @ts-ignore
+                        el.sinkId = this.state.seletSpeaker;
                       }
                     }}
-                  ></video>
+                  ></audio>
                 </div>
-                <div className={ZegoSettingsCss.device}>
-                  camera:
-                  <select
-                    value={this.state.seletVideoResolve}
-                    onChange={(el: ChangeEvent<HTMLSelectElement>) => {
-                      this.toggleVideoResolve(el.target.value);
-                    }}
-                  >
-                    <option value="180">180p</option>
-                    <option value="360">360p</option>
-                    <option value="480">480p</option>
-                    <option value="720">720p</option>
-                  </select>
+              )}
+              {this.state.seletTab === "VIDEO" && (
+                <div className={ZegoSettingsCss.rightVideo}>
+                  <div className={ZegoSettingsCss.device}>
+                    camera:
+                    <select
+                      value={this.state.seletCamera}
+                      onChange={(el: ChangeEvent<HTMLSelectElement>) => {
+                        this.toggleCamera(el.target.value);
+                      }}
+                    >
+                      {this.state.cameraDevices.map((device, index) => (
+                        <option value={device.deviceID} key={index}>
+                          {device.deviceName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={ZegoSettingsCss.preview}>
+                    <video
+                      controls
+                      muted
+                      autoPlay
+                      ref={(el: HTMLVideoElement | null) => {
+                        if (
+                          el &&
+                          this.state.localVideoStream &&
+                          el.srcObject !== this.state.localVideoStream
+                        ) {
+                          el.srcObject = this.state.localVideoStream;
+                        }
+                      }}
+                    ></video>
+                  </div>
+                  <div className={ZegoSettingsCss.device}>
+                    camera:
+                    <select
+                      value={this.state.seletVideoResolve}
+                      onChange={(el: ChangeEvent<HTMLSelectElement>) => {
+                        this.toggleVideoResolve(el.target.value);
+                      }}
+                    >
+                      <option value="180">180p</option>
+                      <option value="360">360p</option>
+                      <option value="480">480p</option>
+                      <option value="720">720p</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
