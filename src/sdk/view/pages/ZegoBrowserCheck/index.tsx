@@ -3,7 +3,7 @@ import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
-import { ZegoSupports } from "../../components/zegoSupports";
+import { ZegoModel } from "../../components/zegoModel";
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: false,
@@ -17,6 +17,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     isCopied: false, //  是否已经点击复制链接
     isJoinRoomFailed: false, // 是否加入房间失败
     joinRoomErrorTip: `Failed to join the room.`, // 加入房间失败提示
+    showDeviceAuthorAlert: false, // 控制设备权限警告弹窗
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -43,8 +44,10 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         this.state.videoOpen,
         this.state.audioOpen
       );
+      //   TODO
       this.setState({
-        isSupportWebRTC: false,
+        // isSupportWebRTC: res,
+        isSupportWebRTC: true, // 调试
         userName: this.props.core._expressConfig.userName,
       });
     }
@@ -214,7 +217,14 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   render(): React.ReactNode {
     let page;
     if (!this.state.isSupportWebRTC) {
-      page = <ZegoSupports></ZegoSupports>;
+      page = (
+        <ZegoModel
+          header={"Browser not supported"}
+          contentText={
+            "The current browser is not available for you to join the room."
+          }
+        ></ZegoModel>
+      );
     } else {
       page = (
         <div className={ZegoBrowserCheckCss.support}>
@@ -329,6 +339,18 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             <a href="#">Terms of Services</a> and <a href="#">Privacy Policy</a>
             .
           </div>
+          {this.state.showDeviceAuthorAlert && (
+            <ZegoModel
+              header={"Equipment authorization"}
+              contentText={
+                "Please allow us to access your camera and microphone in your browser's address bar."
+              }
+              okText="OK"
+              onOk={() => {
+                this.setState({ showDeviceAuthorAlert: false });
+              }}
+            ></ZegoModel>
+          )}
         </div>
       );
     }
