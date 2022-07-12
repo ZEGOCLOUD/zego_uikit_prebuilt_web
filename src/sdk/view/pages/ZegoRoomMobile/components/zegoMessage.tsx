@@ -1,7 +1,7 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, RefObject } from "react";
 import zegoMessageCss from "./zegoMessage.module.scss";
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { DateFormat } from "../../../../util";
+import { DateFormat, userNameColor } from "../../../../util";
 export class ZegoMessage extends React.Component<{
   messageList: ZegoBroadcastMessageInfo[];
   sendMessage: (msg: string) => void;
@@ -13,6 +13,33 @@ export class ZegoMessage extends React.Component<{
   } = {
     message: "",
   };
+
+  msgContentListRef: RefObject<HTMLDivElement>;
+
+  constructor(props: {
+    messageList: ZegoBroadcastMessageInfo[];
+    sendMessage: (msg: string) => void;
+    userID: string;
+    closeCallBac: () => void;
+  }) {
+    super(props);
+    this.msgContentListRef = React.createRef<HTMLDivElement>();
+  }
+
+  componentDidUpdate(prevProps: {
+    messageList: ZegoBroadcastMessageInfo[];
+    sendMessage: (msg: string) => void;
+    userID: string;
+    closeCallBac: () => void;
+  }) {
+    if (prevProps.messageList.length !== this.props.messageList.length) {
+      this.msgContentListRef.current?.scroll(
+        0,
+        this.msgContentListRef.current.scrollHeight -
+          this.msgContentListRef.current.clientHeight
+      );
+    }
+  }
 
   messageInput(event: ChangeEvent<HTMLInputElement>) {
     this.setState({
@@ -34,7 +61,10 @@ export class ZegoMessage extends React.Component<{
           Chat
         </div>
 
-        <div className={zegoMessageCss.msgListContent}>
+        <div
+          className={zegoMessageCss.msgListContent}
+          ref={this.msgContentListRef}
+        >
           {this.props.messageList.map((msg) => {
             return (
               <div
@@ -45,14 +75,16 @@ export class ZegoMessage extends React.Component<{
                 }`}
                 key={msg.messageID}
               >
-                <i>{msg.fromUser.userName?.substring(0, 1)}</i>
+                <i style={{ color: userNameColor(msg.fromUser.userName!) }}>
+                  {msg.fromUser.userName?.substring(0, 1)}
+                </i>
                 <div className={zegoMessageCss.msgContentRight}>
                   <div className={zegoMessageCss.msgContentRightHeader}>
                     <span>{msg.fromUser.userName}</span>
                     <span>
                       {`${
-                        new Date(msg.sendTime).getHours() > 12 ? "AM" : "PM"
-                      }  ${DateFormat(msg.sendTime, "mm:ss")}`}
+                        new Date(msg.sendTime).getHours() > 12 ? "PM" : "AM"
+                      }  ${DateFormat(msg.sendTime, "hh:mm")}`}
                     </span>
                   </div>
                   <p className={zegoMessageCss.msgContentRightBody}>
