@@ -1,6 +1,7 @@
 .msgList {
   position: absolute;
   bottom: 0px;
+  z-index: 202;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -26,9 +27,12 @@
   }
   .msgListContent {
     display: flex;
-    flex: 1;
     flex-direction: column;
     align-items: flex-start;
+    box-sizing: border-box;
+    height: 535px;
+    padding-bottom: 14px;
+    overflow-y: scroll;
     .msgContent {
       display: flex;
       align-items: flex-start;

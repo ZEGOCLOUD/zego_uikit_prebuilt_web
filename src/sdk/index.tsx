@@ -36,7 +36,10 @@ export default class ZegoCloudRTCKit {
       div.style.backgroundColor = "#FFFFFF";
       document.body.appendChild(div);
       roomConfig = {
-        container: div,
+        ...roomConfig,
+        ...{
+          container: div,
+        },
       };
     }
 
