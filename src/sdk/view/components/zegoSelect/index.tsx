@@ -17,6 +17,8 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
     name: "",
     showList: false,
   };
+  listRef = React.createRef<HTMLDivElement>();
+  selectRef = React.createRef<HTMLDivElement>();
   handleChange(op: { value: string; name: string }): void {
     this.setState({ ...op });
     this.props.onChange && this.props.onChange(op.value);
@@ -31,6 +33,19 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
       });
     }
   }
+  onCloseList = (event: any) => {
+    if (
+      this.listRef.current === event.target ||
+      this.listRef.current?.contains(event.target as Node) ||
+      this.selectRef.current === event.target ||
+      this.selectRef.current?.contains(event.target as Node)
+    ) {
+    } else {
+      this.setState({
+        showList: false,
+      });
+    }
+  };
   componentDidMount() {
     if (this.props.options?.length) {
       if (this.props.initValue) {
@@ -44,17 +59,11 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
         this.setState({ ...this.props.options[0] });
       }
     }
-    // document.body.addEventListener(
-    //   "click",
-    //   () => {
-    //     if (this.state.showList) {
-    //       this.setState({
-    //         showList: false,
-    //       });
-    //     }
-    //   },
-    //   { passive: true }
-    // );
+    // 点击其他区域时, 隐藏指定区域(cDom)
+    document.addEventListener("click", this.onCloseList);
+  }
+  componentWillUnmount() {
+    document.removeEventListener("click", this.onCloseList);
   }
   componentDidUpdate(prevProps: any) {
     if (this.props.options?.length !== prevProps.options?.length) {
@@ -75,6 +84,7 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
       >
         <label className={ZegoSelectCss.selectLabel}>{this.props.label}</label>
         <div
+          ref={this.selectRef}
           className={`${ZegoSelectCss.selectInputWrapper} ${this.state
             .showList && ZegoSelectCss.inputActived}`}
           onClick={() => {
@@ -86,12 +96,13 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
           </p>
           <span></span>
         </div>
-        <ul
+        <div
+          ref={this.listRef}
           className={`${ZegoSelectCss.optionsWrapper} ${this.state.showList &&
             ZegoSelectCss.showList}`}
         >
           {this.props.options?.map((op) => (
-            <li
+            <div
               className={`${ZegoSelectCss.option} ${this.state.value ===
                 op.value && ZegoSelectCss.optionSelected}`}
               onClick={() => {
@@ -100,9 +111,9 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
               key={op.value}
             >
               {op.name}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     );
   }
