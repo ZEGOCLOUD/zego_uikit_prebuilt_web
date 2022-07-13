@@ -44,8 +44,14 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
       );
     } else if (this.state.step === 1 && this.props.core) {
       const root = document.getElementById("root");
+      const nav = document.querySelector(
+        "#root div div:first-child"
+      ) as HTMLDivElement;
       if (root && !isPc()) {
         root.style.display = "none";
+      }
+      if (nav && isPc()) {
+        nav.style.display = "none";
       }
 
       page = isPc() ? (
