@@ -1,64 +1,83 @@
+@import "./var.scss";
 .app {
   width: 100vw;
   height: 100vh;
   .nav {
-    height: 64px;
     top: 0;
-    width: 100vw;
-    background: #edf0f3;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: rgba(0, 0, 0, 0);
-    padding: 14px 20px;
     box-sizing: border-box;
+    width: 100vw;
+    height: 64px;
+    padding: 14px 20px;
+    background: #edf0f3;
+    background-color: rgba(0, 0, 0, 0);
+    .LOGO {
+      width: 182px;
+      height: 37px;
+      background-image: url(./assets/logo_zegocloud@2x.png);
+      background-size: contain;
+    }
+    .link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .link_item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 4px;
+      padding: 6px 10px;
+      color: #666666;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      text-decoration: none;
+      span {
+        width: 20px;
+        height: 20px;
+        margin-right: 6px;
+      }
+      &:hover {
+        color: #0055ff;
+        .icon__doc {
+          background-image: url("./assets/icon_doc_hover.png");
+        }
+        .icon__github {
+          background-image: url("./assets/icon_github_hover.png");
+        }
+      }
+    }
+    .icon__doc {
+      background: url("./assets/icon_doc.png") no-repeat center/cover;
+    }
+    .icon__github {
+      background: url("./assets/icon_github.png") no-repeat center/cover;
+    }
   }
   .myMeeting {
     height: calc(100vh - 64px);
   }
-  .LOGO {
-    width: 182px;
-    height: 37px;
-    background-size: contain;
-    background-image: url(./assets/logo_zegocloud@2x.png);
-  }
-  .link {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .link_item {
-    font-size: 14px;
-    font-weight: 400;
-    color: #666666;
-    line-height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 10px;
-    margin-left: 4px;
-    text-decoration: none;
-    span {
-      width: 20px;
-      height: 20px;
-      margin-right: 6px;
+
+  .mobileNav {
+    position: absolute;
+    z-index: 102;
+    height: vw(108px);
+    padding: vw(27px) vw(30px);
+
+    .mobileLOGO {
+      width: vw(248px);
+      height: vw(54px);
+      background-image: url(./assets/App_logo@2x.png);
+      background-size: contain;
     }
-    &:hover {
-      color: #0055ff;
-      .icon__doc {
-        background-image: url("./assets/icon_doc_hover.png");
-      }
-      .icon__github {
-        background-image: url("./assets/icon_github_hover.png");
+    .mobileLink {
+      span {
+        width: vw(50px);
+        height: vw(50px);
       }
     }
-  }
-  .icon__doc {
-    background: url("./assets/icon_doc.png") no-repeat center/cover;
-  }
-  .icon__github {
-    background: url("./assets/icon_github.png") no-repeat center/cover;
-  }
-  .sample {
   }
 }

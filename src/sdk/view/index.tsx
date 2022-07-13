@@ -43,6 +43,11 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         ></ZegoBrowserCheckMobile>
       );
     } else if (this.state.step === 1 && this.props.core) {
+      const root = document.getElementById("root");
+      if (root && !isPc()) {
+        root.style.display = "none";
+      }
+
       page = isPc() ? (
         <ZegoRoom
           core={this.props.core}
