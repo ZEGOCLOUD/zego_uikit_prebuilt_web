@@ -14,7 +14,7 @@
 }
 .selectLabel {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--labelColor);
   line-height: 17px;
   margin-bottom: 6px;
@@ -35,7 +35,7 @@
     width: 208px;
     height: 20px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 400;
     color: var(--inputColor);
     line-height: 20px;
     white-space: nowrap;
@@ -66,7 +66,8 @@
   left: 0;
   z-index: 10;
   width: 264px;
-  height: 182px;
+  max-height: 182px;
+  height: auto;
   background: var(--bgColor);
   box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.1);
   border-radius: 4px;

@@ -26,6 +26,8 @@ export class ZegoSettings extends React.Component<{
     cameraDevices: ZegoDeviceInfo[];
     localVideoStream: MediaStream | undefined;
     localAudioStream: MediaStream | undefined;
+    audioVolume: number;
+    speakerVolume: number;
   } = {
     visible: true,
     seletTab: "AUDIO",
@@ -38,9 +40,28 @@ export class ZegoSettings extends React.Component<{
     localVideoStream: undefined,
     localAudioStream: undefined,
     seletVideoResolve: "480",
+    audioVolume: 0,
+    speakerVolume: 0,
   };
   videoRef = React.createRef<HTMLDivElement>();
-
+  solutionList = [
+    {
+      name: "180p",
+      value: "180",
+    },
+    {
+      name: "360p",
+      value: "360",
+    },
+    {
+      name: "480p",
+      value: "480",
+    },
+    {
+      name: "720p",
+      value: "720",
+    },
+  ];
   componentDidMount() {
     this.getDevices();
     if (!this.props.localAudioStream && !this.props.localVideoStream) {
@@ -239,21 +260,62 @@ export class ZegoSettings extends React.Component<{
                       onChange={this.toggleMic}
                       placeholder="No equipment"
                     ></ZegoSelect>
+                    <div className={ZegoSettingsCss.volumeWrapper}>
+                      <span
+                        className={`${ZegoSettingsCss.micIcon} ${
+                          this.state.localAudioStream
+                            ? ZegoSettingsCss.micIconAcitve
+                            : ""
+                        }`}
+                      ></span>
+                      {Array(20)
+                        .fill(1)
+                        .map((i, index) => (
+                          <span
+                            key={index}
+                            className={`${
+                              this.state.audioVolume >= index + 1
+                                ? ZegoSettingsCss.volumeActive
+                                : ""
+                            } ${ZegoSettingsCss.volume}`}
+                          ></span>
+                        ))}
+                    </div>
                   </div>
                   <div className={ZegoSettingsCss.device}>
-                    speaker:
-                    <select
-                      value={this.state.seletSpeaker}
-                      onChange={(el: ChangeEvent<HTMLSelectElement>) => {
-                        this.toggleSpeaker(el.target.value);
-                      }}
-                    >
-                      {this.state.speakerDevices.map((device, index) => (
-                        <option value={device.deviceID} key={index}>
-                          {device.deviceName}
-                        </option>
-                      ))}
-                    </select>
+                    <ZegoSelect
+                      label="Speakers"
+                      options={this.state.speakerDevices.map((device) => ({
+                        name: device.deviceName,
+                        value: device.deviceID,
+                      }))}
+                      onChange={this.toggleSpeaker}
+                      placeholder="No equipment"
+                    ></ZegoSelect>
+                    <div className={ZegoSettingsCss.volumeWrapper}>
+                      <span
+                        className={`${ZegoSettingsCss.speakerIcon} ${
+                          this.state.localAudioStream
+                            ? ZegoSettingsCss.peakerIconAcitve
+                            : ""
+                        }`}
+                      ></span>
+                      {Array(16)
+                        .fill(1)
+                        .map((i, index) => (
+                          <span
+                            key={index}
+                            className={`${
+                              this.state.speakerVolume >= index + 1
+                                ? ZegoSettingsCss.volumeActive
+                                : ""
+                            } ${ZegoSettingsCss.volume}`}
+                          ></span>
+                        ))}
+                      <div className={ZegoSettingsCss.speakerTestButton}>
+                        Test
+                      </div>
+                    </div>
                   </div>
                   <audio
                     style={{ width: "1px", height: "1px" }}
@@ -285,25 +347,22 @@ export class ZegoSettings extends React.Component<{
               {this.state.seletTab === "VIDEO" && (
                 <div className={ZegoSettingsCss.rightVideo}>
                   <div className={ZegoSettingsCss.device}>
-                    camera:
-                    <select
-                      value={this.state.seletCamera}
-                      onChange={(el: ChangeEvent<HTMLSelectElement>) => {
-                        this.toggleCamera(el.target.value);
-                      }}
-                    >
-                      {this.state.cameraDevices.map((device, index) => (
-                        <option value={device.deviceID} key={index}>
-                          {device.deviceName}
-                        </option>
-                      ))}
-                    </select>
+                    <ZegoSelect
+                      label="Cameras"
+                      options={this.state.cameraDevices.map((device) => ({
+                        name: device.deviceName,
+                        value: device.deviceID,
+                      }))}
+                      onChange={this.toggleCamera}
+                      placeholder="No equipment"
+                    ></ZegoSelect>
                   </div>
-                  <div className={ZegoSettingsCss.preview}>
+                  <div className={ZegoSettingsCss.device}>
+                    <label>Preview</label>
                     <video
-                      controls
                       muted
                       autoPlay
+                      className={ZegoSettingsCss.previewVideo}
                       ref={(el: HTMLVideoElement | null) => {
                         if (
                           el &&
@@ -316,18 +375,12 @@ export class ZegoSettings extends React.Component<{
                     ></video>
                   </div>
                   <div className={ZegoSettingsCss.device}>
-                    camera:
-                    <select
-                      value={this.state.seletVideoResolve}
-                      onChange={(el: ChangeEvent<HTMLSelectElement>) => {
-                        this.toggleVideoResolve(el.target.value);
-                      }}
-                    >
-                      <option value="180">180p</option>
-                      <option value="360">360p</option>
-                      <option value="480">480p</option>
-                      <option value="720">720p</option>
-                    </select>
+                    <ZegoSelect
+                      label="Send resolution"
+                      options={this.solutionList}
+                      onChange={this.toggleVideoResolve}
+                      placeholder=""
+                    ></ZegoSelect>
                   </div>
                 </div>
               )}
