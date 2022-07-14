@@ -6,7 +6,7 @@ import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModel } from "../../components/zegoModel";
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
-    isSupportWebRTC: false,
+    isSupportWebRTC: undefined,
     localStream: undefined,
     localVideoStream: undefined,
     localAudioStream: undefined,
@@ -46,8 +46,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       );
       //   TODO
       this.setState({
-        // isSupportWebRTC: res,
-        isSupportWebRTC: true, // 调试
+        isSupportWebRTC: res,
+        // isSupportWebRTC: true, // 调试
         userName: this.props.core._expressConfig.userName,
       });
     }
@@ -216,7 +216,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
   render(): React.ReactNode {
     let page;
-    if (!this.state.isSupportWebRTC) {
+    if (this.state.isSupportWebRTC === false) {
       page = (
         <ZegoModel
           header={"Browser not supported"}
@@ -225,7 +225,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           }
         ></ZegoModel>
       );
-    } else {
+    } else if (this.state.isSupportWebRTC === true) {
       page = (
         <div className={ZegoBrowserCheckCss.support}>
           <div className={ZegoBrowserCheckCss.supportWrapper}>
@@ -244,8 +244,9 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               <div className={ZegoBrowserCheckCss.toolsWrapper}>
                 {this.props.core._config.userCanToggleSelfMic && (
                   <div
-                    className={`${ZegoBrowserCheckCss.audioButton} ${!this.state
-                      .audioOpen && ZegoBrowserCheckCss.close}`}
+                    className={`${ZegoBrowserCheckCss.audioButton} ${
+                      !this.state.audioOpen && ZegoBrowserCheckCss.close
+                    }`}
                     onClick={() => {
                       this.toggleStream("audio");
                     }}
@@ -259,8 +260,9 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 )}
                 {this.props.core._config.userCanToggleSelfCamera && (
                   <div
-                    className={`${ZegoBrowserCheckCss.videoButton} ${!this.state
-                      .videoOpen && ZegoBrowserCheckCss.close}`}
+                    className={`${ZegoBrowserCheckCss.videoButton} ${
+                      !this.state.videoOpen && ZegoBrowserCheckCss.close
+                    }`}
                     onClick={() => {
                       this.toggleStream("video");
                     }}

@@ -14,7 +14,8 @@ export function randomID(len: number): string {
 export function isPc(): boolean {
   const p = navigator.platform;
   let system = { win: p.indexOf("Win") == 0, mac: p.indexOf("Mac") == 0 };
-  return system.win || system.mac;
+  return false;
+  // system.win || system.mac;
 }
 
 export function DateFormat(date: number, fmt: string) {

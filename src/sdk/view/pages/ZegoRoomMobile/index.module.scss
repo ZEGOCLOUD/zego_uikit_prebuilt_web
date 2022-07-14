@@ -1,3 +1,4 @@
+@import "../../../var.scss";
 .ZegoRoom {
   position: relative;
   display: flex;
@@ -9,106 +10,121 @@
   .footer {
     position: absolute;
     bottom: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     box-sizing: border-box;
     width: 100%;
-    padding: 0 45px;
+    height: vw(152px);
+    padding: 0 vw(87px);
     background: #1c1f2e;
-    .footerContent {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 63px;
-      a {
-        width: 40px;
-        height: 40px;
-        background: #2c2f3e;
+    a {
+      box-sizing: border-box;
+      width: vw(76px);
+      height: vw(76px);
+      background: #2c2f3e;
+      border-radius: vw(18px);
+    }
+    .switchCamera {
+      background-image: url(../../../sdkMobileAssets/Room_camera_switch@2x.png);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(56px) vw(56px);
+    }
+    .toggleCamera {
+      background-image: url(../../../sdkMobileAssets/Room_camera_open@2x.png);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(56px) vw(56px);
+    }
+    .cameraClose {
+      background-image: url(../../../sdkMobileAssets/Room_camera_close@2x.png);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(56px) vw(56px);
+    }
+    .toggleMic {
+      background-image: url(../../../sdkMobileAssets/Room_mic_open@2x.png);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(56px) vw(56px);
+    }
+    .micClose {
+      background-image: url(../../../sdkMobileAssets/Room_mic_close@2x.png);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(56px) vw(56px);
+    }
+    .leaveRoom {
+      background-color: rgba(232, 84, 59, 1);
+      background-image: url(../../../sdkMobileAssets/Room_leaveRoom@2x.png);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(56px) vw(56px);
+    }
+    .more {
+      position: relative;
+      background-image: url(../../../sdkMobileAssets/Room_more@2x.png);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(56px) vw(56px);
+
+      .popMore {
+        position: absolute;
+        bottom: 66px;
+        left: -199px;
+        z-index: 202;
+        box-sizing: border-box;
+        width: 241px;
+        height: 89px;
+        padding: 17px 29px;
+        background-color: #1c1f2e;
+        border: 1px solid #3d4054;
         border-radius: 9px;
-      }
-      .switchCamera {
-        background-image: url(../../../sdkMobileAssets/Room_camera_switch@2x.png);
-        background-size: contain;
-      }
-      .toggleCamera {
-        background-image: url(../../../sdkMobileAssets/Room_camera_open@2x.png);
-        background-size: contain;
-      }
-      .cameraClose {
-        background-image: url(../../../sdkMobileAssets/Room_camera_close@2x.png);
-        background-size: contain;
-      }
-      .toggleMic {
-        background-image: url(../../../sdkMobileAssets/Room_mic_open@2x.png);
-        background-size: contain;
-      }
-      .micClose {
-        background-image: url(../../../sdkMobileAssets/Room_mic_close@2x.png);
-        background-size: contain;
-      }
-      .leaveRoom {
-        background-image: url(../../../sdkMobileAssets/Room_leaveRoom@2x.png);
-        background-size: contain;
-      }
-      .more {
-        position: relative;
-        background-image: url(../../../sdkMobileAssets/Room_more@2x.png);
-        background-size: contain;
-        .popMore {
-          position: absolute;
-          bottom: 66px;
-          left: -199px;
-          z-index: 202;
-          box-sizing: border-box;
-          width: 241px;
-          height: 89px;
-          padding: 17px 29px;
-          background-color: #1c1f2e;
-          border: 1px solid #3d4054;
-          border-radius: 9px;
-          box-shadow: 0px 2px 3px 0px rgba(23, 24, 33, 0.35);
-          .popMoreContent {
+        box-shadow: 0px 2px 3px 0px rgba(23, 24, 33, 0.35);
+        .popMoreContent {
+          display: flex;
+          justify-content: space-between;
+          div {
             display: flex;
-            justify-content: space-between;
-            div {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              i {
-                width: 40px;
-                height: 40px;
-                margin-bottom: 10px;
-                background: #2c2f3e;
-                border-radius: 9px;
-              }
-              .details {
-                background-image: url(../../../sdkMobileAssets/Room_more_details@2x.png);
-                background-size: contain;
-              }
-              .member {
-                background-image: url(../../../sdkMobileAssets/Room_more_members@2x.png);
-                background-size: contain;
-              }
-              .chat {
-                background-image: url(../../../sdkMobileAssets/Room_more_chat@2x.png);
-                background-size: contain;
-              }
-              span {
-                color: #ffffff;
-                font-weight: 400;
-                font-size: 10px;
-                font-family: PingFangSC-Regular, PingFang SC;
-              }
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            i {
+              width: 40px;
+              height: 40px;
+              margin-bottom: 10px;
+              background: #2c2f3e;
+              border-radius: 9px;
+            }
+            .details {
+              background-image: url(../../../sdkMobileAssets/Room_more_details@2x.png);
+              background-size: contain;
+            }
+            .member {
+              background-image: url(../../../sdkMobileAssets/Room_more_members@2x.png);
+              background-size: contain;
+            }
+            .chat {
+              background-image: url(../../../sdkMobileAssets/Room_more_chat@2x.png);
+              background-size: contain;
+            }
+            span {
+              color: #ffffff;
+              font-weight: 400;
+              font-size: 10px;
+              font-family: PingFangSC-Regular, PingFang SC;
             }
           }
-          .popMoreArray {
-            position: absolute;
-            right: 17px;
-            bottom: -4px;
-            width: 10px;
-            height: 10px;
-            background-color: #1c1f2e;
-            transform: rotate(45deg);
-          }
+        }
+        .popMoreArray {
+          position: absolute;
+          right: 17px;
+          bottom: -4px;
+          width: 10px;
+          height: 10px;
+          background-color: #1c1f2e;
+          transform: rotate(45deg);
         }
       }
     }
