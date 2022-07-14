@@ -4,11 +4,10 @@ import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModel } from "../../components/zegoModel";
-export class ZegoBrowserCheckMobile extends React.Component<
-  ZegoBrowserCheckProp
-> {
+import { ZegoToast } from "../../components/zegoToast";
+export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
-    isSupportWebRTC: false,
+    isSupportWebRTC: undefined,
     localStream: undefined,
     localVideoStream: undefined,
     localAudioStream: undefined,
@@ -151,14 +150,32 @@ export class ZegoBrowserCheckMobile extends React.Component<
     this.props.core._config.cameraEnabled =
       this.state.videoOpen && !this.videoRefuse;
     const loginRsp = await this.props.core.enterRoom();
-    if (loginRsp) {
-      this.props.joinRoom && this.props.joinRoom();
+    let massage = "";
+    if (loginRsp === 0) {
       this.state.localStream &&
         this.props.core.destroyStream(this.state.localStream);
+      this.props.joinRoom && this.props.joinRoom();
+    } else if (loginRsp === 1002034) {
+      // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
+      massage =
+        "Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
+    } else if ([1002031, 1002053].includes(loginRsp)) {
+      //登录房间超时，可能是由于网络原因导致。
+      massage =
+        "There's something wrong with your network. Please check it and try again.";
+    } else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
+      // 登录 token 错误，
+    } else if (1002056 === loginRsp) {
+      // 用户重复进行登录。
+      massage =
+        "You are on a call in another room, please leave that room first.";
     } else {
-      // alert
-      console.error("【ZEGOCLOUD】Room is full !!");
+      massage =
+        "Failed to join the room, please try again.(error code:" +
+        loginRsp +
+        ")";
     }
+    massage && ZegoToast({ content: massage });
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -167,7 +184,7 @@ export class ZegoBrowserCheckMobile extends React.Component<
 
   render(): React.ReactNode {
     let page;
-    if (!this.state.isSupportWebRTC) {
+    if (this.state.isSupportWebRTC === false) {
       page = page = (
         <ZegoModel
           header={"Browser not supported"}
@@ -176,7 +193,7 @@ export class ZegoBrowserCheckMobile extends React.Component<
           }
         ></ZegoModel>
       );
-    } else {
+    } else if (this.state.isSupportWebRTC === true) {
       page = (
         <div className={ZegoBrowserCheckCss.ZegoBrowserCheckSupport}>
           <div className={ZegoBrowserCheckCss.videoScree}>

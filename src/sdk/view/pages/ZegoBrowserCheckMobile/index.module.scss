@@ -1,39 +1,41 @@
+@import "../../../var.scss";
 .ZegoBrowserCheckSupport {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  margin: 120px 0 113px 0;
+  margin: vw(186px) 0 auto 0;
   background-color: #ffffff;
   .videoScree {
     position: relative;
     justify-content: center;
-    padding: 0 66px;
+    padding: 0 vw(127px);
 
     .video {
-      width: 100%;
-      height: 100%;
+      width: vw(496px);
+      height: vw(660px);
     }
     .handler {
       position: absolute;
-      bottom: 11px;
+      bottom: vw(21px);
       left: 50%;
       display: flex;
       transform: 50%;
       transform: translate(-50%);
       a {
         display: block;
-        width: 46px;
-        height: 46px;
-        margin-right: 24px;
-        border: 1px solid #ffffff;
-        border-radius: 23px;
+        width: vw(87.85px);
+        height: vw(88px);
+        border: vw(2px) solid #ffffff;
+        border-radius: vw(88px);
       }
       .micOpen {
+        margin-right: vw(46px);
         background: url(../../../sdkMobileAssets/mic_open@2x.png);
         background-size: contain;
       }
       .micClose {
+        margin-right: vw(46px);
         background: url(../../../sdkMobileAssets/mic_close@2x.png);
         background-size: contain;
       }
@@ -50,51 +52,50 @@
   .joinScreen {
     display: flex;
     flex-direction: column;
-    margin-top: 45px;
+    margin-top: vw(86px);
     .joinRoom {
       display: flex;
       flex-direction: row;
-      padding: 0 47px;
+      padding: 0 vw(90px);
       input {
-        width: 197px;
-        height: 24px;
-        padding: 13px 16px 12px 16px;
+        box-sizing: border-box;
+        width: vw(440px);
+        height: vw(94px);
+        padding: vw(25px) vw(30px);
         color: #ababb5;
         font-weight: 500;
-        font-size: 17px;
+        font-size: vw(32px);
         font-family: PingFangSC-Medium, PingFang SC;
-        line-height: 23px;
-        border: 1px solid #333333;
-        border-radius: 9px;
+        line-height: vw(45px);
+        border: vw(2px) solid #333333;
+        border-radius: vw(18px);
         outline: none;
-        &::before {
-          content: "Your Name";
-        }
         &:focus {
-          border: 1px solid #0055ff;
+          color: #2a2a2a;
+          border: vw(2px) solid #0055ff;
         }
       }
       button {
-        width: 54px;
-        height: 49px;
-        margin-left: 14px;
+        width: vw(104px);
+        height: vw(94px);
+        margin-left: vw(26px);
         color: #ffffff;
         font-weight: 500;
-        font-size: 17px;
+        font-size: vw(32px);
         font-family: PingFangSC-Medium, PingFang SC;
-        line-height: 23px;
+        line-height: vw(45px);
         background: rgba(0, 85, 255, 0.3);
         border: 0;
-        border-radius: 9px;
+        border-radius: vw(18px);
       }
       .active {
         background: rgba(0, 85, 255, 1);
       }
       label {
         position: absolute;
-        left: 64px;
-        width: 68px;
+        left: vw(120px);
         height: 7px;
+        padding: 0 5px;
         color: #0055ff;
         font-weight: 400;
         font-size: 12px;
@@ -107,12 +108,13 @@
     .inviteLink {
       display: flex;
       align-items: center;
-      margin: 32px 47px 0 47px;
-      padding: 13px 10px 12px 17px;
+      margin: vw(50px) vw(65px);
+      padding: vw(27px) vw(22px) vw(26px) vw(36px);
       background: #f5f7fa;
       border-radius: 9px;
       input {
         flex: 1;
+        width: vw(460px);
         height: 23px;
         color: #666666;
         font-weight: 500;

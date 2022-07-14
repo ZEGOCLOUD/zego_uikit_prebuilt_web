@@ -180,9 +180,9 @@ export class ZegoCloudRTCCore {
     return ZegoCloudRTCCore._zg.muteMicrophone(enable);
   }
 
-  async enterRoom(): Promise<boolean> {
+  async enterRoom(): Promise<number> {
     // 已经登陆过不再登录
-    if (this.status.loginRsp) return Promise.resolve(true);
+    if (this.status.loginRsp) return Promise.resolve(0);
 
     ZegoCloudRTCCore._zg.on(
       "roomStreamUpdate",
@@ -275,19 +275,6 @@ export class ZegoCloudRTCCore {
     );
 
     ZegoCloudRTCCore._zg.on(
-      "roomStateUpdate",
-      (
-        roomID: string,
-        state: "DISCONNECTED" | "CONNECTING" | "CONNECTED",
-        errorCode: number,
-        extendedData: string
-      ) => {
-        this.onNetworkStatusCallBack &&
-          this.onNetworkStatusCallBack(roomID, "ROOM", state);
-      }
-    );
-
-    ZegoCloudRTCCore._zg.on(
       "publisherStateUpdate",
       (streamInfo: ZegoPublisherState) => {
         let state: "DISCONNECTED" | "CONNECTING" | "CONNECTED" = "DISCONNECTED";
@@ -307,19 +294,39 @@ export class ZegoCloudRTCCore {
       }
     );
 
-    this.status.loginRsp = await ZegoCloudRTCCore._zg.loginRoom(
-      ZegoCloudRTCCore._instance._expressConfig.roomID,
-      ZegoCloudRTCCore._instance._expressConfig.token,
-      {
-        userID: ZegoCloudRTCCore._instance._expressConfig.userID,
-        userName: ZegoCloudRTCCore._instance._expressConfig.userName,
-      },
-      {
-        userUpdate: true,
-        maxMemberCount: 2,
-      }
-    );
-    return this.status.loginRsp;
+    const resp = await new Promise<number>(async (res, rej) => {
+      let code: number;
+      ZegoCloudRTCCore._zg.on(
+        "roomStateUpdate",
+        (
+          roomID: string,
+          state: "DISCONNECTED" | "CONNECTING" | "CONNECTED",
+          errorCode: number,
+          extendedData: string
+        ) => {
+          this.onNetworkStatusCallBack &&
+            this.onNetworkStatusCallBack(roomID, "ROOM", state);
+          if (state === "CONNECTED" || state === "DISCONNECTED") {
+            this.status.loginRsp = errorCode === 0;
+            res(errorCode);
+          }
+        }
+      );
+
+      await ZegoCloudRTCCore._zg.loginRoom(
+        ZegoCloudRTCCore._instance._expressConfig.roomID,
+        ZegoCloudRTCCore._instance._expressConfig.token,
+        {
+          userID: ZegoCloudRTCCore._instance._expressConfig.userID,
+          userName: ZegoCloudRTCCore._instance._expressConfig.userName,
+        },
+        {
+          userUpdate: true,
+          maxMemberCount: 2,
+        }
+      );
+    });
+    return resp;
   }
 
   publishLocalStream(media: MediaStream): boolean {
