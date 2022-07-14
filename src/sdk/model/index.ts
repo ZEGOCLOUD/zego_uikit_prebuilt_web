@@ -43,4 +43,11 @@ export interface ZegoBrowserCheckProp {
   core: ZegoCloudRTCCore;
   joinRoom?: () => void;
   leaveRoom?: () => void;
+  returnHome?: () => void;
+}
+
+export interface ZegoNotification {
+  type: "USER" | "MSG";
+  content: string;
+  userName: undefined | string;
 }

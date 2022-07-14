@@ -1,5 +1,9 @@
 import React from "react";
-import { ZegoBrowserCheckProp, ZegoCloudRemoteMedia } from "../../../model";
+import {
+  ZegoBrowserCheckProp,
+  ZegoCloudRemoteMedia,
+  ZegoNotification,
+} from "../../../model";
 import ZegoRoomCss from "./index.module.scss";
 import {
   ZegoUser,
@@ -18,7 +22,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
     userList: ZegoUser[];
     messageList: ZegoBroadcastMessageInfo[];
-    notificationList: string[];
+    notificationList: ZegoNotification[];
     micOpen: boolean;
     cameraOpen: boolean;
     showMore: boolean;
@@ -50,15 +54,18 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
       userList: ZegoUser[];
       messageList: ZegoBroadcastMessageInfo[];
-      notificationList: string[];
+      notificationList: ZegoNotification[];
       micOpen: boolean;
       cameraOpen: boolean;
       showMore: boolean;
     }
   ) {
     if (
-      preState.notificationList[preState.notificationList.length - 1] !=
-      this.state.notificationList[this.state.notificationList.length - 1]
+      preState.notificationList.length > 0 &&
+      this.state.notificationList.length > 0 &&
+      preState.notificationList[preState.notificationList.length - 1].content !=
+        this.state.notificationList[this.state.notificationList.length - 1]
+          .content
     ) {
       this.notifyTimer && clearTimeout(this.notifyTimer);
       this.notifyTimer = setTimeout(() => {
@@ -83,17 +90,18 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     );
     this.props.core.onRemoteUserUpdate(
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
-        let notificationList: string[] = [];
+        let notificationList: ZegoNotification[] = [];
         if (this.props.core._config.notification?.userOnlineOfflineTips) {
-          if (updateType === "ADD") {
-            notificationList = userList.map<string>(
-              (u) => u.userName + " enter the room"
-            );
-          } else if (updateType === "DELETE") {
-            notificationList = [
-              ...userList.map((u) => u.userName + " quit the room"),
-            ];
-          }
+          userList.map((u) => {
+            notificationList.push({
+              content:
+                u.userName + " " + updateType === "ADD"
+                  ? "enter"
+                  : "quite" + " the room",
+              type: "USER",
+              userName: u.userName,
+            });
+          });
         }
         if (updateType === "ADD") {
           this.setState(
@@ -146,18 +154,22 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         this.setState(
           (state: {
             messageList: ZegoBroadcastMessageInfo[];
-            notificationList: string[];
+            notificationList: ZegoNotification[];
           }) => {
-            let notification: string[] = [];
+            let notification: ZegoNotification[] = [];
             if (
               this.state.layOutStatus !== "MESSAGE" &&
               this.props.core._config.notification?.unreadMessageTips
             ) {
               notification = [
                 ...state.notificationList,
-                ...messageList.map<string>(
-                  (u) => u.fromUser.userName + ": " + u.message
-                ),
+                ...messageList.map<ZegoNotification>((m) => {
+                  return {
+                    content: m.message,
+                    type: "MSG",
+                    userName: m.fromUser.userName,
+                  };
+                }),
               ];
             }
             return {
@@ -476,17 +488,17 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         {this.getListScreen()}
         <div className={ZegoRoomCss.notify}>
           {this.state.notificationList.slice(startIndex).map((notify) => {
-            if (notify.indexOf(":") > -1) {
+            if (notify.type === "MSG") {
               return (
-                <div key={notify} className={ZegoRoomCss.notifyContent}>
-                  <h5>{notify.split(":")[0]}</h5>
-                  <span>{notify.split(":")[1]}</span>
+                <div key={notify.content} className={ZegoRoomCss.notifyContent}>
+                  <h5>{notify.userName}</h5>
+                  <span>{notify.content}</span>
                 </div>
               );
             } else {
               return (
-                <div key={notify} className={ZegoRoomCss.notifyContent}>
-                  {notify}
+                <div key={notify.content} className={ZegoRoomCss.notifyContent}>
+                  {notify.content}
                 </div>
               );
             }

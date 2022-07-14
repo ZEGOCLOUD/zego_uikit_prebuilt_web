@@ -448,8 +448,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           <div className={ZegoRoomCss.handlerMiddle}>
             {this.props.core._config.userCanToggleSelfMic && (
               <div
-                className={`${ZegoRoomCss.micButton} ${!this.state.micOpen &&
-                  ZegoRoomCss.close}`}
+                className={`${ZegoRoomCss.micButton} ${
+                  !this.state.micOpen && ZegoRoomCss.close
+                }`}
                 onClick={() => {
                   this.toggleMic();
                 }}
@@ -457,8 +458,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             )}
             {this.props.core._config.userCanToggleSelfCamera && (
               <div
-                className={`${ZegoRoomCss.cameraButton} ${!this.state
-                  .cameraOpen && ZegoRoomCss.close}`}
+                className={`${ZegoRoomCss.cameraButton} ${
+                  !this.state.cameraOpen && ZegoRoomCss.close
+                }`}
                 onClick={() => {
                   this.toggleCamera();
                 }}

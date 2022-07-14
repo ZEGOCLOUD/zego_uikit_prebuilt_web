@@ -82,6 +82,11 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
               step: 1,
             });
           }}
+          returnHome={() => {
+            this.setState({
+              step: 0,
+            });
+          }}
         ></ZegoRejoinRoom>
       );
     }
