@@ -1,10 +1,35 @@
 .whiteTheme {
   --labelColor: #666666;
   --inputColor: #2a2a2a;
+  --inputSelectedColor: #0055ff;
   --placeholderColor: #bbbbbb;
   --hoverBgColor: #f5f7fa;
   --selectedColor: #0055ff;
   --bgColor: #fff;
+}
+.blackTheme {
+  --labelColor: #a6a7ad;
+  --inputColor: #fff;
+  --inputSelectedColor: #a4a4a4;
+  --placeholderColor: #bbbbbb;
+  --hoverBgColor: #36394b;
+  --selectedColor: #fff;
+  --bgColor: #2c2f3e;
+  .optionsWrapper {
+    border-color: #3d4054;
+  }
+  .selectInputWrapper {
+    & > span {
+      background: url("../../../sdkAssets/icon_settings_black_arrow.png")
+        no-repeat center/cover;
+    }
+    &.inputActived {
+      & > span {
+        background: url("../../../sdkAssets/icon_settings_black_arrow_active.png")
+          no-repeat center/cover;
+      }
+    }
+  }
 }
 
 .selectWrapper {
@@ -53,7 +78,7 @@
     color: var(--placeholderColor);
   }
   &.inputActived {
-    border-color: var(--selectedColor);
+    border-color: var(--inputSelectedColor);
     & > span {
       background: url("../../../sdkAssets/icon_settings_arrow_active.png")
         no-repeat center/cover;
@@ -85,7 +110,7 @@
 .option {
   width: 252px;
   height: 34px;
-  background-color: #ffffff0d;
+  //   background-color: #ffffff0d;
   border-radius: 4px;
   padding: 7px 8px;
   box-sizing: border-box;

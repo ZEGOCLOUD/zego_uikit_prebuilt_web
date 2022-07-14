@@ -27,6 +27,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     notificationList: ZegoNotification[];
     micOpen: boolean;
     cameraOpen: boolean;
+    showSettings: boolean;
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -36,12 +37,19 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     notificationList: [],
     micOpen: !!this.props.core._config.micEnabled,
     cameraOpen: !!this.props.core._config.cameraEnabled,
+    showSettings: false,
   };
   inviteRef: RefObject<HTMLInputElement> = React.createRef();
+  settingsRef: RefObject<HTMLDivElement> = React.createRef();
+  moreRef: RefObject<HTMLDivElement> = React.createRef();
   componentDidMount() {
     this.initSDK();
+    // 点击其他区域时, 隐藏更多弹窗)
+    document.addEventListener("click", this.onOpenSettings);
   }
-
+  componentWillUnmount() {
+    document.removeEventListener("click", this.onOpenSettings);
+  }
   async initSDK() {
     this.props.core.onNetworkStatus(
       (
@@ -272,14 +280,32 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   }
 
   openSettings() {
+    this.setState({
+      showSettings: !this.state.showSettings,
+    });
+  }
+  onOpenSettings = (event: any) => {
+    if (
+      this.settingsRef.current === event.target ||
+      this.settingsRef.current?.contains(event.target as Node) ||
+      this.moreRef.current === event.target ||
+      this.moreRef.current?.contains(event.target as Node)
+    ) {
+    } else {
+      this.setState({
+        showSettings: false,
+      });
+    }
+  };
+  handleSetting() {
     ZegoSettingsAlert({
       core: this.props.core,
+      theme: "black",
       closeCallBack: () => {},
       localAudioStream: this.state.localStream,
       localVideoStream: this.state.localStream,
     });
   }
-
   leaveRoom() {
     this.props.core.leaveRoom();
     this.props.leaveRoom && this.props.leaveRoom();
@@ -419,12 +445,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           )}
         </div>
         <div className={ZegoRoomCss.content}>
-          <div
-            className={ZegoRoomCss.contentLeft}
-            // style={{
-            //   width: this.state.layOutStatus !== "ONE_VIDEO" ? "70%" : "100%",
-            // }}
-          >
+          <div className={ZegoRoomCss.contentLeft}>
             <ZegoOne2One
               localStream={this.state.localStream}
               remoteStreamInfo={this.state.remoteStreamInfo}
@@ -499,11 +520,24 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               ></div>
             )}
             <div
+              ref={this.moreRef}
               className={ZegoRoomCss.moreButton}
               onClick={() => {
                 this.openSettings();
               }}
-            ></div>
+            >
+              <div
+                className={ZegoRoomCss.settingsButtonModel}
+                style={{
+                  display: this.state.showSettings ? "block" : "none",
+                }}
+                ref={this.settingsRef}
+              >
+                {/* <div>Change the layout</div>
+                <span></span> */}
+                <div onClick={() => this.handleSetting()}>Setting</div>
+              </div>
+            </div>
             <div
               className={ZegoRoomCss.leaveButton}
               onClick={() => {

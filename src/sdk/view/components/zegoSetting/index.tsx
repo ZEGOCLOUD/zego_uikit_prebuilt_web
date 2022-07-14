@@ -259,6 +259,7 @@ export class ZegoSettings extends React.Component<{
                       }))}
                       onChange={this.toggleMic}
                       placeholder="No equipment"
+                      theme={this.props.theme}
                     ></ZegoSelect>
                     <div className={ZegoSettingsCss.volumeWrapper}>
                       <span
@@ -291,6 +292,7 @@ export class ZegoSettings extends React.Component<{
                       }))}
                       onChange={this.toggleSpeaker}
                       placeholder="No equipment"
+                      theme={this.props.theme}
                     ></ZegoSelect>
                     <div className={ZegoSettingsCss.volumeWrapper}>
                       <span
@@ -355,6 +357,7 @@ export class ZegoSettings extends React.Component<{
                       }))}
                       onChange={this.toggleCamera}
                       placeholder="No equipment"
+                      theme={this.props.theme}
                     ></ZegoSelect>
                   </div>
                   <div className={ZegoSettingsCss.device}>
@@ -380,6 +383,7 @@ export class ZegoSettings extends React.Component<{
                       options={this.solutionList}
                       onChange={this.toggleVideoResolve}
                       placeholder=""
+                      theme={this.props.theme}
                     ></ZegoSelect>
                   </div>
                 </div>
@@ -400,6 +404,7 @@ export const ZegoSettingsAlert = (config: {
   closeCallBack: () => void;
   localVideoStream?: MediaStream;
   localAudioStream?: MediaStream;
+  theme?: string;
 }) => {
   const root = ReactDOM.createRoot(div);
   root.render(
@@ -409,6 +414,7 @@ export const ZegoSettingsAlert = (config: {
         root.unmount();
         config.closeCallBack();
       }}
+      theme={config.theme}
       localVideoStream={config.localVideoStream}
       localAudioStream={config.localAudioStream}
     ></ZegoSettings>

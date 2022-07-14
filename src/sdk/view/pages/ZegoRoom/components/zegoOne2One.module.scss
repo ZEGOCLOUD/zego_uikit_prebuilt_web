@@ -43,10 +43,10 @@
     content: "";
     position: absolute;
     width: 4px;
-    height: 6px;
+    height: 5px;
     border-radius: 4px;
-    background: linear-gradient(to bottom, #fff 50%, #0055ff 0%);
-    top: 4px;
+    background: #0055ff;
+    bottom: 8px;
     left: 7px;
   }
   &.close {

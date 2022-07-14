@@ -6,7 +6,73 @@
   --tabTextColor: #333333;
   --activeColor: #0055ff;
   --labelColor: #666666;
+  --volomeColor: #cfcfd4;
+  --volomeActiveColor: #0055ff;
 }
+.blackTheme {
+  --bgColor: #2c2f3e;
+  --borderColor: #3d4054;
+  --lineColor: #3d4054;
+  --titleColor: #fff;
+  --tabTextColor: #a4a4a4;
+  --activeColor: #fff;
+  --labelColor: #a6a7ad;
+  --volomeColor: #5b5e72;
+  --volomeActiveColor: #cfcfd4;
+  .right::-webkit-scrollbar-thumb {
+    background: #5b5e72;
+    border-radius: 2px;
+  }
+  .closeIcon {
+    background: url("../../../sdkAssets/icon_settings_black_close.png")
+      no-repeat center/cover;
+    &:hover {
+      background: url("../../../sdkAssets/icon_settings_black_close_hover.png")
+        no-repeat center/cover;
+    }
+  }
+  .leftAudioTab::before {
+    background: url("../../../sdkAssets/icon_settings_black_audio.png")
+      no-repeat center/cover;
+  }
+  .leftVideoTab::before {
+    background: url("../../../sdkAssets/icon_settings_black_video.png")
+      no-repeat center/cover;
+  }
+  .left {
+    .tabActive {
+      &.leftAudioTab::before {
+        background: url("../../../sdkAssets/icon_settings_black_audio_active.png")
+          no-repeat center/cover;
+      }
+      &.leftVideoTab::before {
+        background: url("../../../sdkAssets/icon_settings_black_video_active.png")
+          no-repeat center/cover;
+      }
+    }
+  }
+  .volumeWrapper {
+    .micIcon {
+      background: url("../../../sdkAssets/icon_settings_black_audio_volume.png")
+        no-repeat center/cover;
+
+      &.micIconAcitve {
+        background: url("../../../sdkAssets/icon_settings_black_audio_volume_active.png")
+          no-repeat center/cover;
+      }
+    }
+    .speakerIcon {
+      background: url("../../../sdkAssets/icon_settings_black_speaker_volume.png")
+        no-repeat center/cover;
+
+      &.speakerIconAcitve {
+        background: url("../../../sdkAssets/icon_settings_black_speaker_volume_active.png")
+          no-repeat center/cover;
+      }
+    }
+  }
+}
+
 .frame {
   position: fixed;
   top: 0;
@@ -55,6 +121,10 @@
   cursor: pointer;
   background: url("../../../sdkAssets/icon_settings_close.png") no-repeat
     center/cover;
+  &:hover {
+    background: url("../../../sdkAssets/icon_settings_close_hover.png")
+      no-repeat center/cover;
+  }
 }
 .content {
   flex: 1;
@@ -131,7 +201,7 @@
     border-radius: 2px;
   }
   &::-webkit-scrollbar-track {
-    background: #ffffff;
+    background: transparent;
   }
 }
 
@@ -168,7 +238,7 @@
   .volume {
     width: 4px;
     height: 18px;
-    background: #cfcfd4;
+    background: var(--volomeColor);
     border-radius: 2px;
     &:not(:last-of-type) {
       margin-right: 8px;
@@ -216,4 +286,5 @@ label {
   height: 144px;
   border-radius: 4px;
   object-fit: cover;
+  background-color: #000;
 }

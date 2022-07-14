@@ -239,6 +239,7 @@
   }
 }
 .moreButton {
+  position: relative;
   background-image: url("../../../sdkAssets/icon_inner_more.png");
 }
 .memberButton {
@@ -246,6 +247,51 @@
 }
 .msgButton {
   background-image: url("../../../sdkAssets/icon_inner_message.png");
+}
+.settingsButtonModel {
+  width: 178px;
+  background: #2c2f3e;
+  box-shadow: 0px 3px 6px 0px rgba(23, 24, 33, 0.75);
+  border: 1px solid #3d4054;
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 6px;
+  border-radius: 6px;
+  & > div {
+    font-size: 16px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #ffffff;
+    line-height: 22px;
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    &:hover {
+      background: #36394b;
+    }
+  }
+  & > span {
+    display: block;
+    width: 166px;
+    height: 1px;
+    background: #3d4054;
+    margin: 8px 0;
+  }
+  &::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-left: 1px solid #3d4054;
+    border-bottom: 1px solid #3d4054;
+    background: #2c2f3e;
+    position: absolute;
+    bottom: -7px;
+    left: calc(50% - 5px);
+    transform: rotateZ(-45deg);
+  }
 }
 .notify {
   position: absolute;
