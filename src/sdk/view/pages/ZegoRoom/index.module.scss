@@ -42,16 +42,7 @@
   border-radius: 19px;
   flex: 1;
 }
-.notification {
-  position: absolute;
-  left: 5px;
-  bottom: 5px;
-  width: 40%;
-  height: 30%;
-  flex-direction: column;
-  display: flex;
-  color: red;
-}
+
 .contentRight {
   width: 340px;
   border-radius: 19px;
@@ -146,7 +137,7 @@
   .member {
     display: flex;
     align-items: center;
-
+    padding: 8px 0;
     & > span {
       width: 36px;
       height: 36px;
@@ -253,4 +244,44 @@
 }
 .msgButton {
   background-image: url("../../../sdkAssets/icon_inner_message.png");
+}
+.notify {
+  position: absolute;
+  bottom: 24px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  z-index: 10;
+  .notifyContent {
+    padding: 10px 12px;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    background: rgba(42, 42, 42, 0.5);
+    border-radius: 8px;
+    max-width: 408px;
+    max-height: 124px;
+    box-sizing: border-box;
+
+    &:not(:last-of-type) {
+      margin-bottom: 10px;
+    }
+    h5 {
+      font-size: 14px;
+      font-weight: 400;
+      color: #ffb763;
+      line-height: 20px;
+      margin-bottom: 4px;
+    }
+    & > span {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
+  }
 }

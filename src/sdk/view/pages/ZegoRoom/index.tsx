@@ -140,7 +140,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
     const logInRsp = await this.props.core.enterRoom();
 
-    logInRsp &&
+    logInRsp === 0 &&
       this.createStream(
         !!this.props.core._config.cameraEnabled,
         !!this.props.core._config.micEnabled
@@ -390,6 +390,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   }
 
   render(): React.ReactNode {
+    const startIndex =
+      this.state.notificationList.length < 4
+        ? 0
+        : this.state.notificationList.length - 2;
     return (
       <div className={ZegoRoomCss.ZegoRoom}>
         <div className={ZegoRoomCss.header}>
@@ -415,16 +419,24 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               localStream={this.state.localStream}
               remoteStreamInfo={this.state.remoteStreamInfo}
             ></ZegoOne2One>
-            {(this.props.core._config.notification?.unreadMessageTips ||
-              this.props.core._config.notification?.userOnlineOfflineTips) && (
-              <div className={ZegoRoomCss.notification}>
-                {this.state.notificationList.map(
-                  (not: string, index: number) => (
-                    <a key={index}>{not}</a>
-                  )
-                )}
-              </div>
-            )}
+            <div className={ZegoRoomCss.notify}>
+              {this.state.notificationList.slice(startIndex).map((notify) => {
+                if (notify.indexOf(":") > -1) {
+                  return (
+                    <div key={notify} className={ZegoRoomCss.notifyContent}>
+                      <h5>{notify.split(":")[0]}</h5>
+                      <span>{notify.split(":")[1]}</span>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={notify} className={ZegoRoomCss.notifyContent}>
+                      {notify}
+                    </div>
+                  );
+                }
+              })}
+            </div>
           </div>
           <div
             className={ZegoRoomCss.contentRight}

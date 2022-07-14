@@ -177,19 +177,35 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     this.props.core._config.cameraEnabled =
       this.state.videoOpen && !this.videoRefuse;
     const loginRsp = await this.props.core.enterRoom();
-    if (loginRsp) {
-      this.props.joinRoom && this.props.joinRoom();
+    let massage = "";
+    if (loginRsp === 0) {
       this.state.localStream &&
         this.props.core.destroyStream(this.state.localStream);
+      this.props.joinRoom && this.props.joinRoom();
+    } else if (loginRsp === 1002034) {
+      // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
+      massage =
+        "Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
+    } else if ([1002031, 1002053].includes(loginRsp)) {
+      //登录房间超时，可能是由于网络原因导致。
+      massage =
+        "There's something wrong with your network. Please check it and try again.";
+    } else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
+      // 登录 token 错误，
+    } else if (1002056 === loginRsp) {
+      // 用户重复进行登录。
+      massage =
+        "You are on a call in another room, please leave that room first.";
     } else {
-      //   TODO: 需要返回具体的错误码，然后给出不同的提示
-      this.setState({
-        isJoinRoomFailed: true,
-        joinRoomErrorTip: `Failed to join the room, the number of people 
-          in the room has reached the maximum.`,
-      });
-      console.error("【ZEGOCLOUD】Room is full !!");
+      massage =
+        "Failed to join the room, please try again.(error code:" +
+        loginRsp +
+        ")";
     }
+    this.setState({
+      isJoinRoomFailed: !!massage,
+      joinRoomErrorTip: massage,
+    });
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -244,9 +260,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               <div className={ZegoBrowserCheckCss.toolsWrapper}>
                 {this.props.core._config.userCanToggleSelfMic && (
                   <div
-                    className={`${ZegoBrowserCheckCss.audioButton} ${
-                      !this.state.audioOpen && ZegoBrowserCheckCss.close
-                    }`}
+                    className={`${ZegoBrowserCheckCss.audioButton} ${!this.state
+                      .audioOpen && ZegoBrowserCheckCss.close}`}
                     onClick={() => {
                       this.toggleStream("audio");
                     }}
@@ -260,9 +275,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 )}
                 {this.props.core._config.userCanToggleSelfCamera && (
                   <div
-                    className={`${ZegoBrowserCheckCss.videoButton} ${
-                      !this.state.videoOpen && ZegoBrowserCheckCss.close
-                    }`}
+                    className={`${ZegoBrowserCheckCss.videoButton} ${!this.state
+                      .videoOpen && ZegoBrowserCheckCss.close}`}
                     onClick={() => {
                       this.toggleStream("video");
                     }}
