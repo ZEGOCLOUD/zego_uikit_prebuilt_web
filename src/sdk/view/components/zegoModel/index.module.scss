@@ -41,12 +41,12 @@
   .cancelButton {
     min-width: 74px;
     box-sizing: border-box;
-    padding: 4px;
+    padding: 2px;
     text-align: center;
     font-size: 14px;
     line-height: 20px;
     border-radius: 4px;
-    border: none;
+    border: 1px solid transparent;
     cursor: pointer;
     margin-left: 10px;
   }
@@ -57,5 +57,8 @@
   .cancelButton {
     color: #0055ff;
     background-color: #fff;
+    &:hover {
+      border: 1px solid #0055ff;
+    }
   }
 }

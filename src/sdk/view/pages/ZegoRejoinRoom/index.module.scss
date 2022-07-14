@@ -1,4 +1,5 @@
 @import "../../../var.scss";
+
 .rejoinRoomContainer {
   display: flex;
   flex-direction: column;
@@ -29,6 +30,7 @@
 
     border: 0;
     border-radius: vw(18px);
+    cursor: pointer;
   }
   .rejoin {
     margin-top: vw(64px);
@@ -39,5 +41,31 @@
   .returnHome {
     color: rgba(0, 85, 255, 1);
     background: #ffffff;
+  }
+}
+
+.isPC {
+  width: 100%;
+  height: 100%;
+  .title {
+    height: auto;
+    text-align: center;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 37px;
+  }
+  .rejoin,
+  .returnHome {
+    width: 206px;
+    height: 46px;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 46px;
+    border: 0;
+    border-radius: 10px;
+  }
+  .rejoin {
+    margin-top: 30px;
+    margin-bottom: 22px;
   }
 }

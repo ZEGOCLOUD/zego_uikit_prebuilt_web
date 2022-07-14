@@ -17,6 +17,7 @@ import { randomID } from "../../../util";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { copy } from "../../../modules/util";
 import { userNameColor } from "../../../util";
+import { ZegoModelShow } from "../../components/zegoModel";
 export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -28,6 +29,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     micOpen: boolean;
     cameraOpen: boolean;
     showSettings: boolean;
+    isNetworkPoor: boolean;
+    reconnect: boolean;
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -38,6 +41,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     micOpen: !!this.props.core._config.micEnabled,
     cameraOpen: !!this.props.core._config.cameraEnabled,
     showSettings: false,
+    isNetworkPoor: false,
+    reconnect: false,
   };
   inviteRef: RefObject<HTMLInputElement> = React.createRef();
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -306,6 +311,17 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       localVideoStream: this.state.localStream,
     });
   }
+  handleLeave() {
+    ZegoModelShow({
+      header: "Leave the room",
+      contentText: "Are you sure to leave the room?",
+      okText: "Confirm",
+      cancelText: "Cancel",
+      onOk: () => {
+        this.leaveRoom();
+      },
+    });
+  }
   leaveRoom() {
     this.props.core.leaveRoom();
     this.props.leaveRoom && this.props.leaveRoom();
@@ -479,6 +495,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 }
               })}
             </div>
+            {this.state.isNetworkPoor && (
+              <div className={ZegoRoomCss.network}></div>
+            )}
           </div>
           <div
             className={ZegoRoomCss.contentRight}
@@ -541,7 +560,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             <div
               className={ZegoRoomCss.leaveButton}
               onClick={() => {
-                this.leaveRoom();
+                this.handleLeave();
               }}
             ></div>
           </div>
@@ -563,6 +582,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               ></div>
             )}
           </div>
+        </div>
+        <div
+          className={ZegoRoomCss.reconnect}
+          style={{
+            display: this.state.reconnect ? "flex" : "none",
+          }}
+        >
+          <div></div>
+          <p>Trying to reconnect...</p>
         </div>
       </div>
     );

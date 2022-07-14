@@ -1,9 +1,13 @@
 import React from "react";
 import { ZegoBrowserCheckProp } from "../../../model";
+import { isPc } from "../../../util";
 import { ZegoToast } from "../../components/zegoToast";
 import ZegoRejoinRoomCss from "./index.module.scss";
 
 export class ZegoRejoinRoom extends React.Component<ZegoBrowserCheckProp> {
+  state = {
+    isPc: isPc(),
+  };
   async joinRoom() {
     let massage = "";
     const loginRsp = await this.props.core.enterRoom();
@@ -38,7 +42,11 @@ export class ZegoRejoinRoom extends React.Component<ZegoBrowserCheckProp> {
 
   render(): React.ReactNode {
     return (
-      <div className={ZegoRejoinRoomCss.rejoinRoomContainer}>
+      <div
+        className={`${ZegoRejoinRoomCss.rejoinRoomContainer} ${
+          this.state.isPc ? ZegoRejoinRoomCss.isPC : ""
+        }`}
+      >
         <button className={ZegoRejoinRoomCss.title}>
           You have left the room.
         </button>

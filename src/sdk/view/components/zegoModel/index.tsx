@@ -42,6 +42,7 @@ export class ZegoModel extends React.Component<ZegoModelProps> {
                 className={ZegoModelCss.okButton}
                 onClick={() => {
                   onOk && onOk();
+                  onCancel && onCancel(false);
                 }}
               >
                 {okText}
@@ -59,5 +60,13 @@ document.body.appendChild(div);
 
 export const ZegoModelShow = (props: ZegoModelProps) => {
   const root = ReactDOM.createRoot(div);
-  root.render(<ZegoModel {...props}></ZegoModel>);
+  root.render(
+    <ZegoModel
+      {...props}
+      onCancel={(confirm: boolean) => {
+        root.unmount();
+        !confirm && props.onCancel && props.onCancel();
+      }}
+    ></ZegoModel>
+  );
 };

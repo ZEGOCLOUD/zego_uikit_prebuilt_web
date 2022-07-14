@@ -44,7 +44,54 @@
   overflow: hidden;
   flex: 1;
 }
+.network {
+  width: 32px;
+  height: 32px;
 
+  border-radius: 4px;
+  backdrop-filter: blur(8px);
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  z-index: 20;
+  background: url("../../../sdkAssets/icon_inner_network_poor.png") no-repeat
+      center,
+    rgba(42, 42, 42, 0.25);
+  background-size: 24px 24px;
+}
+.reconnect {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba($color: #2a2a2a, $alpha: 0.6);
+  z-index: 100000;
+  flex-direction: column;
+  & > div {
+    width: 56px;
+    height: 56px;
+    background: url("../../../sdkAssets/icon_network_reconnect.png") no-repeat
+      center/cover;
+    margin-bottom: 12px;
+    animation: netLoading 2s linear infinite;
+  }
+  & > p {
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 22px;
+    text-align: center;
+  }
+}
+@keyframes netLoading {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 .contentRight {
   width: 340px;
   border-radius: 19px;
