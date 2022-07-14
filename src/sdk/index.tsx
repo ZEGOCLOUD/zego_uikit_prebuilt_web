@@ -30,6 +30,7 @@ export default class ZegoCloudRTCKit {
       div.style.position = "fixed";
       div.style.width = "100vw";
       div.style.height = "100vh";
+      div.style.minWidth = "345px";
       div.style.top = "0px";
       div.style.left = "0px";
       div.style.zIndex = "100";

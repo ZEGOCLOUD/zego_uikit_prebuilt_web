@@ -1,3 +1,4 @@
+@import "../../../var.scss";
 .ZegoConfirm {
   position: fixed;
   top: 0;
@@ -9,42 +10,42 @@
   justify-content: center;
   width: 100%;
   height: 100%;
+  font-family: PingFangSC-Medium, PingFang SC;
   background: rgba($color: #2a2a2a, $alpha: 0.5);
   .content {
     box-sizing: border-box;
-    width: 302px;
-    padding: 26px;
+    width: vw(608px);
+    padding: vw(44px) vw(48px);
     background: #ffffff;
-    border-radius: 4px;
+    border-radius: vw(18px);
     box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.2);
     .tipsHeader {
-      margin-bottom: 18px;
+      margin-bottom: vw(18px);
       color: #2a2a2a;
       font-weight: 600;
-      font-size: 16px;
-      line-height: 16px;
+      font-size: vw(30px);
+      line-height: vw(47px);
     }
     .tipsText {
-      margin-bottom: 18px;
+      margin-bottom: vw(50px);
       color: #2a2a2a;
       font-weight: 400;
-      font-size: 14px;
-      line-height: 20px;
+      font-size: vw(28px);
+      line-height: vw(40px);
     }
   }
   .handler {
     display: flex;
     justify-content: right;
-    padding-right: 23px;
     button {
-      margin-left: 24px;
+      margin-left: vw(46px);
       color: #0055ff;
       font-weight: 500;
-      font-size: 14px;
-      line-height: 19px;
+      font-size: vw(26px);
+      line-height: vw(37px);
       background: #ffffff;
       border: 0;
-      border-radius: 9px;
+      border-radius: vw(18px);
     }
     button:hover {
       color: #ffffff;

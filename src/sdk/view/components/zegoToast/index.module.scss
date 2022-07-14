@@ -1,3 +1,4 @@
+@import "../../../var.scss";
 .ZegoToast {
   position: fixed;
   top: 100vh;
@@ -12,18 +13,17 @@
   // animation: name duration timing-function delay iteration-count direction fill-mode;
   .content {
     box-sizing: border-box;
-    max-width: 302px;
-    padding: 7px 16px;
+    max-width: 60vw;
+    padding: vw(14px) vw(30px);
     color: #ffffff;
     font-weight: 400;
-    font-size: 12px;
+    font-size: vw(24px);
     font-family: PingFangSC-Regular, PingFang SC;
-    line-height: 17px;
-    background: #2a2a2a;
-    border-radius: 6px;
-    opacity: 0.6;
+    line-height: vw(33px);
+    background: rgba(42, 42, 42, 0.6);
+    border-radius: vw(12px);
   }
 }
 .show {
-  top: 15px;
+  top: vw(133px);
 }
