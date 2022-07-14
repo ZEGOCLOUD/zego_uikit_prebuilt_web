@@ -19,7 +19,8 @@ export class ZegoOne2One extends React.Component<{
               }}
             ></video>
             <div className={zegoOne2OneCss.name}>
-              {this.props.remoteStreamInfo.fromUser.userName}
+              <span className={zegoOne2OneCss.micIcon}></span>
+              <p>{this.props.remoteStreamInfo.fromUser.userName}</p>
             </div>
           </div>
           <div className={zegoOne2OneCss.smallVideo}>
@@ -32,7 +33,7 @@ export class ZegoOne2One extends React.Component<{
                   (el.srcObject = this.props.localStream!);
               }}
             ></video>
-            <div className={zegoOne2OneCss.name}>You</div>
+            <div className={zegoOne2OneCss.name}></div>
           </div>
         </>
       );

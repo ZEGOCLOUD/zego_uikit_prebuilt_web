@@ -42,7 +42,7 @@ export class ZegoMessage extends React.Component<{
                     }  ${DateFormat(msg.sendTime, "hh:mm")}`}
                   </span>
                 </div>
-                <p className={ZegoMessageCss.error}>{msg.message}</p>
+                <p>{msg.message}</p>
               </div>
             );
           })}
