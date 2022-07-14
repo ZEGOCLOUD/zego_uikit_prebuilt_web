@@ -33,6 +33,7 @@
   display: flex;
   box-sizing: border-box;
   padding: 0 16px 10px;
+  height: calc(100% - 74px - 64px);
 }
 .contentLeft {
   position: relative;
@@ -40,6 +41,7 @@
   justify-content: center;
   background-color: black;
   border-radius: 19px;
+  overflow: hidden;
   flex: 1;
 }
 

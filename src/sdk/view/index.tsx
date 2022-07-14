@@ -47,11 +47,13 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
       const nav = document.querySelector(
         "#root div div:first-child"
       ) as HTMLDivElement;
+      const meetingEl = nav.nextElementSibling as HTMLDivElement;
       if (root && !isPc()) {
         root.style.display = "none";
       }
       if (nav && isPc()) {
         nav.style.display = "none";
+        meetingEl.style.height = "100%";
       }
 
       page = isPc() ? (

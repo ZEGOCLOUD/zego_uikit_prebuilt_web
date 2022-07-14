@@ -123,17 +123,18 @@
   height: 300px;
   overflow-x: hidden;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dde0e3;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #ffffff;
+  }
 }
-::-webkit-scrollbar {
-  width: 3px;
-}
-::-webkit-scrollbar-thumb {
-  background: #dde0e3;
-  border-radius: 2px;
-}
-::-webkit-scrollbar-track {
-  background: #ffffff;
-}
+
 .device {
   margin-bottom: 18px;
 }

@@ -95,9 +95,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           userList.map((u) => {
             notificationList.push({
               content:
-                u.userName + " " + updateType === "ADD"
-                  ? "enter"
-                  : "quite" + " the room",
+                u.userName +
+                " " +
+                (updateType === "ADD" ? "enter" : "quite") +
+                " the room",
               type: "USER",
               userName: u.userName,
             });

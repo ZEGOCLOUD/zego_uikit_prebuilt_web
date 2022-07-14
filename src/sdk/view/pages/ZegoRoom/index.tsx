@@ -1,5 +1,9 @@
 import React, { RefObject } from "react";
-import { ZegoBrowserCheckProp, ZegoCloudRemoteMedia } from "../../../model";
+import {
+  ZegoBrowserCheckProp,
+  ZegoCloudRemoteMedia,
+  ZegoNotification,
+} from "../../../model";
 import ZegoRoomCss from "./index.module.scss";
 import {
   ZegoUser,
@@ -20,7 +24,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
     userList: ZegoUser[];
     messageList: ZegoBroadcastMessageInfo[];
-    notificationList: string[];
+    notificationList: ZegoNotification[];
     micOpen: boolean;
     cameraOpen: boolean;
   } = {
@@ -52,17 +56,19 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     );
     this.props.core.onRemoteUserUpdate(
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
-        let notificationList: string[] = [];
+        let notificationList: ZegoNotification[] = [];
         if (this.props.core._config.notification?.userOnlineOfflineTips) {
-          if (updateType === "ADD") {
-            notificationList = userList.map<string>(
-              (u) => u.userName + ": enter room"
-            );
-          } else if (updateType === "DELETE") {
-            notificationList = [
-              ...userList.map((u) => u.userName + ": leave room"),
-            ];
-          }
+          userList.map((u) => {
+            notificationList.push({
+              content:
+                u.userName +
+                " " +
+                (updateType === "ADD" ? "enter" : "quite") +
+                " the room",
+              type: "USER",
+              userName: u.userName,
+            });
+          });
         }
         if (updateType === "ADD") {
           this.setState(
@@ -115,18 +121,22 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         this.setState(
           (state: {
             messageList: ZegoBroadcastMessageInfo[];
-            notificationList: string[];
+            notificationList: ZegoNotification[];
           }) => {
-            let notification: string[] = [];
+            let notification: ZegoNotification[] = [];
             if (
               this.state.layOutStatus !== "MESSAGE" &&
               this.props.core._config.notification?.unreadMessageTips
             ) {
               notification = [
                 ...state.notificationList,
-                ...messageList.map<string>(
-                  (u) => u.fromUser.userName + ": " + u.message
-                ),
+                ...messageList.map<ZegoNotification>((m) => {
+                  return {
+                    content: m.message,
+                    type: "MSG",
+                    userName: m.fromUser.userName,
+                  };
+                }),
               ];
             }
             return {
@@ -418,20 +428,31 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             <ZegoOne2One
               localStream={this.state.localStream}
               remoteStreamInfo={this.state.remoteStreamInfo}
+              selfUserInfo={{
+                userName: this.props.core._expressConfig.userName,
+                micOpen: this.state.micOpen,
+                cameraOpen: this.state.cameraOpen,
+              }}
             ></ZegoOne2One>
             <div className={ZegoRoomCss.notify}>
               {this.state.notificationList.slice(startIndex).map((notify) => {
-                if (notify.indexOf(":") > -1) {
+                if (notify.type === "MSG") {
                   return (
-                    <div key={notify} className={ZegoRoomCss.notifyContent}>
-                      <h5>{notify.split(":")[0]}</h5>
-                      <span>{notify.split(":")[1]}</span>
+                    <div
+                      key={notify.content}
+                      className={ZegoRoomCss.notifyContent}
+                    >
+                      <h5>{notify.userName}</h5>
+                      <span>{notify.content}</span>
                     </div>
                   );
                 } else {
                   return (
-                    <div key={notify} className={ZegoRoomCss.notifyContent}>
-                      {notify}
+                    <div
+                      key={notify.content}
+                      className={ZegoRoomCss.notifyContent}
+                    >
+                      {notify.content}
                     </div>
                   );
                 }
@@ -441,7 +462,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           <div
             className={ZegoRoomCss.contentRight}
             style={{
-              width: this.state.layOutStatus !== "ONE_VIDEO" ? "340px" : "0px",
+              display:
+                this.state.layOutStatus !== "ONE_VIDEO" ? "flex" : "none",
             }}
           >
             {this.getListScreen()}
@@ -460,9 +482,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           <div className={ZegoRoomCss.handlerMiddle}>
             {this.props.core._config.userCanToggleSelfMic && (
               <div
-                className={`${ZegoRoomCss.micButton} ${
-                  !this.state.micOpen && ZegoRoomCss.close
-                }`}
+                className={`${ZegoRoomCss.micButton} ${!this.state.micOpen &&
+                  ZegoRoomCss.close}`}
                 onClick={() => {
                   this.toggleMic();
                 }}
@@ -470,9 +491,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             )}
             {this.props.core._config.userCanToggleSelfCamera && (
               <div
-                className={`${ZegoRoomCss.cameraButton} ${
-                  !this.state.cameraOpen && ZegoRoomCss.close
-                }`}
+                className={`${ZegoRoomCss.cameraButton} ${!this.state
+                  .cameraOpen && ZegoRoomCss.close}`}
                 onClick={() => {
                   this.toggleCamera();
                 }}
