@@ -29,6 +29,10 @@ export class App extends React.Component {
             roomID,
           visible: true,
         },
+        branding: {
+          logoURL:
+            "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
+        },
       });
     };
   }
