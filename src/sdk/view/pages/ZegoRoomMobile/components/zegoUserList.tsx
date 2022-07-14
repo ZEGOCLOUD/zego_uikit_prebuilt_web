@@ -38,14 +38,22 @@ export class ZegoUserList extends React.Component<{
         </div>
         <div className={zegoUserListCss.memberListContent}>
           <div>
-            <i>{this.props.core._expressConfig.userName.substring(0, 1)}</i>
+            <i
+              style={{
+                color: userNameColor(this.props.core._expressConfig.userName!),
+              }}
+            >
+              {this.props.core._expressConfig.userName.substring(0, 1)}
+            </i>
             <a>{this.props.core._expressConfig.userName}(You)</a>
           </div>
 
           {this.props.userList.map((user) => {
             return (
               <div>
-                <i>{user.userName?.substring(0, 1)}</i>
+                <i style={{ color: userNameColor(user.userName!) }}>
+                  {user.userName?.substring(0, 1)}
+                </i>
                 <a key={user.userID}>{user.userName}</a>{" "}
               </div>
             );

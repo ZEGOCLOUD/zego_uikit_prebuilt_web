@@ -10,7 +10,16 @@ export class ZegoRoomInvite extends React.Component<{
   render(): React.ReactNode {
     return (
       <div className={zegoRoomInviteCss.roomDetails}>
-        <div className={zegoRoomInviteCss.inviteHeader}>Room details</div>
+        <div className={zegoRoomInviteCss.inviteHeader}>
+          <div
+            className={zegoRoomInviteCss.inviteHide}
+            onClick={(ev) => {
+              ev.stopPropagation();
+              this.props.closeCallBack();
+            }}
+          ></div>
+          Room details
+        </div>
         <div className={zegoRoomInviteCss.inviteURL}>
           {this.props.core._config.joinScreen?.inviteURL}
         </div>
@@ -25,7 +34,6 @@ export class ZegoRoomInvite extends React.Component<{
               content: "Copy successfully",
               duration: 3,
             });
-            this.props.closeCallBack();
           }}
         >
           <i></i>

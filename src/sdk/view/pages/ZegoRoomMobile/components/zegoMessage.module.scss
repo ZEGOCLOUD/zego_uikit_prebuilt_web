@@ -1,3 +1,4 @@
+@import "../../../../var.scss";
 .msgList {
   position: absolute;
   bottom: 0px;
@@ -7,20 +8,23 @@
   align-items: flex-start;
   box-sizing: border-box;
   width: 100%;
-  height: 643px;
+  height: vw(1236px);
   background: #242736;
-  border-radius: 24px 24px 0px 0px;
+  border-radius: vw(46px) vw(46px) 0px 0px;
   .msgListHeader {
     display: flex;
     align-items: center;
-    padding: 8px 12px 7px 12px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: vw(15px) vw(23px) vw(13px) vw(23px);
     color: #ffffff;
     font-weight: 400;
-    font-size: 19px;
+    font-size: vw(36px);
+    box-shadow: 0px 1px 0px 0px rgba(61, 64, 84, 1);
     .msgHide {
-      width: 36px;
-      height: 36px;
-      margin-right: 11px;
+      width: vw(70px);
+      height: vw(70px);
+      margin-right: vw(16px);
       background-image: url(../../../../sdkMobileAssets/Room_member_hide@2x.png);
       background-size: contain;
     }
@@ -30,27 +34,29 @@
     flex-direction: column;
     align-items: flex-start;
     box-sizing: border-box;
-    height: 535px;
+    width: 102vw;
+    height: vw(1231px);
     padding-bottom: 14px;
     overflow-y: scroll;
     .msgContent {
       display: flex;
       align-items: flex-start;
-      margin-top: 19px;
+      margin-top: vw(46px);
       i {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 37px;
-        height: 37px;
-        margin-right: 12px;
-        margin-left: 16px;
+        width: vw(56px);
+        height: vw(56px);
+        margin-right: vw(24px);
+        margin-left: vw(30px);
         color: #557bff;
         font-weight: 600;
-        font-size: 17px;
+        font-size: vw(24px);
         font-family: PingFangSC-Semibold, PingFang SC;
+        line-height: vw(33px);
         background: rgba(216, 216, 216, 1);
-        border-radius: 19px;
+        border-radius: vw(28px);
       }
       .msgContentRight {
         display: flex;
@@ -60,25 +66,43 @@
         .msgContentRightHeader {
           display: flex;
           font-weight: 400;
-          font-size: 12px;
-          font-family: PingFangSC-Regular, PingFang SC;
+          font-size: vw(24px);
+          font-family: PingFangSC-Semibold, PingFang SC;
+          line-height: vw(33px);
           span {
-            margin-right: 7px;
+            margin-right: vw(14px);
           }
         }
         .msgContentRightBody {
-          max-width: 276px;
-          margin-top: 3px;
-          padding: 9px 15px;
-          color: #ffffff;
-          font-weight: 500;
-          font-size: 17px;
-          font-family: PingFangSC-Medium, PingFang SC;
-          line-height: 23px;
-          white-space: normal;
-          word-break: break-word;
-          background: rgba(48, 51, 65, 1);
-          border-radius: 3px;
+          display: flex;
+          align-items: center;
+          i {
+            width: vw(40px);
+            height: vw(40px);
+            background-color: #f0f8ff00;
+          }
+          .loading {
+            background-image: url(../../../../sdkMobileAssets/Room_msg_loading@2x.png);
+            background-size: contain;
+          }
+          .sendFailed {
+            background-image: url(../../../../sdkMobileAssets/Room_msg_failed@2x.png);
+            background-size: contain;
+          }
+          p {
+            max-width: vw(482px);
+            margin-top: vw(6px);
+            padding: vw(18px) vw(28px);
+            color: #ffffff;
+            font-weight: 400;
+            font-size: vw(32px);
+            font-family: PingFangSC-Regular, PingFang SC;
+            line-height: vw(45px);
+            white-space: normal;
+            word-break: break-word;
+            background: rgba(48, 51, 65, 1);
+            border-radius: vw(18px);
+          }
         }
       }
     }
@@ -87,11 +111,14 @@
       align-self: flex-end;
       width: 100vw;
       i {
-        margin-right: 16px;
-        margin-left: 12px;
+        margin-right: vw(30px);
+        margin-left: vw(24px);
       }
       .msgContentRight {
         align-items: flex-end;
+        p {
+          background: #0055ff !important;
+        }
       }
     }
   }
@@ -100,30 +127,31 @@
     justify-content: space-between;
     box-sizing: border-box;
     width: 100vw;
-    height: 57px;
-    padding: 8px 16px;
+    height: vw(110px);
+    padding: vw(16px) vw(30px);
     background: #242736;
-    box-shadow: 0px -1px 0px 0px #3d4054;
+    box-shadow: 0px vw(-1px) 0px 0px #3d4054;
     input {
       flex: 1;
       box-sizing: border-box;
-      margin-right: 9px;
-      padding: 10px 12px;
+      margin-right: vw(18px);
+      padding: vw(19px) vw(24px);
       color: #a4a4a4;
       font-weight: 500;
-      font-size: 15px;
+      font-size: vw(28px);
       font-family: PingFangSC-Medium, PingFang SC;
+      line-height: vw(40px);
       background: #303341;
       border: 0px;
-      border-radius: 8px;
+      border-radius: vw(16px);
       &:focus {
         color: #ffffff;
         outline: none;
       }
     }
     button {
-      width: 41px;
-      height: 41px;
+      width: vw(68px);
+      height: vw(68px);
       background-color: #242736;
       background-image: url(../../../../sdkMobileAssets/Room_msg_send2x.png);
       background-size: contain;

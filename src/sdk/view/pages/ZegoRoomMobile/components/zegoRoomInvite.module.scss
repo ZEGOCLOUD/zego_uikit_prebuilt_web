@@ -1,3 +1,4 @@
+@import "../../../../var.scss";
 .roomDetails {
   position: absolute;
   bottom: 0px;
@@ -8,29 +9,42 @@
   justify-content: center;
   box-sizing: border-box;
   width: 100%;
-  height: 199px;
+  height: vw(382px);
   background: #242736;
-  border-radius: 24px 24px 0px 0px;
+  border-radius: vw(46px) vw(46px) 0px 0px;
   .inviteHeader {
-    padding: 12px 0px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: vw(15px) vw(23px) vw(13px) vw(23px);
     color: #ffffff;
     font-weight: 400;
-    font-size: 19px;
+    font-size: vw(36px);
+    font-family: PingFangSC-Regular, PingFang SC;
+    line-height: vw(50px);
+    .inviteHide {
+      width: vw(70px);
+      height: vw(70px);
+      margin-right: vw(16px);
+      background-image: url(../../../../sdkMobileAssets/Room_member_hide@2x.png);
+      background-size: contain;
+    }
   }
   .inviteURL {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 359px;
-    height: 67px;
-    padding: 8px 15px;
+    width: 92vw;
+    height: vw(128px);
+    padding: vw(16px) 0;
     color: #a4a4a4;
     font-weight: 400;
-    font-size: 16px;
+    font-size: vw(30px);
     font-family: PingFangSC-Regular, PingFang SC;
-    background: #303341;
-    border-radius: 6px;
-    opacity: 0.7;
+    line-height: vw(42px);
+    background: rgba(48, 51, 65, 0.7);
+    border-radius: vw(12px);
   }
   .inviteCopy {
     display: flex;
@@ -39,18 +53,19 @@
     justify-content: center;
     i {
       display: inline-block;
-      width: 23px;
-      height: 23px;
+      width: vw(44px);
+      height: vw(44px);
       background-image: url(../../../../sdkMobileAssets/Room_details_conpy@2x.png);
       background-size: contain;
       border: 0px;
     }
     span {
-      margin-left: 6px;
+      margin-left: vw(10px);
       color: #ffb763;
       font-weight: 500;
-      font-size: 16px;
+      font-size: vw(30px);
       font-family: PingFangSC-Medium, PingFang SC;
+      line-height: vw(42px);
     }
   }
 }

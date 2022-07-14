@@ -1,9 +1,14 @@
 import React from "react";
 import { ZegoCloudRemoteMedia } from "../../../../model";
+import { ZegoCloudRTCCore } from "../../../../modules";
+import { userNameColor } from "../../../../util";
 import zegoOne2OneCss from "./zegoOne2One.module.scss";
 export class ZegoOne2One extends React.Component<{
   localStream: MediaStream | undefined;
   remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
+  core: ZegoCloudRTCCore;
+  cameraOpen: boolean;
+  micOpen: boolean;
 }> {
   getVideoScreen() {
     if (this.props.localStream && this.props.remoteStreamInfo) {
@@ -14,13 +19,25 @@ export class ZegoOne2One extends React.Component<{
               autoPlay
               ref={(el) => {
                 el &&
-                  el.srcObject !== this.props.localStream! &&
-                  (el.srcObject = this.props.localStream!);
+                  el.srcObject !== this.props.remoteStreamInfo?.media &&
+                  (el.srcObject = this.props.remoteStreamInfo?.media!);
               }}
             ></video>
-            <div className={zegoOne2OneCss.name}>
+            {/* <div className={zegoOne2OneCss.name}>
               {this.props.remoteStreamInfo.fromUser.userName}
-            </div>
+            </div> */}
+            {this.props.remoteStreamInfo?.media.getVideoTracks().length ===
+              0 && (
+              <i
+                style={{
+                  color: userNameColor(
+                    this.props.remoteStreamInfo.fromUser.userName!
+                  ),
+                }}
+              >
+                {this.props.remoteStreamInfo.fromUser.userName?.substring(0, 1)}
+              </i>
+            )}
           </div>
           <div className={zegoOne2OneCss.smallVideo}>
             <video
@@ -32,7 +49,16 @@ export class ZegoOne2One extends React.Component<{
                   (el.srcObject = this.props.localStream!);
               }}
             ></video>
-            <div className={zegoOne2OneCss.name}>You</div>
+            {/* <div className={zegoOne2OneCss.name}>You</div> */}
+            {!this.props.cameraOpen && (
+              <i
+                style={{
+                  color: userNameColor(this.props.core._expressConfig.userName),
+                }}
+              >
+                {this.props.core._expressConfig.userName?.substring(0, 1)}
+              </i>
+            )}
           </div>
         </>
       );
@@ -48,7 +74,16 @@ export class ZegoOne2One extends React.Component<{
                 (el.srcObject = this.props.localStream!);
             }}
           ></video>
-          <div className={zegoOne2OneCss.name}>You</div>
+          {/* <div className={zegoOne2OneCss.name}>You</div> */}
+          {!this.props.cameraOpen && (
+            <i
+              style={{
+                color: userNameColor(this.props.core._expressConfig.userName),
+              }}
+            >
+              {this.props.core._expressConfig.userName?.substring(0, 1)}
+            </i>
+          )}
         </div>
       );
     } else if (this.props.remoteStreamInfo) {
@@ -63,9 +98,20 @@ export class ZegoOne2One extends React.Component<{
                 (el.srcObject = this.props.remoteStreamInfo!.media);
             }}
           ></video>
-          <div className={zegoOne2OneCss.name}>
+          {/* <div className={zegoOne2OneCss.name}>
             {this.props.remoteStreamInfo.fromUser.userName}
-          </div>
+          </div> */}
+          {this.props.remoteStreamInfo?.media.getVideoTracks().length === 0 && (
+            <i
+              style={{
+                color: userNameColor(
+                  this.props.remoteStreamInfo.fromUser.userName!
+                ),
+              }}
+            >
+              {this.props.remoteStreamInfo.fromUser.userName?.substring(0, 1)}
+            </i>
+          )}
         </div>
       );
     } else {

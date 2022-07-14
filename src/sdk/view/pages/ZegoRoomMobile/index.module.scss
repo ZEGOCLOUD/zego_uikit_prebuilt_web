@@ -71,17 +71,17 @@
 
       .popMore {
         position: absolute;
-        bottom: 66px;
-        left: -199px;
+        right: vw(-20px);
+        bottom: vw(106px+25px);
         z-index: 202;
         box-sizing: border-box;
-        width: 241px;
-        height: 89px;
-        padding: 17px 29px;
+        width: vw(464px);
+        height: vw(190px-14px);
+        padding: vw(32px) vw(55px) vw(30px) vw(55px);
         background-color: #1c1f2e;
         border: 1px solid #3d4054;
-        border-radius: 9px;
-        box-shadow: 0px 2px 3px 0px rgba(23, 24, 33, 0.35);
+        border-radius: vw(18px);
+        box-shadow: 0px vw(3px) vw(6px) 0px rgba(23, 24, 33, 0.35);
         .popMoreContent {
           display: flex;
           justify-content: space-between;
@@ -91,23 +91,31 @@
             align-items: center;
             justify-content: center;
             i {
-              width: 40px;
-              height: 40px;
-              margin-bottom: 10px;
+              width: vw(76px);
+              height: vw(76px);
+              margin-bottom: vw(10px);
               background: #2c2f3e;
-              border-radius: 9px;
+              border-radius: vw(18px);
             }
             .details {
               background-image: url(../../../sdkMobileAssets/Room_more_details@2x.png);
-              background-size: contain;
+              background-repeat: no-repeat;
+              background-position: center;
+              background-size: vw(56px) vw(56px);
             }
             .member {
               background-image: url(../../../sdkMobileAssets/Room_more_members@2x.png);
+              background-repeat: no-repeat;
+              background-position: center;
               background-size: contain;
+              background-size: vw(56px) vw(56px);
             }
             .chat {
               background-image: url(../../../sdkMobileAssets/Room_more_chat@2x.png);
+              background-repeat: no-repeat;
+              background-position: center;
               background-size: contain;
+              background-size: vw(56px) vw(56px);
             }
             span {
               color: #ffffff;
@@ -119,10 +127,11 @@
         }
         .popMoreArray {
           position: absolute;
-          right: 17px;
-          bottom: -4px;
-          width: 10px;
-          height: 10px;
+          right: vw(42px);
+          bottom: vw(-10px);
+          z-index: -1;
+          width: vw(20px);
+          height: vw(20px);
           background-color: #1c1f2e;
           transform: rotate(45deg);
         }

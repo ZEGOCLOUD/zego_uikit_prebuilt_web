@@ -1,3 +1,4 @@
+@import "../../../../var.scss";
 .bigVideo,
 .smallVideo {
   position: relative;
@@ -5,37 +6,63 @@
 
   .name {
     position: absolute;
-    bottom: 15px;
-    left: 15px;
+    bottom: vw(10px);
+    left: vw(10px);
+    width: vw(118px);
+    height: vw(46px);
+    color: #ffffff;
+    font-weight: 400;
+    font-size: vw(24px);
+    font-family: PingFangSC-Regular, PingFang SC;
+    line-height: vw(33px);
+    text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+    background: rgba(42, 42, 42, 0.5);
+    border-radius: vw(12px);
   }
 
   video {
     height: 100%;
+  }
+  i {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: vw(160px);
+    height: vw(160px);
+    color: #1fad40;
+    font-weight: 600;
+    font-size: vw(46px);
+    font-family: PingFangSC-Semibold, PingFang SC;
+    line-height: vw(65px);
+    background: #171821;
+    border-radius: vw(80px);
   }
 }
 
 .bigVideo {
   width: auto;
   height: 100%;
+  i {
+    position: fixed;
+    top: vw(730px);
+    left: vw(295px);
+  }
 }
 
 .smallVideo {
   position: absolute;
-  top: 47px;
-  right: 12px;
-  width: 99px;
-  height: 176px;
+  top: vw(90px);
+  right: vw(24px);
+  width: vw(190px);
+  height: vw(338px);
   border: 1px solid #a4a4a4;
-  border-radius: 9px;
+  border-radius: vw(18px);
   video {
     width: 100%;
   }
-}
-
-.notification {
-  position: absolute;
-  bottom: 5px;
-  left: 5px;
-  width: 40%;
-  height: 30%;
+  i {
+    top: vw(89px);
+    right: vw(15px);
+  }
 }

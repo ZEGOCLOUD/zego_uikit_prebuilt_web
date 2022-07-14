@@ -2,8 +2,9 @@ import React, { ChangeEvent, RefObject } from "react";
 import zegoMessageCss from "./zegoMessage.module.scss";
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { DateFormat, userNameColor } from "../../../../util";
+import { ZegoBroadcastMessageInfo2 } from "../../../../model";
 export class ZegoMessage extends React.Component<{
-  messageList: ZegoBroadcastMessageInfo[];
+  messageList: ZegoBroadcastMessageInfo2[];
   sendMessage: (msg: string) => void;
   userID: string;
   closeCallBac: () => void;
@@ -17,7 +18,7 @@ export class ZegoMessage extends React.Component<{
   msgContentListRef: RefObject<HTMLDivElement>;
 
   constructor(props: {
-    messageList: ZegoBroadcastMessageInfo[];
+    messageList: ZegoBroadcastMessageInfo2[];
     sendMessage: (msg: string) => void;
     userID: string;
     closeCallBac: () => void;
@@ -87,9 +88,20 @@ export class ZegoMessage extends React.Component<{
                       }  ${DateFormat(msg.sendTime, "hh:mm")}`}
                     </span>
                   </div>
-                  <p className={zegoMessageCss.msgContentRightBody}>
-                    {msg.message}
-                  </p>
+                  <div className={zegoMessageCss.msgContentRightBody}>
+                    {msg.status && (
+                      <i
+                        className={
+                          msg.status === "SENDING"
+                            ? zegoMessageCss.loading
+                            : msg.status === "SENDED"
+                            ? ""
+                            : zegoMessageCss.sendFailed
+                        }
+                      ></i>
+                    )}
+                    <p>{msg.message}</p>
+                  </div>
                 </div>
               </div>
             );

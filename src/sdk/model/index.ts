@@ -1,4 +1,8 @@
-import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import {
+  ZegoUser,
+  ZegoBroadcastMessageInfo,
+} from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+
 import { ZegoCloudRTCCore } from "../modules";
 export interface ZegoCloudRemoteMedia {
   media: MediaStream;
@@ -51,3 +55,7 @@ export interface ZegoNotification {
   content: string;
   userName: undefined | string;
 }
+
+export declare type ZegoBroadcastMessageInfo2 = ZegoBroadcastMessageInfo & {
+  status: "SENDING" | "SENDED" | "FAILED";
+};

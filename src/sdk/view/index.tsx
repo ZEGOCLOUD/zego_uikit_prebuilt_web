@@ -27,6 +27,17 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
   render(): React.ReactNode {
     let page;
     if (this.state.step === 0 && this.props.core) {
+      const root = document.getElementById("root");
+      const nav = document.querySelector(
+        "#root div div:first-child"
+      ) as HTMLDivElement;
+      if (root && !isPc()) {
+        root.style.display = "block";
+      }
+      if (nav && isPc()) {
+        nav.style.display = "block";
+      }
+
       page = isPc() ? (
         <ZegoBrowserCheck
           core={this.props.core}

@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
   ZegoCloudRemoteMedia,
   ZegoNotification,
@@ -11,21 +12,23 @@ import {
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { randomID } from "../../../util";
+import { randomID, randomNumber } from "../../../util";
 import { ZegoConfirm } from "../../components/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
+import { ZegoReconnect } from "./components/zegoReConnect";
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
     remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
     layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
     userList: ZegoUser[];
-    messageList: ZegoBroadcastMessageInfo[];
+    messageList: ZegoBroadcastMessageInfo2[];
     notificationList: ZegoNotification[];
     micOpen: boolean;
     cameraOpen: boolean;
     showMore: boolean;
+    connecting: boolean;
   } = {
     micOpen: !!this.props.core._config.micEnabled,
     cameraOpen: !!this.props.core._config.cameraEnabled,
@@ -36,6 +39,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     messageList: [],
     notificationList: [],
     showMore: false,
+    connecting: false,
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
@@ -61,11 +65,14 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     }
   ) {
     if (
-      preState.notificationList.length > 0 &&
-      this.state.notificationList.length > 0 &&
-      preState.notificationList[preState.notificationList.length - 1].content !=
-        this.state.notificationList[this.state.notificationList.length - 1]
-          .content
+      (preState.notificationList.length > 0 &&
+        this.state.notificationList.length > 0 &&
+        preState.notificationList[preState.notificationList.length - 1]
+          .content !=
+          this.state.notificationList[this.state.notificationList.length - 1]
+            .content) ||
+      (preState.notificationList.length == 0 &&
+        this.state.notificationList.length > 0)
     ) {
       this.notifyTimer && clearTimeout(this.notifyTimer);
       this.notifyTimer = setTimeout(() => {
@@ -84,7 +91,16 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         status: "DISCONNECTED" | "CONNECTING" | "CONNECTED"
       ) => {
         if (status === "DISCONNECTED") {
-          this.leaveRoom();
+          this.props.core.leaveRoom();
+          this.props.leaveRoom && this.props.leaveRoom();
+        } else if (status === "CONNECTING") {
+          this.setState({
+            connecting: true,
+          });
+        } else {
+          this.setState({
+            connecting: false,
+          });
         }
       }
     );
@@ -307,10 +323,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     );
   }
 
-  sendMessage(msg: string) {
-    this.props.core.sendRoomMessage(msg);
-
-    this.setState((state: { messageList: ZegoBroadcastMessageInfo[] }) => {
+  async sendMessage(msg: string) {
+    let messageID = randomNumber(3);
+    this.setState((state: { messageList: ZegoBroadcastMessageInfo2[] }) => {
       return {
         messageList: [
           ...state.messageList,
@@ -321,9 +336,23 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             },
             message: msg,
             sendTime: Date.now(),
-            messageID: randomID(3),
+            messageID,
+            status: "SENDING",
           },
         ],
+      };
+    });
+    const resp = await this.props.core.sendRoomMessage(msg);
+    this.setState((state: { messageList: ZegoBroadcastMessageInfo2[] }) => {
+      const _messageList = state.messageList.map((msg) => {
+        if (msg.messageID === messageID) {
+          msg.status = resp.errorCode === 0 ? "SENDED" : "FAILED";
+        }
+        return msg;
+      });
+      console.log(_messageList);
+      return {
+        messageList: _messageList,
       };
     });
   }
@@ -398,8 +427,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     return (
       <div className={ZegoRoomCss.ZegoRoom}>
         <ZegoOne2One
+          cameraOpen={this.state.cameraOpen}
+          micOpen={this.state.micOpen}
           localStream={this.state.localStream}
           remoteStreamInfo={this.state.remoteStreamInfo}
+          core={this.props.core}
         ></ZegoOne2One>
 
         <div className={ZegoRoomCss.footer}>
@@ -505,6 +537,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             }
           })}
         </div>
+        {this.state.connecting && <ZegoReconnect></ZegoReconnect>}
       </div>
     );
   }

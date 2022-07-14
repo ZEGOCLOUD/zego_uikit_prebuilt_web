@@ -1,6 +1,5 @@
 export function randomID(len: number): string {
   let result = "";
-  if (result) return result;
   var chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP",
     maxPos = chars.length,
     i;
@@ -9,6 +8,18 @@ export function randomID(len: number): string {
     result += chars.charAt(Math.floor(Math.random() * maxPos));
   }
   return result;
+}
+
+export function randomNumber(len: number): number {
+  let result = "";
+  var chars = "123456789",
+    maxPos = chars.length,
+    i;
+  len = len || 5;
+  for (i = 0; i < len; i++) {
+    result += chars.charAt(Math.floor(Math.random() * maxPos));
+  }
+  return Number.parseInt(result);
 }
 
 export function isPc(): boolean {
