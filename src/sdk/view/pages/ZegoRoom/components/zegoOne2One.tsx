@@ -18,6 +18,7 @@ export class ZegoOne2One extends React.Component<{
           <div className={zegoOne2OneCss.bigVideo}>
             <video
               autoPlay
+              playsInline={true}
               ref={(el) => {
                 el &&
                   el.srcObject !== this.props.remoteStreamInfo!.media &&
@@ -47,9 +48,10 @@ export class ZegoOne2One extends React.Component<{
             </div>
             <div className={zegoOne2OneCss.name}>
               <span
-                className={`${zegoOne2OneCss.micIcon} ${this.props
-                  .remoteStreamInfo.micStatus !== "OPEN" &&
-                  zegoOne2OneCss.close}`}
+                className={`${zegoOne2OneCss.micIcon} ${
+                  this.props.remoteStreamInfo.micStatus !== "OPEN" &&
+                  zegoOne2OneCss.close
+                }`}
               ></span>
               <p>{this.props.remoteStreamInfo.fromUser.userName}</p>
             </div>
@@ -58,6 +60,7 @@ export class ZegoOne2One extends React.Component<{
             <video
               muted
               autoPlay
+              playsInline={true}
               ref={(el) => {
                 el &&
                   el.srcObject !== this.props.localStream! &&
@@ -80,8 +83,9 @@ export class ZegoOne2One extends React.Component<{
             </div>
             <div className={zegoOne2OneCss.name}>
               <span
-                className={`${zegoOne2OneCss.micIcon} ${!this.props.selfUserInfo
-                  .micOpen && zegoOne2OneCss.close}`}
+                className={`${zegoOne2OneCss.micIcon} ${
+                  !this.props.selfUserInfo.micOpen && zegoOne2OneCss.close
+                }`}
               ></span>
               <p>{this.props.selfUserInfo.userName} (Me)</p>
             </div>
@@ -94,6 +98,7 @@ export class ZegoOne2One extends React.Component<{
           <video
             muted
             autoPlay
+            playsInline={true}
             ref={(el) => {
               el &&
                 el.srcObject !== this.props.localStream! &&
@@ -116,8 +121,9 @@ export class ZegoOne2One extends React.Component<{
           </div>
           <div className={zegoOne2OneCss.name}>
             <span
-              className={`${zegoOne2OneCss.micIcon} ${!this.props.selfUserInfo
-                .micOpen && zegoOne2OneCss.close}`}
+              className={`${zegoOne2OneCss.micIcon} ${
+                !this.props.selfUserInfo.micOpen && zegoOne2OneCss.close
+              }`}
             ></span>
             <p>{this.props.selfUserInfo.userName} (Me)</p>
           </div>
@@ -128,6 +134,7 @@ export class ZegoOne2One extends React.Component<{
         <div className={zegoOne2OneCss.bigVideo}>
           <video
             autoPlay
+            playsInline={true}
             className={zegoOne2OneCss.bigVideo}
             ref={(el) => {
               el &&
@@ -158,9 +165,10 @@ export class ZegoOne2One extends React.Component<{
           </div>
           <div className={zegoOne2OneCss.name}>
             <span
-              className={`${zegoOne2OneCss.micIcon} ${this.props
-                .remoteStreamInfo.micStatus !== "OPEN" &&
-                zegoOne2OneCss.close}`}
+              className={`${zegoOne2OneCss.micIcon} ${
+                this.props.remoteStreamInfo.micStatus !== "OPEN" &&
+                zegoOne2OneCss.close
+              }`}
             ></span>
             <p>{this.props.remoteStreamInfo.fromUser.userName}</p>
           </div>

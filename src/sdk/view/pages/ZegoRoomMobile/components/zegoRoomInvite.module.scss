@@ -1,6 +1,6 @@
 @import "../../../../var.scss";
 .roomDetails {
-  position: absolute;
+  position: fixed;
   bottom: 0px;
   z-index: 202;
   display: flex;
@@ -35,9 +35,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
     width: 92vw;
     height: vw(128px);
-    padding: vw(16px) 0;
+    padding: vw(16px) vw(28px);
     color: #a4a4a4;
     font-weight: 400;
     font-size: vw(30px);

@@ -1,7 +1,7 @@
 import CryptoJS from "./crypto-js";
 const appConfig = {
   appID: 1715619064, // Fill in the AppID of the application
-  serverSecret: "", // Fill in the requested ServerSecret
+  serverSecret: "e11a7e6d5172d78ef37092874c14ec59", // Fill in the requested ServerSecret
 };
 
 /**

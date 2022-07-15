@@ -46,7 +46,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
-  faceModel: 0 | 1 | -1 = 0;
+  faceModel: 0 | 1 | -1 = 1;
   notifyTimer!: NodeJS.Timeout;
 
   componentDidMount() {
@@ -224,8 +224,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             audio,
             facingMode: facingMode ? "user" : "environment",
             videoQuality: 4,
-            width: 480,
-            height: 640,
+            width: 640,
+            height: 480,
             bitrate: 500,
             frameRate: 15,
           },
