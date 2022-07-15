@@ -3,14 +3,18 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "gh-pages": "^4.0.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-intl": "^6.0.4",
         "zego-express-engine-webrtc": "^2.16.1"
     },
+    "homepage": "https://choui666.github.io/prebuilt-webrtc/",
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -b main -d build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "build:lib": "father build",
