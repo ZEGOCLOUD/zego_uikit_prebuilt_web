@@ -1,12 +1,14 @@
 import React, { ChangeEvent } from "react";
 
-import ZegoReconnectCss from "./index.module.scss";
-export class ZegoReconnect extends React.Component {
+import ZegoReconnectCss from "./ZegoReconnect.module.scss";
+export class ZegoReconnect extends React.Component<{
+  content: string;
+}> {
   render(): React.ReactNode {
     return (
       <div className={ZegoReconnectCss.container}>
         <i className={ZegoReconnectCss.loading}></i>
-        <p>Trying to reconnect...</p>
+        <p>{this.props.content}</p>
       </div>
     );
   }

@@ -1,7 +1,7 @@
 import React from "react";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { isPc } from "../../../util";
-import { ZegoToast } from "../../components/zegoToast";
+import { ZegoToast } from "../../components/mobile/zegoToast";
 import ZegoRejoinRoomCss from "./index.module.scss";
 
 export class ZegoRejoinRoom extends React.Component<ZegoBrowserCheckProp> {

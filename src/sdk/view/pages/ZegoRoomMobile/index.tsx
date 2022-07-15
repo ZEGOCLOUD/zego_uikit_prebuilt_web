@@ -12,11 +12,11 @@ import {
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { randomID, randomNumber } from "../../../util";
-import { ZegoConfirm } from "../../components/zegoConfirm";
+import { randomNumber } from "../../../util";
+import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
-import { ZegoReconnect } from "./components/zegoReConnect";
+import { ZegoReconnect } from "./components/ZegoReconnect";
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -29,6 +29,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     cameraOpen: boolean;
     showMore: boolean;
     connecting: boolean;
+    firstLoading: boolean;
   } = {
     micOpen: !!this.props.core._config.micEnabled,
     cameraOpen: !!this.props.core._config.cameraEnabled,
@@ -40,6 +41,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     notificationList: [],
     showMore: false,
     connecting: false,
+    firstLoading: true,
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
@@ -76,9 +78,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     ) {
       this.notifyTimer && clearTimeout(this.notifyTimer);
       this.notifyTimer = setTimeout(() => {
-        this.setState({
-          notificationList: [],
-        });
+        // this.setState({
+        //   notificationList: [],
+        // });
       }, 3000);
     }
   }
@@ -100,6 +102,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         } else {
           this.setState({
             connecting: false,
+            fistLoading: false,
           });
         }
       }
@@ -245,6 +248,16 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async toggleMic() {
+    if (this.props.core.status.audioRefuse) {
+      ZegoConfirm({
+        title: "Equipment authorization",
+        content:
+          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+        confirm: "OK",
+      });
+      return;
+    }
+
     if (this.micStatus === -1) return;
     this.micStatus = -1;
 
@@ -268,6 +281,15 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async toggleCamera() {
+    if (this.props.core.status.videoRefuse) {
+      ZegoConfirm({
+        title: "Equipment authorization",
+        content:
+          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+        confirm: "OK",
+      });
+      return;
+    }
     if (this.cameraStatus === -1) return;
     this.cameraStatus = -1;
 
@@ -293,6 +315,16 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async switchCamera() {
+    if (this.props.core.status.videoRefuse) {
+      ZegoConfirm({
+        title: "Equipment authorization",
+        content:
+          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+        confirm: "OK",
+      });
+      return;
+    }
+
     let targetModel = false;
     if (this.faceModel === -1) {
       return;
@@ -300,6 +332,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       targetModel = true;
     }
     this.faceModel = -1;
+
     const res = await this.createStream(
       !!this.state.cameraOpen,
       !!this.state.micOpen,
@@ -367,6 +400,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     ZegoConfirm({
       title: "Leave the room",
       content: "Are you sure to leave the room?",
+      cancel: "Cancel",
+      confirm: "Canform",
       closeCallBack: (confirm: boolean) => {
         if (confirm) {
           this.props.core.leaveRoom();
@@ -531,13 +566,21 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             } else {
               return (
                 <div key={notify.content} className={ZegoRoomCss.notifyContent}>
-                  {notify.content}
+                  <span>{notify.content}</span>
                 </div>
               );
             }
           })}
         </div>
-        {this.state.connecting && <ZegoReconnect></ZegoReconnect>}
+        {this.state.connecting && (
+          <ZegoReconnect
+            content={
+              this.state.firstLoading
+                ? "Joining Room"
+                : "Trying to reconnect..."
+            }
+          ></ZegoReconnect>
+        )}
       </div>
     );
   }

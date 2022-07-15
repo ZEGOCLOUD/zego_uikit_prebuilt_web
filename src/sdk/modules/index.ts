@@ -48,8 +48,12 @@ export class ZegoCloudRTCCore {
 
   status: {
     loginRsp: boolean;
+    videoRefuse: boolean;
+    audioRefuse: boolean;
   } = {
     loginRsp: false,
+    videoRefuse: false,
+    audioRefuse: false,
   };
   remoteStreamMap: { [index: string]: ZegoCloudRemoteMedia } = {};
 

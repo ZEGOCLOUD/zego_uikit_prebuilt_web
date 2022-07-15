@@ -2,9 +2,9 @@ import React, { ChangeEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
-import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModel } from "../../components/zegoModel";
-import { ZegoToast } from "../../components/zegoToast";
+import { ZegoToast } from "../../components/mobile/zegoToast";
+import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: undefined,
@@ -32,13 +32,8 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
     const res = await this.props.core.checkWebRTC();
     const videoOpen = !!this.props.core._config.cameraEnabled;
     const audioOpen = !!this.props.core._config.micEnabled;
-    let localStream: MediaStream | undefined = undefined;
-    this.setState({
-      videoOpen,
-      audioOpen,
-    });
     if (res && (videoOpen || audioOpen)) {
-      localStream = await this.createStream(videoOpen, audioOpen);
+      await this.createStream(videoOpen, audioOpen);
       this.setState({
         isSupportWebRTC: res,
         userName: this.props.core._expressConfig.userName,
@@ -108,6 +103,8 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
     this.setState(
       {
         localStream,
+        audioOpen: audioOpen && !this.audioRefuse,
+        videoOpen: videoOpen && !this.videoRefuse,
       },
       () => {
         if (this.videoRef.current && localStream) {
@@ -120,7 +117,16 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
   }
 
   async toggleStream(type: "video" | "audio") {
-    if (type === "video" && !this.videoRefuse) {
+    if (type === "video") {
+      if (this.videoRefuse) {
+        ZegoConfirm({
+          title: "Equipment authorization",
+          content:
+            "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+          confirm: "OK",
+        });
+        return;
+      }
       const videoOpen = !this.state.videoOpen;
       if (!this.state.localVideoStream) {
         const res = await this.createStream(videoOpen, false);
@@ -132,7 +138,16 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
         this.setState({ localVideoStream: undefined });
       }
       this.setState({ videoOpen });
-    } else if (type === "audio" && !this.audioRefuse) {
+    } else if (type === "audio") {
+      if (this.audioRefuse) {
+        ZegoConfirm({
+          title: "Equipment authorization",
+          content:
+            "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+          confirm: "OK",
+        });
+        return;
+      }
       const audioOpen = !this.state.audioOpen;
       if (!this.state.localAudioStream) {
         const res = await this.createStream(this.state.videoOpen, audioOpen);
@@ -149,6 +164,9 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       this.state.audioOpen && !this.audioRefuse;
     this.props.core._config.cameraEnabled =
       this.state.videoOpen && !this.videoRefuse;
+    this.props.core.status.audioRefuse = this.audioRefuse;
+    this.props.core.status.videoRefuse = this.videoRefuse;
+
     const loginRsp = await this.props.core.enterRoom();
     let massage = "";
     if (loginRsp === 0) {
