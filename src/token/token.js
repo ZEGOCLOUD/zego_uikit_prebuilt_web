@@ -1,7 +1,7 @@
 import CryptoJS from "./crypto-js";
 const appConfig = {
   appID: 1715619064, // Fill in the AppID of the application
-  serverSecret: "e11a7e6d5172d78ef37092874c14ec59", // Fill in the requested ServerSecret
+  serverSecret: "", // Fill in the requested ServerSecret
 };
 
 /**
@@ -26,9 +26,7 @@ export function generateV4Token(userID, seconds) {
   };
   // encrypt body
   const key = CryptoJS.enc.Utf8.parse(appConfig.serverSecret);
-  let iv = Math.random()
-    .toString()
-    .substring(2, 18);
+  let iv = Math.random().toString().substring(2, 18);
   if (iv.length < 16) iv += iv.substring(0, 16 - iv.length);
 
   const ciphertext = CryptoJS.AES.encrypt(JSON.stringify(body), key, {
