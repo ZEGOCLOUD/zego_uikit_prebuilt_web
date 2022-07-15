@@ -35,7 +35,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         root.style.display = "block";
       }
       if (nav && isPc()) {
-        nav.style.display = "block";
+        nav.style.display = "flex";
       }
 
       page = isPc() ? (

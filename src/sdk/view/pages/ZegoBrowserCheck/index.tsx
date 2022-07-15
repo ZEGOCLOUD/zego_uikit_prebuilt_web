@@ -38,12 +38,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       audioOpen: !!this.props.core._config.micEnabled,
     });
 
-    let localStream: MediaStream | undefined = undefined;
     if (res && (this.state.videoOpen || this.state.audioOpen)) {
-      localStream = await this.createStream(
-        this.state.videoOpen,
-        this.state.audioOpen
-      );
+      await this.createStream(this.state.videoOpen, this.state.audioOpen);
       //   TODO
       this.setState({
         isSupportWebRTC: res,

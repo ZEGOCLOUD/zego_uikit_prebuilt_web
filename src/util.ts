@@ -8,20 +8,20 @@ export function generateToken(
 ): Promise<{ token: string }> {
   // Obtain the token interface provided by the App Server
   //   本地调试token
-  // return Promise.resolve({
-  //   token:
-  //     generateV4Token(userID) +
-  //     "#" +
-  //     window.btoa(
-  //       JSON.stringify({ userID, roomID, userName, appID: 1715619064 })
-  //     ),
-  // });
-  return fetch(
-    `${tokenServerUrl}/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`,
-    {
-      method: "GET",
-    }
-  ).then((res) => res.json());
+  return Promise.resolve({
+    token:
+      generateV4Token(userID) +
+      "#" +
+      window.btoa(
+        JSON.stringify({ userID, roomID, userName, appID: 1715619064 })
+      ),
+  });
+  //   return fetch(
+  //     `${tokenServerUrl}/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`,
+  //     {
+  //       method: "GET",
+  //     }
+  //   ).then((res) => res.json());
 }
 
 export function randomID(len: number): string {

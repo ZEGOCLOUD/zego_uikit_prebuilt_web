@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, RefObject } from "react";
 import ReactDOM from "react-dom/client";
 import {
   ZegoDeviceInfo,
@@ -7,6 +7,7 @@ import {
 import { ZegoCloudRTCCore } from "../../../modules";
 import ZegoSettingsCss from "./index.module.scss";
 import { ZegoSelect } from "../../components/zegoSelect";
+import { SoundLevel } from "../../../modules/soundmeter";
 export class ZegoSettings extends React.Component<{
   core: ZegoCloudRTCCore;
   theme?: string;
@@ -44,6 +45,7 @@ export class ZegoSettings extends React.Component<{
     speakerVolume: 0,
   };
   videoRef = React.createRef<HTMLDivElement>();
+  micAudioRef = React.createRef<HTMLAudioElement>();
   solutionList = [
     {
       name: "180p",
@@ -75,8 +77,13 @@ export class ZegoSettings extends React.Component<{
         localVideoStream: this.props.localVideoStream,
       });
     }
+    // this.props.core.capturedSoundLevelUpdate(
+    //   this.micAudioRef.current as HTMLAudioElement,
+    //   (soundLevel) => {
+    //     console.warn(soundLevel);
+    //   }
+    // );
   }
-
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
     const speakerDevices = await this.props.core.getSpeakers();
@@ -188,7 +195,14 @@ export class ZegoSettings extends React.Component<{
 
     res && this.setState({ seletVideoResolve: level });
   }
-
+  toggleSpeakerTest() {
+    this.props.core.capturedSoundLevelUpdate(
+      this.micAudioRef.current as HTMLAudioElement,
+      (soundLevel) => {
+        console.warn(soundLevel);
+      }
+    );
+  }
   close() {
     sessionStorage.setItem("seletMic", this.state.seletMic || "");
     sessionStorage.setItem("seletCamera", this.state.seletCamera || "");
@@ -314,12 +328,24 @@ export class ZegoSettings extends React.Component<{
                             } ${ZegoSettingsCss.volume}`}
                           ></span>
                         ))}
-                      <div className={ZegoSettingsCss.speakerTestButton}>
+                      <div
+                        className={ZegoSettingsCss.speakerTestButton}
+                        onClick={() => {
+                          this.toggleSpeakerTest();
+                        }}
+                      >
                         Test
                       </div>
                     </div>
                   </div>
                   <audio
+                    style={{ width: "1px", height: "1px" }}
+                    ref={this.micAudioRef}
+                    autoPlay
+                    loop
+                    src="//resource.zegocloud.com/office/sdk_static/speaker_test.wav"
+                  ></audio>
+                  {/* <audio
                     style={{ width: "1px", height: "1px" }}
                     ref={(el: HTMLAudioElement | null) => {
                       if (
@@ -342,8 +368,9 @@ export class ZegoSettings extends React.Component<{
                         // @ts-ignore
                         el.sinkId = this.state.seletSpeaker;
                       }
-                    }}
-                  ></audio>
+                    }} 
+                    src="//resource.zegocloud.com/office/sdk_static/speaker_test.wav"
+                  ></audio> */}
                 </div>
               )}
               {this.state.seletTab === "VIDEO" && (
