@@ -17,6 +17,7 @@ import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoReconnect } from "./components/ZegoReconnect";
+import { ZegoToast } from "../../components/mobile/zegoToast";
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -273,6 +274,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
 
     if (result) {
       this.micStatus = !this.state.micOpen ? 1 : 0;
+      ZegoToast({
+        content: "The microphone is " + (this.micStatus ? "on" : "off"),
+      });
       result &&
         this.setState({
           micOpen: !!this.micStatus,
@@ -307,6 +311,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     }
     if (result) {
       this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
+      ZegoToast({
+        content: "The camera is " + (this.cameraStatus ? "on" : "off"),
+      });
       result &&
         this.setState({
           cameraOpen: !!this.cameraStatus,

@@ -19,7 +19,7 @@ export class ZegoToastComponents extends React.Component<{
 
     setTimeout(() => {
       this.props.closeCallBack();
-    }, this.props.duration * 1000);
+    }, this.props.duration * 1000 + 500);
   }
   render(): React.ReactNode {
     return (
