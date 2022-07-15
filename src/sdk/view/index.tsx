@@ -32,7 +32,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         "#root div div:first-child"
       ) as HTMLDivElement;
       if (root && !isPc()) {
-        root.style.display = "block";
+        root.style.display = "flex";
       }
       if (nav && isPc()) {
         nav.style.display = "flex";

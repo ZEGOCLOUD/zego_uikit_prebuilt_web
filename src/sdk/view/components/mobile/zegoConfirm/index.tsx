@@ -6,6 +6,8 @@ export class ZegoConfirmComponents extends React.Component<{
   closeCallBack: (confirm: boolean) => void;
   title: string;
   content?: string;
+  cancel?: string;
+  confirm?: string;
 }> {
   render(): React.ReactNode {
     return (
@@ -14,20 +16,24 @@ export class ZegoConfirmComponents extends React.Component<{
           <p className={ZegoConfirmCss.tipsHeader}>{this.props.title}</p>
           <p className={ZegoConfirmCss.tipsText}>{this.props.content}</p>
           <div className={ZegoConfirmCss.handler}>
-            <button
-              onClick={() => {
-                this.props.closeCallBack(false);
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => {
-                this.props.closeCallBack(true);
-              }}
-            >
-              Confirm
-            </button>
+            {this.props.cancel && (
+              <button
+                onClick={() => {
+                  this.props.closeCallBack(false);
+                }}
+              >
+                {this.props.cancel}
+              </button>
+            )}
+            {this.props.confirm && (
+              <button
+                onClick={() => {
+                  this.props.closeCallBack(true);
+                }}
+              >
+                {this.props.confirm}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -42,6 +48,8 @@ export const ZegoConfirm = (config?: {
   closeCallBack?: (confirm: boolean) => void;
   title?: string;
   content?: string;
+  cancel?: string;
+  confirm?: string;
 }) => {
   const root = ReactDOM.createRoot(div);
   root.render(
@@ -52,6 +60,8 @@ export const ZegoConfirm = (config?: {
       }}
       title={config?.title || ""}
       content={config?.content || ""}
+      confirm={config?.confirm || ""}
+      cancel={config?.cancel || ""}
     ></ZegoConfirmComponents>
   );
 };
