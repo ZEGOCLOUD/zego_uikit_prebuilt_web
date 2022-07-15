@@ -7,7 +7,7 @@ export class SoundMeter {
   instant = 0.0;
   slow = 0.0;
   clip = 0.0;
-  context: AudioContext;
+  context: AudioContext | undefined;
   states: {
     [index: string]: {
       script: any;
@@ -15,9 +15,7 @@ export class SoundMeter {
     };
   } = {};
   timer!: NodeJS.Timer;
-  constructor() {
-    this.context = new AudioContext();
-  }
+  constructor() {}
 
   callBack!: (level: SoundLevel) => void;
 
@@ -36,6 +34,7 @@ export class SoundMeter {
     dom: HTMLMediaElement,
     callback: (level: SoundLevel) => void
   ) {
+    this.context = new AudioContext();
     console.log("SoundMeter connecting");
     try {
       const script = this.context.createScriptProcessor(4096, 1, 1);

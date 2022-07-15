@@ -45,7 +45,7 @@ export class ZegoSettings extends React.Component<{
     speakerVolume: 0,
   };
   videoRef = React.createRef<HTMLDivElement>();
-  micAudioRef = React.createRef<HTMLAudioElement>();
+  //   micAudioRef = React.createRef<HTMLAudioElement>();
   solutionList = [
     {
       name: "180p",
@@ -77,12 +77,25 @@ export class ZegoSettings extends React.Component<{
         localVideoStream: this.props.localVideoStream,
       });
     }
-    // this.props.core.capturedSoundLevelUpdate(
-    //   this.micAudioRef.current as HTMLAudioElement,
-    //   (soundLevel) => {
-    //     console.warn(soundLevel);
-    //   }
-    // );
+  }
+  componentDidUpdate(
+    prevProps: any,
+    preState: { localAudioStream: undefined }
+  ) {
+    if (
+      preState.localAudioStream === undefined &&
+      this.state.localAudioStream
+    ) {
+      this.props.core.capturedSoundLevelUpdate(
+        document.querySelector("#micTestAudio") as HTMLAudioElement,
+        (soundLevel) => {
+          //   console.warn(soundLevel);
+          this.setState({
+            audioVolume: soundLevel.instant,
+          });
+        }
+      );
+    }
   }
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
@@ -196,12 +209,15 @@ export class ZegoSettings extends React.Component<{
     res && this.setState({ seletVideoResolve: level });
   }
   toggleSpeakerTest() {
-    this.props.core.capturedSoundLevelUpdate(
-      this.micAudioRef.current as HTMLAudioElement,
-      (soundLevel) => {
-        console.warn(soundLevel);
-      }
-    );
+    // this.props.core.capturedSoundLevelUpdate(
+    //   document.querySelector("#micTestAudio") as HTMLAudioElement,
+    //   (soundLevel) => {
+    //     //   console.warn(soundLevel);
+    //     this.setState({
+    //       audioVolume: soundLevel.instant,
+    //     });
+    //   }
+    // );
   }
   close() {
     sessionStorage.setItem("seletMic", this.state.seletMic || "");
@@ -340,10 +356,30 @@ export class ZegoSettings extends React.Component<{
                   </div>
                   <audio
                     style={{ width: "1px", height: "1px" }}
-                    ref={this.micAudioRef}
+                    id="micTestAudio"
+                    ref={(el: HTMLAudioElement | null) => {
+                      if (
+                        el &&
+                        this.state.localAudioStream &&
+                        el.srcObject !== this.state.localAudioStream
+                      ) {
+                        el.srcObject = this.state.localAudioStream;
+                      }
+                      if (
+                        el &&
+                        this.state.localAudioStream &&
+                        el.srcObject &&
+                        // @ts-ignore
+                        el.sinkId &&
+                        // @ts-ignore
+                        el.sinkId !== this.state.seletSpeaker
+                      ) {
+                        // @ts-ignore
+                        el.sinkId = this.state.seletSpeaker;
+                      }
+                    }}
                     autoPlay
                     loop
-                    src="//resource.zegocloud.com/office/sdk_static/speaker_test.wav"
                   ></audio>
                   {/* <audio
                     style={{ width: "1px", height: "1px" }}
