@@ -10,7 +10,7 @@
         "react-intl": "^6.0.4",
         "zego-express-engine-webrtc": "^2.16.1"
     },
-    "homepage": "https://choui666.github.io/prebuilt-webrtc/",
+    "homepage": "https://ZEGOCLOUD.github.io/zegocloud_prebuilt_webrtc/",
     "scripts": {
         "start": "HTTPS=true  react-scripts start",
         "build": "react-scripts build",
