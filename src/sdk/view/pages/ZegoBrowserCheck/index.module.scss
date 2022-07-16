@@ -272,23 +272,6 @@
     cursor: no-drop;
   }
 }
-.serviceTips {
-  width: 100%;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 400;
-  color: #ababb5;
-  line-height: 20px;
-  position: absolute;
-  left: 50%;
-  bottom: 10px;
-  transform: translateX(-50%);
-  flex: 0 0 auto;
-  a {
-    color: #0055ff;
-    text-decoration: none;
-  }
-}
 @media screen and (max-height: 730px) {
   .serviceTips {
     position: relative;

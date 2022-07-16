@@ -96,7 +96,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         if (status === "DISCONNECTED") {
           this.props.core.leaveRoom();
           this.props.leaveRoom && this.props.leaveRoom();
-        } else if (status === "CONNECTING") {
+        } else if (status === "CONNECTING" && type != "STREAM") {
           this.setState({
             connecting: true,
           });
@@ -397,10 +397,32 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     });
   }
 
+  onblur = (e: { path?: any[] }) => {
+    if (
+      e.path &&
+      !e.path.includes(document.querySelector("#ZegoRoomCssMobileMore")) &&
+      !e.path.includes(document.querySelector("#ZegoRoomCssMobilePopMore"))
+    ) {
+      this.setState({ showMore: false });
+      // @ts-ignore
+      document.removeEventListener("click", this.onblur);
+    }
+  };
   openMore() {
-    this.setState((state: { showMore: boolean }) => {
-      return { showMore: !state.showMore };
-    });
+    this.setState(
+      (state: { showMore: boolean }) => {
+        return { showMore: !state.showMore };
+      },
+      () => {
+        if (this.state.showMore) {
+          // @ts-ignore
+          document.addEventListener("click", this.onblur);
+        } else {
+          // @ts-ignore
+          document.removeEventListener("click", this.onblur);
+        }
+      }
+    );
   }
 
   leaveRoom() {
@@ -408,7 +430,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       title: "Leave the room",
       content: "Are you sure to leave the room?",
       cancel: "Cancel",
-      confirm: "Canform",
+      confirm: "Confirm",
       closeCallBack: (confirm: boolean) => {
         if (confirm) {
           this.props.core.leaveRoom();
@@ -491,7 +513,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               className={
                 this.state.micOpen
                   ? ZegoRoomCss.toggleMic
-                  : ZegoRoomCss.cameraClose
+                  : ZegoRoomCss.micClose
               }
               onClick={() => {
                 this.toggleMic();
@@ -519,13 +541,17 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           ></a>
 
           <a
+            id="ZegoRoomCssMobileMore"
             className={ZegoRoomCss.more}
             onClick={() => {
               this.openMore();
             }}
           >
             {this.state.showMore && (
-              <div className={ZegoRoomCss.popMore}>
+              <div
+                id="ZegoRoomCssMobilePopMore"
+                className={ZegoRoomCss.popMore}
+              >
                 <div className={ZegoRoomCss.popMoreContent}>
                   <div
                     onClick={(ev) => {

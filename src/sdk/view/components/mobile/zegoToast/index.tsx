@@ -34,14 +34,13 @@ export class ZegoToastComponents extends React.Component<{
   }
 }
 
-const div = document.createElement("div");
-document.body.appendChild(div);
-
 export const ZegoToast = (config?: {
   closeCallBack?: () => void;
   content?: string;
   duration?: number;
 }) => {
+  const div = document.createElement("div");
+  document.body.appendChild(div);
   const root = ReactDOM.createRoot(div);
   root.render(
     <ZegoToastComponents

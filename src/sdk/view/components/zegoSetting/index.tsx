@@ -255,8 +255,9 @@ export class ZegoSettings extends React.Component<{
           <div className={ZegoSettingsCss.content}>
             <div className={ZegoSettingsCss.left}>
               <div
-                className={`${ZegoSettingsCss.leftAudioTab} ${this.state
-                  .seletTab === "AUDIO" && ZegoSettingsCss.tabActive}`}
+                className={`${ZegoSettingsCss.leftAudioTab} ${
+                  this.state.seletTab === "AUDIO" && ZegoSettingsCss.tabActive
+                }`}
                 onClick={() => {
                   this.setState({
                     seletTab: "AUDIO",
@@ -266,8 +267,9 @@ export class ZegoSettings extends React.Component<{
                 Audio
               </div>
               <div
-                className={`${ZegoSettingsCss.leftVideoTab} ${this.state
-                  .seletTab === "VIDEO" && ZegoSettingsCss.tabActive}`}
+                className={`${ZegoSettingsCss.leftVideoTab} ${
+                  this.state.seletTab === "VIDEO" && ZegoSettingsCss.tabActive
+                }`}
                 onClick={() => {
                   this.setState({
                     seletTab: "VIDEO",
@@ -459,9 +461,6 @@ export class ZegoSettings extends React.Component<{
   }
 }
 
-const div = document.createElement("div");
-document.body.appendChild(div);
-
 export const ZegoSettingsAlert = (config: {
   core: ZegoCloudRTCCore;
   closeCallBack: () => void;
@@ -469,6 +468,8 @@ export const ZegoSettingsAlert = (config: {
   localAudioStream?: MediaStream;
   theme?: string;
 }) => {
+  const div = document.createElement("div");
+  document.body.appendChild(div);
   const root = ReactDOM.createRoot(div);
   root.render(
     <ZegoSettings

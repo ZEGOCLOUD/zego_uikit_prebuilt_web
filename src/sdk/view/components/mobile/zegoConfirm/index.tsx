@@ -41,9 +41,6 @@ export class ZegoConfirmComponents extends React.Component<{
   }
 }
 
-const div = document.createElement("div");
-document.body.appendChild(div);
-
 export const ZegoConfirm = (config?: {
   closeCallBack?: (confirm: boolean) => void;
   title?: string;
@@ -51,6 +48,8 @@ export const ZegoConfirm = (config?: {
   cancel?: string;
   confirm?: string;
 }) => {
+  const div = document.createElement("div");
+  document.body.appendChild(div);
   const root = ReactDOM.createRoot(div);
   root.render(
     <ZegoConfirmComponents

@@ -188,6 +188,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         "There's something wrong with your network. Please check it and try again.";
     } else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
       // 登录 token 错误，
+      massage = "Failed to join the room, token authentication error.";
     } else if (1002056 === loginRsp) {
       // 用户重复进行登录。
       massage =
@@ -346,11 +347,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 </div>
               </div>
             </div>
-          </div>
-          <div className={ZegoBrowserCheckCss.serviceTips}>
-            By clicking "Join", you agree to our{" "}
-            <a href="#">Terms of Services</a> and <a href="#">Privacy Policy</a>
-            .
           </div>
           {this.state.showDeviceAuthorAlert && (
             <ZegoModel
