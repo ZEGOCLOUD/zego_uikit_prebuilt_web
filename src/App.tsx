@@ -3,7 +3,7 @@ import APP from "./App.module.scss";
 import ZegoCloudRTCKit from "./sdk";
 import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, randomID } from "./util";
-export class App extends React.Component {
+export default class App extends React.Component {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
 
   constructor(props: Readonly<{}>) {
@@ -57,9 +57,4 @@ export class App extends React.Component {
       </div>
     );
   }
-}
-
-export default App;
-function isPC() {
-  throw new Error("Function not implemented.");
 }

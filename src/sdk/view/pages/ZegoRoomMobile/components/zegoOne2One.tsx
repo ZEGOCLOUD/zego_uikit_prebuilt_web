@@ -17,6 +17,7 @@ export class ZegoOne2One extends React.Component<{
           <div className={zegoOne2OneCss.bigVideo}>
             <video
               autoPlay
+              playsInline={true}
               ref={(el) => {
                 el &&
                   el.srcObject !== this.props.remoteStreamInfo?.media &&
@@ -42,6 +43,7 @@ export class ZegoOne2One extends React.Component<{
           <div className={zegoOne2OneCss.smallVideo}>
             <video
               muted
+              playsInline={true}
               autoPlay
               ref={(el) => {
                 el &&
@@ -68,6 +70,7 @@ export class ZegoOne2One extends React.Component<{
           <video
             muted
             autoPlay
+            playsInline={true}
             ref={(el) => {
               el &&
                 el.srcObject !== this.props.localStream! &&
@@ -91,6 +94,7 @@ export class ZegoOne2One extends React.Component<{
         <div className={zegoOne2OneCss.bigVideo}>
           <video
             autoPlay
+            playsInline={true}
             className={zegoOne2OneCss.bigVideo}
             ref={(el) => {
               el &&

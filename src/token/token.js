@@ -26,9 +26,7 @@ export function generateV4Token(userID, seconds) {
   };
   // encrypt body
   const key = CryptoJS.enc.Utf8.parse(appConfig.serverSecret);
-  let iv = Math.random()
-    .toString()
-    .substring(2, 18);
+  let iv = Math.random().toString().substring(2, 18);
   if (iv.length < 16) iv += iv.substring(0, 16 - iv.length);
 
   const ciphertext = CryptoJS.AES.encrypt(JSON.stringify(body), key, {

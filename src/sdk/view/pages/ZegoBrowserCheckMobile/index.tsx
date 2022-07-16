@@ -56,8 +56,8 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
             audio: false,
             facingMode: "user",
             videoQuality: 4,
-            width: 480,
-            height: 640,
+            width: 640,
+            height: 480,
             bitrate: 500,
             frameRate: 15,
           },
@@ -216,6 +216,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
         <div className={ZegoBrowserCheckCss.ZegoBrowserCheckSupport}>
           <div className={ZegoBrowserCheckCss.videoScree}>
             <video
+              playsInline={true}
               className={ZegoBrowserCheckCss.video}
               autoPlay
               muted
@@ -279,8 +280,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               <button
                 className={this.state.copied ? ZegoBrowserCheckCss.copied : ""}
                 onClick={() => {
-                  this.inviteRef.current &&
-                    copy(this.inviteRef.current.value, this.inviteRef.current);
+                  this.inviteRef.current && copy(this.inviteRef.current.value);
                   this.setState({
                     copied: true,
                   });
