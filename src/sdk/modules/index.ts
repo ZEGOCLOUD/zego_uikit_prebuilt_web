@@ -108,17 +108,21 @@ export class ZegoCloudRTCCore {
   }
 
   capturedSoundLevelUpdate(
-    media: HTMLVideoElement | HTMLAudioElement,
-    callback: (soundLevel: SoundLevel) => void
+    source: HTMLMediaElement | MediaStream,
+    type: "Element" | "Stream",
+    sourceId: string,
+    callback: (soundLevel: number) => void
   ): void {
-    ZegoCloudRTCCore._soundMeter.connectToSource(media, callback);
+    ZegoCloudRTCCore._soundMeter.connectToSource(
+      source,
+      type,
+      sourceId,
+      callback
+    );
   }
 
-  stopCapturedSoundLevelUpdate(
-    media: HTMLVideoElement | HTMLAudioElement,
-    callback: (soundLevel: SoundLevel) => void
-  ): void {
-    ZegoCloudRTCCore._soundMeter.stop(media);
+  stopCapturedSoundLevelUpdate(sourceId: string): void {
+    ZegoCloudRTCCore._soundMeter.stop(sourceId);
   }
 
   setVolume(media: HTMLVideoElement, volume: number): void {

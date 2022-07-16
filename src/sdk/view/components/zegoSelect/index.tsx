@@ -20,6 +20,7 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
   listRef = React.createRef<HTMLDivElement>();
   selectRef = React.createRef<HTMLDivElement>();
   handleChange(op: { value: string; name: string }): void {
+    if (this.state.value === op.value) return;
     this.setState({ ...op });
     this.props.onChange && this.props.onChange(op.value);
     this.setState({

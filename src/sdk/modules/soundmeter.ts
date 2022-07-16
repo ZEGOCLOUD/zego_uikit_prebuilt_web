@@ -4,41 +4,33 @@ export interface SoundLevel {
   clip: number;
 }
 export class SoundMeter {
-  instant = 0.0;
-  slow = 0.0;
-  clip = 0.0;
   context: AudioContext | undefined;
   states: {
     [index: string]: {
       script: any;
       mic: any;
+      timer: any;
+      instant: number;
+      source: HTMLMediaElement | MediaStream;
     };
   } = {};
-  timer!: NodeJS.Timer;
-  constructor() {}
-
-  callBack!: (level: SoundLevel) => void;
-
-  startTimer() {
-    this.timer = setTimeout(() => {
-      this.callBack({
-        instant: Number(this.instant.toFixed(2)),
-        slow: this.slow,
-        clip: this.clip,
-      });
-      this.startTimer();
-    }, 200);
-  }
 
   connectToSource(
-    dom: HTMLMediaElement,
-    callback: (level: SoundLevel) => void
+    source: HTMLMediaElement | MediaStream,
+    type: "Element" | "Stream",
+    sourceId: string,
+    callback: (level: number) => void
   ) {
-    this.context = new AudioContext();
+    !this.context && (this.context = new AudioContext());
     console.log("SoundMeter connecting");
+    let timer;
+
+    if (!this.states[sourceId]) {
+      // @ts-ignore
+      this.states[sourceId] = {};
+    }
     try {
       const script = this.context.createScriptProcessor(4096, 1, 1);
-
       script.onaudioprocess = (event: AudioProcessingEvent) => {
         const input = event.inputBuffer.getChannelData(0);
         let i;
@@ -50,24 +42,36 @@ export class SoundMeter {
             clipcount += 1;
           }
         }
-        this.instant = Math.sqrt(sum / input.length);
-        this.slow = 0.95 * this.slow + 0.05 * this.instant;
-        this.clip = clipcount / input.length;
-        console.warn("this.instant ", this.instant);
+        this.states[sourceId].instant = Math.sqrt(sum / input.length);
       };
-      const mic = this.context.createMediaElementSource(dom);
+      let mic;
+      if (type === "Element") {
+        if (this.states[sourceId].source === source) {
+          mic = this.states[sourceId].mic;
+        } else {
+          mic = this.context.createMediaElementSource(
+            source as HTMLMediaElement
+          );
+        }
+      } else {
+        mic = this.context.createMediaStreamSource(source as MediaStream);
+      }
+
       mic.connect(script);
       //       // necessary to make sample run, but should not be.
       script.connect(this.context.destination);
-      if (typeof callback !== "undefined") {
-        this.callBack = callback;
-        this.startTimer();
-      }
 
-      this.states[dom.getAttribute("id")!] = {
+      if (typeof callback !== "undefined") {
+        timer = setInterval(() => {
+          callback(this.states[sourceId].instant);
+        }, 1000);
+      }
+      this.states[sourceId] = Object.assign(this.states[sourceId], {
         script,
+        source,
         mic,
-      };
+        timer,
+      });
     } catch (e) {
       console.error(e);
       //   if (typeof callback !== "undefined") {
@@ -76,12 +80,10 @@ export class SoundMeter {
     }
   }
 
-  stop(dom: HTMLMediaElement) {
+  stop(sourceId: string) {
     console.log("SoundMeter stopping");
-    this.timer && clearTimeout(this.timer);
-    this.states[dom.getAttribute("id")!].mic &&
-      this.states[dom.getAttribute("id")!].mic.disconnect();
-    this.states[dom.getAttribute("id")!].script &&
-      this.states[dom.getAttribute("id")!].script.disconnect();
+    this.states[sourceId]?.timer && clearTimeout(this.states[sourceId]?.timer);
+    this.states[sourceId].mic && this.states[sourceId].mic.disconnect();
+    this.states[sourceId].script && this.states[sourceId].script.disconnect();
   }
 }

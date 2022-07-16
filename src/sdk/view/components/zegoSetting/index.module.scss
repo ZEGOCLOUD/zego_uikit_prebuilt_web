@@ -243,7 +243,7 @@
     &:not(:last-of-type) {
       margin-right: 8px;
     }
-    &.audioVolumeActive {
+    &.volumeActive {
       background-color: var(--activeColor);
     }
   }
