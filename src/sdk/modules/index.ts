@@ -224,6 +224,7 @@ export class ZegoCloudRTCCore {
           for (let i = 0; i < streamList.length; i++) {
             const streamInfo = streamList[i];
             _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
+            ZegoCloudRTCCore._zg.stopPlayingStream(streamInfo.streamID);
             delete this.remoteStreamMap[streamInfo.streamID];
             this.onRemoteMediaUpdateCallBack &&
               this.onRemoteMediaUpdateCallBack("DELETE", _streamList);

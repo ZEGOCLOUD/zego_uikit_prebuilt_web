@@ -45,7 +45,7 @@ export class ZegoUserList extends React.Component<{
             >
               {this.props.core._expressConfig.userName.substring(0, 1)}
             </i>
-            <a>{this.props.core._expressConfig.userName}(You)</a>
+            <a>{this.props.core._expressConfig.userName}(Me)</a>
           </div>
 
           {this.props.userList.map((user) => {
