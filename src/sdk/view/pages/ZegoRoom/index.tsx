@@ -18,6 +18,7 @@ import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { copy } from "../../../modules/util";
 import { userNameColor } from "../../../util";
 import { ZegoModelShow } from "../../components/zegoModel";
+import { ZegoToast } from "../../components/mobile/zegoToast";
 export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -31,6 +32,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     showSettings: boolean;
     isNetworkPoor: boolean;
     reconnect: boolean;
+    connecting: boolean;
+    firstLoading: boolean;
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -43,10 +46,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     showSettings: false,
     isNetworkPoor: false,
     reconnect: false,
+    connecting: false,
+    firstLoading: true,
   };
   inviteRef: RefObject<HTMLInputElement> = React.createRef();
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
   moreRef: RefObject<HTMLDivElement> = React.createRef();
+
+  micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
+  cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
   componentDidMount() {
     this.initSDK();
     // 点击其他区域时, 隐藏更多弹窗)
@@ -63,7 +71,17 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         status: "DISCONNECTED" | "CONNECTING" | "CONNECTED"
       ) => {
         if (status === "DISCONNECTED") {
-          this.leaveRoom();
+          this.props.core.leaveRoom();
+          this.props.leaveRoom && this.props.leaveRoom();
+        } else if (status === "CONNECTING" && type !== "STREAM") {
+          this.setState({
+            connecting: true,
+          });
+        } else {
+          this.setState({
+            connecting: false,
+            fistLoading: false,
+          });
         }
       }
     );
@@ -198,56 +216,73 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async toggleMic() {
-    this.setState(
-      {
-        micOpen: !this.state.micOpen,
-      },
-      async () => {
-        if (
-          this.state.localStream &&
-          this.state.localStream.getAudioTracks().length > 0
-        ) {
-          this.props.core.muteMicrophone(this.state.micOpen);
-        } else {
-          const res = await this.createStream(
-            !!this.state.cameraOpen,
-            !!this.state.micOpen
-          );
-          !res &&
-            this.setState({
-              micOpen: !this.state.micOpen,
-            });
-        }
-      }
-    );
+    if (this.props.core.status.audioRefuse) {
+      ZegoModelShow({
+        header: "Equipment authorization",
+        contentText:
+          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+        okText: "OK",
+      });
+      return;
+    }
+
+    if (this.micStatus === -1) return;
+    this.micStatus = -1;
+
+    let result;
+    if (this.state.localStream) {
+      result = await this.props.core.muteMicrophone(!this.state.micOpen);
+    } else {
+      result = await this.createStream(
+        !!this.state.cameraOpen,
+        !!this.state.micOpen
+      );
+    }
+
+    if (result) {
+      this.micStatus = !this.state.micOpen ? 1 : 0;
+      ZegoToast({
+        content: "The microphone is " + (this.micStatus ? "on" : "off"),
+      });
+      result &&
+        this.setState({
+          micOpen: !!this.micStatus,
+        });
+    }
   }
 
   async toggleCamera() {
-    this.setState(
-      {
-        cameraOpen: !this.state.cameraOpen,
-      },
-      async () => {
-        if (
-          this.state.localStream &&
-          this.state.localStream.getVideoTracks().length > 0
-        ) {
-          this.props.core.enableVideoCaptureDevice(
-            this.state.localStream,
-            this.state.cameraOpen
-          );
-        } else {
-          const res = await this.createStream(
-            !!this.state.cameraOpen,
-            !!this.state.micOpen
-          );
-          !res &&
-            this.setState({
-              cameraOpen: !this.state.cameraOpen,
-            });
-        }
-      }
-    );
+    if (this.props.core.status.videoRefuse) {
+      ZegoModelShow({
+        header: "Equipment authorization",
+        contentText:
+          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+        okText: "OK",
+      });
+      return;
+    }
+    if (this.cameraStatus === -1) return;
+    this.cameraStatus = -1;
+
+    let result;
+    if (this.state.localStream) {
+      result = await this.props.core.enableVideoCaptureDevice(
+        this.state.localStream,
+        !this.state.cameraOpen
+      );
+    } else {
+      await this.createStream(!!this.state.cameraOpen, !!this.state.micOpen);
+    }
+    if (result) {
+      this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
+      ZegoToast({
+        content: "The camera is " + (this.cameraStatus ? "on" : "off"),
+      });
+      result &&
+        this.setState({
+          cameraOpen: !!this.cameraStatus,
+        });
+    }
   }
 
   toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE") {
@@ -521,9 +556,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           <div className={ZegoRoomCss.handlerMiddle}>
             {this.props.core._config.userCanToggleSelfMic && (
               <div
-                className={`${ZegoRoomCss.micButton} ${
-                  !this.state.micOpen && ZegoRoomCss.close
-                }`}
+                className={`${ZegoRoomCss.micButton} ${!this.state.micOpen &&
+                  ZegoRoomCss.close}`}
                 onClick={() => {
                   this.toggleMic();
                 }}
@@ -531,9 +565,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             )}
             {this.props.core._config.userCanToggleSelfCamera && (
               <div
-                className={`${ZegoRoomCss.cameraButton} ${
-                  !this.state.cameraOpen && ZegoRoomCss.close
-                }`}
+                className={`${ZegoRoomCss.cameraButton} ${!this.state
+                  .cameraOpen && ZegoRoomCss.close}`}
                 onClick={() => {
                   this.toggleCamera();
                 }}

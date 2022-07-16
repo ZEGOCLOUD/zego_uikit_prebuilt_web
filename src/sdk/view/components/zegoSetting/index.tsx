@@ -40,7 +40,7 @@ export class ZegoSettings extends React.Component<{
     cameraDevices: [],
     localVideoStream: undefined,
     localAudioStream: undefined,
-    seletVideoResolve: "480",
+    seletVideoResolve: "360",
     audioVolume: 0,
     speakerVolume: 0,
     isSpeakerPlaying: false,
@@ -239,14 +239,13 @@ export class ZegoSettings extends React.Component<{
         ) as HTMLMediaElement;
         // @ts-ignore
         const stream = dom.captureStream();
+        if (!stream.active) return;
         if (this.state.isSpeakerPlaying) {
           dom.play();
           this.props.core.capturedSoundLevelUpdate(
             stream,
-            "Stream",
             "speakerTest",
             (soundLevel) => {
-              console.warn("speakerTest", soundLevel);
               this.setState({
                 speakerVolume: (soundLevel * 1000) / 12,
               });
@@ -274,12 +273,11 @@ export class ZegoSettings extends React.Component<{
     this.props.closeCallBack && this.props.closeCallBack();
   }
   captureMicVolume() {
+    if (!this.state.localAudioStream) return;
     this.props.core.capturedSoundLevelUpdate(
       this.state.localAudioStream as MediaStream,
-      "Stream",
       "micTest",
       (soundLevel) => {
-        console.warn("micTest", soundLevel);
         this.setState({
           audioVolume: (soundLevel * 1000) / 5,
         });
@@ -341,6 +339,7 @@ export class ZegoSettings extends React.Component<{
                       onChange={(value: string) => {
                         this.toggleMic(value);
                       }}
+                      initValue={this.state.seletMic}
                       placeholder="No equipment"
                       theme={this.props.theme}
                     ></ZegoSelect>
@@ -376,6 +375,7 @@ export class ZegoSettings extends React.Component<{
                       onChange={(value: string) => {
                         this.toggleSpeaker(value);
                       }}
+                      initValue={this.state.seletSpeaker}
                       placeholder="No equipment"
                       theme={this.props.theme}
                     ></ZegoSelect>
@@ -452,7 +452,7 @@ export class ZegoSettings extends React.Component<{
                       }
                     }}
                     loop
-                    src="/speaker_test.wav"
+                    src={require("../../../sdkAssets/speaker_test.wav")}
                   ></audio>
                 </div>
               )}
@@ -468,6 +468,7 @@ export class ZegoSettings extends React.Component<{
                       onChange={(value: string) => {
                         this.toggleCamera(value);
                       }}
+                      initValue={this.state.seletCamera}
                       placeholder="No equipment"
                       theme={this.props.theme}
                     ></ZegoSelect>
@@ -496,6 +497,7 @@ export class ZegoSettings extends React.Component<{
                       onChange={(value: string) => {
                         this.toggleVideoResolve(value);
                       }}
+                      initValue={this.state.seletVideoResolve}
                       placeholder=""
                       theme={this.props.theme}
                     ></ZegoSelect>

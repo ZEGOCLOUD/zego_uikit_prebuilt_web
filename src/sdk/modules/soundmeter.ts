@@ -16,8 +16,7 @@ export class SoundMeter {
   } = {};
 
   connectToSource(
-    source: HTMLMediaElement | MediaStream,
-    type: "Element" | "Stream",
+    source: MediaStream,
     sourceId: string,
     callback: (level: number) => void
   ) {
@@ -44,18 +43,7 @@ export class SoundMeter {
         }
         this.states[sourceId].instant = Math.sqrt(sum / input.length);
       };
-      let mic;
-      if (type === "Element") {
-        if (this.states[sourceId].source === source) {
-          mic = this.states[sourceId].mic;
-        } else {
-          mic = this.context.createMediaElementSource(
-            source as HTMLMediaElement
-          );
-        }
-      } else {
-        mic = this.context.createMediaStreamSource(source as MediaStream);
-      }
+      let mic = this.context.createMediaStreamSource(source as MediaStream);
 
       mic.connect(script);
       //       // necessary to make sample run, but should not be.
@@ -64,7 +52,7 @@ export class SoundMeter {
       if (typeof callback !== "undefined") {
         timer = setInterval(() => {
           callback(this.states[sourceId].instant);
-        }, 1000);
+        }, 300);
       }
       this.states[sourceId] = Object.assign(this.states[sourceId], {
         script,
@@ -83,7 +71,7 @@ export class SoundMeter {
   stop(sourceId: string) {
     console.log("SoundMeter stopping");
     this.states[sourceId]?.timer && clearTimeout(this.states[sourceId]?.timer);
-    this.states[sourceId].mic && this.states[sourceId].mic.disconnect();
-    this.states[sourceId].script && this.states[sourceId].script.disconnect();
+    this.states[sourceId]?.mic?.disconnect();
+    this.states[sourceId]?.script?.disconnect();
   }
 }

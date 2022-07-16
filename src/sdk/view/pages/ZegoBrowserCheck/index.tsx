@@ -171,11 +171,15 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
   async joinRoom() {
     if (!this.state.userName.length) return;
+
     this.props.core._expressConfig.userName = this.state.userName;
     this.props.core._config.micEnabled =
       this.state.audioOpen && !this.audioRefuse;
     this.props.core._config.cameraEnabled =
       this.state.videoOpen && !this.videoRefuse;
+    this.props.core.status.audioRefuse = this.audioRefuse;
+    this.props.core.status.videoRefuse = this.videoRefuse;
+
     const loginRsp = await this.props.core.enterRoom();
     let massage = "";
     if (loginRsp === 0) {
@@ -210,7 +214,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
-    this.setState({ userName: event.target.value });
+    this.setState({ userName: event.target.value.slice(0, 256) });
   }
   handleCopy() {
     if (this.state.isCopied) return;
@@ -260,9 +264,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               <div className={ZegoBrowserCheckCss.toolsWrapper}>
                 {this.props.core._config.userCanToggleSelfMic && (
                   <div
-                    className={`${ZegoBrowserCheckCss.audioButton} ${
-                      !this.state.audioOpen && ZegoBrowserCheckCss.close
-                    }`}
+                    className={`${ZegoBrowserCheckCss.audioButton} ${!this.state
+                      .audioOpen && ZegoBrowserCheckCss.close}`}
                     onClick={() => {
                       this.toggleStream("audio");
                     }}
@@ -276,9 +279,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 )}
                 {this.props.core._config.userCanToggleSelfCamera && (
                   <div
-                    className={`${ZegoBrowserCheckCss.videoButton} ${
-                      !this.state.videoOpen && ZegoBrowserCheckCss.close
-                    }`}
+                    className={`${ZegoBrowserCheckCss.videoButton} ${!this.state
+                      .videoOpen && ZegoBrowserCheckCss.close}`}
                     onClick={() => {
                       this.toggleStream("video");
                     }}
