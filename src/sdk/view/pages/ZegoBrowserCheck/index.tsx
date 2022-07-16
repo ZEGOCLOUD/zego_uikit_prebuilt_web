@@ -3,7 +3,7 @@ import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
-import { ZegoModel } from "../../components/zegoModel";
+import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: undefined,
@@ -33,17 +33,12 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
   async componentDidMount() {
     const res = await this.props.core.checkWebRTC();
-    this.setState({
-      videoOpen: !!this.props.core._config.cameraEnabled,
-      audioOpen: !!this.props.core._config.micEnabled,
-    });
-
-    if (res && (this.state.videoOpen || this.state.audioOpen)) {
-      await this.createStream(this.state.videoOpen, this.state.audioOpen);
-      //   TODO
+    const videoOpen = !!this.props.core._config.cameraEnabled;
+    const audioOpen = !!this.props.core._config.micEnabled;
+    if (res && (videoOpen || audioOpen)) {
+      await this.createStream(videoOpen, audioOpen);
       this.setState({
         isSupportWebRTC: res,
-        // isSupportWebRTC: true, // 调试
         userName: this.props.core._expressConfig.userName,
       });
     }
@@ -113,6 +108,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     this.setState(
       {
         localStream,
+        audioOpen: audioOpen && !this.audioRefuse,
+        videoOpen: videoOpen && !this.videoRefuse,
       },
       () => {
         if (this.videoRef.current && localStream) {
@@ -125,20 +122,22 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async toggleStream(type: "video" | "audio") {
-    if (type === "video" && !this.videoRefuse) {
-      this.setState({
-        videoOpen: !this.state.videoOpen,
-      });
+    if (type === "video") {
+      if (this.videoRefuse) {
+        ZegoModelShow({
+          header: "Equipment authorization",
+          contentText:
+            "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+          okText: "OK",
+        });
+        return;
+      }
+      const videoOpen = !this.state.videoOpen;
       if (!this.state.localVideoStream) {
         this.setState({
           isVideoOpening: true,
         });
-        const res = await this.createStream(this.state.videoOpen, false);
-        res.getVideoTracks().length > 0 &&
-          this.setState({
-            videoOpen: !this.state.videoOpen,
-            isVideoOpening: false,
-          });
+        await this.createStream(videoOpen, false);
       } else {
         (this.state.localVideoStream as MediaStream)
           .getTracks()
@@ -146,22 +145,27 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           .forEach((track) => track.stop());
         this.setState({ localVideoStream: undefined });
       }
-    } else if (type === "audio" && !this.audioRefuse) {
+      this.setState({ videoOpen });
+    } else if (type === "audio") {
+      if (this.audioRefuse) {
+        ZegoModelShow({
+          header: "Equipment authorization",
+          contentText:
+            "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+          okText: "OK",
+        });
+        return;
+      }
       this.setState({
         audioOpen: !this.state.audioOpen,
       });
+      const audioOpen = !this.state.audioOpen;
       if (!this.state.localAudioStream) {
-        const res = await this.createStream(
-          this.state.videoOpen,
-          this.state.audioOpen
-        );
-        res.getAudioTracks().length > 0 &&
-          this.setState({
-            audioOpen: !this.state.audioOpen,
-          });
+        await this.createStream(this.state.videoOpen, audioOpen);
       } else {
-        this.props.core.muteMicrophone(this.state.audioOpen);
+        this.props.core.muteMicrophone(audioOpen);
       }
+      this.setState({ audioOpen });
     }
   }
 
