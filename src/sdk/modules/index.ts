@@ -7,6 +7,7 @@ import {
   ZegoLocalStreamConfig,
   ZegoPlayerState,
   ZegoPublisherState,
+  ZegoPublishStats,
   ZegoPublishStreamConfig,
   ZegoServerResponse,
   ZegoStreamList,
@@ -297,6 +298,26 @@ export class ZegoCloudRTCCore {
       }
     );
 
+    ZegoCloudRTCCore._zg.on(
+      "playQualityUpdate",
+      (streamID: string, stats: ZegoPublishStats) => {
+        this.onNetworkStatusQualityCallBack(
+          streamID,
+          Math.max(stats.video.videoQuality, stats.audio.audioQuality)
+        );
+      }
+    );
+
+    ZegoCloudRTCCore._zg.on(
+      "publishQualityUpdate",
+      (streamID: string, stats: ZegoPublishStats) => {
+        this.onNetworkStatusQualityCallBack(
+          streamID,
+          Math.max(stats.video.videoQuality, stats.audio.audioQuality)
+        );
+      }
+    );
+
     const resp = await new Promise<number>(async (res, rej) => {
       let code: number;
       ZegoCloudRTCCore._zg.on(
@@ -358,6 +379,14 @@ export class ZegoCloudRTCCore {
     ) => void
   ) {
     this.onRemoteMediaUpdateCallBack = func;
+  }
+
+  private onNetworkStatusQualityCallBack!: (
+    roomID: string,
+    level: number
+  ) => void;
+  onNetworkStatusQuality(func: (roomID: string, level: number) => void) {
+    this.onNetworkStatusQualityCallBack = func;
   }
 
   private onRemoteUserUpdateCallBack!: (

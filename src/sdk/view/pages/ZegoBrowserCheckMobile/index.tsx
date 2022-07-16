@@ -264,6 +264,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
                 placeholder="Your Name"
                 value={this.state.userName}
                 onChange={(ev: ChangeEvent<HTMLInputElement>) => {
+                  ev.target.scrollIntoView();
                   this.handleChange(ev);
                 }}
               ></input>
