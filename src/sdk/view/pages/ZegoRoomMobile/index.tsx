@@ -31,6 +31,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     showMore: boolean;
     connecting: boolean;
     firstLoading: boolean;
+    cameraFront: boolean;
   } = {
     micOpen: !!this.props.core._config.micEnabled,
     cameraOpen: !!this.props.core._config.cameraEnabled,
@@ -43,6 +44,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     showMore: false,
     connecting: false,
     firstLoading: true,
+    cameraFront: true,
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
@@ -204,25 +206,19 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
 
     const logInRsp = await this.props.core.enterRoom();
 
-    logInRsp === 0 &&
-      this.createStream(
-        !!this.props.core._config.cameraEnabled,
-        !!this.props.core._config.micEnabled
-      );
+    logInRsp === 0 && this.createStream();
   }
 
-  async createStream(
-    video: boolean,
-    audio: boolean,
-    facingMode = true
-  ): Promise<boolean> {
-    if (video || audio) {
+  async createStream(): Promise<boolean> {
+    if (
+      !this.props.core.status.audioRefuse ||
+      !this.props.core.status.audioRefuse
+    ) {
       try {
         const localStream = await this.props.core.createStream({
           camera: {
-            video,
-            audio,
-            facingMode: facingMode ? "user" : "environment",
+            video: !this.props.core.status.audioRefuse,
+            audio: !this.props.core.status.audioRefuse,
             videoQuality: 4,
             width: 640,
             height: 480,
@@ -231,6 +227,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           },
         });
 
+        this.props.core.enableVideoCaptureDevice(
+          localStream,
+          !!this.props.core._config.cameraEnabled
+        );
+        this.props.core.muteMicrophone(!!this.props.core._config.micEnabled);
         this.setState({
           localStream,
         });
@@ -263,17 +264,15 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     this.micStatus = -1;
 
     let result;
-    if (this.state.localStream) {
+    if (
+      this.state.localStream &&
+      this.state.localStream.getAudioTracks().length > 0
+    ) {
       result = await this.props.core.muteMicrophone(!this.state.micOpen);
-    } else {
-      result = await this.createStream(
-        !!this.state.cameraOpen,
-        !!this.state.micOpen
-      );
     }
 
+    this.micStatus = !this.state.micOpen ? 1 : 0;
     if (result) {
-      this.micStatus = !this.state.micOpen ? 1 : 0;
       ZegoToast({
         content: "The microphone is " + (this.micStatus ? "on" : "off"),
       });
@@ -298,19 +297,17 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     this.cameraStatus = -1;
 
     let result;
-    if (this.state.localStream) {
+    if (
+      this.state.localStream &&
+      this.state.localStream.getVideoTracks().length > 0
+    ) {
       result = await this.props.core.enableVideoCaptureDevice(
         this.state.localStream,
         !this.state.cameraOpen
       );
-    } else {
-      const res = await this.createStream(
-        !!this.state.cameraOpen,
-        !!this.state.micOpen
-      );
     }
+    this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
     if (result) {
-      this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
       ZegoToast({
         content: "The camera is " + (this.cameraStatus ? "on" : "off"),
       });
@@ -332,6 +329,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       return;
     }
 
+    if (!this.state.localStream) {
+      return;
+    }
+
     let targetModel = false;
     if (this.faceModel === -1) {
       return;
@@ -340,12 +341,29 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     }
     this.faceModel = -1;
 
-    const res = await this.createStream(
-      !!this.state.cameraOpen,
-      !!this.state.micOpen,
-      targetModel
-    );
-    this.faceModel = targetModel ? 1 : 0;
+    const _localStream = await this.props.core.createStream({
+      camera: {
+        video: !this.props.core.status.audioRefuse,
+        audio: false,
+        facingMode: targetModel ? "user" : "environment",
+        videoQuality: 4,
+        width: 640,
+        height: 480,
+        bitrate: 500,
+        frameRate: 15,
+      },
+    });
+
+    if (_localStream) {
+      this.props.core.replaceTrack(
+        this.state.localStream,
+        _localStream.getVideoTracks()[0]
+      );
+      this.faceModel = targetModel ? 1 : 0;
+      this.setState({
+        cameraFront: targetModel,
+      });
+    }
   }
 
   toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE") {
@@ -501,7 +519,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         <div className={ZegoRoomCss.footer}>
           {this.props.core._config.userCanToggleSelfMic && (
             <a
-              className={ZegoRoomCss.switchCamera}
+              className={`${ZegoRoomCss.switchCamera} ${
+                this.state.cameraFront ? "" : ZegoRoomCss.switchCameraBack
+              }`}
               onClick={() => {
                 this.switchCamera();
               }}

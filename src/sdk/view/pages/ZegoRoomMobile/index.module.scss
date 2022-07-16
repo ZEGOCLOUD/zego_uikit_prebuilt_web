@@ -10,6 +10,7 @@
   .footer {
     position: fixed;
     bottom: 0px;
+    left:0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -30,6 +31,9 @@
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
+    }
+    .switchCameraBack {
+       background-color:  #3D4154;;
     }
     .toggleCamera {
       background-image: url(../../../sdkMobileAssets/Room_camera_open@2x.png);
