@@ -30,13 +30,18 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 
   async componentDidMount() {
     const res = await this.props.core.checkWebRTC();
+    this.setState({
+      isSupportWebRTC: res,
+      userName: this.props.core._expressConfig.userName,
+    });
     const videoOpen = !!this.props.core._config.cameraEnabled;
     const audioOpen = !!this.props.core._config.micEnabled;
-    if (res && (videoOpen || audioOpen)) {
+    if (videoOpen || audioOpen) {
       await this.createStream(videoOpen, audioOpen);
+    } else {
       this.setState({
-        isSupportWebRTC: res,
-        userName: this.props.core._expressConfig.userName,
+        audioOpen: audioOpen,
+        videoOpen: videoOpen,
       });
     }
   }
@@ -129,7 +134,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       }
       const videoOpen = !this.state.videoOpen;
       if (!this.state.localVideoStream) {
-        const res = await this.createStream(videoOpen, this.state.audioOpen);
+        await this.createStream(videoOpen, this.state.audioOpen);
       } else {
         (this.state.localVideoStream as MediaStream)
           .getTracks()
@@ -150,7 +155,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       }
       const audioOpen = !this.state.audioOpen;
       if (!this.state.localAudioStream) {
-        const res = await this.createStream(this.state.videoOpen, audioOpen);
+        await this.createStream(this.state.videoOpen, audioOpen);
       } else {
         this.props.core.muteMicrophone(audioOpen);
       }
@@ -198,7 +203,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
-    this.setState({ userName: event.target.value });
+    this.setState({ userName: event.target.value.substring(0, 255) });
   }
 
   render(): React.ReactNode {

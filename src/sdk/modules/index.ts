@@ -345,6 +345,12 @@ export class ZegoCloudRTCCore {
     );
   }
 
+  async replaceTrack(
+    media: MediaStream,
+    mediaStreamTrack: MediaStreamTrack
+  ): Promise<ZegoServerResponse> {
+    return ZegoCloudRTCCore._zg.replaceTrack(media, mediaStreamTrack);
+  }
   private onRemoteMediaUpdateCallBack!: (
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]

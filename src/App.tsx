@@ -41,13 +41,26 @@ export default class App extends React.Component {
     return (
       <div className={APP.app}>
         <div className={`${APP.nav} ${isPc() ? "" : APP.mobileNav}`}>
-          <div className={`${APP.LOGO} ${isPc() ? "" : APP.mobileLOGO}`}></div>
+          <div
+            className={`${APP.LOGO} ${isPc() ? "" : APP.mobileLOGO}`}
+            onClick={() => {
+              window.open("https://www.zegocloud.com", "_blank");
+            }}
+          ></div>
           <div className={`${APP.link} ${isPc() ? "" : APP.mobileLink}`}>
-            <a href="void()" className={APP.link_item}>
+            <a
+              href="https://docs.zegocloud.com/article/5546"
+              target="_blank"
+              className={APP.link_item}
+            >
               <span className={APP.icon__doc}></span>{" "}
               {isPc() && "Documentation"}
             </a>
-            <a href="void()" className={APP.link_item}>
+            <a
+              href="https://github.com/ZEGOCLOUD/zegocloud_prebuilt_webrtc"
+              target="_blank"
+              className={APP.link_item}
+            >
               <span className={APP.icon__github}></span>
               {isPc() && "View demo code"}
             </a>

@@ -210,7 +210,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
-    this.setState({ userName: event.target.value });
+    this.setState({ userName: event.target.value.substring(0, 255) });
   }
   handleCopy() {
     if (this.state.isCopied) return;

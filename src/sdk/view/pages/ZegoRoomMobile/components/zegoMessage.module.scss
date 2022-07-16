@@ -1,4 +1,5 @@
 @import "../../../../var.scss";
+
 .msgList {
   position: fixed;
   bottom: 0px;
@@ -11,6 +12,7 @@
   height: vw(1236px);
   background: #242736;
   border-radius: vw(46px) vw(46px) 0px 0px;
+
   .msgListHeader {
     display: flex;
     align-items: center;
@@ -21,6 +23,7 @@
     font-weight: 400;
     font-size: vw(36px);
     box-shadow: 0px 1px 0px 0px rgba(61, 64, 84, 1);
+
     .msgHide {
       width: vw(70px);
       height: vw(70px);
@@ -29,6 +32,7 @@
       background-size: contain;
     }
   }
+
   .msgListContent {
     display: flex;
     flex-direction: column;
@@ -38,10 +42,12 @@
     height: vw(1231px);
     padding-bottom: 14px;
     overflow-y: scroll;
+
     .msgContent {
       display: flex;
       align-items: flex-start;
       margin-top: vw(46px);
+
       i {
         display: flex;
         align-items: center;
@@ -58,37 +64,49 @@
         background: rgba(216, 216, 216, 1);
         border-radius: vw(28px);
       }
+
       .msgContentRight {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         color: #a4a4a4;
+
         .msgContentRightHeader {
           display: flex;
           font-weight: 400;
           font-size: vw(24px);
           font-family: PingFangSC-Semibold, PingFang SC;
           line-height: vw(33px);
+
           span {
             margin-right: vw(14px);
+            max-width: vw(300px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
+
         .msgContentRightBody {
           display: flex;
           align-items: center;
+
           i {
             width: vw(40px);
             height: vw(40px);
             background-color: #f0f8ff00;
           }
+
           .loading {
             background-image: url(../../../../sdkMobileAssets/Room_msg_loading@2x.png);
             background-size: contain;
           }
+
           .sendFailed {
             background-image: url(../../../../sdkMobileAssets/Room_msg_failed@2x.png);
             background-size: contain;
           }
+
           p {
             max-width: vw(482px);
             margin-top: vw(6px);
@@ -106,22 +124,27 @@
         }
       }
     }
+
     .self {
       flex-direction: row-reverse;
       align-self: flex-end;
       width: 100vw;
+
       i {
         margin-right: vw(30px);
         margin-left: vw(24px);
       }
+
       .msgContentRight {
         align-items: flex-end;
+
         p {
           background: #0055ff !important;
         }
       }
     }
   }
+
   .msgFooter {
     display: flex;
     justify-content: space-between;
@@ -131,6 +154,7 @@
     padding: vw(16px) vw(30px);
     background: #242736;
     box-shadow: 0px vw(-1px) 0px 0px #3d4054;
+
     input {
       flex: 1;
       box-sizing: border-box;
@@ -144,11 +168,13 @@
       background: #303341;
       border: 0px;
       border-radius: vw(16px);
+
       &:focus {
         color: #ffffff;
         outline: none;
       }
     }
+
     button {
       width: vw(68px);
       height: vw(68px);
