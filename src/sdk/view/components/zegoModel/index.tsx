@@ -13,14 +13,8 @@ export interface ZegoModelProps {
 }
 export class ZegoModel extends React.Component<ZegoModelProps> {
   render(): React.ReactNode {
-    const {
-      header,
-      contentText,
-      okText,
-      cancelText,
-      onOk,
-      onCancel,
-    } = this.props;
+    const { header, contentText, okText, cancelText, onOk, onCancel } =
+      this.props;
     return (
       <div className={ZegoModelCss.ZegoBrowserCheckNotSupport}>
         <div className={ZegoModelCss.content}>
@@ -55,10 +49,9 @@ export class ZegoModel extends React.Component<ZegoModelProps> {
   }
 }
 
-const div = document.createElement("div");
-document.body.appendChild(div);
-
 export const ZegoModelShow = (props: ZegoModelProps) => {
+  const div = document.createElement("div");
+  document.body.appendChild(div);
   const root = ReactDOM.createRoot(div);
   root.render(
     <ZegoModel

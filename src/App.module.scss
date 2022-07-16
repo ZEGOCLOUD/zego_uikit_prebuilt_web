@@ -65,6 +65,24 @@
     flex: 1 0 auto;
     // height: calc(100vh - 64px);
   }
+  .serviceTips {
+    position: fixed;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 400;
+    color: #ababb5;
+    line-height: 20px;
+    position: absolute;
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    flex: 0 0 auto;
+    a {
+      color: #0055ff;
+      text-decoration: none;
+    }
+  }
 
   .mobileNav {
     position: absolute;
@@ -84,5 +102,18 @@
         height: vw(50px);
       }
     }
+  }
+  .mobileServiceTips{
+    position: fixed;
+    padding: 0px vw(146px);
+    box-sizing: border-box;
+    font-size: vw(24px);
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #ABABB5;
+    line-height: vw(33px);
+    bottom: vw(12px);
+    z-index: 101;    
+    white-space: nowrap;
   }
 }

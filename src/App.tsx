@@ -54,6 +54,21 @@ export default class App extends React.Component {
           </div>
         </div>
         <div ref={this.myMeeting} className={APP.myMeeting}></div>
+        <div
+          className={`${APP.serviceTips}  ${
+            isPc() ? "" : APP.mobileServiceTips
+          }`}
+        >
+          By clicking "Join", you agree to {!isPc() && <br />} our{" "}
+          <a href="https://www.zegocloud.com/policy?index=1" target="_blank">
+            Terms of Services
+          </a>{" "}
+          and{" "}
+          <a href="https://www.zegocloud.com/policy?index=0" target="_blank">
+            Privacy Policy
+          </a>
+          .
+        </div>
       </div>
     );
   }

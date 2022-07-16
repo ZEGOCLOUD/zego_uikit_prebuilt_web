@@ -31,11 +31,15 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
       const nav = document.querySelector(
         "#root div div:first-child"
       ) as HTMLDivElement;
+      const privacy = document.querySelectorAll(
+        "#root > div > div"
+      )[2] as HTMLDivElement;
       if (root && !isPc()) {
         root.style.display = "flex";
       }
       if (nav && isPc()) {
         nav.style.display = "flex";
+        privacy.style.display = "block";
       }
 
       page = isPc() ? (
@@ -58,13 +62,18 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
       const nav = document.querySelector(
         "#root div div:first-child"
       ) as HTMLDivElement;
+      const privacy = document.querySelectorAll(
+        "#root > div > div"
+      )[2] as HTMLDivElement;
       const meetingEl = nav.nextElementSibling as HTMLDivElement;
       if (root && !isPc()) {
         root.style.display = "none";
       }
+
       if (nav && isPc()) {
         nav.style.display = "none";
         meetingEl.style.height = "100%";
+        privacy.style.display = "none";
       }
 
       page = isPc() ? (

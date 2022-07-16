@@ -510,9 +510,6 @@ export class ZegoSettings extends React.Component<{
   }
 }
 
-const div = document.createElement("div");
-document.body.appendChild(div);
-
 export const ZegoSettingsAlert = (config: {
   core: ZegoCloudRTCCore;
   closeCallBack: () => void;
@@ -520,6 +517,8 @@ export const ZegoSettingsAlert = (config: {
   localAudioStream?: MediaStream;
   theme?: string;
 }) => {
+  const div = document.createElement("div");
+  document.body.appendChild(div);
   const root = ReactDOM.createRoot(div);
   root.render(
     <ZegoSettings

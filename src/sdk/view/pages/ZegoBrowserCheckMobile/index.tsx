@@ -129,7 +129,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       }
       const videoOpen = !this.state.videoOpen;
       if (!this.state.localVideoStream) {
-        const res = await this.createStream(videoOpen, false);
+        const res = await this.createStream(videoOpen, this.state.audioOpen);
       } else {
         (this.state.localVideoStream as MediaStream)
           .getTracks()
@@ -183,6 +183,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
         "There's something wrong with your network. Please check it and try again.";
     } else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
       // 登录 token 错误，
+      massage = "Failed to join the room, token authentication error.";
     } else if (1002056 === loginRsp) {
       // 用户重复进行登录。
       massage =
