@@ -36,7 +36,7 @@
   }
   .handler {
     display: flex;
-    justify-content: right;
+    justify-content: flex-end;
     button {
       margin-left: vw(46px);
       color: #0055ff;
