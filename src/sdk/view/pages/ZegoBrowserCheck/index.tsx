@@ -60,6 +60,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           camera: {
             video: true,
             audio: false,
+            videoQuality: 4,
+            width: 640,
+            height: 360,
+            bitrate: 400,
+            frameRate: 15,
           },
         });
         localVideoStream?.getVideoTracks().map((track) => {

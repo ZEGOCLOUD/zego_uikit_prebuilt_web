@@ -102,6 +102,7 @@
   transition: all 0.3s ease;
 }
 .listHeader {
+  flex: 0 0 auto;
   height: 50px;
   display: flex;
   align-items: center;
@@ -130,6 +131,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .inviteLinkWrapper {
   padding: 24px 16px 0;
@@ -309,9 +312,8 @@
   border-radius: 6px;
   & > div {
     font-size: 16px;
-    font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
-    color: #ffffff;
+    color: rgba(255, 255, 255, 0.9);
     line-height: 22px;
     padding: 7px 14px;
     border-radius: 4px;

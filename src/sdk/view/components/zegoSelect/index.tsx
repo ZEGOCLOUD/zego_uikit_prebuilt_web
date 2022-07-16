@@ -47,19 +47,22 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
       });
     }
   };
-  componentDidMount() {
+  setInitValue() {
     if (this.props.options?.length) {
       if (this.props.initValue) {
         const option = this.props.options.filter(
           (op) => op.value === this.props.initValue
         );
         this.setState({
-          ...option,
+          ...option[0],
         });
       } else {
         this.setState({ ...this.props.options[0] });
       }
     }
+  }
+  componentDidMount() {
+    this.setInitValue();
     // 点击其他区域时, 隐藏指定区域(cDom)
     document.addEventListener("click", this.onCloseList);
   }
@@ -68,10 +71,7 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
   }
   componentDidUpdate(prevProps: any) {
     if (this.props.options?.length !== prevProps.options?.length) {
-      if (this.props.options?.length) {
-        const { value, name } = this.props.options[0];
-        this.setState({ value: value, name: name });
-      }
+      this.setInitValue();
     }
   }
   render(): React.ReactNode {

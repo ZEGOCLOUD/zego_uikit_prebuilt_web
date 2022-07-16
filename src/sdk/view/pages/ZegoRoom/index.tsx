@@ -55,10 +55,43 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
+  notifyTimer!: NodeJS.Timeout;
   componentDidMount() {
     this.initSDK();
     // 点击其他区域时, 隐藏更多弹窗)
     document.addEventListener("click", this.onOpenSettings);
+  }
+  componentDidUpdate(
+    preProps: ZegoBrowserCheckProp,
+    preState: {
+      localStream: undefined | MediaStream;
+      remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
+      layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
+      userList: ZegoUser[];
+      messageList: ZegoBroadcastMessageInfo[];
+      notificationList: ZegoNotification[];
+      micOpen: boolean;
+      cameraOpen: boolean;
+      showMore: boolean;
+    }
+  ) {
+    if (
+      (preState.notificationList.length > 0 &&
+        this.state.notificationList.length > 0 &&
+        preState.notificationList[preState.notificationList.length - 1]
+          .content !=
+          this.state.notificationList[this.state.notificationList.length - 1]
+            .content) ||
+      (preState.notificationList.length == 0 &&
+        this.state.notificationList.length > 0)
+    ) {
+      this.notifyTimer && clearTimeout(this.notifyTimer);
+      this.notifyTimer = setTimeout(() => {
+        this.setState({
+          notificationList: [],
+        });
+      }, 3000);
+    }
   }
   componentWillUnmount() {
     document.removeEventListener("click", this.onOpenSettings);

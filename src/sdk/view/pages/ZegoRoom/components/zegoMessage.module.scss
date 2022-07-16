@@ -1,11 +1,26 @@
 .msgContentWrapper {
   display: flex;
   flex-direction: column;
-  padding: 20px 16px 16px;
+  padding: 20px 0 16px;
   height: 100%;
+  box-sizing: border-box;
 }
 .msgList {
-  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 16px;
+  height: calc(100% - 57px);
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #3d4054;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
   & > div {
     display: flex;
     flex-direction: column;
@@ -91,6 +106,7 @@
   display: flex;
   align-items: center;
   margin-top: 12px;
+  padding: 0 16px;
   input {
     width: 256px;
     height: 44px;

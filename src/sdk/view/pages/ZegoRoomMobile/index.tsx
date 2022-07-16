@@ -81,9 +81,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     ) {
       this.notifyTimer && clearTimeout(this.notifyTimer);
       this.notifyTimer = setTimeout(() => {
-        // this.setState({
-        //   notificationList: [],
-        // });
+        this.setState({
+          notificationList: [],
+        });
       }, 3000);
     }
   }
