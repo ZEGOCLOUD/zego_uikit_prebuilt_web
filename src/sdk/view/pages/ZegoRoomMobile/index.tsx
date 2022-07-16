@@ -211,13 +211,13 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
 
   async createStream(): Promise<boolean> {
     if (
-      !this.props.core.status.audioRefuse ||
+      !this.props.core.status.videoRefuse ||
       !this.props.core.status.audioRefuse
     ) {
       try {
         const localStream = await this.props.core.createStream({
           camera: {
-            video: !this.props.core.status.audioRefuse,
+            video: !this.props.core.status.videoRefuse,
             audio: !this.props.core.status.audioRefuse,
             videoQuality: 4,
             width: 640,
@@ -231,7 +231,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           localStream,
           !!this.props.core._config.cameraEnabled
         );
-        this.props.core.muteMicrophone(!!this.props.core._config.micEnabled);
+        this.props.core.muteMicrophone(!this.props.core._config.micEnabled);
         this.setState({
           localStream,
         });
@@ -268,7 +268,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       this.state.localStream &&
       this.state.localStream.getAudioTracks().length > 0
     ) {
-      result = await this.props.core.muteMicrophone(!this.state.micOpen);
+      result = await this.props.core.muteMicrophone(this.state.micOpen);
     }
 
     this.micStatus = !this.state.micOpen ? 1 : 0;
