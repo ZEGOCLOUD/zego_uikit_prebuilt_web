@@ -1,25 +1,25 @@
 import ReactDOM, { Root } from "react-dom/client";
-import { ZegoCloudRoomConfig } from "./model";
-import { ZegoCloudRTCCore } from "./modules";
+import { ZegoCloudRoomConfig } from "./model/index";
+import { ZegoCloudRTCCore } from "./modules/index";
 import { isPc } from "./util";
-import { ZegoCloudRTCKitComponent } from "./view";
+import { ZegoCloudRTCKitComponent } from "./view/index";
 
-export default class ZegoCloudRTCKit {
+export class ZegoPrebuilt {
   static core: ZegoCloudRTCCore;
-  static _instance: ZegoCloudRTCKit;
+  static _instance: ZegoPrebuilt;
 
   root: Root | undefined;
 
-  static init(token: string): ZegoCloudRTCKit {
-    if (!ZegoCloudRTCKit.core && token) {
-      ZegoCloudRTCKit.core = ZegoCloudRTCCore.getInstance(token);
-      ZegoCloudRTCKit._instance = new ZegoCloudRTCKit();
+  static init(token: string): ZegoPrebuilt {
+    if (!ZegoPrebuilt.core && token) {
+      ZegoPrebuilt.core = ZegoCloudRTCCore.getInstance(token);
+      ZegoPrebuilt._instance = new ZegoPrebuilt();
     }
-    return ZegoCloudRTCKit._instance;
+    return ZegoPrebuilt._instance;
   }
 
   joinRoom(roomConfig?: ZegoCloudRoomConfig) {
-    if (!ZegoCloudRTCKit.core) {
+    if (!ZegoPrebuilt.core) {
       console.error("【ZEGOCLOUD】 please call init first !!");
       return;
     }
@@ -44,17 +44,17 @@ export default class ZegoCloudRTCKit {
       };
     }
 
-    ZegoCloudRTCKit.core.setConfig(roomConfig);
+    ZegoPrebuilt.core.setConfig(roomConfig);
     this.root = ReactDOM.createRoot(roomConfig.container as HTMLDivElement);
     this.root.render(
       <ZegoCloudRTCKitComponent
-        core={ZegoCloudRTCKit.core}
+        core={ZegoPrebuilt.core}
       ></ZegoCloudRTCKitComponent>
     );
   }
 
   destroyRoom() {
-    ZegoCloudRTCKit.core.leaveRoom();
+    ZegoPrebuilt.core.leaveRoom();
     this.root?.unmount();
     this.root = undefined;
   }

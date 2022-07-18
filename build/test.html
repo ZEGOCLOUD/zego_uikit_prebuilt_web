@@ -35,7 +35,7 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
 </body>
-<script src="./ZegoClient.umd.js"></script>
+<script src="../ZegoPrebuilt/index.umd.js"></script>
 <script>
   // 生成token
   function generateToken(
@@ -73,8 +73,8 @@
       "choui2",
       randomID(5)
     );
-    const zgc = ZegoClient.init(token);
-    zgc.joinRoom({ container: document.querySelector('#root') });
+    const zp = ZegoPrebuilt.init(token);
+    zp.joinRoom({ container: document.querySelector('#root') });
   }
 
   window.onload = init;

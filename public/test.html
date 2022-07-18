@@ -73,8 +73,8 @@
       "choui2",
       randomID(5)
     );
-    const zgc = ZegoClient.init(token);
-    zgc.joinRoom({ container: document.querySelector('#root') });
+    const zp = ZegoPrebuilt.init(token);
+    zp.joinRoom({ container: document.querySelector('#root') });
   }
 
   window.onload = init;

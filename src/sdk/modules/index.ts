@@ -301,21 +301,22 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.on(
       "playQualityUpdate",
       (streamID: string, stats: ZegoPublishStats) => {
-
-       this.onNetworkStatusQualityCallBack && this.onNetworkStatusQualityCallBack(
-          streamID,
-          Math.max(stats.video.videoQuality, stats.audio.audioQuality)
-        );
+        this.onNetworkStatusQualityCallBack &&
+          this.onNetworkStatusQualityCallBack(
+            streamID,
+            Math.max(stats.video.videoQuality, stats.audio.audioQuality)
+          );
       }
     );
 
     ZegoCloudRTCCore._zg.on(
       "publishQualityUpdate",
       (streamID: string, stats: ZegoPublishStats) => {
-        this.onNetworkStatusQualityCallBack && this.onNetworkStatusQualityCallBack(
-          streamID,
-          Math.max(stats.video.videoQuality, stats.audio.audioQuality)
-        );
+        this.onNetworkStatusQualityCallBack &&
+          this.onNetworkStatusQualityCallBack(
+            streamID,
+            Math.max(stats.video.videoQuality, stats.audio.audioQuality)
+          );
       }
     );
 

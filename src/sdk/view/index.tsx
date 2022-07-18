@@ -9,6 +9,7 @@ import index from "./index.module.scss";
 import { ZegoRejoinRoom } from "./pages/ZegoRejoinRoom";
 import { isPc } from "../util";
 
+declare const SDK_ENV: boolean;
 export class ZegoCloudRTCKitComponent extends React.Component<{
   core: ZegoCloudRTCCore;
 }> {
@@ -27,19 +28,21 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
   render(): React.ReactNode {
     let page;
     if (this.state.step === 0 && this.props.core) {
-      const root = document.getElementById("root");
-      const nav = document.querySelector(
-        "#root div div:first-child"
-      ) as HTMLDivElement;
-      const privacy = document.querySelectorAll(
-        "#root > div > div"
-      )[2] as HTMLDivElement;
-      if (root && !isPc()) {
-        root.style.display = "flex";
-      }
-      if (nav && isPc()) {
-        nav.style.display = "flex";
-        privacy.style.display = "block";
+      if (typeof SDK_ENV === "undefined") {
+        const root = document.getElementById("root");
+        const nav = document.querySelector(
+          "#root div div:first-child"
+        ) as HTMLDivElement;
+        const privacy = document.querySelectorAll(
+          "#root > div > div"
+        )[2] as HTMLDivElement;
+        if (root && !isPc()) {
+          root.style.display = "flex";
+        }
+        if (nav && isPc()) {
+          nav.style.display = "flex";
+          privacy.style.display = "block";
+        }
       }
 
       page = isPc() ? (
@@ -58,22 +61,24 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         ></ZegoBrowserCheckMobile>
       );
     } else if (this.state.step === 1 && this.props.core) {
-      const root = document.getElementById("root");
-      const nav = document.querySelector(
-        "#root div div:first-child"
-      ) as HTMLDivElement;
-      const privacy = document.querySelectorAll(
-        "#root > div > div"
-      )[2] as HTMLDivElement;
-      const meetingEl = nav.nextElementSibling as HTMLDivElement;
-      if (root && !isPc()) {
-        root.style.display = "none";
-      }
+      if (typeof SDK_ENV === "undefined") {
+        const root = document.getElementById("root");
+        const nav = document.querySelector(
+          "#root div div:first-child"
+        ) as HTMLDivElement;
+        const privacy = document.querySelectorAll(
+          "#root > div > div"
+        )[2] as HTMLDivElement;
+        const meetingEl = nav.nextElementSibling as HTMLDivElement;
+        if (root && !isPc()) {
+          root.style.display = "none";
+        }
 
-      if (nav && isPc()) {
-        nav.style.display = "none";
-        meetingEl.style.height = "100%";
-        privacy.style.display = "none";
+        if (nav && isPc()) {
+          nav.style.display = "none";
+          meetingEl.style.height = "100%";
+          privacy.style.display = "none";
+        }
       }
 
       page = isPc() ? (

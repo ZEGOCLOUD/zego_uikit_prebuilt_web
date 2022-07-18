@@ -1,6 +1,6 @@
 import React from "react";
 import APP from "./App.module.scss";
-import ZegoCloudRTCKit from "./sdk";
+import { ZegoPrebuilt } from "./sdk/index";
 import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, randomID } from "./util";
 export default class App extends React.Component {
@@ -17,7 +17,7 @@ export default class App extends React.Component {
         roomID,
         randomID(5)
       );
-      const zgc = ZegoCloudRTCKit.init(token);
+      const zgc = ZegoPrebuilt.init(token);
       zgc.joinRoom({
         container: element,
         notification: { unreadMessageTips: true, userOnlineOfflineTips: true },
