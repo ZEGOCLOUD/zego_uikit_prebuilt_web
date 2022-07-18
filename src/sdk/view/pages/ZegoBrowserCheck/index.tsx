@@ -269,8 +269,9 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               <div className={ZegoBrowserCheckCss.toolsWrapper}>
                 {this.props.core._config.userCanToggleSelfMic && (
                   <div
-                    className={`${ZegoBrowserCheckCss.audioButton} ${!this.state
-                      .audioOpen && ZegoBrowserCheckCss.close}`}
+                    className={`${ZegoBrowserCheckCss.audioButton} ${
+                      !this.state.audioOpen && ZegoBrowserCheckCss.close
+                    }`}
                     onClick={() => {
                       this.toggleStream("audio");
                     }}
@@ -284,8 +285,9 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 )}
                 {this.props.core._config.userCanToggleSelfCamera && (
                   <div
-                    className={`${ZegoBrowserCheckCss.videoButton} ${!this.state
-                      .videoOpen && ZegoBrowserCheckCss.close}`}
+                    className={`${ZegoBrowserCheckCss.videoButton} ${
+                      !this.state.videoOpen && ZegoBrowserCheckCss.close
+                    }`}
                     onClick={() => {
                       this.toggleStream("video");
                     }}
@@ -374,6 +376,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         </div>
       );
     }
+
     return page;
   }
 }
