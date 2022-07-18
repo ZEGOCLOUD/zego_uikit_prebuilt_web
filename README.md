@@ -6,9 +6,12 @@
 
 ## Quick integration
 
+### [Experience Demo online](https://zegocloud.github.io/zegocloud_prebuilt_webrtc/build/index.html)
+
+
 ### Preparation before integration
 
-1 Register a [ZEGOCLOUD ACCOUNT,](https://console.zegocloud.com/account/signup)  ----- >create a project ----- > get the project AppID, ServerSecret
+1 Register a [ZEGOCLOUD ACCOUNT](https://console.zegocloud.com/account/signup)  ----- >create a project ----- > get the project AppID, ServerSecret
 
 ![config](docs/images/appID.png)
 
@@ -119,11 +122,11 @@ function getUrlParams(url) {
 }
 ```
 
-6 The preview effect is as follows
+6 The preview effect is as follows,[Click me](https://stackblitz.com/edit/zegocloud-prebuilt?file=index.js) to see the full code
 
 ![config](docs/images/preview.png)
 
-## More configuration is as follows, code and descriptionearn More
+## More configuration is as follows
 
 ```typescript
  export interface ZegoCloudRoomConfig {
@@ -153,6 +156,7 @@ function getUrlParams(url) {
 ```
 
 ## Principle introduction
+
 The prebuilt sdk is based on the secondary packaging of the ZEGOCLOUD Express WebRTC SDK, so the upper limit of functions can include all the capabilities of the Express WebRTC SDK, and the same browser compatibility, error codes, weak network heavy chain, etc. are also consistent with it;  [click me](https://docs.zegocloud.com/article/12307) to see more capabilities
 
 The source code of this project is all in the src directory, written using react + typescript + scss, you can also extend it based on the source code; or scan the whatsapp QR code below to contact me for more benefits
