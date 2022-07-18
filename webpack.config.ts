@@ -15,7 +15,7 @@ const config: webpack.Configuration = {
     libraryTarget: "umd",
     umdNamedDefine: true,
     globalObject: "typeof self !== 'undefined' ? self : this",
-    publicPath: "/ZegoPrebuilt/",
+    publicPath: "./",
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
