@@ -1,9 +1,9 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, RefObject } from "react";
 import ZegoMessageCss from "./zegoMessage.module.scss";
-import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { DateFormat } from "../../../../util";
+import { ZegoBroadcastMessageInfo2 } from "../../../../model";
 export class ZegoMessage extends React.Component<{
-  messageList: ZegoBroadcastMessageInfo[];
+  messageList: ZegoBroadcastMessageInfo2[];
   sendMessage: (msg: string) => void;
   selfUserID: string;
 }> {
@@ -12,7 +12,18 @@ export class ZegoMessage extends React.Component<{
   } = {
     message: "",
   };
-
+  msgListRef: RefObject<HTMLInputElement> = React.createRef();
+  handleSend() {
+    this.props.sendMessage(this.state.message);
+    this.setState(
+      {
+        message: "",
+      },
+      () => {
+        this.msgListRef.current!.scrollTop = this.msgListRef.current!.scrollHeight;
+      }
+    );
+  }
   messageInput(event: ChangeEvent<HTMLInputElement>) {
     this.setState({
       message: event.target.value.substring(0, 300),
@@ -21,7 +32,7 @@ export class ZegoMessage extends React.Component<{
   render(): React.ReactNode {
     return (
       <div className={ZegoMessageCss.msgContentWrapper}>
-        <div className={ZegoMessageCss.msgList}>
+        <div className={ZegoMessageCss.msgList} ref={this.msgListRef}>
           {this.props.messageList.map((msg) => {
             return (
               <div
@@ -42,7 +53,13 @@ export class ZegoMessage extends React.Component<{
                     }  ${DateFormat(msg.sendTime, "hh:mm")}`}
                   </span>
                 </div>
-                <p>{msg.message}</p>
+                <p
+                  className={`${msg.status === "SENDING" &&
+                    ZegoMessageCss.loading} ${msg.status === "FAILED" &&
+                    ZegoMessageCss.error}`}
+                >
+                  {msg.message}
+                </p>
               </div>
             );
           })}
@@ -53,14 +70,12 @@ export class ZegoMessage extends React.Component<{
             onChange={(event) => {
               this.messageInput(event);
             }}
+            placeholder="Send a message to everyone"
           />
           <button
             disabled={!this.state.message.length}
             onClick={() => {
-              this.props.sendMessage(this.state.message);
-              this.setState({
-                message: "",
-              });
+              this.handleSend();
             }}
           ></button>
         </div>

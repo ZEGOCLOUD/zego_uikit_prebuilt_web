@@ -405,7 +405,7 @@ export class ZegoSettings extends React.Component<{
                           this.toggleSpeakerTest();
                         }}
                       >
-                        Test
+                        {this.state.isSpeakerPlaying ? "Stop" : "Test"}
                       </div>
                     </div>
                   </div>

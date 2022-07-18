@@ -1,5 +1,6 @@
 import React, { RefObject } from "react";
 import {
+  ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
   ZegoCloudRemoteMedia,
   ZegoNotification,
@@ -13,7 +14,7 @@ import {
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { randomID } from "../../../util";
+import { randomNumber } from "../../../util";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { copy } from "../../../modules/util";
 import { userNameColor } from "../../../util";
@@ -25,7 +26,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
     layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
     userList: ZegoUser[];
-    messageList: ZegoBroadcastMessageInfo[];
+    messageList: ZegoBroadcastMessageInfo2[];
     notificationList: ZegoNotification[];
     micOpen: boolean;
     cameraOpen: boolean;
@@ -58,6 +59,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     this.initSDK();
     // 点击其他区域时, 隐藏更多弹窗)
     document.addEventListener("click", this.onOpenSettings);
+    this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
+      this.setState({
+        isNetworkPoor: level > 2,
+      });
+    });
   }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
@@ -66,7 +72,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
       layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
       userList: ZegoUser[];
-      messageList: ZegoBroadcastMessageInfo[];
+      messageList: ZegoBroadcastMessageInfo2[];
       notificationList: ZegoNotification[];
       micOpen: boolean;
       cameraOpen: boolean;
@@ -111,7 +117,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         } else {
           this.setState({
             connecting: false,
-            firstLoading: false,
           });
         }
       }
@@ -182,7 +187,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       (roomID: string, messageList: ZegoBroadcastMessageInfo[]) => {
         this.setState(
           (state: {
-            messageList: ZegoBroadcastMessageInfo[];
+            messageList: ZegoBroadcastMessageInfo2[];
             notificationList: ZegoNotification[];
           }) => {
             let notification: ZegoNotification[] = [];
@@ -211,7 +216,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     );
 
     const logInRsp = await this.props.core.enterRoom();
-
     logInRsp === 0 &&
       this.createStream(
         !!this.props.core._config.cameraEnabled,
@@ -252,7 +256,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         header: "Equipment authorization",
         contentText:
           "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        okText: "OK",
+        okText: "Okay",
       });
       return;
     }
@@ -288,7 +292,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         header: "Equipment authorization",
         contentText:
           "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        okText: "OK",
+        okText: "Okay",
       });
       return;
     }
@@ -329,10 +333,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     );
   }
 
-  sendMessage(msg: string) {
-    this.props.core.sendRoomMessage(msg);
-
-    this.setState((state: { messageList: ZegoBroadcastMessageInfo[] }) => {
+  async sendMessage(msg: string) {
+    let messageID = randomNumber(5);
+    this.setState((state: { messageList: ZegoBroadcastMessageInfo2[] }) => {
       return {
         messageList: [
           ...state.messageList,
@@ -343,9 +346,28 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             },
             message: msg,
             sendTime: Date.now(),
-            messageID: randomID(3),
+            messageID,
+            status: "SENDING",
           },
         ],
+      };
+    });
+    let resp = {} as any;
+    try {
+      resp = await this.props.core.sendRoomMessage(msg);
+    } catch (err) {
+      console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
+    }
+    this.setState((state: { messageList: ZegoBroadcastMessageInfo2[] }) => {
+      const _messageList = state.messageList.map((msg) => {
+        if (msg.messageID === messageID) {
+          msg.status = resp?.errorCode === 0 ? "SENDED" : "FAILED";
+        }
+        return msg;
+      });
+      console.log(_messageList);
+      return {
+        messageList: _messageList,
       };
     });
   }
@@ -464,7 +486,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                     .slice(0, 1)
                     ?.toUpperCase()}
                 </span>
-                <p>{this.props.core._expressConfig.userName} (Me)</p>
+                <p>{this.props.core._expressConfig.userName} (You)</p>
               </div>
               {this.state.userList.map((user) => {
                 return (
@@ -532,6 +554,14 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             <ZegoOne2One
               localStream={this.state.localStream}
               remoteStreamInfo={this.state.remoteStreamInfo}
+              remoteUserInfo={{
+                userName:
+                  this.state.remoteStreamInfo?.fromUser.userName ||
+                  this.state.userList[0]?.userName,
+                userID:
+                  this.state.remoteStreamInfo?.fromUser.userID ||
+                  this.state.userList[0]?.userID,
+              }}
               selfUserInfo={{
                 userName: this.props.core._expressConfig.userName,
                 micOpen: this.state.micOpen,
@@ -638,7 +668,13 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 onClick={() => {
                   this.toggleLayOut("USER_LIST");
                 }}
-              ></div>
+              >
+                <span className={ZegoRoomCss.memberNum}>
+                  {this.state.userList.length > 99
+                    ? "99+"
+                    : this.state.userList.length + 1}
+                </span>
+              </div>
             )}
             {this.props.core._config.chatEnabled && (
               <div
@@ -653,10 +689,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         <div
           className={ZegoRoomCss.reconnect}
           style={{
-            display:
-              this.state.connecting || this.state.firstLoading
-                ? "flex"
-                : "none",
+            display: this.state.connecting ? "flex" : "none",
             backgroundColor: this.state.firstLoading ? "#1C1F2E" : "",
           }}
         >
@@ -664,7 +697,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           <p>
             {this.state.firstLoading
               ? "Joining Room"
-              : "Trying to reconnect..."}
+              : "There's something wrong with your network. Trying to reconnect..."}
           </p>
         </div>
       </div>

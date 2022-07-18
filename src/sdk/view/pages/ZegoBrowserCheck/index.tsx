@@ -22,8 +22,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
 
-  audioRefuse = false;
-  videoRefuse = false;
+  audioRefuse = this.props.core.status.audioRefuse;
+  videoRefuse = this.props.core.status.videoRefuse;
 
   constructor(props: ZegoBrowserCheckProp) {
     super(props);
@@ -133,7 +133,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           header: "Equipment authorization",
           contentText:
             "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-          okText: "OK",
+          okText: "Okay",
         });
         return;
       }
@@ -157,7 +157,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           header: "Equipment authorization",
           contentText:
             "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-          okText: "OK",
+          okText: "Okay",
         });
         return;
       }

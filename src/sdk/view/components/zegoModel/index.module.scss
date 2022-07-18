@@ -41,7 +41,7 @@
   .cancelButton {
     min-width: 74px;
     box-sizing: border-box;
-    padding: 2px;
+    padding: 3px;
     text-align: center;
     font-size: 14px;
     line-height: 20px;
@@ -53,6 +53,7 @@
   .okButton {
     color: #fff;
     background-color: #0055ff;
+    border: 1px solid #0055ff;
   }
   .cancelButton {
     color: #0055ff;

@@ -255,7 +255,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         title: "Equipment authorization",
         content:
           "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        confirm: "OK",
+        confirm: "Okay",
       });
       return;
     }
@@ -289,7 +289,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         title: "Equipment authorization",
         content:
           "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        confirm: "OK",
+        confirm: "Okay",
       });
       return;
     }
@@ -324,7 +324,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         title: "Equipment authorization",
         content:
           "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        confirm: "OK",
+        confirm: "Okay",
       });
       return;
     }
@@ -400,7 +400,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         ],
       };
     });
-    const resp = await this.props.core.sendRoomMessage(msg);
+    let resp = {} as any;
+    try {
+      resp = await this.props.core.sendRoomMessage(msg);
+    } catch (err) {
+      console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
+    }
     this.setState((state: { messageList: ZegoBroadcastMessageInfo2[] }) => {
       const _messageList = state.messageList.map((msg) => {
         if (msg.messageID === messageID) {

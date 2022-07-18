@@ -5,6 +5,10 @@ import zegoOne2OneCss from "./zegoOne2One.module.scss";
 export class ZegoOne2One extends React.Component<{
   localStream: MediaStream | undefined;
   remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
+  remoteUserInfo: {
+    userName: string | undefined;
+    userID: string | undefined;
+  };
   selfUserInfo: {
     userName: string;
     micOpen: boolean;
@@ -12,7 +16,7 @@ export class ZegoOne2One extends React.Component<{
   };
 }> {
   getVideoScreen() {
-    if (this.props.localStream && this.props.remoteStreamInfo) {
+    if (this.props.remoteUserInfo.userID) {
       return (
         <>
           <div className={zegoOne2OneCss.bigVideo}>
@@ -29,7 +33,7 @@ export class ZegoOne2One extends React.Component<{
               className={zegoOne2OneCss.cameraMask}
               style={{
                 display:
-                  this.props.remoteStreamInfo.cameraStatus === "OPEN"
+                  this.props.remoteStreamInfo?.cameraStatus === "OPEN"
                     ? "none"
                     : "flex",
               }}
@@ -37,22 +41,20 @@ export class ZegoOne2One extends React.Component<{
               <div
                 style={{
                   color: userNameColor(
-                    this.props.remoteStreamInfo.fromUser.userName as string
+                    this.props.remoteUserInfo.userName as string
                   ),
                 }}
               >
-                {this.props.remoteStreamInfo.fromUser.userName
-                  ?.slice(0, 1)
-                  ?.toUpperCase()}
+                {this.props.remoteUserInfo.userName?.slice(0, 1)?.toUpperCase()}
               </div>
             </div>
             <div className={zegoOne2OneCss.name}>
               <span
                 className={`${zegoOne2OneCss.micIcon} ${this.props
-                  .remoteStreamInfo.micStatus !== "OPEN" &&
+                  .remoteStreamInfo?.micStatus !== "OPEN" &&
                   zegoOne2OneCss.close}`}
               ></span>
-              <p>{this.props.remoteStreamInfo.fromUser.userName}</p>
+              <p>{this.props.remoteUserInfo.userName}</p>
             </div>
           </div>
           <div className={zegoOne2OneCss.smallVideo}>
@@ -85,12 +87,12 @@ export class ZegoOne2One extends React.Component<{
                 className={`${zegoOne2OneCss.micIcon} ${!this.props.selfUserInfo
                   .micOpen && zegoOne2OneCss.close}`}
               ></span>
-              <p>{this.props.selfUserInfo.userName} (Me)</p>
+              <p>{this.props.selfUserInfo.userName} (You)</p>
             </div>
           </div>
         </>
       );
-    } else if (this.props.localStream) {
+    } else {
       return (
         <div className={zegoOne2OneCss.bigVideo}>
           <video
@@ -122,56 +124,10 @@ export class ZegoOne2One extends React.Component<{
               className={`${zegoOne2OneCss.micIcon} ${!this.props.selfUserInfo
                 .micOpen && zegoOne2OneCss.close}`}
             ></span>
-            <p>{this.props.selfUserInfo.userName} (Me)</p>
+            <p>{this.props.selfUserInfo.userName} (You)</p>
           </div>
         </div>
       );
-    } else if (this.props.remoteStreamInfo) {
-      return (
-        <div className={zegoOne2OneCss.bigVideo}>
-          <video
-            autoPlay
-            playsInline={true}
-            className={zegoOne2OneCss.bigVideo}
-            ref={(el) => {
-              el &&
-                el.srcObject !== this.props.remoteStreamInfo!.media &&
-                (el.srcObject = this.props.remoteStreamInfo!.media);
-            }}
-          ></video>
-          <div
-            className={zegoOne2OneCss.cameraMask}
-            style={{
-              display:
-                this.props.remoteStreamInfo.cameraStatus === "OPEN"
-                  ? "none"
-                  : "flex",
-            }}
-          >
-            <div
-              style={{
-                color: userNameColor(
-                  this.props.remoteStreamInfo.fromUser.userName as string
-                ),
-              }}
-            >
-              {this.props.remoteStreamInfo.fromUser.userName
-                ?.slice(0, 1)
-                ?.toUpperCase()}
-            </div>
-          </div>
-          <div className={zegoOne2OneCss.name}>
-            <span
-              className={`${zegoOne2OneCss.micIcon} ${this.props
-                .remoteStreamInfo.micStatus !== "OPEN" &&
-                zegoOne2OneCss.close}`}
-            ></span>
-            <p>{this.props.remoteStreamInfo.fromUser.userName}</p>
-          </div>
-        </div>
-      );
-    } else {
-      return undefined;
     }
   }
 
