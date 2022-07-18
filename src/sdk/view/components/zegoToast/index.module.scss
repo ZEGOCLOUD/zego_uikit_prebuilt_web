@@ -1,0 +1,22 @@
+@import "../../../../var.scss";
+.ZegoToast {
+  position: fixed;
+  top: 78px;
+  left: 50%;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  background: rgba($color: #2a2a2a, $alpha: 0.6);
+  border-radius: 6px;
+  transform: translateX(-50%);
+  .content {
+    box-sizing: border-box;
+    padding: 14px 20px;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 19px;
+  }
+}

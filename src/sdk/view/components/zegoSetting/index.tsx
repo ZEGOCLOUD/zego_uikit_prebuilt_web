@@ -340,7 +340,7 @@ export class ZegoSettings extends React.Component<{
                         this.toggleMic(value);
                       }}
                       initValue={this.state.seletMic}
-                      placeholder="No equipment"
+                      placeholder="No microphone detected"
                       theme={this.props.theme}
                     ></ZegoSelect>
                     <div className={ZegoSettingsCss.volumeWrapper}>
@@ -376,7 +376,7 @@ export class ZegoSettings extends React.Component<{
                         this.toggleSpeaker(value);
                       }}
                       initValue={this.state.seletSpeaker}
-                      placeholder="No equipment"
+                      placeholder="No speaker detected"
                       theme={this.props.theme}
                     ></ZegoSelect>
                     <div className={ZegoSettingsCss.volumeWrapper}>
@@ -460,7 +460,7 @@ export class ZegoSettings extends React.Component<{
                 <div className={ZegoSettingsCss.rightVideo}>
                   <div className={ZegoSettingsCss.device}>
                     <ZegoSelect
-                      label="Cameras"
+                      label="Camera"
                       options={this.state.cameraDevices.map((device) => ({
                         name: device.deviceName,
                         value: device.deviceID,
@@ -469,7 +469,7 @@ export class ZegoSettings extends React.Component<{
                         this.toggleCamera(value);
                       }}
                       initValue={this.state.seletCamera}
-                      placeholder="No equipment"
+                      placeholder="No camera detected"
                       theme={this.props.theme}
                     ></ZegoSelect>
                   </div>

@@ -18,7 +18,7 @@ import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { copy } from "../../../modules/util";
 import { userNameColor } from "../../../util";
 import { ZegoModelShow } from "../../components/zegoModel";
-import { ZegoToast } from "../../components/mobile/zegoToast";
+import { ZegoToast } from "../../components/zegoToast";
 export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -31,7 +31,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     cameraOpen: boolean;
     showSettings: boolean;
     isNetworkPoor: boolean;
-    reconnect: boolean;
     connecting: boolean;
     firstLoading: boolean;
   } = {
@@ -45,7 +44,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     cameraOpen: !!this.props.core._config.cameraEnabled,
     showSettings: false,
     isNetworkPoor: false,
-    reconnect: false,
     connecting: false,
     firstLoading: true,
   };
@@ -113,7 +111,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         } else {
           this.setState({
             connecting: false,
-            fistLoading: false,
+            firstLoading: false,
           });
         }
       }
@@ -264,7 +262,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
     let result;
     if (this.state.localStream) {
-      result = await this.props.core.muteMicrophone(!this.state.micOpen);
+      result = await this.props.core.muteMicrophone(this.state.micOpen);
     } else {
       result = await this.createStream(
         !!this.state.cameraOpen,
@@ -396,7 +394,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   }
   handleCopy() {
     this.inviteRef.current && copy(this.inviteRef.current.value);
-    // TODO: toast 提示 copy success
+    ZegoToast({
+      content: "Copied",
+    });
   }
 
   getListScreen() {
@@ -653,11 +653,19 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         <div
           className={ZegoRoomCss.reconnect}
           style={{
-            display: this.state.reconnect ? "flex" : "none",
+            display:
+              this.state.connecting || this.state.firstLoading
+                ? "flex"
+                : "none",
+            backgroundColor: this.state.firstLoading ? "#1C1F2E" : "",
           }}
         >
           <div></div>
-          <p>Trying to reconnect...</p>
+          <p>
+            {this.state.firstLoading
+              ? "Joining Room"
+              : "Trying to reconnect..."}
+          </p>
         </div>
       </div>
     );

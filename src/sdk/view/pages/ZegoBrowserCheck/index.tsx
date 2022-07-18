@@ -269,33 +269,31 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               <div className={ZegoBrowserCheckCss.toolsWrapper}>
                 {this.props.core._config.userCanToggleSelfMic && (
                   <div
-                    className={`${ZegoBrowserCheckCss.audioButton} ${
-                      !this.state.audioOpen && ZegoBrowserCheckCss.close
-                    }`}
+                    className={`${ZegoBrowserCheckCss.audioButton} ${!this.state
+                      .audioOpen && ZegoBrowserCheckCss.close}`}
                     onClick={() => {
                       this.toggleStream("audio");
                     }}
                   >
                     <span className={ZegoBrowserCheckCss.buttonTip}>
                       {this.state.audioOpen
-                        ? "Turn off the audio"
-                        : "Turn on the audio"}
+                        ? "Turn off microphone"
+                        : "Turn on microphone"}
                     </span>
                   </div>
                 )}
                 {this.props.core._config.userCanToggleSelfCamera && (
                   <div
-                    className={`${ZegoBrowserCheckCss.videoButton} ${
-                      !this.state.videoOpen && ZegoBrowserCheckCss.close
-                    }`}
+                    className={`${ZegoBrowserCheckCss.videoButton} ${!this.state
+                      .videoOpen && ZegoBrowserCheckCss.close}`}
                     onClick={() => {
                       this.toggleStream("video");
                     }}
                   >
                     <span className={ZegoBrowserCheckCss.buttonTip}>
                       {this.state.videoOpen
-                        ? "Turn off the video"
-                        : "Turn on the video"}
+                        ? "Turn off camera"
+                        : "Turn on camera"}
                     </span>
                   </div>
                 )}
@@ -365,9 +363,9 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             <ZegoModel
               header={"Equipment authorization"}
               contentText={
-                "Please allow us to access your camera and microphone in your browser's address bar."
+                "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again."
               }
-              okText="OK"
+              okText="Okay"
               onOk={() => {
                 this.setState({ showDeviceAuthorAlert: false });
               }}
@@ -376,7 +374,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         </div>
       );
     }
-
     return page;
   }
 }
