@@ -1,46 +1,160 @@
 # ZEGOCLOUD Prebuilt Web SDK
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+* 2 interfaces to quickly implement 1V1 calls
+* pure JS language, support all frameworks  (Reat, Angular, Vue,Ionic, etc.)
+* 10,000 minutes free
 
-## 快速集成
+## Quick integration
 
-In the project directory, you can run:
+### Preparation before integration
 
-### `npm start`
+1 Register a [ZEGOCLOUD ACCOUNT,](https://console.zegocloud.com/account/signup)  ----- >create a project ----- > get the project AppID, ServerSecret
 
-Runs the app in the development mode.
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+![config](docs/images/appID.png)
 
-The page will reload if you make edits.
-You will also see any lint errors in the console.
+2 Register a [Heroku](https://signup.heroku.com/login) account to quickly build an authentication service
 
-### `npm test`
+### Deploy the authentication backend interface
 
-Launches the test runner in the interactive watch mode.
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+ [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/choui666/dynamic_token_server_nodejs)
 
-### `npm run build`
+1. Click the deploy link above to start
+2. Fill in your App name, APP_ID and SERVER_SECRET and press `Deploy App`
+3. Make a cup of coffee and wait for heroku to finish :)
+4. Once done you will get an url for your instance, for example: https://${}$xxxx.herokuapp.com
 
-Builds the app for production to the `build` folder.
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Deploy your Web Call app
 
-The build is minified and the filenames include the hashes.
-Your app is ready to be deployed!
+1 [Click me](https://signup.heroku.com/login) to create a javascript project ( if you do not have an account, please register one first )
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2 Load the SDK in index.js, the code is as follows:
 
-### `npm run eject`
+```javascript
+// dynamically load plugins
+function loadScript(url, callback) {
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  // Compatible with IE
+  if (script.readyState) {
+    script.onreadystatechange = function () {
+      if (script.readyState === 'loaded' || script.readyState === 'complete') {
+        script.onreadystatechange = null;
+        callback();
+      }
+    };
+  } else {
+    // handle the case of other browsers
+    script.onload = function () {
+      callback();
+    };
+  }
+  script.src = url;
+  document.body.append(script);
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+// load plugin
+loadScript(
+  'https://zegocloud.github.io/zegocloud_prebuilt_webrtc/ZegoPrebuilt/index.umd.js',
+  init
+);
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+3 Initialize the SDK, the code is as follows
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```javascript
+async function init() {
+  const roomID = getUrlParams(window.location.href)['roomID'] || randomID(5);
+  const { token } = await generateToken(
+    'https://xxxx.herokuapp.com',
+    randomID(5),
+    roomID,
+    randomID(5)
+  );
+  const zp = ZegoPrebuilt.init(token);
+  zp.joinRoom({
+    container: appDiv,
+    joinScreen: {
+      inviteURL:
+        window.location.origin + window.location.pathname + '?roomID=' + roomID,
+      visible: true,
+    },
+  });
+}
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+4 Replace the address "https://xxxx.herokuapp.com" with your own heroku interface address
 
-## Learn More
+5 Copy the following utility function to the front of the init function
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```javascript
+// get token
+function generateToken(tokenServerUrl, userID, roomID, userName) {
+  // Obtain the token interface provided by the App Server
+  return fetch(
+    `${tokenServerUrl}/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`,
+    {
+      method: 'GET',
+    }
+  ).then((res) => res.json());
+}
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+function randomID(len) {
+  let result = '';
+  if (result) return result;
+  var chars = '12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP',
+    maxPos = chars.length,
+    i;
+  len = len || 5;
+  for (i = 0; i < len; i++) {
+    result += chars.charAt(Math.floor(Math.random() * maxPos));
+  }
+  return result;
+}
+
+function getUrlParams(url) {
+  let urlStr = url.split('?')[1];
+  const urlSearchParams = new URLSearchParams(urlStr);
+  const result = Object.fromEntries(urlSearchParams.entries());
+  return result;
+}
+```
+
+6 The preview effect is as follows
+
+![config](docs/images/preview.png)
+
+## More configuration is as follows, code and descriptionearn More
+
+```typescript
+ export interface ZegoCloudRoomConfig {
+  container?: HTMLElement; // mount the container
+  joinScreen?: {
+    visible: boolean; // Whether to display the entertainment detection page, the default display
+    title?: string; // title setting, default enter Room
+    inviteURL?: string; // invite link, if empty, it will not be displayed, default empty
+  };
+  micEnabled?: boolean; // Whether to enable your own microphone, it is enabled by default
+  cameraEnabled?: boolean; // Whether to open your own camera, open by default
+  userCanToggleSelfCamera?: boolean; // Whether you can control your own microphone, enabled by default
+  userCanToggleSelfMic?: boolean; // Whether you can control the body's own camera, enabled by default
+  deviceSettings?: {
+    audio: boolean; // whether to show audio settings
+    video: boolean; // whether to display video settings
+  };
+
+  chatEnabled?: boolean; // Whether to enable chat, the default is open joinScreen: boolean, // Check whether the page is required before the call, the default is required
+  userListEnabled?: boolean; //Whether to display the member list, not displayed by default
+  notification?: {
+    userOnlineOfflineTips?: boolean; //Whether to display member in and out, not displayed by default
+    unreadMessageTips?: boolean; // Whether to display unread messages, not displayed by default
+  };
+  leaveRoomCallback?: () => void; // leave the room callback
+}
+```
+
+## Principle introduction
+The prebuilt sdk is based on the secondary packaging of the ZEGOCLOUD Express WebRTC SDK, so the upper limit of functions can include all the capabilities of the Express WebRTC SDK, and the same browser compatibility, error codes, weak network heavy chain, etc. are also consistent with it;  [click me](https://docs.zegocloud.com/article/12307) to see more capabilities
+
+The source code of this project is all in the src directory, written using react + typescript + scss, you can also extend it based on the source code; or scan the whatsapp QR code below to contact me for more benefits
+
+![config](docs/images/choui_whatsapp.png)
