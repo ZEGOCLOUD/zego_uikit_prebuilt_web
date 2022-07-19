@@ -22,6 +22,7 @@ export class ZegoMessage extends React.Component<{
     }
   }
   handleSend() {
+    if (!this.state.message.length) return;
     this.props.sendMessage(this.state.message);
     this.setState({
       message: "",

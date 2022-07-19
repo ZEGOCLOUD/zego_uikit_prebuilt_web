@@ -10,7 +10,7 @@
   .footer {
     position: fixed;
     bottom: 0px;
-    left:0px;
+    left: 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -33,7 +33,7 @@
       background-size: vw(56px) vw(56px);
     }
     .switchCameraBack {
-       background-color:  #3D4154;;
+      background-color: #3d4154;
     }
     .toggleCamera {
       background-image: url(../../../sdkMobileAssets/Room_camera_open@2x.png);
@@ -125,7 +125,7 @@
               color: #ffffff;
               font-weight: 400;
               font-size: 10px;
-              font-family: PingFangSC-Regular, PingFang SC;
+              //   font-family: PingFangSC-Regular, PingFang SC;
             }
           }
         }
@@ -156,7 +156,7 @@
       margin-bottom: vw(20px);
       padding: vw(20px) vw(24px) vw(16px) vw(24px);
       font-weight: 400;
-      font-family: PingFangSC-Regular, PingFang SC;
+      //   font-family: PingFangSC-Regular, PingFang SC;
       background-color: rgba(42, 42, 42, 0.5);
       border-radius: vw(18px);
       h5 {
