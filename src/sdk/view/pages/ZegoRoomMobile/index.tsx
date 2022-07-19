@@ -51,7 +51,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
   faceModel: 0 | 1 | -1 = 1;
-  notifyTimer!: NodeJS.Timeout;
+  notifyTimer: NodeJS.Timeout | null = null;
   footerTimer!: NodeJS.Timeout;
   componentDidMount() {
     this.initSDK();
@@ -86,7 +86,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       (preState.notificationList.length == 0 &&
         this.state.notificationList.length > 0)
     ) {
-      this.notifyTimer && clearTimeout(this.notifyTimer);
+      if (this.notifyTimer) {
+        clearTimeout(this.notifyTimer);
+        this.notifyTimer = null;
+      }
       this.notifyTimer = setTimeout(() => {
         this.setState({
           notificationList: [],

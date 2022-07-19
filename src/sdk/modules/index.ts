@@ -422,6 +422,7 @@ export class ZegoCloudRTCCore {
     this.onRoomMessageUpdateCallBack = func;
   }
 
+  NetworkStatusTimer: NodeJS.Timer | null = null;
   private onNetworkStatusCallBack!: (
     roomID: string,
     type: "ROOM" | "STREAM",
@@ -434,7 +435,24 @@ export class ZegoCloudRTCCore {
       status: "DISCONNECTED" | "CONNECTING" | "CONNECTED"
     ) => void
   ) {
-    this.onNetworkStatusCallBack = func;
+    this.onNetworkStatusCallBack = (
+      roomID: string,
+      type: "ROOM" | "STREAM",
+      status: "DISCONNECTED" | "CONNECTING" | "CONNECTED"
+    ) => {
+      if (status === "CONNECTING") {
+        !this.NetworkStatusTimer &&
+          (this.NetworkStatusTimer = setTimeout(() => {
+            func(roomID, type, "DISCONNECTED");
+          }, 60000));
+      } else {
+        if (this.NetworkStatusTimer) {
+          clearTimeout(this.NetworkStatusTimer);
+          this.NetworkStatusTimer = null;
+        }
+      }
+      func(roomID, type, status);
+    };
   }
 
   leaveRoom(): void {
