@@ -169,6 +169,7 @@ export class ZegoBrowserCheckMobile extends React.Component<
   async joinRoom() {
     if (!this.state.userName.length) return;
     if (this.isJoining) return;
+    this.isJoining = true;
     this.props.core._expressConfig.userName = this.state.userName;
     this.props.core._config.micEnabled =
       this.state.audioOpen && !this.audioRefuse;

@@ -108,11 +108,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         if (status === "DISCONNECTED") {
           this.props.core.leaveRoom();
           this.props.leaveRoom && this.props.leaveRoom();
-        } else if (status === "CONNECTING" && type != "STREAM") {
+        } else if (status === "CONNECTING") {
           this.setState({
             connecting: true,
           });
-        } else {
+        } else if (status === "CONNECTED") {
           this.setState({
             connecting: false,
             firstLoading: false,
