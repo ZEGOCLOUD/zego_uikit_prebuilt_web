@@ -117,7 +117,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         } else {
           this.setState({
             connecting: false,
-            fistLoading: false,
+            firstLoading: false,
           });
         }
       }
