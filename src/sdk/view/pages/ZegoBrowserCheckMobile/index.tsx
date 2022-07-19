@@ -5,7 +5,9 @@ import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoModel } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
-export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
+export class ZegoBrowserCheckMobile extends React.Component<
+  ZegoBrowserCheckProp
+> {
   state = {
     isSupportWebRTC: undefined,
     localStream: undefined,

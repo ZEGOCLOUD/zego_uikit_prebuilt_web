@@ -217,23 +217,32 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     );
 
     const logInRsp = await this.props.core.enterRoom();
-    logInRsp === 0 &&
-      this.createStream(
-        !!this.props.core._config.cameraEnabled,
-        !!this.props.core._config.micEnabled
-      );
+    logInRsp === 0 && this.createStream();
   }
 
-  async createStream(video: boolean, audio: boolean): Promise<boolean> {
-    if (video || audio) {
+  async createStream(): Promise<boolean> {
+    if (
+      !this.props.core.status.videoRefuse ||
+      !this.props.core.status.audioRefuse
+    ) {
       try {
         const localStream = await this.props.core.createStream({
           camera: {
-            video,
-            audio,
+            video: !this.props.core.status.videoRefuse,
+            audio: !this.props.core.status.audioRefuse,
+            videoQuality: 4,
+            width: 640,
+            height: 360,
+            bitrate: 500,
+            frameRate: 15,
           },
         });
 
+        this.props.core.enableVideoCaptureDevice(
+          localStream,
+          !!this.props.core._config.cameraEnabled
+        );
+        this.props.core.muteMicrophone(!this.props.core._config.micEnabled);
         this.setState({
           localStream,
         });
@@ -266,17 +275,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     this.micStatus = -1;
 
     let result;
-    if (this.state.localStream) {
+    if (
+      this.state.localStream &&
+      this.state.localStream.getAudioTracks().length > 0
+    ) {
       result = await this.props.core.muteMicrophone(this.state.micOpen);
-    } else {
-      result = await this.createStream(
-        !!this.state.cameraOpen,
-        !!this.state.micOpen
-      );
     }
 
+    this.micStatus = !this.state.micOpen ? 1 : 0;
     if (result) {
-      this.micStatus = !this.state.micOpen ? 1 : 0;
       ZegoToast({
         content: "The microphone is " + (this.micStatus ? "on" : "off"),
       });
@@ -301,16 +308,17 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     this.cameraStatus = -1;
 
     let result;
-    if (this.state.localStream) {
+    if (
+      this.state.localStream &&
+      this.state.localStream.getVideoTracks().length > 0
+    ) {
       result = await this.props.core.enableVideoCaptureDevice(
         this.state.localStream,
         !this.state.cameraOpen
       );
-    } else {
-      await this.createStream(!!this.state.cameraOpen, !!this.state.micOpen);
     }
+    this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
     if (result) {
-      this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
       ZegoToast({
         content: "The camera is " + (this.cameraStatus ? "on" : "off"),
       });
