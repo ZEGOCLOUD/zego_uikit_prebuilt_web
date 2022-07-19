@@ -24,7 +24,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
   audioRefuse = this.props.core.status.audioRefuse;
   videoRefuse = this.props.core.status.videoRefuse;
-
+  isJoining = false; // 是否正在加入房间，防止重复点击join
   constructor(props: ZegoBrowserCheckProp) {
     super(props);
     this.videoRef = React.createRef();
@@ -72,7 +72,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         });
 
         this.setState({
-          isVideoOpening: false,
           localVideoStream,
         });
       }
@@ -115,6 +114,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         localStream,
         audioOpen: audioOpen && !this.audioRefuse,
         videoOpen: videoOpen && !this.videoRefuse,
+        isVideoOpening: false,
       },
       () => {
         if (this.videoRef.current && localStream) {
@@ -176,7 +176,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
   async joinRoom() {
     if (!this.state.userName.length) return;
-
+    if (this.isJoining) return;
+    this.isJoining = true;
     this.props.core._expressConfig.userName = this.state.userName;
     this.props.core._config.micEnabled =
       this.state.audioOpen && !this.audioRefuse;
@@ -186,6 +187,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     this.props.core.status.videoRefuse = this.videoRefuse;
 
     const loginRsp = await this.props.core.enterRoom();
+    this.isJoining = false;
     let massage = "";
     if (loginRsp === 0) {
       this.state.localStream &&
@@ -237,6 +239,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     ZegoSettingsAlert({
       core: this.props.core,
       closeCallBack: () => {},
+      localAudioStream: this.state.localAudioStream,
+      localVideoStream: this.state.localVideoStream,
     });
   }
   render(): React.ReactNode {
@@ -261,11 +265,17 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 muted
                 ref={this.videoRef}
               ></video>
+              {!this.state.videoOpen && (
+                <div className={ZegoBrowserCheckCss.videoTip}>
+                  Camera is off
+                </div>
+              )}
               {this.state.isVideoOpening && (
                 <div className={ZegoBrowserCheckCss.videoTip}>
                   Camera is starting…
                 </div>
               )}
+
               <div className={ZegoBrowserCheckCss.toolsWrapper}>
                 {this.props.core._config.userCanToggleSelfMic && (
                   <div
@@ -328,7 +338,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                       this.joinRoom();
                     }}
                   >
-                    joinRoom
+                    join
                   </button>
                   {this.state.isJoinRoomFailed && (
                     <div className={ZegoBrowserCheckCss.joinRoomButtonTip}>

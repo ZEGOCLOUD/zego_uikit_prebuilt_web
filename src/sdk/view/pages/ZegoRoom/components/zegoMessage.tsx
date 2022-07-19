@@ -13,16 +13,22 @@ export class ZegoMessage extends React.Component<{
     message: "",
   };
   msgListRef: RefObject<HTMLInputElement> = React.createRef();
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+  componentDidUpdate(preProps: { messageList: ZegoBroadcastMessageInfo2[] }) {
+    if (preProps.messageList.length !== this.props.messageList.length) {
+      this.scrollToBottom();
+    }
+  }
   handleSend() {
     this.props.sendMessage(this.state.message);
-    this.setState(
-      {
-        message: "",
-      },
-      () => {
-        this.msgListRef.current!.scrollTop = this.msgListRef.current!.scrollHeight;
-      }
-    );
+    this.setState({
+      message: "",
+    });
+  }
+  scrollToBottom() {
+    this.msgListRef.current!.scrollTop = this.msgListRef.current!.scrollHeight;
   }
   messageInput(event: ChangeEvent<HTMLInputElement>) {
     this.setState({
@@ -71,6 +77,11 @@ export class ZegoMessage extends React.Component<{
               this.messageInput(event);
             }}
             placeholder="Send a message to everyone"
+            onKeyPress={(event) => {
+              if (event.key === "Enter") {
+                this.handleSend();
+              }
+            }}
           />
           <button
             disabled={!this.state.message.length}

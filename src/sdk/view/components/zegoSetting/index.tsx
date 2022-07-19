@@ -7,6 +7,7 @@ import {
 import { ZegoCloudRTCCore } from "../../../modules";
 import ZegoSettingsCss from "./index.module.scss";
 import { ZegoSelect } from "../../components/zegoSelect";
+import { audioBase64 } from "./speakerFile";
 export class ZegoSettings extends React.Component<{
   core: ZegoCloudRTCCore;
   theme?: string;
@@ -66,6 +67,7 @@ export class ZegoSettings extends React.Component<{
     },
   ];
   componentDidMount() {
+    this.getSpeakerFile();
     this.getDevices();
     if (!this.props.localAudioStream && !this.props.localVideoStream) {
       this.props.core._config.cameraEnabled &&
@@ -100,6 +102,7 @@ export class ZegoSettings extends React.Component<{
       this.props.core.stopCapturedSoundLevelUpdate("speakerTest");
     }
   }
+  getSpeakerFile() {}
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
     const speakerDevices = await this.props.core.getSpeakers();
@@ -411,33 +414,6 @@ export class ZegoSettings extends React.Component<{
                   </div>
                   <audio
                     style={{ width: "1px", height: "1px" }}
-                    id="micTestAudio"
-                    ref={(el: HTMLAudioElement | null) => {
-                      if (
-                        el &&
-                        this.state.localAudioStream &&
-                        el.srcObject !== this.state.localAudioStream
-                      ) {
-                        el.srcObject = this.state.localAudioStream;
-                      }
-                      if (
-                        el &&
-                        this.state.localAudioStream &&
-                        el.srcObject &&
-                        // @ts-ignore
-                        el.sinkId &&
-                        // @ts-ignore
-                        el.sinkId !== this.state.seletSpeaker
-                      ) {
-                        // @ts-ignore
-                        el.setSinkId(this.state.seletSpeaker);
-                      }
-                    }}
-                    autoPlay
-                    loop
-                  ></audio>
-                  <audio
-                    style={{ width: "1px", height: "1px" }}
                     id="speakerAudioTest"
                     ref={(el: HTMLAudioElement | null) => {
                       if (
@@ -452,7 +428,7 @@ export class ZegoSettings extends React.Component<{
                       }
                     }}
                     loop
-                    src={require("../../../sdkAssets/speaker_test.wav")}
+                    src={audioBase64}
                   ></audio>
                 </div>
               )}

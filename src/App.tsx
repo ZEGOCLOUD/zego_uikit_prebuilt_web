@@ -28,6 +28,7 @@ export default class App extends React.Component {
             "?roomID=" +
             roomID,
           visible: true,
+          title: "Join Room",
         },
         branding: {
           logoURL:
@@ -52,6 +53,7 @@ export default class App extends React.Component {
               href="https://docs.zegocloud.com/article/5546"
               target="_blank"
               className={APP.link_item}
+              rel="noreferrer"
             >
               <span className={APP.icon__doc}></span>{" "}
               {isPc() && "Documentation"}
@@ -60,6 +62,7 @@ export default class App extends React.Component {
               href="https://github.com/ZEGOCLOUD/zegocloud_prebuilt_webrtc"
               target="_blank"
               className={APP.link_item}
+              rel="noreferrer"
             >
               <span className={APP.icon__github}></span>
               {isPc() && "View demo code"}
@@ -73,11 +76,19 @@ export default class App extends React.Component {
           }`}
         >
           By clicking "Join", you agree to {!isPc() && <br />} our{" "}
-          <a href="https://www.zegocloud.com/policy?index=1" target="_blank">
+          <a
+            href="https://www.zegocloud.com/policy?index=1"
+            target="_blank"
+            rel="noreferrer"
+          >
             Terms of Services
           </a>{" "}
           and{" "}
-          <a href="https://www.zegocloud.com/policy?index=0" target="_blank">
+          <a
+            href="https://www.zegocloud.com/policy?index=0"
+            target="_blank"
+            rel="noreferrer"
+          >
             Privacy Policy
           </a>
           .
