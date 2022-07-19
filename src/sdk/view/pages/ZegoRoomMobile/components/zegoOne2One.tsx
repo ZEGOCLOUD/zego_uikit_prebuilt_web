@@ -89,6 +89,12 @@ export class ZegoOne2One extends React.Component<{
       return (
         <div className={zegoOne2OneCss.bigVideo}>
           <video
+            style={{
+              top: 0,
+              transform: "translateX(-50%)",
+              left: "50%",
+              position: "absolute",
+            }}
             muted
             autoPlay
             playsInline={true}
