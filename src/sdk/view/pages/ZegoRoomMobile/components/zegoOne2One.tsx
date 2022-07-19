@@ -7,11 +7,18 @@ export class ZegoOne2One extends React.Component<{
   localStream: MediaStream | undefined;
   remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
   core: ZegoCloudRTCCore;
-  cameraOpen: boolean;
-  micOpen: boolean;
+  remoteUserInfo: {
+    userName: string | undefined;
+    userID: string | undefined;
+  };
+  selfUserInfo: {
+    userName: string;
+    micOpen: boolean;
+    cameraOpen: boolean;
+  };
 }> {
   getVideoScreen() {
-    if (this.props.localStream && this.props.remoteStreamInfo) {
+    if (this.props.remoteUserInfo.userID) {
       return (
         <>
           <div className={zegoOne2OneCss.bigVideo}>
@@ -24,9 +31,16 @@ export class ZegoOne2One extends React.Component<{
                   (el.srcObject = this.props.remoteStreamInfo?.media!);
               }}
             ></video>
-            {/* <div className={zegoOne2OneCss.name}>
-              {this.props.remoteStreamInfo.fromUser.userName}
-            </div> */}
+            <div className={zegoOne2OneCss.name}>
+              <p>{this.props.remoteStreamInfo?.fromUser.userName}</p>
+              <span
+                className={
+                  this.props.remoteStreamInfo?.micStatus === "OPEN"
+                    ? zegoOne2OneCss.bigVideoMicOpen
+                    : ""
+                }
+              ></span>
+            </div>
             {this.props.remoteStreamInfo?.media.getVideoTracks().length ===
               0 && (
               <i
@@ -51,8 +65,17 @@ export class ZegoOne2One extends React.Component<{
                   (el.srcObject = this.props.localStream!);
               }}
             ></video>
-            {/* <div className={zegoOne2OneCss.name}>You</div> */}
-            {!this.props.cameraOpen && (
+            <div className={zegoOne2OneCss.smallName}>
+              <p> {this.props.selfUserInfo.userName} </p>
+              <span
+                className={
+                  this.props.selfUserInfo.micOpen
+                    ? zegoOne2OneCss.smallVideoMicOpen
+                    : ""
+                }
+              ></span>
+            </div>
+            {!this.props.selfUserInfo.cameraOpen && (
               <i
                 style={{
                   color: userNameColor(this.props.core._expressConfig.userName),
@@ -64,9 +87,9 @@ export class ZegoOne2One extends React.Component<{
           </div>
         </>
       );
-    } else if (this.props.localStream) {
+    } else {
       return (
-        <div className={zegoOne2OneCss.bigVideo}>
+        <div className={zegoOne2OneCss.bigVideo} style={{ width: "auto" }}>
           <video
             muted
             autoPlay
@@ -78,7 +101,7 @@ export class ZegoOne2One extends React.Component<{
             }}
           ></video>
           {/* <div className={zegoOne2OneCss.name}>You</div> */}
-          {!this.props.cameraOpen && (
+          {!this.props.selfUserInfo.cameraOpen && (
             <i
               style={{
                 color: userNameColor(this.props.core._expressConfig.userName),
@@ -89,38 +112,40 @@ export class ZegoOne2One extends React.Component<{
           )}
         </div>
       );
-    } else if (this.props.remoteStreamInfo) {
-      return (
-        <div className={zegoOne2OneCss.bigVideo}>
-          <video
-            autoPlay
-            playsInline={true}
-            className={zegoOne2OneCss.bigVideo}
-            ref={(el) => {
-              el &&
-                el.srcObject !== this.props.remoteStreamInfo!.media &&
-                (el.srcObject = this.props.remoteStreamInfo!.media);
-            }}
-          ></video>
-          {/* <div className={zegoOne2OneCss.name}>
-            {this.props.remoteStreamInfo.fromUser.userName}
-          </div> */}
-          {this.props.remoteStreamInfo?.media.getVideoTracks().length === 0 && (
-            <i
-              style={{
-                color: userNameColor(
-                  this.props.remoteStreamInfo.fromUser.userName!
-                ),
-              }}
-            >
-              {this.props.remoteStreamInfo.fromUser.userName?.substring(0, 1)}
-            </i>
-          )}
-        </div>
-      );
-    } else {
-      return undefined;
     }
+
+    // else if (this.props.remoteStreamInfo) {
+    //   return (
+    //     <div className={zegoOne2OneCss.bigVideo}>
+    //       <video
+    //         autoPlay
+    //         playsInline={true}
+    //         className={zegoOne2OneCss.bigVideo}
+    //         ref={(el) => {
+    //           el &&
+    //             el.srcObject !== this.props.remoteStreamInfo!.media &&
+    //             (el.srcObject = this.props.remoteStreamInfo!.media);
+    //         }}
+    //       ></video>
+    //       {/* <div className={zegoOne2OneCss.name}>
+    //         {this.props.remoteStreamInfo.fromUser.userName}
+    //       </div> */}
+    //       {this.props.remoteStreamInfo?.media.getVideoTracks().length === 0 && (
+    //         <i
+    //           style={{
+    //             color: userNameColor(
+    //               this.props.remoteStreamInfo.fromUser.userName!
+    //             ),
+    //           }}
+    //         >
+    //           {this.props.remoteStreamInfo.fromUser.userName?.substring(0, 1)}
+    //         </i>
+    //       )}
+    //     </div>
+    //   );
+    // } else {
+    //   return undefined;
+    // }
   }
 
   render(): React.ReactNode {
