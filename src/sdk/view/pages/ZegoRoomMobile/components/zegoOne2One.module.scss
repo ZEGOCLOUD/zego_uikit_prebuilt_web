@@ -2,29 +2,51 @@
 .bigVideo,
 .smallVideo {
   position: relative;
-  background-color: black;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  background-color: black;
 
   .name {
     position: absolute;
-    bottom: vw(10px);
-    left: vw(10px);
-    width: vw(118px);
+    right: vw(24px);
+    bottom: vw(24px);
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
     height: vw(46px);
-    color: #ffffff;
-    font-weight: 400;
-    font-size: vw(24px);
-    font-family: PingFangSC-Regular, PingFang SC;
+    padding: vw(7px) vw(12px) vw(6px) vw(10px);
     line-height: vw(33px);
     text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
     background: rgba(42, 42, 42, 0.5);
     border-radius: vw(12px);
+    p {
+      /*第一步： 溢出隐藏 */
+      overflow: hidden;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(24px);
+      line-height: vw(33px);
+      /* 第二步：让文本不会换行， 在同一行继续 */
+      white-space: nowrap;
+      /* 第三步：用省略号来代表未显示完的文本 */
+      text-overflow: ellipsis;
+      text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+    }
+    span {
+      width: vw(36px);
+      height: vw(36px);
+      background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_close@2x.png);
+      background-size: contain;
+    }
+    .bigVideoMicOpen {
+      background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
+      background-size: contain;
+    }
   }
 
   video {
-    height:100vh;
+    height: 100vh;
   }
   i {
     position: absolute;
@@ -44,7 +66,7 @@
 }
 
 .bigVideo {
-  width: auto;
+  width: 100%;
   height: 100%;
   i {
     position: fixed;
@@ -63,6 +85,46 @@
   border-radius: vw(18px);
   video {
     width: 100%;
+  }
+  .smallName {
+    position: absolute;
+    right: vw(10px);
+    bottom: vw(10px);
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    max-width: vw(170px);
+    height: vw(46px);
+    padding: vw(7px) vw(12px) vw(6px) vw(10px);
+    background: rgba(42, 42, 42, 0.5);
+    border: vw(0px) solid #a4a4a4;
+    border-radius: vw(18px);
+
+    p {
+      box-sizing: border-box;
+      max-width: vw(104px);
+      /*第一步： 溢出隐藏 */
+      overflow: hidden;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(24px);
+      line-height: vw(33px);
+      /* 第二步：让文本不会换行， 在同一行继续 */
+      white-space: nowrap;
+      /* 第三步：用省略号来代表未显示完的文本 */
+      text-overflow: ellipsis;
+      text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+    }
+    span {
+      width: vw(36px);
+      height: vw(36px);
+      background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_close@2x.png);
+      background-size: contain;
+    }
+    .smallVideoMicOpen {
+      background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
+      background-size: contain;
+    }
   }
   i {
     top: vw(89px);
