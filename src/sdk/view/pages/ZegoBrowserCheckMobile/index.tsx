@@ -5,9 +5,7 @@ import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoModel } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
-export class ZegoBrowserCheckMobile extends React.Component<
-  ZegoBrowserCheckProp
-> {
+export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: undefined,
     localStream: undefined,
@@ -23,6 +21,7 @@ export class ZegoBrowserCheckMobile extends React.Component<
 
   audioRefuse = this.props.core.status.audioRefuse;
   videoRefuse = this.props.core.status.videoRefuse;
+  isJoining = false;
 
   constructor(props: ZegoBrowserCheckProp) {
     super(props);
@@ -166,6 +165,8 @@ export class ZegoBrowserCheckMobile extends React.Component<
   }
 
   async joinRoom() {
+    if (!this.state.userName.length) return;
+    if (this.isJoining) return;
     this.props.core._expressConfig.userName = this.state.userName;
     this.props.core._config.micEnabled =
       this.state.audioOpen && !this.audioRefuse;
@@ -201,6 +202,7 @@ export class ZegoBrowserCheckMobile extends React.Component<
         loginRsp +
         ")";
     }
+    this.isJoining = false;
     massage && ZegoToast({ content: massage });
   }
 

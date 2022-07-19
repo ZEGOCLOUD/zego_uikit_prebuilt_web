@@ -19,6 +19,7 @@
     "homepage": "https://zegocloud.github.io/zegocloud_prebuilt_webrtc/build/",
     "scripts": {
         "start": "HTTPS=true HOST=0.0.0.0 react-scripts start",
+        "start:m": "REACT_APP_MOBILE='yes' npm run start",
         "build": "react-scripts build",
         "predeploy": "npm run build",
         "deploy": "gh-pages -b main -d build",

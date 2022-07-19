@@ -27,6 +27,14 @@ export class ZegoMessage extends React.Component<{
     this.msgContentListRef = React.createRef<HTMLDivElement>();
   }
 
+  componentDidMount() {
+    this.msgContentListRef.current?.scroll(
+      0,
+      this.msgContentListRef.current.scrollHeight -
+        this.msgContentListRef.current.clientHeight
+    );
+  }
+
   componentDidUpdate(prevProps: {
     messageList: ZegoBroadcastMessageInfo[];
     sendMessage: (msg: string) => void;
@@ -45,6 +53,13 @@ export class ZegoMessage extends React.Component<{
   messageInput(event: ChangeEvent<HTMLInputElement>) {
     this.setState({
       message: event.target.value.substring(0, 300),
+    });
+  }
+
+  handleSend() {
+    this.props.sendMessage(this.state.message);
+    this.setState({
+      message: "",
     });
   }
 
@@ -114,13 +129,15 @@ export class ZegoMessage extends React.Component<{
             onChange={(event) => {
               this.messageInput(event);
             }}
+            onKeyPress={(event) => {
+              if (event.key === "Enter") {
+                this.handleSend();
+              }
+            }}
           />
           <button
             onClick={() => {
-              this.props.sendMessage(this.state.message);
-              this.setState({
-                message: "",
-              });
+              this.handleSend();
             }}
           ></button>
         </div>
