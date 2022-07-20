@@ -186,6 +186,15 @@ export class ZegoCloudRTCCore {
   async enterRoom(): Promise<number> {
     // 已经登陆过不再登录
     if (this.status.loginRsp) return Promise.resolve(0);
+    ZegoCloudRTCCore._zg.off("roomStreamUpdate");
+    ZegoCloudRTCCore._zg.off("remoteCameraStatusUpdate");
+    ZegoCloudRTCCore._zg.off("remoteMicStatusUpdate");
+    ZegoCloudRTCCore._zg.off("playerStateUpdate");
+    ZegoCloudRTCCore._zg.off("roomUserUpdate");
+    ZegoCloudRTCCore._zg.off("IMRecvBroadcastMessage");
+    ZegoCloudRTCCore._zg.off("roomStateUpdate");
+    ZegoCloudRTCCore._zg.off("publisherStateUpdate");
+    ZegoCloudRTCCore._zg.off("publishQualityUpdate");
 
     ZegoCloudRTCCore._zg.on(
       "roomStreamUpdate",
@@ -465,7 +474,7 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.off("IMRecvBroadcastMessage");
     ZegoCloudRTCCore._zg.off("roomStateUpdate");
     ZegoCloudRTCCore._zg.off("publisherStateUpdate");
-
+    ZegoCloudRTCCore._zg.off("publishQualityUpdate");
     this.onNetworkStatusCallBack = () => {};
     this.onRemoteMediaUpdateCallBack = () => {};
     this.onRemoteUserUpdateCallBack = () => {};

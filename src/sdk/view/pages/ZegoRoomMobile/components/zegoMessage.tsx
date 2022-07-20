@@ -52,11 +52,12 @@ export class ZegoMessage extends React.Component<{
 
   messageInput(event: ChangeEvent<HTMLInputElement>) {
     this.setState({
-      message: event.target.value.substring(0, 300),
+      message: event.target.value.trim().substring(0, 300),
     });
   }
 
   handleSend() {
+    if (!this.state.message.length) return;
     this.props.sendMessage(this.state.message);
     this.setState({
       message: "",

@@ -59,3 +59,19 @@ export interface ZegoNotification {
 export declare type ZegoBroadcastMessageInfo2 = ZegoBroadcastMessageInfo & {
   status: "SENDING" | "SENDED" | "FAILED";
 };
+
+export interface ZegoSettingsProps {
+  core: ZegoCloudRTCCore;
+  theme?: string;
+  initDevices: {
+    mic: string | undefined;
+    cam: string | undefined;
+    speaker: string | undefined;
+    videoResolve: string | undefined;
+  };
+  closeCallBack?: () => void;
+  onMicChange: (deviceID: string) => void;
+  onCameraChange: (deviceID: string) => void;
+  onSpeakerChange: (deviceID: string) => void;
+  onVideoResolveChange: (level: string) => void;
+}

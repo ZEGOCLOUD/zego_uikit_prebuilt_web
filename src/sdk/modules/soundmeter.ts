@@ -20,7 +20,14 @@ export class SoundMeter {
     sourceId: string,
     callback: (level: number) => void
   ) {
+    try {
+      window.AudioContext =
+        window.AudioContext || (window as any).webkitAudioContext;
+    } catch (e) {
+      alert("Web Audio API not supported.");
+    }
     !this.context && (this.context = new AudioContext());
+
     console.log("SoundMeter connecting");
     let timer;
 

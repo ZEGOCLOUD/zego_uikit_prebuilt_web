@@ -33,7 +33,7 @@ export class ZegoMessage extends React.Component<{
   }
   messageInput(event: ChangeEvent<HTMLInputElement>) {
     this.setState({
-      message: event.target.value.substring(0, 300),
+      message: event.target.value.trim().substring(0, 300),
     });
   }
   render(): React.ReactNode {

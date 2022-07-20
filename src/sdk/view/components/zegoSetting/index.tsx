@@ -8,13 +8,9 @@ import { ZegoCloudRTCCore } from "../../../modules";
 import ZegoSettingsCss from "./index.module.scss";
 import { ZegoSelect } from "../../components/zegoSelect";
 import { audioBase64 } from "./speakerFile";
-export class ZegoSettings extends React.Component<{
-  core: ZegoCloudRTCCore;
-  theme?: string;
-  localVideoStream?: MediaStream;
-  localAudioStream?: MediaStream;
-  closeCallBack?: () => void;
-}> {
+import { ZegoSettingsProps } from "../../../model";
+import { getVideoResolve } from "../../../util";
+export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   state: {
     visible: boolean;
     selectTab: "AUDIO" | "VIDEO";
@@ -66,28 +62,14 @@ export class ZegoSettings extends React.Component<{
       value: "720",
     },
   ];
-  componentDidMount() {
-    this.getSpeakerFile();
-    this.getDevices();
-    if (!this.props.localAudioStream && !this.props.localVideoStream) {
-      this.props.core._config.cameraEnabled &&
-        this.createVideoStream({ camera: { video: true, audio: false } });
-      this.props.core._config.micEnabled &&
-        this.createAudioStream({ camera: { video: false, audio: true } });
-    } else if (this.props.localAudioStream && this.props.localVideoStream) {
-      this.setState({
-        localAudioStream: this.props.localAudioStream,
-        localVideoStream: this.props.localVideoStream,
-      });
-    }
+  async componentDidMount() {
+    const state = await this.getDevices();
+    this.setState({ ...state }, () => {
+      this.createVideoStream();
+      this.createAudioStream();
+    });
   }
   componentDidUpdate(prevProps: any, preState: any) {
-    if (
-      preState.localAudioStream === undefined &&
-      this.state.localAudioStream
-    ) {
-      this.captureMicVolume();
-    }
     if (preState.seletSpeaker !== this.state.seletSpeaker) {
       document
         .querySelectorAll(".settings_audio audio")
@@ -102,25 +84,33 @@ export class ZegoSettings extends React.Component<{
       this.props.core.stopCapturedSoundLevelUpdate("speakerTest");
     }
   }
-  getSpeakerFile() {}
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
     const speakerDevices = await this.props.core.getSpeakers();
     const cameraDevices = await this.props.core.getCameras();
-    this.setState({
+    return {
       micDevices: micDevices.filter((device) => device.deviceID),
       speakerDevices: speakerDevices.filter((device) => device.deviceID),
       cameraDevices: cameraDevices.filter((device) => device.deviceID),
-      seletMic: sessionStorage.getItem("seletMic") || undefined,
-      seletSpeaker: sessionStorage.getItem("seletSpeaker") || undefined,
-      seletCamera: sessionStorage.getItem("seletCamera") || undefined,
-      seletVideoResolve:
-        sessionStorage.getItem("seletVideoResolve") || undefined,
-    });
+      seletMic: this.props.initDevices.mic || undefined,
+      seletSpeaker: this.props.initDevices.speaker || undefined,
+      seletCamera: this.props.initDevices.cam || undefined,
+      seletVideoResolve: this.props.initDevices.videoResolve || undefined,
+    };
   }
 
-  async createVideoStream(source?: ZegoLocalStreamConfig): Promise<boolean> {
+  async createVideoStream(): Promise<boolean> {
     try {
+      const config = getVideoResolve(this.state.seletVideoResolve as string);
+      const source: ZegoLocalStreamConfig = {
+        camera: {
+          video: true,
+          audio: false,
+          videoInput: this.state.seletCamera,
+          videoQuality: 4,
+          ...config,
+        },
+      };
       const localVideoStream = await this.props.core.createStream(source);
       this.setState({
         localVideoStream,
@@ -136,12 +126,24 @@ export class ZegoSettings extends React.Component<{
     }
   }
 
-  async createAudioStream(source?: ZegoLocalStreamConfig): Promise<boolean> {
+  async createAudioStream(): Promise<boolean> {
     try {
+      const source: ZegoLocalStreamConfig = {
+        camera: {
+          video: false,
+          audio: true,
+          audioInput: this.state.seletMic,
+        },
+      };
       const localAudioStream = await this.props.core.createStream(source);
-      this.setState({
-        localAudioStream,
-      });
+      this.setState(
+        {
+          localAudioStream,
+        },
+        () => {
+          this.captureMicVolume();
+        }
+      );
 
       return true;
     } catch (error) {
@@ -176,11 +178,14 @@ export class ZegoSettings extends React.Component<{
     );
     this.props.core.stopCapturedSoundLevelUpdate("micTest");
     this.captureMicVolume();
-    res.errorCode === 0 && this.setState({ seletMic: deviceID });
+    if (res.errorCode === 0) {
+      this.setState({ seletMic: deviceID });
+      this.props.onMicChange(deviceID);
+    }
   }
   async toggleSpeaker(deviceID: string) {
-    if (!this.state.localAudioStream) return;
     this.setState({ seletSpeaker: deviceID });
+    this.props.onSpeakerChange(deviceID);
   }
   async toggleCamera(deviceID: string) {
     if (!this.state.localVideoStream) return;
@@ -189,46 +194,18 @@ export class ZegoSettings extends React.Component<{
       this.state.localVideoStream,
       deviceID
     );
-    res.errorCode === 0 && this.setState({ seletCamera: deviceID });
+    if (res.errorCode === 0) {
+      this.setState({ seletCamera: deviceID });
+      this.props.onCameraChange(deviceID);
+    }
   }
   async toggleVideoResolve(level: string) {
     if (!this.state.localVideoStream) return;
-
-    let { width, height, maxBitrate, frameRate } = {
-      width: 640,
-      height: 480,
-      maxBitrate: 500,
-      frameRate: 15,
-    };
-
-    if (level === "180") {
-      width = 320;
-      height = 180;
-      maxBitrate = 140;
-    } else if (level === "360") {
-      width = 640;
-      height = 360;
-      maxBitrate = 400;
-    } else if (level === "480") {
-      width = 640;
-      height = 480;
-      maxBitrate = 500;
-    } else if (level === "720") {
-      width = 1280;
-      height = 720;
-      maxBitrate = 1130;
+    const res = await this.createVideoStream();
+    if (res) {
+      this.setState({ seletVideoResolve: level });
+      this.props.onVideoResolveChange(level);
     }
-    const res = await this.props.core.setVideoConfig(
-      this.state.localVideoStream,
-      {
-        width,
-        height,
-        maxBitrate,
-        frameRate,
-      }
-    );
-
-    res && this.setState({ seletVideoResolve: level });
   }
   toggleSpeakerTest() {
     if (!this.state.speakerDevices.length) return;
@@ -281,6 +258,7 @@ export class ZegoSettings extends React.Component<{
       this.state.localAudioStream as MediaStream,
       "micTest",
       (soundLevel) => {
+        console.warn(soundLevel);
         this.setState({
           audioVolume: (soundLevel * 1000) / 5,
         });
@@ -414,6 +392,22 @@ export class ZegoSettings extends React.Component<{
                   </div>
                   <audio
                     style={{ width: "1px", height: "1px" }}
+                    id="mic"
+                    autoPlay={true}
+                    ref={(el: HTMLAudioElement | null) => {
+                      if (
+                        el &&
+                        // @ts-ignore
+                        el.srcObject !== this.state.localAudioStream
+                      ) {
+                        // @ts-ignore
+                        el.srcObject = this.state.localAudioStream;
+                      }
+                    }}
+                    loop
+                  ></audio>
+                  <audio
+                    style={{ width: "1px", height: "1px" }}
                     id="speakerAudioTest"
                     ref={(el: HTMLAudioElement | null) => {
                       if (
@@ -488,26 +482,17 @@ export class ZegoSettings extends React.Component<{
   }
 }
 
-export const ZegoSettingsAlert = (config: {
-  core: ZegoCloudRTCCore;
-  closeCallBack: () => void;
-  localVideoStream?: MediaStream;
-  localAudioStream?: MediaStream;
-  theme?: string;
-}) => {
+export const ZegoSettingsAlert = (config: ZegoSettingsProps) => {
   const div = document.createElement("div");
   document.body.appendChild(div);
   const root = ReactDOM.createRoot(div);
   root.render(
     <ZegoSettings
-      core={config.core}
+      {...config}
       closeCallBack={() => {
         root.unmount();
-        config.closeCallBack();
+        config.closeCallBack && config.closeCallBack();
       }}
-      theme={config.theme}
-      localVideoStream={config.localVideoStream}
-      localAudioStream={config.localAudioStream}
     ></ZegoSettings>
   );
 };

@@ -82,3 +82,42 @@ export function getUrlParams(url: string) {
   const result = Object.fromEntries(urlSearchParams.entries());
   return result;
 }
+
+export function getVideoResolve(
+  level: string
+): {
+  width: number;
+  height: number;
+  bitrate: number;
+  frameRate: number;
+} {
+  let { width, height, bitrate, frameRate } = {
+    width: 640,
+    height: 360,
+    bitrate: 400,
+    frameRate: 15,
+  };
+  if (level === "180") {
+    width = 320;
+    height = 180;
+    bitrate = 140;
+  } else if (level === "360") {
+    width = 640;
+    height = 360;
+    bitrate = 400;
+  } else if (level === "480") {
+    width = 640;
+    height = 480;
+    bitrate = 500;
+  } else if (level === "720") {
+    width = 1280;
+    height = 720;
+    bitrate = 1130;
+  }
+  return {
+    width,
+    height,
+    bitrate,
+    frameRate,
+  };
+}

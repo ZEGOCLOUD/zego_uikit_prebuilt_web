@@ -4,6 +4,7 @@ import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
+import { getVideoResolve } from "../../../util";
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: undefined,
@@ -18,6 +19,10 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     isJoinRoomFailed: false, // 是否加入房间失败
     joinRoomErrorTip: `Failed to join the room.`, // 加入房间失败提示
     showDeviceAuthorAlert: false, // 控制设备权限警告弹窗
+    seletMic: undefined,
+    seletSpeaker: undefined,
+    seletCamera: undefined,
+    seletVideoResolve: "360",
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -37,18 +42,47 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       isSupportWebRTC: res,
       userName: this.props.core._expressConfig.userName,
     });
-    const videoOpen = !!this.props.core._config.cameraEnabled;
-    const audioOpen = !!this.props.core._config.micEnabled;
-    if (videoOpen || audioOpen) {
-      await this.createStream(videoOpen, audioOpen);
-    } else {
-      this.setState({
-        audioOpen: audioOpen,
-        videoOpen: videoOpen,
-      });
-    }
+    const devices = await this.getDevices();
+    this.setState(
+      {
+        ...devices,
+      },
+      async () => {
+        const videoOpen = !!this.props.core._config.cameraEnabled;
+        const audioOpen = !!this.props.core._config.micEnabled;
+        if (videoOpen || audioOpen) {
+          await this.createStream(videoOpen, audioOpen);
+        } else {
+          this.setState({
+            audioOpen: audioOpen,
+            videoOpen: videoOpen,
+          });
+        }
+      }
+    );
   }
-
+  async getDevices() {
+    const micDevices = await this.props.core.getMicrophones();
+    const speakerDevices = await this.props.core.getSpeakers();
+    const cameraDevices = await this.props.core.getCameras();
+    // 防止设备移出后，再次使用缓存设备ID
+    const mic = micDevices.filter(
+      (device) => device.deviceID === sessionStorage.getItem("seletMic")
+    );
+    const cam = cameraDevices.filter(
+      (device) => device.deviceID === sessionStorage.getItem("seletCamera")
+    );
+    const speaker = speakerDevices.filter(
+      (device) => device.deviceID === sessionStorage.getItem("seletSpeaker")
+    );
+    return {
+      seletMic: mic[0]?.deviceID || micDevices[0]?.deviceID || undefined,
+      seletSpeaker:
+        speaker[0]?.deviceID || speakerDevices[0]?.deviceID || undefined,
+      seletCamera: cam[0]?.deviceID || cameraDevices[0]?.deviceID || undefined,
+      seletVideoResolve: sessionStorage.getItem("seletVideoResolve") || "360",
+    };
+  }
   async createStream(
     videoOpen: boolean,
     audioOpen: boolean
@@ -61,15 +95,14 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         this.setState({
           isVideoOpening: true,
         });
+        const solution = getVideoResolve(this.state.seletVideoResolve);
         localVideoStream = await this.props.core.createStream({
           camera: {
             video: true,
             audio: false,
+            videoInput: this.state.seletCamera,
             videoQuality: 4,
-            width: 640,
-            height: 360,
-            bitrate: 400,
-            frameRate: 15,
+            ...solution,
           },
         });
         localVideoStream?.getVideoTracks().map((track) => {
@@ -97,6 +130,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           camera: {
             video: false,
             audio: true,
+            audioInput: this.state.seletMic,
           },
         });
         localAudioStream?.getAudioTracks().map((track) => {
@@ -144,10 +178,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       }
       const videoOpen = !this.state.videoOpen;
       if (!this.state.localVideoStream) {
-        this.setState({
-          isVideoOpening: true,
-        });
-        await this.createStream(videoOpen, false);
+        await this.createStream(videoOpen, this.state.audioOpen);
       } else {
         (this.state.localVideoStream as MediaStream)
           .getTracks()
@@ -166,14 +197,15 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         });
         return;
       }
-      this.setState({
-        audioOpen: !this.state.audioOpen,
-      });
       const audioOpen = !this.state.audioOpen;
       if (!this.state.localAudioStream) {
         await this.createStream(this.state.videoOpen, audioOpen);
       } else {
-        this.props.core.muteMicrophone(audioOpen);
+        (this.state.localAudioStream as MediaStream)
+          .getTracks()
+          .reverse()
+          .forEach((track) => track.stop());
+        this.setState({ localAudioStream: undefined });
       }
       this.setState({ audioOpen });
     }
@@ -244,9 +276,48 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   openSettings() {
     ZegoSettingsAlert({
       core: this.props.core,
+      initDevices: {
+        mic: this.state.seletMic,
+        cam: this.state.seletCamera,
+        speaker: this.state.seletSpeaker,
+        videoResolve: this.state.seletVideoResolve,
+      },
       closeCallBack: () => {},
-      localAudioStream: this.state.localAudioStream,
-      localVideoStream: this.state.localVideoStream,
+      onMicChange: (deviceID: string) => {
+        this.setState(
+          {
+            seletMic: deviceID,
+          },
+          () => {
+            this.createStream(this.state.videoOpen, this.state.audioOpen);
+          }
+        );
+      },
+      onCameraChange: (deviceID: string) => {
+        this.setState(
+          {
+            seletCamera: deviceID,
+          },
+          () => {
+            this.createStream(this.state.videoOpen, this.state.audioOpen);
+          }
+        );
+      },
+      onSpeakerChange: (deviceID: string) => {
+        this.setState({
+          seletSpeaker: deviceID,
+        });
+      },
+      onVideoResolveChange: (level: string) => {
+        this.setState(
+          {
+            seletVideoResolve: level,
+          },
+          () => {
+            this.createStream(this.state.videoOpen, this.state.audioOpen);
+          }
+        );
+      },
     });
   }
 

@@ -400,13 +400,13 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     }
   };
   handleSetting() {
-    ZegoSettingsAlert({
-      core: this.props.core,
-      theme: "black",
-      closeCallBack: () => {},
-      localAudioStream: this.state.localStream,
-      localVideoStream: this.state.localStream,
-    });
+    // ZegoSettingsAlert({
+    //   core: this.props.core,
+    //   theme: "black",
+    //   closeCallBack: () => {},
+    //   localAudioStream: this.state.localStream,
+    //   localVideoStream: this.state.localStream,
+    // });
   }
   handleLeave() {
     ZegoModelShow({
