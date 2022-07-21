@@ -33,7 +33,7 @@ export class ZegoMessage extends React.Component<{
   }
   messageInput(event: ChangeEvent<HTMLInputElement>) {
     this.setState({
-      message: event.target.value.trim().substring(0, 300),
+      message: event.target.value.substring(0, 300),
     });
   }
   render(): React.ReactNode {
@@ -61,9 +61,9 @@ export class ZegoMessage extends React.Component<{
                   </span>
                 </div>
                 <p
-                  className={`${msg.status === "SENDING" &&
-                    ZegoMessageCss.loading} ${msg.status === "FAILED" &&
-                    ZegoMessageCss.error}`}
+                  className={`${
+                    msg.status === "SENDING" && ZegoMessageCss.loading
+                  } ${msg.status === "FAILED" && ZegoMessageCss.error}`}
                 >
                   {msg.message}
                 </p>

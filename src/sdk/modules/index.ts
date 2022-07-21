@@ -183,6 +183,13 @@ export class ZegoCloudRTCCore {
     return ZegoCloudRTCCore._zg.enableVideoCaptureDevice(localStream, enable);
   }
 
+  async mutePublishStreamVideo(
+    localStream: MediaStream,
+    enable: boolean
+  ): Promise<boolean> {
+    return ZegoCloudRTCCore._zg.mutePublishStreamVideo(localStream, enable);
+  }
+
   async muteMicrophone(enable: boolean): Promise<boolean> {
     return ZegoCloudRTCCore._zg.muteMicrophone(enable);
   }

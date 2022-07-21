@@ -237,9 +237,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           },
         });
 
-        this.props.core.enableVideoCaptureDevice(
+        this.props.core.mutePublishStreamVideo(
           localStream,
-          !!this.props.core._config.cameraEnabled
+          !this.props.core._config.cameraEnabled
         );
         this.props.core.muteMicrophone(!this.props.core._config.micEnabled);
         this.setState({
@@ -311,9 +311,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       this.state.localStream &&
       this.state.localStream.getVideoTracks().length > 0
     ) {
-      result = await this.props.core.enableVideoCaptureDevice(
+      result = await this.props.core.mutePublishStreamVideo(
         this.state.localStream,
-        !this.state.cameraOpen
+        this.state.cameraOpen
       );
     }
     this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
