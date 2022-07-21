@@ -14,6 +14,7 @@ export class ZegoOne2One extends React.Component<{
     micOpen: boolean;
     cameraOpen: boolean;
   };
+  onLocalStreamPaused: () => void;
 }> {
   getVideoScreen() {
     if (this.props.remoteUserInfo.userID) {
@@ -50,9 +51,10 @@ export class ZegoOne2One extends React.Component<{
             </div>
             <div className={zegoOne2OneCss.name}>
               <span
-                className={`${zegoOne2OneCss.micIcon} ${this.props
-                  .remoteStreamInfo?.micStatus !== "OPEN" &&
-                  zegoOne2OneCss.close}`}
+                className={`${zegoOne2OneCss.micIcon} ${
+                  this.props.remoteStreamInfo?.micStatus !== "OPEN" &&
+                  zegoOne2OneCss.close
+                }`}
               ></span>
               <p>{this.props.remoteUserInfo.userName}</p>
             </div>
@@ -66,6 +68,9 @@ export class ZegoOne2One extends React.Component<{
                 el &&
                   el.srcObject !== this.props.localStream! &&
                   (el.srcObject = this.props.localStream!);
+              }}
+              onPause={() => {
+                this.props.onLocalStreamPaused();
               }}
             ></video>
             <div
@@ -84,8 +89,9 @@ export class ZegoOne2One extends React.Component<{
             </div>
             <div className={zegoOne2OneCss.name}>
               <span
-                className={`${zegoOne2OneCss.micIcon} ${!this.props.selfUserInfo
-                  .micOpen && zegoOne2OneCss.close}`}
+                className={`${zegoOne2OneCss.micIcon} ${
+                  !this.props.selfUserInfo.micOpen && zegoOne2OneCss.close
+                }`}
               ></span>
               <p>{this.props.selfUserInfo.userName} (You)</p>
             </div>
@@ -104,6 +110,9 @@ export class ZegoOne2One extends React.Component<{
                 el.srcObject !== this.props.localStream! &&
                 (el.srcObject = this.props.localStream!);
             }}
+            onPause={() => {
+              this.props.onLocalStreamPaused();
+            }}
           ></video>
           <div
             className={zegoOne2OneCss.cameraMask}
@@ -121,8 +130,9 @@ export class ZegoOne2One extends React.Component<{
           </div>
           <div className={zegoOne2OneCss.name}>
             <span
-              className={`${zegoOne2OneCss.micIcon} ${!this.props.selfUserInfo
-                .micOpen && zegoOne2OneCss.close}`}
+              className={`${zegoOne2OneCss.micIcon} ${
+                !this.props.selfUserInfo.micOpen && zegoOne2OneCss.close
+              }`}
             ></span>
             <p>{this.props.selfUserInfo.userName} (You)</p>
           </div>

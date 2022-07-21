@@ -7,6 +7,7 @@ export class ZegoOne2One extends React.Component<{
   localStream: MediaStream | undefined;
   remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
   core: ZegoCloudRTCCore;
+  onLocalStreamPaused: () => void;
   remoteUserInfo: {
     userName: string | undefined;
     userID: string | undefined;
@@ -62,6 +63,9 @@ export class ZegoOne2One extends React.Component<{
                   el.srcObject !== this.props.localStream! &&
                   (el.srcObject = this.props.localStream!);
               }}
+              onPause={() => {
+                this.props.onLocalStreamPaused();
+              }}
             ></video>
             <div className={zegoOne2OneCss.smallName}>
               <p> {this.props.selfUserInfo.userName} </p>
@@ -102,6 +106,9 @@ export class ZegoOne2One extends React.Component<{
               el &&
                 el.srcObject !== this.props.localStream! &&
                 (el.srcObject = this.props.localStream!);
+            }}
+            onPause={() => {
+              this.props.onLocalStreamPaused();
             }}
           ></video>
           <div className={zegoOne2OneCss.name}>
