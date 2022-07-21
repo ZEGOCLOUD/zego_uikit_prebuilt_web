@@ -72,7 +72,7 @@ export default class App extends React.Component {
         <div ref={this.myMeeting} className={APP.myMeeting}></div>
         <div
           className={`${APP.serviceTips}  ${
-            isPc() ? "" : APP.mobileServiceTips
+            isPc() ? APP.pcServiceTips : APP.mobileServiceTips
           }`}
         >
           By clicking "Join", you agree to {!isPc() && <br />} our{" "}

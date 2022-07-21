@@ -74,7 +74,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       document
         .querySelectorAll(".settings_audio audio")
         .forEach((audio: any) => {
-          audio.setSinkId(this.state.seletSpeaker);
+          audio?.setSinkId && audio?.setSinkId(this.state.seletSpeaker);
         });
     }
   }
@@ -86,8 +86,20 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   }
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
-    const speakerDevices = await this.props.core.getSpeakers();
+    let speakerDevices = await this.props.core.getSpeakers();
     const cameraDevices = await this.props.core.getCameras();
+    if (!speakerDevices.length) {
+      if (
+        (/Safari/.test(navigator.userAgent) &&
+          !/Chrome/.test(navigator.userAgent)) ||
+        /Firefox/.test(navigator.userAgent)
+      ) {
+        speakerDevices.push({
+          deviceID: "default",
+          deviceName: "Default speaker",
+        });
+      }
+    }
     return {
       micDevices: micDevices.filter((device) => device.deviceID),
       speakerDevices: speakerDevices.filter((device) => device.deviceID),
@@ -257,7 +269,6 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       this.state.localAudioStream as MediaStream,
       "micTest",
       (soundLevel) => {
-        console.warn(soundLevel);
         this.setState({
           audioVolume: (soundLevel * 1000) / 5,
         });

@@ -63,8 +63,20 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
-    const speakerDevices = await this.props.core.getSpeakers();
+    let speakerDevices = await this.props.core.getSpeakers();
     const cameraDevices = await this.props.core.getCameras();
+    if (!speakerDevices.length) {
+      if (
+        (/Safari/.test(navigator.userAgent) &&
+          !/Chrome/.test(navigator.userAgent)) ||
+        /Firefox/.test(navigator.userAgent)
+      ) {
+        speakerDevices.push({
+          deviceID: "default",
+          deviceName: "efault speaker",
+        });
+      }
+    }
     // 防止设备移出后，再次使用缓存设备ID
     const mic = micDevices.filter(
       (device) => device.deviceID === sessionStorage.getItem("seletMic")
@@ -228,7 +240,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     this.props.core.status.cameraDeviceID = this.state.seletCamera;
     this.props.core.status.speakerDeviceID = this.state.seletSpeaker;
     this.props.core.status.videoResolution = this.state.seletVideoResolution;
-
     const loginRsp = await this.props.core.enterRoom();
 
     let massage = "";
@@ -265,7 +276,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
-    this.setState({ userName: event.target.value.substring(0, 255) });
+    this.setState({ userName: event.target.value.trim().substring(0, 255) });
   }
   handleCopy() {
     if (this.state.isCopied) return;

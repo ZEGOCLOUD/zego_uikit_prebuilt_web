@@ -384,11 +384,15 @@
       margin-bottom: 10px;
     }
     h5 {
+      max-width: 384px;
       font-size: 14px;
       font-weight: 400;
       color: #ffb763;
       line-height: 20px;
       margin-bottom: 4px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
     & > span {
       text-overflow: ellipsis;
@@ -396,6 +400,9 @@
       display: -webkit-box;
       -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
+    }
+    .nowrap {
+      word-wrap: break-word;
     }
   }
 }

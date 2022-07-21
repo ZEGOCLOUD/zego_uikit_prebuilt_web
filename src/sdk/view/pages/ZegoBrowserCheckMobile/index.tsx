@@ -210,7 +210,7 @@ export class ZegoBrowserCheckMobile extends React.Component<
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
-    this.setState({ userName: event.target.value.substring(0, 255) });
+    this.setState({ userName: event.target.value.trim().substring(0, 255) });
   }
 
   render(): React.ReactNode {

@@ -76,7 +76,6 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
 
         if (nav && isPc()) {
           nav.style.display = "none";
-          meetingEl.style.height = "100%";
           privacy.style.display = "none";
         }
       }

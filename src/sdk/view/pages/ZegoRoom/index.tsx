@@ -14,7 +14,7 @@ import {
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { randomNumber } from "../../../util";
+import { getVideoResolution, randomNumber } from "../../../util";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { copy } from "../../../modules/util";
 import { userNameColor } from "../../../util";
@@ -52,8 +52,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     connecting: false,
     firstLoading: true,
     seletMic: this.props.core.status.micDeviceID,
-    seletSpeaker: this.props.core.status.cameraDeviceID,
-    seletCamera: this.props.core.status.speakerDeviceID,
+    seletSpeaker: this.props.core.status.speakerDeviceID,
+    seletCamera: this.props.core.status.cameraDeviceID,
     seletVideoResolution: this.props.core.status.videoResolution || "360",
   };
   inviteRef: RefObject<HTMLInputElement> = React.createRef();
@@ -234,15 +234,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       !this.props.core.status.audioRefuse
     ) {
       try {
+        const solution = getVideoResolution(this.state.seletVideoResolution);
         const localStream = await this.props.core.createStream({
           camera: {
             video: !this.props.core.status.videoRefuse,
             audio: !this.props.core.status.audioRefuse,
+            videoInput: this.state.seletCamera,
+            audioInput: this.state.seletMic,
             videoQuality: 4,
-            width: 640,
-            height: 360,
-            bitrate: 500,
-            frameRate: 15,
+            ...solution,
           },
         });
 
@@ -287,7 +287,13 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       this.state.localStream &&
       this.state.localStream.getAudioTracks().length > 0
     ) {
-      result = await this.props.core.muteMicrophone(this.state.micOpen);
+      (this.state.localStream as MediaStream)
+        .getAudioTracks()
+        .reverse()
+        .forEach((track) => {
+          track.enabled = !this.state.micOpen;
+        });
+      result = true;
     }
 
     this.micStatus = !this.state.micOpen ? 1 : 0;
@@ -408,13 +414,76 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     }
   };
   handleSetting() {
-    // ZegoSettingsAlert({
-    //   core: this.props.core,
-    //   theme: "black",
-    //   closeCallBack: () => {},
-    //   localAudioStream: this.state.localStream,
-    //   localVideoStream: this.state.localStream,
-    // });
+    ZegoSettingsAlert({
+      core: this.props.core,
+      theme: "black",
+      initDevices: {
+        mic: this.state.seletMic,
+        cam: this.state.seletCamera,
+        speaker: this.state.seletSpeaker,
+        videoResolve: this.state.seletVideoResolution,
+      },
+      closeCallBack: () => {},
+      onMicChange: (deviceID: string) => {
+        this.setState(
+          {
+            seletMic: deviceID,
+          },
+          () => {
+            if (this.state.localStream) {
+              this.props.core.useMicrophoneDevice(
+                this.state.localStream,
+                deviceID
+              );
+            }
+          }
+        );
+      },
+      onCameraChange: (deviceID: string) => {
+        this.setState(
+          {
+            seletCamera: deviceID,
+          },
+          () => {
+            if (this.state.localStream) {
+              this.props.core.useCameraDevice(this.state.localStream, deviceID);
+            }
+          }
+        );
+      },
+      onSpeakerChange: (deviceID: string) => {
+        this.setState(
+          {
+            seletSpeaker: deviceID,
+          },
+          () => {
+            document
+              .querySelectorAll("video")
+              .forEach((el: any) => el.setSinkId(deviceID));
+          }
+        );
+      },
+      onVideoResolutionChange: (level: string) => {
+        this.setState(
+          {
+            seletVideoResolution: level,
+          },
+          () => {
+            if (this.state.localStream) {
+              const { width, height, bitrate, frameRate } = getVideoResolution(
+                level
+              );
+              this.props.core.setVideoConfig(this.state.localStream, {
+                width,
+                height,
+                maxBitrate: bitrate,
+                frameRate,
+              });
+            }
+          }
+        );
+      },
+    });
   }
   handleLeave() {
     ZegoModelShow({
@@ -603,7 +672,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                       key={notify.content}
                       className={ZegoRoomCss.notifyContent}
                     >
-                      {notify.content}
+                      <span className={ZegoRoomCss.nowrap}>
+                        {notify.content}
+                      </span>
                     </div>
                   );
                 }
