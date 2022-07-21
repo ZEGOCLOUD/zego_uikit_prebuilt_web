@@ -139,8 +139,22 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         if (updateType === "ADD") {
           this.setState(
             (state: { userList: ZegoUser[]; notificationList: string[] }) => {
+              const noRepeat: ZegoUser[] = [];
+              userList.map((user) => {
+                if (
+                  state.userList.some((su) => {
+                    if (su.userID === user.userID) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  })
+                ) {
+                  noRepeat.push(user);
+                }
+              });
               return {
-                userList: [...state.userList, ...userList],
+                userList: [...state.userList, ...noRepeat],
                 notificationList: [
                   ...state.notificationList,
                   ...notificationList,

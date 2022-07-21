@@ -219,18 +219,22 @@ export class ZegoCloudRTCCore {
           const _streamList = [];
           for (let i = 0; i < streamList.length; i++) {
             const streamInfo = streamList[i];
-            const stream = await ZegoCloudRTCCore._zg.startPlayingStream(
-              streamInfo.streamID
-            );
-            this.remoteStreamMap[streamInfo.streamID] = {
-              fromUser: streamInfo.user,
-              media: stream,
-              micStatus: stream.getAudioTracks().length > 0 ? "OPEN" : "MUTE",
-              cameraStatus:
-                stream.getVideoTracks().length > 0 ? "OPEN" : "MUTE",
-              state: "PLAYING",
-            };
-            _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
+            try {
+              const stream = await ZegoCloudRTCCore._zg.startPlayingStream(
+                streamInfo.streamID
+              );
+              this.remoteStreamMap[streamInfo.streamID] = {
+                fromUser: streamInfo.user,
+                media: stream,
+                micStatus: stream.getAudioTracks().length > 0 ? "OPEN" : "MUTE",
+                cameraStatus:
+                  stream.getVideoTracks().length > 0 ? "OPEN" : "MUTE",
+                state: "PLAYING",
+              };
+              _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
+            } catch (error) {
+              console.warn("【ZEGOCLOUD】:startPlayingStream error", error);
+            }
           }
           this.onRemoteMediaUpdateCallBack &&
             this.onRemoteMediaUpdateCallBack("ADD", _streamList);
@@ -274,6 +278,7 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.on(
       "playerStateUpdate",
       (streamInfo: ZegoPlayerState) => {
+        console.warn("【ZEGOCLOUD】", streamInfo);
         if (this.remoteStreamMap[streamInfo.streamID]) {
           this.remoteStreamMap[streamInfo.streamID].state = streamInfo.state;
           this.onRemoteMediaUpdateCallBack &&
