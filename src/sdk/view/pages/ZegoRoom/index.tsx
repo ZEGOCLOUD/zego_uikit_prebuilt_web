@@ -682,7 +682,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                   } else {
                     return (
                       <div key={index} className={ZegoRoomCss.notifyContent}>
-                        {notify.content}
                         <span className={ZegoRoomCss.nowrap}>
                           {notify.content}
                         </span>

@@ -40,7 +40,9 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           root.style.display = "flex";
         }
         if (nav && isPc()) {
+          const meetingEl = nav.nextElementSibling as HTMLDivElement;
           nav.style.display = "flex";
+          meetingEl.style.height = "auto";
           privacy.style.display = "block";
         }
       }
@@ -76,6 +78,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
 
         if (nav && isPc()) {
           nav.style.display = "none";
+          meetingEl.style.height = "100%";
           privacy.style.display = "none";
         }
       }
