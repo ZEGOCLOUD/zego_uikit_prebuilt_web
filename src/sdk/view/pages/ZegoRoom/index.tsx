@@ -498,6 +498,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     });
   }
   leaveRoom() {
+    this.state.localStream &&
+      this.props.core.destroyStream(this.state.localStream);
     this.props.core.leaveRoom();
     this.props.leaveRoom && this.props.leaveRoom();
   }

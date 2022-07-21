@@ -466,6 +466,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       confirm: "Confirm",
       closeCallBack: (confirm: boolean) => {
         if (confirm) {
+          this.state.localStream &&
+            this.props.core.destroyStream(this.state.localStream);
           this.props.core.leaveRoom();
           this.props.leaveRoom && this.props.leaveRoom();
         }

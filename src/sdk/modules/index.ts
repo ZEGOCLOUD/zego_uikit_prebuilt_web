@@ -483,6 +483,10 @@ export class ZegoCloudRTCCore {
     this.onRemoteMediaUpdateCallBack = () => {};
     this.onRemoteUserUpdateCallBack = () => {};
     this.onRoomMessageUpdateCallBack = () => {};
+    for (let key in this.remoteStreamMap) {
+      ZegoCloudRTCCore._zg.stopPlayingStream(key);
+    }
+    this.remoteStreamMap = {};
 
     ZegoCloudRTCCore._zg.logoutRoom();
     this.status.loginRsp = false;
