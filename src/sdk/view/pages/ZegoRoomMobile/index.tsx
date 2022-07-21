@@ -549,6 +549,17 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             cameraOpen: this.state.cameraOpen,
           }}
           core={this.props.core}
+          onLocalStreamPaused={async () => {
+            console.warn("onLocalStreamPaused");
+            await this.props.core.enableVideoCaptureDevice(
+              this.state.localStream!,
+              !this.state.cameraOpen
+            );
+            this.props.core.enableVideoCaptureDevice(
+              this.state.localStream!,
+              this.state.cameraOpen
+            );
+          }}
         ></ZegoOne2One>
 
         {this.state.showFooter && (

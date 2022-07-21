@@ -308,7 +308,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     }
   }
 
-  async toggleCamera() {
+  async toggleCamera(): Promise<boolean> {
     if (this.props.core.status.videoRefuse) {
       ZegoModelShow({
         header: "Equipment authorization",
@@ -316,9 +316,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
         okText: "Okay",
       });
-      return;
+      return Promise.resolve(false);
     }
-    if (this.cameraStatus === -1) return;
+    if (this.cameraStatus === -1) return Promise.resolve(false);
     this.cameraStatus = -1;
 
     let result;
@@ -341,6 +341,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           cameraOpen: !!this.cameraStatus,
         });
     }
+    return !!result;
   }
 
   toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE") {
@@ -638,6 +639,17 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         <div className={ZegoRoomCss.content}>
           <div className={ZegoRoomCss.contentLeft}>
             <ZegoOne2One
+              onLocalStreamPaused={async () => {
+                console.warn("onLocalStreamPaused");
+                await this.props.core.enableVideoCaptureDevice(
+                  this.state.localStream!,
+                  !this.state.cameraOpen
+                );
+                this.props.core.enableVideoCaptureDevice(
+                  this.state.localStream!,
+                  this.state.cameraOpen
+                );
+              }}
               localStream={this.state.localStream}
               remoteStreamInfo={this.state.remoteStreamInfo}
               remoteUserInfo={{
@@ -655,30 +667,27 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               }}
             ></ZegoOne2One>
             <div className={ZegoRoomCss.notify}>
-              {this.state.notificationList.slice(startIndex).map((notify) => {
-                if (notify.type === "MSG") {
-                  return (
-                    <div
-                      key={notify.content}
-                      className={ZegoRoomCss.notifyContent}
-                    >
-                      <h5>{notify.userName}</h5>
-                      <span>{notify.content}</span>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div
-                      key={notify.content}
-                      className={ZegoRoomCss.notifyContent}
-                    >
-                      <span className={ZegoRoomCss.nowrap}>
+              {this.state.notificationList
+                .slice(startIndex)
+                .map((notify, index) => {
+                  if (notify.type === "MSG") {
+                    return (
+                      <div key={index} className={ZegoRoomCss.notifyContent}>
+                        <h5>{notify.userName}</h5>
+                        <span>{notify.content}</span>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div key={index} className={ZegoRoomCss.notifyContent}>
                         {notify.content}
-                      </span>
-                    </div>
-                  );
-                }
-              })}
+                        <span className={ZegoRoomCss.nowrap}>
+                          {notify.content}
+                        </span>
+                      </div>
+                    );
+                  }
+                })}
             </div>
             {this.state.isNetworkPoor && (
               <div className={ZegoRoomCss.network}></div>
