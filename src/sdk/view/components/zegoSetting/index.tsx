@@ -43,7 +43,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     isSpeakerPlaying: false,
   };
   videoRef = React.createRef<HTMLDivElement>();
-  //   micAudioRef = React.createRef<HTMLAudioElement>();
+  speakerTimer: NodeJS.Timer | null = null;
   solutionList = [
     {
       name: "180p",
@@ -220,19 +220,23 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   }
   toggleSpeakerTest() {
     if (!this.state.speakerDevices.length) return;
+    if (this.speakerTimer) {
+      clearTimeout(this.speakerTimer);
+    }
+    const prePlaying = this.state.isSpeakerPlaying;
     this.setState(
       {
-        isSpeakerPlaying: !this.state.isSpeakerPlaying,
+        isSpeakerPlaying: true,
       },
       () => {
         const dom = document.querySelector(
           "#speakerAudioTest"
         ) as HTMLMediaElement;
-        // @ts-ignore
-        const stream = dom.captureStream();
-        if (!stream.active) return;
-        if (this.state.isSpeakerPlaying) {
-          dom.play();
+        dom.paused && dom.play();
+        if (!prePlaying) {
+          // @ts-ignore
+          const stream = dom.captureStream();
+          if (!stream.active) return;
           this.props.core.capturedSoundLevelUpdate(
             stream,
             "speakerTest",
@@ -242,13 +246,15 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
               });
             }
           );
-        } else {
+        }
+        this.speakerTimer = setTimeout(() => {
           dom.pause();
           this.setState({
             speakerVolume: 0,
+            isSpeakerPlaying: false,
           });
           this.props.core.stopCapturedSoundLevelUpdate("speakerTest");
-        }
+        }, 5000);
       }
     );
   }
@@ -396,7 +402,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                           this.toggleSpeakerTest();
                         }}
                       >
-                        {this.state.isSpeakerPlaying ? "Stop" : "Test"}
+                        Test
                       </div>
                     </div>
                   </div>
@@ -415,8 +421,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                         el.setSinkId(this.state.seletSpeaker);
                       }
                     }}
-                    loop
                     src={audioBase64}
+                    loop
                   ></audio>
                 </div>
               )}

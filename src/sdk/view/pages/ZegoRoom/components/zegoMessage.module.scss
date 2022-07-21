@@ -49,6 +49,8 @@
     border-radius: 10px;
     background-color: rgba(48, 51, 65, 0.7);
     position: relative;
+    word-break: break-word;
+    white-space: break-spaces;
   }
   .loading {
     &::after {

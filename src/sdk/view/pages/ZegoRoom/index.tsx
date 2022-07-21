@@ -91,10 +91,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       (preState.notificationList.length > 0 &&
         this.state.notificationList.length > 0 &&
         preState.notificationList[preState.notificationList.length - 1]
-          .content !=
+          .messageID !==
           this.state.notificationList[this.state.notificationList.length - 1]
-            .content) ||
-      (preState.notificationList.length == 0 &&
+            .messageID) ||
+      (preState.notificationList.length === 0 &&
         this.state.notificationList.length > 0)
     ) {
       this.notifyTimer && clearTimeout(this.notifyTimer);
@@ -133,6 +133,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     this.props.core.onRemoteUserUpdate(
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
         let notificationList: ZegoNotification[] = [];
+        console.warn(userList);
         if (this.props.core._config.notification?.userOnlineOfflineTips) {
           userList.map((u) => {
             notificationList.push({
@@ -143,6 +144,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 " the room",
               type: "USER",
               userName: u.userName,
+              messageID: randomNumber(5),
             });
           });
         }
@@ -211,6 +213,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                     content: m.message,
                     type: "MSG",
                     userName: m.fromUser.userName,
+                    messageID: m.messageID,
                   };
                 }),
               ];
@@ -493,6 +496,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       okText: "Confirm",
       cancelText: "Cancel",
       onOk: () => {
+        this.props.core._config.cameraEnabled = this.state.cameraOpen;
+        this.props.core._config.micEnabled = this.state.micOpen;
         this.leaveRoom();
       },
     });

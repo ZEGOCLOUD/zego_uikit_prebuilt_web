@@ -42,6 +42,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       isSupportWebRTC: res,
       userName: this.props.core._expressConfig.userName,
     });
+    if (!res) return;
     const devices = await this.getDevices();
     this.setState(
       {

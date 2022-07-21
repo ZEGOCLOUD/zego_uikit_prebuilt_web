@@ -80,10 +80,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       (preState.notificationList.length > 0 &&
         this.state.notificationList.length > 0 &&
         preState.notificationList[preState.notificationList.length - 1]
-          .content !=
+          .messageID !==
           this.state.notificationList[this.state.notificationList.length - 1]
-            .content) ||
-      (preState.notificationList.length == 0 &&
+            .messageID) ||
+      (preState.notificationList.length === 0 &&
         this.state.notificationList.length > 0)
     ) {
       if (this.notifyTimer) {
@@ -133,6 +133,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 " the room",
               type: "USER",
               userName: u.userName,
+              messageID: randomNumber(5),
             });
           });
         }
@@ -201,6 +202,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                     content: m.message,
                     type: "MSG",
                     userName: m.fromUser.userName,
+                    messageID: m.messageID,
                   };
                 }),
               ];

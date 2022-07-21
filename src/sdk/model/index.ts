@@ -54,6 +54,7 @@ export interface ZegoNotification {
   type: "USER" | "MSG";
   content: string;
   userName: undefined | string;
+  messageID: number;
 }
 
 export declare type ZegoBroadcastMessageInfo2 = ZegoBroadcastMessageInfo & {
