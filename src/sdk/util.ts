@@ -83,7 +83,7 @@ export function getUrlParams(url: string) {
   return result;
 }
 
-export function getVideoResolve(
+export function getVideoResolution(
   level: string
 ): {
   width: number;

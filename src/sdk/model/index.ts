@@ -73,5 +73,5 @@ export interface ZegoSettingsProps {
   onMicChange: (deviceID: string) => void;
   onCameraChange: (deviceID: string) => void;
   onSpeakerChange: (deviceID: string) => void;
-  onVideoResolveChange: (level: string) => void;
+  onVideoResolutionChange: (level: string) => void;
 }

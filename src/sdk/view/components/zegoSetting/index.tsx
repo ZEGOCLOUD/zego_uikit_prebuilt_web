@@ -9,7 +9,7 @@ import ZegoSettingsCss from "./index.module.scss";
 import { ZegoSelect } from "../../components/zegoSelect";
 import { audioBase64 } from "./speakerFile";
 import { ZegoSettingsProps } from "../../../model";
-import { getVideoResolve } from "../../../util";
+import { getVideoResolution } from "../../../util";
 export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   state: {
     visible: boolean;
@@ -17,7 +17,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     seletMic: string | undefined;
     seletSpeaker: string | undefined;
     seletCamera: string | undefined;
-    seletVideoResolve: string | undefined;
+    seletVideoResolution: string | undefined;
     micDevices: ZegoDeviceInfo[];
     speakerDevices: ZegoDeviceInfo[];
     cameraDevices: ZegoDeviceInfo[];
@@ -37,7 +37,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     cameraDevices: [],
     localVideoStream: undefined,
     localAudioStream: undefined,
-    seletVideoResolve: "360",
+    seletVideoResolution: "360",
     audioVolume: 0,
     speakerVolume: 0,
     isSpeakerPlaying: false,
@@ -95,13 +95,15 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       seletMic: this.props.initDevices.mic || undefined,
       seletSpeaker: this.props.initDevices.speaker || undefined,
       seletCamera: this.props.initDevices.cam || undefined,
-      seletVideoResolve: this.props.initDevices.videoResolve || undefined,
+      seletVideoResolution: this.props.initDevices.videoResolve || undefined,
     };
   }
 
   async createVideoStream(): Promise<boolean> {
     try {
-      const config = getVideoResolve(this.state.seletVideoResolve as string);
+      const config = getVideoResolution(
+        this.state.seletVideoResolution as string
+      );
       const source: ZegoLocalStreamConfig = {
         camera: {
           video: true,
@@ -199,13 +201,10 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       this.props.onCameraChange(deviceID);
     }
   }
-  async toggleVideoResolve(level: string) {
-    if (!this.state.localVideoStream) return;
-    const res = await this.createVideoStream();
-    if (res) {
-      this.setState({ seletVideoResolve: level });
-      this.props.onVideoResolveChange(level);
-    }
+  async toggleVideoResolution(level: string) {
+    this.createVideoStream();
+    this.setState({ seletVideoResolution: level });
+    this.props.onVideoResolutionChange(level);
   }
   toggleSpeakerTest() {
     if (!this.state.speakerDevices.length) return;
@@ -246,8 +245,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     sessionStorage.setItem("seletCamera", this.state.seletCamera || "");
     sessionStorage.setItem("seletSpeaker", this.state.seletSpeaker || "");
     sessionStorage.setItem(
-      "seletVideoResolve",
-      this.state.seletVideoResolve || ""
+      "seletVideoResolution",
+      this.state.seletVideoResolution || ""
     );
     this.setState({ visible: false });
     this.props.closeCallBack && this.props.closeCallBack();
@@ -392,22 +391,6 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                   </div>
                   <audio
                     style={{ width: "1px", height: "1px" }}
-                    id="mic"
-                    autoPlay={true}
-                    ref={(el: HTMLAudioElement | null) => {
-                      if (
-                        el &&
-                        // @ts-ignore
-                        el.srcObject !== this.state.localAudioStream
-                      ) {
-                        // @ts-ignore
-                        el.srcObject = this.state.localAudioStream;
-                      }
-                    }}
-                    loop
-                  ></audio>
-                  <audio
-                    style={{ width: "1px", height: "1px" }}
                     id="speakerAudioTest"
                     ref={(el: HTMLAudioElement | null) => {
                       if (
@@ -465,9 +448,9 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                       label="Send resolution"
                       options={this.solutionList}
                       onChange={(value: string) => {
-                        this.toggleVideoResolve(value);
+                        this.toggleVideoResolution(value);
                       }}
-                      initValue={this.state.seletVideoResolve}
+                      initValue={this.state.seletVideoResolution}
                       placeholder=""
                       theme={this.props.theme}
                     ></ZegoSelect>

@@ -34,6 +34,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     isNetworkPoor: boolean;
     connecting: boolean;
     firstLoading: boolean;
+    seletMic: string | undefined;
+    seletSpeaker: string | undefined;
+    seletCamera: string | undefined;
+    seletVideoResolution: string;
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -47,6 +51,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     isNetworkPoor: false,
     connecting: false,
     firstLoading: true,
+    seletMic: this.props.core.status.micDeviceID,
+    seletSpeaker: this.props.core.status.cameraDeviceID,
+    seletCamera: this.props.core.status.speakerDeviceID,
+    seletVideoResolution: this.props.core.status.videoResolution || "360",
   };
   inviteRef: RefObject<HTMLInputElement> = React.createRef();
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
