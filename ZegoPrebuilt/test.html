@@ -19,6 +19,12 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
   <title>ZEGOCLOUD video call Demo(prebuilt)</title>
+  <style>
+    #root {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
 </head>
 
 <body>
@@ -35,7 +41,7 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
 </body>
-<script src="./ZegoClient.umd.js"></script>
+<script src="./index.umd.js"></script>
 <script>
   // get token
   function generateToken(tokenServerUrl, userID, roomID, userName) {
@@ -78,7 +84,7 @@
     );
     const zp = ZegoPrebuilt.init(token);
     zp.joinRoom({
-      container: appDiv,
+      container: document.querySelector("#root"),
       joinScreen: {
         inviteURL:
           window.location.origin + window.location.pathname + '?roomID=' + roomID,

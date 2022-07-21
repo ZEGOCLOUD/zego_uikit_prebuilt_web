@@ -7,7 +7,7 @@ const BundleAnalyzerPlugin =
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 const config: webpack.Configuration = {
-  mode: "production",
+  mode: "development",
   entry: "./src/sdk/index.tsx",
   output: {
     filename: "index.umd.js",

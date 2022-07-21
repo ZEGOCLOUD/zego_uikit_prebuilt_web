@@ -25,7 +25,11 @@ export function randomNumber(len: number): number {
 export function isPc(): boolean {
   const p = navigator.platform;
   let system = { win: p.indexOf("Win") === 0, mac: p.indexOf("Mac") === 0 };
-  if (process && process.env && process.env.REACT_APP_MOBILE === "yes") {
+  if (
+    typeof process !== "undefined" &&
+    process.env &&
+    process.env.REACT_APP_MOBILE === "yes"
+  ) {
     return false;
   }
   return system.win || system.mac;
