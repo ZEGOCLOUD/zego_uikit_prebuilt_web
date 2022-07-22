@@ -1,6 +1,5 @@
 import { getConfig } from "./util";
 import { randomID } from "../../util";
-import { SoundLevel } from "./soundmeter";
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import {
   ZegoDeviceInfo,
