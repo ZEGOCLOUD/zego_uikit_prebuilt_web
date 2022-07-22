@@ -20,7 +20,7 @@ export default class App extends React.Component {
       const zgc = ZegoPrebuilt.init(token);
       zgc.joinRoom({
         container: element,
-        notification: { unreadMessageTips: true, userOnlineOfflineTips: true },
+        // notification: { unreadMessageTips: true, userOnlineOfflineTips: true },
         joinScreen: {
           inviteURL:
             window.location.origin +
@@ -30,10 +30,15 @@ export default class App extends React.Component {
           visible: true,
           title: "Join Room",
         },
-        branding: {
-          logoURL:
-            "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
-        },
+        // micEnabled: false, // 是否开启自己的麦克风,默认开启
+        // cameraEnabled: true, // 是否开启自己的摄像头 ,默认开启
+        // userCanToggleSelfCamera: false, // 是否可以控制自己的麦克风,默认开启
+        // userCanToggleSelfMic: false, // 是否可以控制体自己的摄像头,默认开启
+        deviceSettings: true,
+        // branding: {
+        //   logoURL:
+        //     "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
+        // },
       });
     };
   }

@@ -35,6 +35,7 @@ export class ZegoPrebuilt {
       div.style.left = "0px";
       div.style.zIndex = "100";
       div.style.backgroundColor = "#FFFFFF";
+      div.style.overflow = "auto";
       document.body.appendChild(div);
       roomConfig = {
         ...roomConfig,

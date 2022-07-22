@@ -444,25 +444,29 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 </div>
               </div>
 
-              <div className={ZegoBrowserCheckCss.shareLinkWrapper}>
-                <div className={ZegoBrowserCheckCss.title}>Share the Link</div>
-                <div className={ZegoBrowserCheckCss.inviteLinkWrapper}>
-                  <input
-                    className={ZegoBrowserCheckCss.inviteLink}
-                    placeholder="inviteLink"
-                    readOnly
-                    value={this.props.core._config.joinScreen?.inviteURL}
-                    ref={this.inviteRef}
-                  ></input>
-                  <button
-                    className={ZegoBrowserCheckCss.copyLinkButton}
-                    disabled={this.state.isCopied}
-                    onClick={() => {
-                      this.handleCopy();
-                    }}
-                  ></button>
+              {this.props.core._config.joinScreen?.inviteURL && (
+                <div className={ZegoBrowserCheckCss.shareLinkWrapper}>
+                  <div className={ZegoBrowserCheckCss.title}>
+                    Share the Link
+                  </div>
+                  <div className={ZegoBrowserCheckCss.inviteLinkWrapper}>
+                    <input
+                      className={ZegoBrowserCheckCss.inviteLink}
+                      placeholder="inviteLink"
+                      readOnly
+                      value={this.props.core._config.joinScreen?.inviteURL}
+                      ref={this.inviteRef}
+                    ></input>
+                    <button
+                      className={ZegoBrowserCheckCss.copyLinkButton}
+                      disabled={this.state.isCopied}
+                      onClick={() => {
+                        this.handleCopy();
+                      }}
+                    ></button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
           {this.state.showDeviceAuthorAlert && (

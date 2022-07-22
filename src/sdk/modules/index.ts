@@ -79,10 +79,7 @@ export class ZegoCloudRTCCore {
     cameraEnabled: true, // 是否开启自己的摄像头 ,默认开启
     userCanToggleSelfCamera: true, // 是否可以控制自己的麦克风,默认开启
     userCanToggleSelfMic: true, // 是否可以控制体自己的摄像头,默认开启
-    deviceSettings: {
-      audio: true, // 是否显示音频设置
-      video: true, // 是否显示视频设置
-    },
+    deviceSettings: true,
     chatEnabled: true, // 是否开启聊天，默认开启   joinScreen: boolean，// 通话前检测页面是否需要，默认需要
     userListEnabled: true, //是否显示成员列表，默认不展示
     notification: {
@@ -113,11 +110,17 @@ export class ZegoCloudRTCCore {
   }
 
   capturedSoundLevelUpdate(
-    source: MediaStream,
+    source: MediaStream | HTMLMediaElement,
     sourceId: string,
+    type: "Element" | "Stream",
     callback: (soundLevel: number) => void
   ): void {
-    ZegoCloudRTCCore._soundMeter.connectToSource(source, sourceId, callback);
+    ZegoCloudRTCCore._soundMeter.connectToSource(
+      source,
+      sourceId,
+      type,
+      callback
+    );
   }
 
   stopCapturedSoundLevelUpdate(sourceId: string): void {
