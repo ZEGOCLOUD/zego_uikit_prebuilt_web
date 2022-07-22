@@ -143,7 +143,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               const noRepeat: ZegoUser[] = [];
               userList.map((user) => {
                 if (
-                  state.userList.some((su) => {
+                  !state.userList.some((su) => {
                     if (su.userID === user.userID) {
                       return true;
                     } else {
