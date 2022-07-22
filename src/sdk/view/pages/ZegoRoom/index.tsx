@@ -754,7 +754,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               >
                 {/* <div>Change the layout</div>
                 <span></span> */}
-                <div onClick={() => this.handleSetting()}>Setting</div>
+                <div onClick={() => this.handleSetting()}>Settings</div>
               </div>
             </div>
             <div
