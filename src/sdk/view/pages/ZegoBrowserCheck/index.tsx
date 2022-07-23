@@ -194,12 +194,15 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       if (!this.state.localVideoStream) {
         await this.createStream(videoOpen, this.state.audioOpen);
       } else {
-        // (this.state.localVideoStream as MediaStream)
-        //   .getTracks()
-        //   .reverse()
-        //   .forEach((track) => track.stop());
         this.props.core.destroyStream(this.state.localVideoStream);
         this.setState({ localVideoStream: undefined });
+        if (
+          /Firefox/.test(navigator.userAgent) &&
+          this.videoRef.current &&
+          this.state.localStream
+        ) {
+          this.videoRef.current.srcObject = this.videoRef.current.srcObject;
+        }
       }
       this.setState({ videoOpen });
     } else if (type === "audio") {
