@@ -14,7 +14,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     userName: "xxx",
     videoOpen: true,
     audioOpen: true,
-    isVideoOpening: false, // 摄像头正在开启中
+    isVideoOpening: true, // 摄像头正在开启中
     isCopied: false, //  是否已经点击复制链接
     isJoinRoomFailed: false, // 是否加入房间失败
     joinRoomErrorTip: `Failed to join the room.`, // 加入房间失败提示
@@ -194,10 +194,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       if (!this.state.localVideoStream) {
         await this.createStream(videoOpen, this.state.audioOpen);
       } else {
-        (this.state.localVideoStream as MediaStream)
-          .getTracks()
-          .reverse()
-          .forEach((track) => track.stop());
+        // (this.state.localVideoStream as MediaStream)
+        //   .getTracks()
+        //   .reverse()
+        //   .forEach((track) => track.stop());
+        this.props.core.destroyStream(this.state.localVideoStream);
         this.setState({ localVideoStream: undefined });
       }
       this.setState({ videoOpen });
@@ -215,11 +216,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       if (!this.state.localAudioStream) {
         await this.createStream(this.state.videoOpen, audioOpen);
       } else {
-        (this.state.localAudioStream as MediaStream)
-          .getTracks()
-          .reverse()
-          .forEach((track) => track.stop());
-        this.setState({ localAudioStream: undefined });
+        this.props.core.muteMicrophone(this.state.audioOpen);
       }
       this.setState({ audioOpen });
     }
@@ -346,7 +343,9 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         <ZegoModel
           header={"Browser not supported"}
           contentText={
-            "The current browser is not available for you to join the room."
+            /Firefox/.test(window.navigator.userAgent)
+              ? "Your browser version does not support the features or something wrong with your network. Please check them and try again."
+              : "The current browser is not available for you to join the room."
           }
         ></ZegoModel>
       );

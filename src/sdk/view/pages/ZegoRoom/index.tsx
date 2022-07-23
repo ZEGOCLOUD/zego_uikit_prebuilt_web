@@ -304,13 +304,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       this.state.localStream &&
       this.state.localStream.getAudioTracks().length > 0
     ) {
-      (this.state.localStream as MediaStream)
-        .getAudioTracks()
-        .reverse()
-        .forEach((track) => {
-          track.enabled = !this.state.micOpen;
-        });
-      result = true;
+      result = await this.props.core.muteMicrophone(this.state.micOpen);
     }
 
     this.micStatus = !this.state.micOpen ? 1 : 0;
@@ -462,9 +456,17 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           {
             seletCamera: deviceID,
           },
-          () => {
+          async () => {
             if (this.state.localStream) {
-              this.props.core.useCameraDevice(this.state.localStream, deviceID);
+              await this.props.core.useCameraDevice(
+                this.state.localStream,
+                deviceID
+              );
+              //   !this.state.cameraOpen &&
+              //     this.props.core.enableVideoCaptureDevice(
+              //       this.state.localStream,
+              //       this.state.cameraOpen
+              //     );
             }
           }
         );
@@ -488,8 +490,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           },
           () => {
             if (this.state.localStream) {
-              const { width, height, bitrate, frameRate } =
-                getVideoResolution(level);
+              const { width, height, bitrate, frameRate } = getVideoResolution(
+                level
+              );
               this.props.core.setVideoConfig(this.state.localStream, {
                 width,
                 height,
@@ -511,6 +514,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       onOk: () => {
         this.props.core._config.cameraEnabled = this.state.cameraOpen;
         this.props.core._config.micEnabled = this.state.micOpen;
+        this.props.core.status.micDeviceID = this.state.seletMic;
+        this.props.core.status.cameraDeviceID = this.state.seletCamera;
+        this.props.core.status.speakerDeviceID = this.state.seletSpeaker;
+        this.props.core.status.videoResolution = this.state.seletVideoResolution;
         this.leaveRoom();
       },
     });
@@ -735,9 +742,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           <div className={ZegoRoomCss.handlerMiddle}>
             {this.props.core._config.userCanToggleSelfMic && (
               <div
-                className={`${ZegoRoomCss.micButton} ${
-                  !this.state.micOpen && ZegoRoomCss.close
-                }`}
+                className={`${ZegoRoomCss.micButton} ${!this.state.micOpen &&
+                  ZegoRoomCss.close}`}
                 onClick={() => {
                   this.toggleMic();
                 }}
@@ -745,9 +751,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             )}
             {this.props.core._config.userCanToggleSelfCamera && (
               <div
-                className={`${ZegoRoomCss.cameraButton} ${
-                  !this.state.cameraOpen && ZegoRoomCss.close
-                }`}
+                className={`${ZegoRoomCss.cameraButton} ${!this.state
+                  .cameraOpen && ZegoRoomCss.close}`}
                 onClick={() => {
                   this.toggleCamera();
                 }}

@@ -28,13 +28,13 @@ export class ZegoCloudRTCCore {
     roomID: string;
     token: string;
   };
-  static _soundMeter: SoundMeter;
+  //   static _soundMeter: SoundMeter;
   static getInstance(token: string): ZegoCloudRTCCore {
     const config = getConfig(token);
     if (!ZegoCloudRTCCore._instance && config) {
       ZegoCloudRTCCore._instance = new ZegoCloudRTCCore();
       ZegoCloudRTCCore._instance._expressConfig = config;
-      ZegoCloudRTCCore._soundMeter = new SoundMeter();
+      //   ZegoCloudRTCCore._soundMeter = new SoundMeter();
       ZegoCloudRTCCore._zg = new ZegoExpressEngine(
         ZegoCloudRTCCore._instance._expressConfig.appID,
         "wss://webliveroom" +
@@ -108,23 +108,23 @@ export class ZegoCloudRTCCore {
     return ZegoCloudRTCCore._zg.getSpeakers();
   }
 
-  capturedSoundLevelUpdate(
-    source: MediaStream | HTMLMediaElement,
-    sourceId: string,
-    type: "Element" | "Stream",
-    callback: (soundLevel: number) => void
-  ): void {
-    ZegoCloudRTCCore._soundMeter.connectToSource(
-      source,
-      sourceId,
-      type,
-      callback
-    );
-  }
+  //   capturedSoundLevelUpdate(
+  //     source: MediaStream | HTMLMediaElement,
+  //     sourceId: string,
+  //     type: "Element" | "Stream",
+  //     callback: (soundLevel: number) => void
+  //   ): void {
+  //     // ZegoCloudRTCCore._soundMeter.connectToSource(
+  //     //   source,
+  //     //   sourceId,
+  //     //   type,
+  //     //   callback
+  //     // );
+  //   }
 
-  stopCapturedSoundLevelUpdate(sourceId: string): void {
-    ZegoCloudRTCCore._soundMeter.stop(sourceId);
-  }
+  //   stopCapturedSoundLevelUpdate(sourceId: string): void {
+  //     // ZegoCloudRTCCore._soundMeter.stop(sourceId);
+  //   }
 
   setVolume(media: HTMLVideoElement, volume: number): void {
     media.volume = volume;
@@ -191,7 +191,12 @@ export class ZegoCloudRTCCore {
   ): Promise<boolean> {
     return ZegoCloudRTCCore._zg.mutePublishStreamVideo(localStream, enable);
   }
-
+  async mutePublishStreamAudio(
+    localStream: MediaStream,
+    enable: boolean
+  ): Promise<boolean> {
+    return ZegoCloudRTCCore._zg.mutePublishStreamAudio(localStream, enable);
+  }
   async muteMicrophone(enable: boolean): Promise<boolean> {
     return ZegoCloudRTCCore._zg.muteMicrophone(enable);
   }

@@ -10,6 +10,7 @@ import { ZegoSelect } from "../../components/zegoSelect";
 import { audioBase64 } from "./speakerFile";
 import { ZegoSettingsProps } from "../../../model";
 import { getVideoResolution } from "../../../util";
+import { SoundMeter } from "../../../modules/soundmeter";
 export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   state: {
     visible: boolean;
@@ -44,8 +45,9 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   };
   videoRef = React.createRef<HTMLDivElement>();
   speakerTimer: NodeJS.Timer | null = null;
-  micID: string = "mic" + Date.now();
-  speakerID: string = "speaker" + Date.now();
+  micTimer: NodeJS.Timer | null = null;
+  micSounder: SoundMeter = new SoundMeter();
+  speakerSounder: SoundMeter = new SoundMeter();
   solutionList = [
     {
       name: "180p",
@@ -70,6 +72,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       this.createVideoStream();
       this.createAudioStream();
     });
+    const dom = document.querySelector("#speakerAudioTest") as HTMLMediaElement;
+    dom.addEventListener("ended", this.onTestMusicEnded.bind(this));
   }
   componentDidUpdate(prevProps: any, preState: any) {
     if (preState.seletSpeaker !== this.state.seletSpeaker) {
@@ -81,14 +85,17 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     }
   }
   componentWillUnmount() {
-    this.props.core.stopCapturedSoundLevelUpdate(this.micID);
     if (this.state.isSpeakerPlaying) {
-      this.props.core.stopCapturedSoundLevelUpdate(this.speakerID);
+      this.speakerTimer && clearTimeout(this.speakerTimer);
+      this.speakerSounder.stop();
     }
-    this.state.localAudioStream &&
+    if (this.state.localAudioStream) {
       this.state.localAudioStream.getAudioTracks().forEach((track: any) => {
         track.stop();
       });
+      this.micTimer && clearTimeout(this.micTimer);
+      this.micSounder.stop();
+    }
   }
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
@@ -180,9 +187,14 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     if (type === "AUDIO") {
       this.captureMicVolume();
     } else {
-      this.props.core.stopCapturedSoundLevelUpdate(this.micID);
+      if (this.state.localAudioStream) {
+        this.micSounder.stop();
+        this.micTimer && clearTimeout(this.micTimer);
+        this.setState({ audioVolume: 0 });
+      }
       if (this.state.isSpeakerPlaying) {
-        this.props.core.stopCapturedSoundLevelUpdate(this.speakerID);
+        this.speakerTimer && clearTimeout(this.speakerTimer);
+        this.speakerSounder.stop();
         this.setState({ isSpeakerPlaying: false, speakerVolume: 0 });
       }
     }
@@ -196,7 +208,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       this.state.localAudioStream,
       deviceID
     );
-    this.props.core.stopCapturedSoundLevelUpdate(this.micID);
+    this.micSounder.stop();
+    this.micTimer && clearTimeout(this.micTimer);
     this.captureMicVolume();
     if (res.errorCode === 0) {
       this.setState({ seletMic: deviceID });
@@ -226,10 +239,10 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   }
   toggleSpeakerTest() {
     if (!this.state.speakerDevices.length) return;
+    if (this.state.isSpeakerPlaying) return;
     if (this.speakerTimer) {
       clearTimeout(this.speakerTimer);
     }
-    const prePlaying = this.state.isSpeakerPlaying;
     this.setState(
       {
         isSpeakerPlaying: true,
@@ -239,29 +252,19 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
           "#speakerAudioTest"
         ) as HTMLMediaElement;
         dom.paused && dom.play();
-        if (!prePlaying) {
-          // @ts-ignore
-          //   const stream = dom.captureStream();
-          //   if (!stream.active) return;
-          this.props.core.capturedSoundLevelUpdate(
-            dom,
-            this.speakerID,
-            "Element",
-            (soundLevel) => {
-              this.setState({
-                speakerVolume: (soundLevel * 1000) / 12,
-              });
-            }
-          );
-        }
-        this.speakerTimer = setTimeout(() => {
-          dom.pause();
-          this.setState({
-            speakerVolume: 0,
-            isSpeakerPlaying: false,
+        this.speakerSounder.connectToElementSource(dom, (error: any) => {
+          if (error) {
+            console.error(
+              "[zegocloud] captureSpeakerVolume!!!",
+              JSON.stringify(error)
+            );
+          }
+          this.speakerTimer = setInterval(() => {
+            this.setState({
+              speakerVolume: this.speakerSounder.instant * 100,
+            });
           });
-          this.props.core.stopCapturedSoundLevelUpdate(this.speakerID);
-        }, 5000);
+        });
       }
     );
   }
@@ -278,16 +281,33 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   }
   captureMicVolume() {
     if (!this.state.localAudioStream) return;
-    this.props.core.capturedSoundLevelUpdate(
-      this.state.localAudioStream as MediaStream,
-      this.micID,
-      "Stream",
-      (soundLevel) => {
-        this.setState({
-          audioVolume: (soundLevel * 1000) / 5,
+    this.micSounder.connectToStreamSource(
+      this.state.localAudioStream,
+      (error: any) => {
+        if (error) {
+          console.error(
+            "[zegocloud] captureMicVolume!!!",
+            JSON.stringify(error)
+          );
+        }
+        this.micTimer = setInterval(() => {
+          this.setState({
+            audioVolume: (this.micSounder.instant * 1000) / 5,
+          });
         });
       }
     );
+  }
+  onTestMusicEnded() {
+    this.speakerSounder.stop();
+    if (this.speakerTimer) {
+      clearTimeout(this.speakerTimer);
+      this.speakerTimer = null;
+    }
+    this.setState({
+      isSpeakerPlaying: false,
+      speakerVolume: 0,
+    });
   }
   render(): React.ReactNode {
     return (
@@ -482,7 +502,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
               }
             }}
             src={audioBase64}
-            loop
+            // loop
           ></audio>
         </div>
       </div>
