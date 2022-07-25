@@ -1,13 +1,11 @@
-import React, { ChangeEvent, RefObject } from "react";
+import React, { ChangeEvent, FocusEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoModel } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
-export class ZegoBrowserCheckMobile extends React.Component<
-  ZegoBrowserCheckProp
-> {
+export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: undefined,
     localStream: undefined,
@@ -274,6 +272,19 @@ export class ZegoBrowserCheckMobile extends React.Component<
                   ev.target.scrollIntoView();
                   this.handleChange(ev);
                 }}
+                // onFocus={(ev: FocusEvent<HTMLInputElement>) => {
+                //   const ua = navigator.userAgent;
+                //   const iOS = /iPad|iPhone|iPod/.test(ua);
+                //   setTimeout(() => {
+                //     if (iOS) {
+                //       if (!/OS 11_[0-3]\D/.test(ua)) {
+                //         document.body.scrollTop = document.body.scrollHeight;
+                //       }
+                //     } else {
+                //       ev.target.scrollIntoView(false);
+                //     }
+                //   }, 500);
+                // }}
               ></input>
               <button
                 className={this.state.userName && ZegoBrowserCheckCss.active}

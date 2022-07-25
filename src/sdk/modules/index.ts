@@ -82,8 +82,8 @@ export class ZegoCloudRTCCore {
     chatEnabled: true, // 是否开启聊天，默认开启   joinScreen: boolean，// 通话前检测页面是否需要，默认需要
     userListEnabled: true, //是否显示成员列表，默认展示
     notification: {
-      userOnlineOfflineTips: false, //是否显示成员进出，默认不显示
-      unreadMessageTips: false, // 是否显示未读消息，默认不显示
+      userOnlineOfflineTips: true, //是否显示成员进出，默认显示
+      unreadMessageTips: true, // 是否显示未读消息，默认显示
     },
     leaveRoomCallback: () => {}, // 退出房间回调
     roomTimerDisplayed: false, //是否计时，默认不计时

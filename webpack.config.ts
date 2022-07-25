@@ -95,6 +95,7 @@ const config: webpack.Configuration = {
   plugins: [
     new webpack.DefinePlugin({
       SDK_ENV: JSON.stringify(true),
+      "process.env.REACT_APP_MOBILE": JSON.stringify("no"),
     }),
     new CleanWebpackPlugin(),
   ],
