@@ -33,6 +33,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     firstLoading: boolean;
     cameraFront: boolean;
     showFooter: boolean;
+    isNetworkPoor: boolean;
   } = {
     micOpen: !!this.props.core._config.micEnabled,
     cameraOpen: !!this.props.core._config.cameraEnabled,
@@ -47,6 +48,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     firstLoading: true,
     cameraFront: true,
     showFooter: true,
+    isNetworkPoor: false,
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
@@ -99,6 +101,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async initSDK() {
+    this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
+      this.setState({
+        isNetworkPoor: level > 2,
+      });
+    });
+
     this.props.core.onNetworkStatus(
       (
         roomID: string,
@@ -580,6 +588,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           }}
         ></ZegoOne2One>
 
+        {this.state.isNetworkPoor && (
+          <div className={ZegoRoomCss.network}></div>
+        )}
         {this.state.showFooter && (
           <div className={ZegoRoomCss.footer}>
             {this.props.core._config.userCanToggleSelfMic && (

@@ -4,16 +4,29 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  margin: vw(146px) 0 auto 0;
+  margin: 0 0 auto 0;
   background-color: #ffffff;
   .videoScree {
     position: relative;
     justify-content: center;
     padding: 0 vw(127px);
     .video {
-      background-color: #2a2a2a;
       width: vw(496px);
       height: vw(660px);
+      background-color: #2a2a2a;
+    }
+    .videoTip {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      width: 100%;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(32px);
+      line-height: vw(45px);
+      text-align: center;
+      transform: translate(-50%, -50%);
     }
     .handler {
       position: absolute;
@@ -32,28 +45,28 @@
       .micOpen {
         margin-right: vw(46px);
         background: url(../../../sdkMobileAssets/mic_open@2x.png);
-        background-size: vw(52px);
         background-repeat: no-repeat;
         background-position: center;
+        background-size: vw(52px);
       }
       .micClose {
         margin-right: vw(46px);
         background: url(../../../sdkMobileAssets/mic_close@2x.png);
-        background-size: vw(52px);
         background-repeat: no-repeat;
         background-position: center;
+        background-size: vw(52px);
       }
       .cameraOpen {
         background: url(../../../sdkMobileAssets/camera_open@2x.png);
-        background-size: vw(52px);
         background-repeat: no-repeat;
         background-position: center;
+        background-size: vw(52px);
       }
       .cameraClose {
         background: url(../../../sdkMobileAssets/camera_close@2x.png);
-        background-size: vw(52px);
         background-repeat: no-repeat;
         background-position: center;
+        background-size: vw(52px);
       }
     }
   }
@@ -85,8 +98,8 @@
       }
       button {
         height: vw(94px);
-        padding: vw(25px) vw(20px) vw(24px) vw(20px);
         margin-left: vw(26px);
+        padding: vw(25px) vw(20px) vw(24px) vw(20px);
         color: #ffffff;
         font-weight: 500;
         font-size: vw(32px);

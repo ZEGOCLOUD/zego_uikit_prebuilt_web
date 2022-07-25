@@ -89,7 +89,7 @@ export default class App extends React.Component {
 
   render(): React.ReactNode {
     return (
-      <div className={APP.app}>
+      <div className={`${APP.app} ${isPc() ? "" : APP.mobileApp}`}>
         <div className={`${APP.nav} ${isPc() ? "" : APP.mobileNav}`}>
           <div
             className={`${APP.LOGO} ${isPc() ? "" : APP.mobileLOGO}`}
@@ -118,7 +118,10 @@ export default class App extends React.Component {
             </a>
           </div>
         </div>
-        <div ref={this.myMeeting} className={APP.myMeeting}></div>
+        <div
+          ref={this.myMeeting}
+          className={`${APP.myMeeting}  ${isPc() ? "" : APP.mobileMeeting}`}
+        ></div>
         <div
           className={`${APP.serviceTips}  ${
             isPc() ? APP.pcServiceTips : APP.mobileServiceTips

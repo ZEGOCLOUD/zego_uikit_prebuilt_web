@@ -174,8 +174,23 @@
         text-overflow: ellipsis;
         word-break: break-all;
         -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
+        -webkit-line-clamp: 4;
       }
     }
+  }
+  .network {
+    position: absolute;
+    top: vw(28px);
+    left: vw(24px);
+    z-index: 20;
+    width: vw(60px);
+    height: vw(60px);
+    background: rgba(42, 42, 42, 0.25);
+    background: url("../../../sdkAssets/icon_inner_network_poor.png") no-repeat
+        center,
+      rgba(42, 42, 42, 0.25);
+    background-size: vw(46px) vw(46px);
+    border-radius: vw(15px);
+    backdrop-filter: blur(vw(15px));
   }
 }

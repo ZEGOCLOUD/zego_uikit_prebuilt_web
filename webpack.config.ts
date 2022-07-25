@@ -9,6 +9,14 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const config: webpack.Configuration = {
   mode: "development",
   entry: "./src/sdk/index.tsx",
+  devServer: {
+    static: {
+      directory: path.join(__dirname, "ZegoPrebuilt"),
+    },
+    compress: true,
+    port: 9000,
+    https: true,
+  },
   output: {
     filename: "index.umd.js",
     path: path.resolve(__dirname, "./ZegoPrebuilt"),

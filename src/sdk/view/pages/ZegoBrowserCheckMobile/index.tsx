@@ -15,6 +15,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
     videoOpen: true,
     audioOpen: true,
     copied: false,
+    isVideoOpening: true,
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -56,6 +57,9 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       localStream = new MediaStream();
     try {
       if (videoOpen) {
+        this.setState({
+          isVideoOpening: true,
+        });
         localVideoStream = await this.props.core.createStream({
           camera: {
             video: true,
@@ -77,6 +81,9 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       }
     } catch (error) {
       this.videoRefuse = true;
+      this.setState({
+        isVideoOpening: false,
+      });
       console.error(
         "【ZEGOCLOUD】toggleStream/createStream failed !!",
         JSON.stringify(error)
@@ -111,6 +118,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
         localStream,
         audioOpen: audioOpen && !this.audioRefuse,
         videoOpen: videoOpen && !this.videoRefuse,
+        isVideoOpening: false,
       },
       () => {
         if (this.videoRef.current && localStream) {
@@ -233,6 +241,14 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               muted
               ref={this.videoRef}
             ></video>
+            {!this.state.videoOpen && !this.state.isVideoOpening && (
+              <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
+            )}
+            {this.state.isVideoOpening && (
+              <div className={ZegoBrowserCheckCss.videoTip}>
+                Camera is starting…
+              </div>
+            )}
             <div className={ZegoBrowserCheckCss.handler}>
               {this.props.core._config.userCanToggleSelfMic && (
                 <a
@@ -272,19 +288,6 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
                   ev.target.scrollIntoView();
                   this.handleChange(ev);
                 }}
-                // onFocus={(ev: FocusEvent<HTMLInputElement>) => {
-                //   const ua = navigator.userAgent;
-                //   const iOS = /iPad|iPhone|iPod/.test(ua);
-                //   setTimeout(() => {
-                //     if (iOS) {
-                //       if (!/OS 11_[0-3]\D/.test(ua)) {
-                //         document.body.scrollTop = document.body.scrollHeight;
-                //       }
-                //     } else {
-                //       ev.target.scrollIntoView(false);
-                //     }
-                //   }, 500);
-                // }}
               ></input>
               <button
                 className={this.state.userName && ZegoBrowserCheckCss.active}
