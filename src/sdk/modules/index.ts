@@ -80,7 +80,7 @@ export class ZegoCloudRTCCore {
     userCanToggleSelfMic: true, // 是否可以控制体自己的摄像头,默认开启
     deviceSettings: true,
     chatEnabled: true, // 是否开启聊天，默认开启   joinScreen: boolean，// 通话前检测页面是否需要，默认需要
-    userListEnabled: true, //是否显示成员列表，默认不展示
+    userListEnabled: true, //是否显示成员列表，默认展示
     notification: {
       userOnlineOfflineTips: false, //是否显示成员进出，默认不显示
       unreadMessageTips: false, // 是否显示未读消息，默认不显示

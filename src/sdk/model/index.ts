@@ -24,7 +24,7 @@ export interface ZegoCloudRoomConfig {
   userCanToggleSelfMic?: boolean; // 是否可以控制体自己的摄像头,默认开启
   deviceSettings?: boolean; // 是否显示音频设置,默认显示
 
-  chatEnabled?: boolean; // 是否开启聊天，默认开启   joinScreen: boolean，// 通话前检测页面是否需要，默认需要
+  chatEnabled?: boolean; // 是否开启聊天，默认开启
   userListEnabled?: boolean; //是否显示成员列表，默认不展示
   notification?: {
     userOnlineOfflineTips?: boolean; //是否显示成员进出，默认不显示
@@ -35,7 +35,7 @@ export interface ZegoCloudRoomConfig {
   branding?: {
     logoURL?: string;
   };
-  leftScreen?: true; // 离开房间后页面，默认有
+  leftScreen?: boolean; // 离开房间后页面，默认有
   i18nURL?: string; // 自定义翻译文件，json地址，默认不需要，默认英文，需要先提供英文版key
   i18nJSON?: string; //者json对象
 }

@@ -649,18 +649,21 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         : this.state.notificationList.length - 2;
     return (
       <div className={ZegoRoomCss.ZegoRoom}>
-        <div className={ZegoRoomCss.header}>
-          {this.props.core._config.branding?.logoURL && (
-            <img
-              className={ZegoRoomCss.logo}
-              src={this.props.core._config.branding?.logoURL}
-              alt="logo"
-            />
-          )}
-          {this.props.core._config.roomTimerDisplayed && (
-            <ZegoTimer></ZegoTimer>
-          )}
-        </div>
+        {(this.props.core._config.branding?.logoURL ||
+          this.props.core._config.roomTimerDisplayed) && (
+          <div className={ZegoRoomCss.header}>
+            {this.props.core._config.branding?.logoURL && (
+              <img
+                className={ZegoRoomCss.logo}
+                src={this.props.core._config.branding?.logoURL}
+                alt="logo"
+              />
+            )}
+            {this.props.core._config.roomTimerDisplayed && (
+              <ZegoTimer></ZegoTimer>
+            )}
+          </div>
+        )}
         <div className={ZegoRoomCss.content}>
           <div className={ZegoRoomCss.contentLeft}>
             <ZegoOne2One
@@ -756,25 +759,27 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 }}
               ></div>
             )}
-            <div
-              ref={this.moreRef}
-              className={ZegoRoomCss.moreButton}
-              onClick={() => {
-                this.openSettings();
-              }}
-            >
+            {this.props.core._config.deviceSettings && (
               <div
-                className={ZegoRoomCss.settingsButtonModel}
-                style={{
-                  display: this.state.showSettings ? "block" : "none",
+                ref={this.moreRef}
+                className={ZegoRoomCss.moreButton}
+                onClick={() => {
+                  this.openSettings();
                 }}
-                ref={this.settingsRef}
               >
-                {/* <div>Change the layout</div>
+                <div
+                  className={ZegoRoomCss.settingsButtonModel}
+                  style={{
+                    display: this.state.showSettings ? "block" : "none",
+                  }}
+                  ref={this.settingsRef}
+                >
+                  {/* <div>Change the layout</div>
                 <span></span> */}
-                <div onClick={() => this.handleSetting()}>Settings</div>
+                  <div onClick={() => this.handleSetting()}>Settings</div>
+                </div>
               </div>
-            </div>
+            )}
             <div
               className={ZegoRoomCss.leaveButton}
               onClick={() => {
