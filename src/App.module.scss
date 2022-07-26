@@ -91,6 +91,7 @@
 }
 
 .mobileApp {
+  overflow-x: hidden;
   background: #ffffff;
   .mobileNav {
     // position: absolute;
@@ -113,7 +114,7 @@
     }
   }
   .mobileMeeting {
-    //flex: 1;
+    // flex: 0;
     margin-top: vw(78px);
   }
   .mobileServiceTips {
@@ -127,7 +128,6 @@
     font-weight: 400;
     font-size: vw(24px);
     line-height: vw(33px);
-    white-space: nowrap;
     background-color: #ffffff;
   }
 }
