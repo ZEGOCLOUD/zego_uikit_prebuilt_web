@@ -75,6 +75,7 @@
     flex-direction: column;
     margin-top: vw(86px);
     .joinRoom {
+      position: relative;
       display: flex;
       flex-direction: row;
       padding: 0 vw(90px);
