@@ -23,13 +23,14 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     seletSpeaker: undefined,
     seletCamera: undefined,
     seletVideoResolution: "360",
+    isJoining: false, // 是否正在加入房间，防止重复点击join
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
 
   audioRefuse = this.props.core.status.audioRefuse;
   videoRefuse = this.props.core.status.videoRefuse;
-  isJoining = false; // 是否正在加入房间，防止重复点击join
+
   constructor(props: ZegoBrowserCheckProp) {
     super(props);
     this.videoRef = React.createRef();
@@ -227,53 +228,59 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
   async joinRoom() {
     if (!this.state.userName.length) return;
-    if (this.isJoining) return;
-    this.isJoining = true;
-    this.props.core._expressConfig.userName = this.state.userName;
-    this.props.core._config.micEnabled =
-      this.state.audioOpen && !this.audioRefuse;
-    this.props.core._config.cameraEnabled =
-      this.state.videoOpen && !this.videoRefuse;
-    this.props.core.status.audioRefuse = this.audioRefuse;
-    this.props.core.status.videoRefuse = this.videoRefuse;
+    if (this.state.isJoining) return;
+    this.setState(
+      {
+        isJoining: true,
+      },
+      async () => {
+        this.props.core._expressConfig.userName = this.state.userName;
+        this.props.core._config.micEnabled =
+          this.state.audioOpen && !this.audioRefuse;
+        this.props.core._config.cameraEnabled =
+          this.state.videoOpen && !this.videoRefuse;
+        this.props.core.status.audioRefuse = this.audioRefuse;
+        this.props.core.status.videoRefuse = this.videoRefuse;
 
-    this.props.core.status.micDeviceID = this.state.seletMic;
-    this.props.core.status.cameraDeviceID = this.state.seletCamera;
-    this.props.core.status.speakerDeviceID = this.state.seletSpeaker;
-    this.props.core.status.videoResolution = this.state.seletVideoResolution;
-    const loginRsp = await this.props.core.enterRoom();
+        this.props.core.status.micDeviceID = this.state.seletMic;
+        this.props.core.status.cameraDeviceID = this.state.seletCamera;
+        this.props.core.status.speakerDeviceID = this.state.seletSpeaker;
+        this.props.core.status.videoResolution = this.state.seletVideoResolution;
+        const loginRsp = await this.props.core.enterRoom();
 
-    let massage = "";
-    if (loginRsp === 0) {
-      this.state.localStream &&
-        this.props.core.destroyStream(this.state.localStream);
-      this.props.joinRoom && this.props.joinRoom();
-    } else if (loginRsp === 1002034) {
-      // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
-      massage =
-        "Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
-    } else if ([1002031, 1002053].includes(loginRsp)) {
-      //登录房间超时，可能是由于网络原因导致。
-      massage =
-        "There's something wrong with your network. Please check it and try again.";
-    } else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
-      // 登录 token 错误，
-      massage = "Failed to join the room, token authentication error.";
-    } else if (1002056 === loginRsp) {
-      // 用户重复进行登录。
-      massage =
-        "You are on a call in another room, please leave that room first.";
-    } else {
-      massage =
-        "Failed to join the room, please try again.(error code:" +
-        loginRsp +
-        ")";
-    }
-    this.setState({
-      isJoinRoomFailed: !!massage,
-      joinRoomErrorTip: massage,
-    });
-    this.isJoining = false;
+        let massage = "";
+        if (loginRsp === 0) {
+          this.state.localStream &&
+            this.props.core.destroyStream(this.state.localStream);
+          this.props.joinRoom && this.props.joinRoom();
+        } else if (loginRsp === 1002034) {
+          // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
+          massage =
+            "Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
+        } else if ([1002031, 1002053].includes(loginRsp)) {
+          //登录房间超时，可能是由于网络原因导致。
+          massage =
+            "There's something wrong with your network. Please check it and try again.";
+        } else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
+          // 登录 token 错误，
+          massage = "Failed to join the room, token authentication error.";
+        } else if (1002056 === loginRsp) {
+          // 用户重复进行登录。
+          massage =
+            "You are on a call in another room, please leave that room first.";
+        } else {
+          massage =
+            "Failed to join the room, please try again.(error code:" +
+            loginRsp +
+            ")";
+        }
+        this.setState({
+          isJoinRoomFailed: !!massage,
+          joinRoomErrorTip: massage,
+          isJoining: false,
+        });
+      }
+    );
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -436,6 +443,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                       this.joinRoom();
                     }}
                   >
+                    {this.state.isJoining && (
+                      <span
+                        className={ZegoBrowserCheckCss.joinRoomButtonLoading}
+                      ></span>
+                    )}
                     join
                   </button>
                   {this.state.isJoinRoomFailed && (

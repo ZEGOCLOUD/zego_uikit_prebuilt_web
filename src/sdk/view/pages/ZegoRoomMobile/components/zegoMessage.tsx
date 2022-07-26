@@ -3,6 +3,7 @@ import zegoMessageCss from "./zegoMessage.module.scss";
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { DateFormat, userNameColor } from "../../../../util";
 import { ZegoBroadcastMessageInfo2 } from "../../../../model";
+import { ZegoToast } from "../../../components/mobile/zegoToast";
 export class ZegoMessage extends React.Component<{
   messageList: ZegoBroadcastMessageInfo2[];
   sendMessage: (msg: string) => void;
@@ -14,7 +15,7 @@ export class ZegoMessage extends React.Component<{
   } = {
     message: "",
   };
-
+  sendTime = 0;
   msgContentListRef: RefObject<HTMLDivElement>;
 
   constructor(props: {
@@ -58,10 +59,18 @@ export class ZegoMessage extends React.Component<{
 
   handleSend() {
     if (!this.state.message.length) return;
+    const timestamp = new Date().getTime();
+    if (this.sendTime > 0 && this.sendTime + 900 > timestamp) {
+      ZegoToast({
+        content: "Message sent too fast, please send again later",
+      });
+      return false;
+    }
     this.props.sendMessage(this.state.message);
     this.setState({
       message: "",
     });
+    this.sendTime = timestamp;
   }
 
   render(): React.ReactNode {

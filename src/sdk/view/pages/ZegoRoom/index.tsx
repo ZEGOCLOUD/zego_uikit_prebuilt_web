@@ -462,11 +462,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 this.state.localStream,
                 deviceID
               );
-              //   !this.state.cameraOpen &&
-              //     this.props.core.enableVideoCaptureDevice(
-              //       this.state.localStream,
-              //       this.state.cameraOpen
-              //     );
+              this.setState({
+                cameraOpen: true,
+              });
             }
           }
         );
