@@ -9,7 +9,7 @@
   align-items: flex-start;
   box-sizing: border-box;
   width: 100%;
-  height: vw(1236px);
+  height: 88vh;
   background: #242736;
   border-radius: vw(46px) vw(46px) 0px 0px;
   .memberListHeader {
@@ -31,6 +31,7 @@
   }
   .memberListContent {
     display: flex;
+    flex: 1;
     flex-direction: column;
     align-items: flex-start;
     div {
@@ -53,14 +54,14 @@
         border-radius: vw(28px);
       }
       a {
+        max-width: vw(300px);
+        overflow: hidden;
         color: #ffffff;
         font-weight: 500;
         font-size: vw(32px);
         // font-family: PingFangSC-Medium, PingFang SC;
         line-height: vw(45px);
-        max-width: vw(300px);
         white-space: nowrap;
-        overflow: hidden;
         text-overflow: ellipsis;
       }
     }

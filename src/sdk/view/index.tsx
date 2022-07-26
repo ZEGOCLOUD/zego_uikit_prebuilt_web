@@ -36,14 +36,13 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         const privacy = document.querySelectorAll(
           "#root > div > div"
         )[2] as HTMLDivElement;
-        if (root && !isPc()) {
-          root.style.display = "flex";
-        }
-        if (nav && isPc()) {
-          const meetingEl = nav.nextElementSibling as HTMLDivElement;
-          nav.style.display = "flex";
-          meetingEl.style.height = "auto";
-          privacy.style.display = "block";
+
+        const meetingEl = nav.nextElementSibling as HTMLDivElement;
+        nav.style.display = "flex";
+        meetingEl.style.height = "auto";
+        privacy.style.display = "block";
+        if (!isPc()) {
+          meetingEl.style.marginTop = "";
         }
       }
 
@@ -72,14 +71,12 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           "#root > div > div"
         )[2] as HTMLDivElement;
         const meetingEl = nav.nextElementSibling as HTMLDivElement;
-        if (root && !isPc()) {
-          root.style.display = "none";
-        }
 
-        if (nav && isPc()) {
-          nav.style.display = "none";
-          meetingEl.style.height = "100%";
-          privacy.style.display = "none";
+        nav.style.display = "none";
+        meetingEl.style.height = "100%";
+        privacy.style.display = "none";
+        if (!isPc()) {
+          meetingEl.style.marginTop = "0";
         }
       }
 

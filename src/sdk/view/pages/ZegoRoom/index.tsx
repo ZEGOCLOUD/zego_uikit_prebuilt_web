@@ -71,11 +71,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     this.initSDK();
     // 点击其他区域时, 隐藏更多弹窗)
     document.addEventListener("click", this.onOpenSettings);
-    this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
-      this.setState({
-        isNetworkPoor: level > 2,
-      });
-    });
   }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
@@ -113,6 +108,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     document.removeEventListener("click", this.onOpenSettings);
   }
   async initSDK() {
+    this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
+      this.setState({
+        isNetworkPoor: level > 2,
+      });
+    });
     this.props.core.onNetworkStatus(
       (
         roomID: string,
@@ -495,9 +495,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           },
           () => {
             if (this.state.localStream) {
-              const { width, height, bitrate, frameRate } = getVideoResolution(
-                level
-              );
+              const { width, height, bitrate, frameRate } =
+                getVideoResolution(level);
               this.props.core.setVideoConfig(this.state.localStream, {
                 width,
                 height,
@@ -522,7 +521,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         this.props.core.status.micDeviceID = this.state.seletMic;
         this.props.core.status.cameraDeviceID = this.state.seletCamera;
         this.props.core.status.speakerDeviceID = this.state.seletSpeaker;
-        this.props.core.status.videoResolution = this.state.seletVideoResolution;
+        this.props.core.status.videoResolution =
+          this.state.seletVideoResolution;
         this.leaveRoom();
       },
     });
@@ -750,8 +750,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           <div className={ZegoRoomCss.handlerMiddle}>
             {this.props.core._config.userCanToggleSelfMic && (
               <div
-                className={`${ZegoRoomCss.micButton} ${!this.state.micOpen &&
-                  ZegoRoomCss.close}`}
+                className={`${ZegoRoomCss.micButton} ${
+                  !this.state.micOpen && ZegoRoomCss.close
+                }`}
                 onClick={() => {
                   this.toggleMic();
                 }}
@@ -759,8 +760,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             )}
             {this.props.core._config.userCanToggleSelfCamera && (
               <div
-                className={`${ZegoRoomCss.cameraButton} ${!this.state
-                  .cameraOpen && ZegoRoomCss.close}`}
+                className={`${ZegoRoomCss.cameraButton} ${
+                  !this.state.cameraOpen && ZegoRoomCss.close
+                }`}
                 onClick={() => {
                   this.toggleCamera();
                 }}

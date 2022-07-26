@@ -68,7 +68,7 @@ export class ZegoOne2One extends React.Component<{
               }}
             ></video>
             <div className={zegoOne2OneCss.smallName}>
-              <p> {this.props.selfUserInfo.userName} </p>
+              <p> {this.props.selfUserInfo.userName + "（YOU）"} </p>
               <span
                 className={
                   this.props.selfUserInfo.micOpen
@@ -112,7 +112,7 @@ export class ZegoOne2One extends React.Component<{
             }}
           ></video>
           <div className={zegoOne2OneCss.name}>
-            <p>{this.props.selfUserInfo.userName}</p>
+            <p>{this.props.selfUserInfo.userName + "（YOU）"}</p>
             <span
               className={
                 this.props.selfUserInfo.micOpen

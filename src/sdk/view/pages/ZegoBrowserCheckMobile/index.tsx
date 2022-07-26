@@ -1,13 +1,11 @@
-import React, { ChangeEvent, RefObject } from "react";
+import React, { ChangeEvent, FocusEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoModel } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
-export class ZegoBrowserCheckMobile extends React.Component<
-  ZegoBrowserCheckProp
-> {
+export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: undefined,
     localStream: undefined,
@@ -17,6 +15,7 @@ export class ZegoBrowserCheckMobile extends React.Component<
     videoOpen: true,
     audioOpen: true,
     copied: false,
+    isVideoOpening: true,
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -58,6 +57,9 @@ export class ZegoBrowserCheckMobile extends React.Component<
       localStream = new MediaStream();
     try {
       if (videoOpen) {
+        this.setState({
+          isVideoOpening: true,
+        });
         localVideoStream = await this.props.core.createStream({
           camera: {
             video: true,
@@ -79,6 +81,9 @@ export class ZegoBrowserCheckMobile extends React.Component<
       }
     } catch (error) {
       this.videoRefuse = true;
+      this.setState({
+        isVideoOpening: false,
+      });
       console.error(
         "【ZEGOCLOUD】toggleStream/createStream failed !!",
         JSON.stringify(error)
@@ -113,6 +118,7 @@ export class ZegoBrowserCheckMobile extends React.Component<
         localStream,
         audioOpen: audioOpen && !this.audioRefuse,
         videoOpen: videoOpen && !this.videoRefuse,
+        isVideoOpening: false,
       },
       () => {
         if (this.videoRef.current && localStream) {
@@ -235,6 +241,14 @@ export class ZegoBrowserCheckMobile extends React.Component<
               muted
               ref={this.videoRef}
             ></video>
+            {!this.state.videoOpen && !this.state.isVideoOpening && (
+              <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
+            )}
+            {this.state.isVideoOpening && (
+              <div className={ZegoBrowserCheckCss.videoTip}>
+                Camera is starting…
+              </div>
+            )}
             <div className={ZegoBrowserCheckCss.handler}>
               {this.props.core._config.userCanToggleSelfMic && (
                 <a

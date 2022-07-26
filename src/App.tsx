@@ -1,6 +1,7 @@
 import React from "react";
 import APP from "./App.module.scss";
 import { ZegoPrebuilt } from "./sdk/index";
+import { ZegoCloudRoomConfig } from "./sdk/model";
 import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, randomID } from "./util";
 export default class App extends React.Component {
@@ -17,8 +18,8 @@ export default class App extends React.Component {
         roomID,
         randomID(5)
       );
-      const zgc = ZegoPrebuilt.init(token);
-      zgc.joinRoom({
+      const zp = ZegoPrebuilt.init(token);
+      zp.joinRoom({
         container: element,
         notification: { unreadMessageTips: true, userOnlineOfflineTips: true },
         joinScreen: {
@@ -47,12 +48,48 @@ export default class App extends React.Component {
         },
         // leftScreen: false, // 离开房间后页面，默认有
       });
+      // const param: ZegoCloudRoomConfig = {
+      //   // @ts-ignore
+      //   container: undefined, // 挂载容器
+      //   joinScreen: {
+      //     inviteURL:
+      //       window.location.origin +
+      //       window.location.pathname +
+      //       "?roomID=" +
+      //       roomID,
+      //     visible: true,
+      //     title: "Join Room",
+      //   },
+      //   // micEnabled: true, // 是否开启自己的麦克风,默认开启
+      //   // cameraEnabled: true, // 是否开启自己的摄像头 ,默认开启
+      //   // // userCanToggleSelfCamera: true, // 是否可以控制自己的麦克风,默认开启
+      //   // userCanToggleSelfMic: true, // 是否可以控制体自己的摄像头,默认开启
+      //   // deviceSettings: {
+      //   //   audio: true, // 是否显示音频设置
+      //   //   video: true, // 是否显示视频设置
+      //   // },
+      //   // chatEnabled: true, // 是否开启聊天，默认开启   joinScreen: boolean，// 通话前检测页面是否需要，默认需要
+      //   // userListEnabled: true, //是否显示成员列表，默认不展示
+      //   notification: {
+      //     userOnlineOfflineTips: false, //是否显示成员进出，默认不显示
+      //     unreadMessageTips: false, // 是否显示未读消息，默认不显示
+      //   },
+      //   // leaveRoomCallback: () => {}, // 退出房间回调
+      //   // roomTimerDisplayed: false, //是否计时，默认不计时
+      //   // branding: {
+      //   //   logoURL: "",
+      //   // },
+      //   // leftScreen: true, // 离开房间后页面，默认有
+      //   // i18nURL: "", // 自定义翻译文件，json地址，默认不需要，默认英文，需要先提供英文版key
+      //   // i18nJSON: "", //者json对象
+      // };
+      // zp.joinRoom(param);
     };
   }
 
   render(): React.ReactNode {
     return (
-      <div className={APP.app}>
+      <div className={`${APP.app} ${isPc() ? "" : APP.mobileApp}`}>
         <div className={`${APP.nav} ${isPc() ? "" : APP.mobileNav}`}>
           <div
             className={`${APP.LOGO} ${isPc() ? "" : APP.mobileLOGO}`}
@@ -81,7 +118,10 @@ export default class App extends React.Component {
             </a>
           </div>
         </div>
-        <div ref={this.myMeeting} className={APP.myMeeting}></div>
+        <div
+          ref={this.myMeeting}
+          className={`${APP.myMeeting}  ${isPc() ? "" : APP.mobileMeeting}`}
+        ></div>
         <div
           className={`${APP.serviceTips}  ${
             isPc() ? APP.pcServiceTips : APP.mobileServiceTips

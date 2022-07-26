@@ -46,6 +46,8 @@
         monospace;
     }
   </style>
+  <script src="./crypto-js.js"></script>
+  <script src="./token.js"></script>
 </head>
 
 <body>
@@ -66,6 +68,15 @@
 <script>
   // get token
   function generateToken(tokenServerUrl, userID, roomID, userName) {
+    return Promise.resolve({
+      token:
+        generateV4Token(userID) +
+        "#" +
+        window.btoa(
+          JSON.stringify({ userID, roomID, userName, appID: 3349318446 })
+        ),
+    });
+
     // Obtain the token interface provided by the App Server
     return fetch(
       `${tokenServerUrl}/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`,
@@ -74,6 +85,7 @@
       }
     ).then((res) => res.json());
   }
+
 
   function randomID(len) {
     let result = '';

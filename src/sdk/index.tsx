@@ -24,7 +24,7 @@ export class ZegoPrebuilt {
       return;
     }
 
-    if (!roomConfig || !roomConfig.container || !isPc()) {
+    if (!roomConfig || !roomConfig.container) {
       console.warn("【ZEGOCLOUD】joinRoom/roomConfig/container required !!");
       const div = document.createElement("div");
       div.style.position = "fixed";
