@@ -63,7 +63,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
   notifyTimer!: NodeJS.Timeout;
+  msgDelayed = true; // 5s不显示
   componentDidMount() {
+    setTimeout(() => {
+      this.msgDelayed = false;
+    }, 5000);
     this.initSDK();
     // 点击其他区域时, 隐藏更多弹窗)
     document.addEventListener("click", this.onOpenSettings);
@@ -134,7 +138,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
         let notificationList: ZegoNotification[] = [];
         console.warn(userList);
-        if (this.props.core._config.notification?.userOnlineOfflineTips) {
+        if (
+          this.props.core._config.notification?.userOnlineOfflineTips &&
+          !this.msgDelayed
+        ) {
           userList.map((u) => {
             notificationList.push({
               content:
