@@ -77,13 +77,6 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     const dom = document.querySelector("#speakerAudioTest") as HTMLMediaElement;
     dom.addEventListener("ended", this.onTestMusicEnded.bind(this));
   }
-  componentDidUpdate(prevProps: any, preState: any) {
-    // if (preState.seletSpeaker !== this.state.seletSpeaker) {
-    //   document.querySelectorAll("audio").forEach((audio: any) => {
-    //     audio?.setSinkId && audio?.setSinkId(this.state.seletSpeaker);
-    //   });
-    // }
-  }
   componentWillUnmount() {
     if (this.state.isSpeakerPlaying) {
       this.speakerTimer && clearTimeout(this.speakerTimer);
@@ -264,7 +257,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
         const dom = document.querySelector("#speakerAudioTest") as any;
         const playDom = document.querySelector("#speakerAudio") as any;
         if (dom.paused) {
-          await playDom?.setSinkId(this.state.seletSpeaker);
+          playDom?.setSinkId &&
+            (await playDom?.setSinkId(this.state.seletSpeaker));
           playDom.play();
           dom.play();
           this.speakerSounder.connectToElementSource(dom, (error: any) => {
