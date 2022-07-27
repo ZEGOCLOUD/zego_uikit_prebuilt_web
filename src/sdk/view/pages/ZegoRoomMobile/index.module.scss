@@ -7,6 +7,7 @@
   justify-content: center;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   .footer {
     position: fixed;
     bottom: 0px;
@@ -79,7 +80,7 @@
         bottom: vw(106px+25px);
         z-index: 202;
         box-sizing: border-box;
-        width: vw(464px);
+        // width: vw(464px);
         height: vw(190px-14px);
         padding: vw(32px) vw(55px) vw(30px) vw(55px);
         background-color: #1c1f2e;
@@ -94,6 +95,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            margin-right: vw(63px);
+            white-space: nowrap;
             i {
               width: vw(76px);
               height: vw(76px);
@@ -127,6 +130,9 @@
               font-size: 10px;
               //   font-family: PingFangSC-Regular, PingFang SC;
             }
+          }
+          div:last-child {
+            margin-right: 0;
           }
         }
         .popMoreArray {

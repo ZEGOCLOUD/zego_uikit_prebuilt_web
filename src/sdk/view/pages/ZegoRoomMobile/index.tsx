@@ -593,7 +593,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         )}
         {this.state.showFooter && (
           <div className={ZegoRoomCss.footer}>
-            {this.props.core._config.userCanToggleSelfMic && (
+            {this.props.core._config.userCanToggleSelfCamera && (
               <a
                 className={`${ZegoRoomCss.switchCamera} ${
                   this.state.cameraFront ? "" : ZegoRoomCss.switchCameraBack
@@ -603,7 +603,6 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 }}
               ></a>
             )}
-
             {this.props.core._config.userCanToggleSelfMic && (
               <a
                 className={
@@ -628,59 +627,67 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 }}
               ></a>
             )}
-
             <a
               className={ZegoRoomCss.leaveRoom}
               onClick={() => {
                 this.leaveRoom();
               }}
             ></a>
-
-            <a
-              id="ZegoRoomCssMobileMore"
-              className={ZegoRoomCss.more}
-              onClick={() => {
-                this.openMore();
-              }}
-            >
-              {this.state.showMore && (
-                <div
-                  id="ZegoRoomCssMobilePopMore"
-                  className={ZegoRoomCss.popMore}
-                >
-                  <div className={ZegoRoomCss.popMoreContent}>
-                    <div
-                      onClick={(ev) => {
-                        ev.stopPropagation();
-                        this.toggleLayOut("INVITE");
-                      }}
-                    >
-                      <i className={ZegoRoomCss.details}></i>
-                      <span>Room details</span>
+            {(this.props.core._config.chatEnabled ||
+              this.props.core._config.userListEnabled ||
+              this.props.core._config.joinScreen?.inviteURL) && (
+              <a
+                id="ZegoRoomCssMobileMore"
+                className={ZegoRoomCss.more}
+                onClick={() => {
+                  this.openMore();
+                }}
+              >
+                {this.state.showMore && (
+                  <div
+                    id="ZegoRoomCssMobilePopMore"
+                    className={ZegoRoomCss.popMore}
+                  >
+                    <div className={ZegoRoomCss.popMoreContent}>
+                      {this.props.core._config.joinScreen?.inviteURL && (
+                        <div
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            this.toggleLayOut("INVITE");
+                          }}
+                        >
+                          <i className={ZegoRoomCss.details}></i>
+                          <span>Room details</span>
+                        </div>
+                      )}
+                      {this.props.core._config.userListEnabled && (
+                        <div
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            this.toggleLayOut("USER_LIST");
+                          }}
+                        >
+                          <i className={ZegoRoomCss.member}></i>
+                          <span>Member</span>
+                        </div>
+                      )}
+                      {this.props.core._config.chatEnabled && (
+                        <div
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            this.toggleLayOut("MESSAGE");
+                          }}
+                        >
+                          <i className={ZegoRoomCss.chat}></i>
+                          <span>Chat</span>
+                        </div>
+                      )}
                     </div>
-                    <div
-                      onClick={(ev) => {
-                        ev.stopPropagation();
-                        this.toggleLayOut("USER_LIST");
-                      }}
-                    >
-                      <i className={ZegoRoomCss.member}></i>
-                      <span>Member</span>
-                    </div>
-                    <div
-                      onClick={(ev) => {
-                        ev.stopPropagation();
-                        this.toggleLayOut("MESSAGE");
-                      }}
-                    >
-                      <i className={ZegoRoomCss.chat}></i>
-                      <span>Chat</span>
-                    </div>
+                    <div className={ZegoRoomCss.popMoreArray}></div>
                   </div>
-                  <div className={ZegoRoomCss.popMoreArray}></div>
-                </div>
-              )}
-            </a>
+                )}
+              </a>
+            )}
           </div>
         )}
         {this.getListScreen()}

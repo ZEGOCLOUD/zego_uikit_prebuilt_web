@@ -5,6 +5,7 @@ import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoModel } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
+import { ZegoLoading } from "./components/ZegoLoading";
 export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
     isSupportWebRTC: undefined,
@@ -16,13 +17,13 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
     audioOpen: true,
     copied: false,
     isVideoOpening: true,
+    isJoining: false,
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
 
   audioRefuse = this.props.core.status.audioRefuse;
   videoRefuse = this.props.core.status.videoRefuse;
-  isJoining = false;
 
   constructor(props: ZegoBrowserCheckProp) {
     super(props);
@@ -174,45 +175,58 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 
   async joinRoom() {
     if (!this.state.userName.length) return;
-    if (this.isJoining) return;
-    this.isJoining = true;
-    this.props.core._expressConfig.userName = this.state.userName;
-    this.props.core._config.micEnabled =
-      this.state.audioOpen && !this.audioRefuse;
-    this.props.core._config.cameraEnabled =
-      this.state.videoOpen && !this.videoRefuse;
-    this.props.core.status.audioRefuse = this.audioRefuse;
-    this.props.core.status.videoRefuse = this.videoRefuse;
+    if (this.state.isJoining) return;
 
-    const loginRsp = await this.props.core.enterRoom();
-    let massage = "";
-    if (loginRsp === 0) {
-      this.state.localStream &&
-        this.props.core.destroyStream(this.state.localStream);
-      this.props.joinRoom && this.props.joinRoom();
-    } else if (loginRsp === 1002034) {
-      // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
-      massage =
-        "Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
-    } else if ([1002031, 1002053].includes(loginRsp)) {
-      //登录房间超时，可能是由于网络原因导致。
-      massage =
-        "There's something wrong with your network. Please check it and try again.";
-    } else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
-      // 登录 token 错误，
-      massage = "Failed to join the room, token authentication error.";
-    } else if (1002056 === loginRsp) {
-      // 用户重复进行登录。
-      massage =
-        "You are on a call in another room, please leave that room first.";
-    } else {
-      massage =
-        "Failed to join the room, please try again.(error code:" +
-        loginRsp +
-        ")";
-    }
-    this.isJoining = false;
-    massage && ZegoToast({ content: massage });
+    this.setState(
+      {
+        isJoining: true,
+      },
+      async () => {
+        this.props.core._expressConfig.userName = this.state.userName;
+        this.props.core._config.micEnabled =
+          this.state.audioOpen && !this.audioRefuse;
+        this.props.core._config.cameraEnabled =
+          this.state.videoOpen && !this.videoRefuse;
+        this.props.core.status.audioRefuse = this.audioRefuse;
+        this.props.core.status.videoRefuse = this.videoRefuse;
+
+        const loginRsp = await this.props.core.enterRoom();
+        let massage = "";
+        if (loginRsp === 0) {
+          this.state.localStream &&
+            this.props.core.destroyStream(this.state.localStream);
+          this.props.joinRoom && this.props.joinRoom();
+        } else if (loginRsp === 1002034) {
+          // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
+          massage =
+            "Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
+        } else if ([1002031, 1002053].includes(loginRsp)) {
+          //登录房间超时，可能是由于网络原因导致。
+          massage =
+            "There's something wrong with your network. Please check it and try again.";
+        } else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
+          // 登录 token 错误，
+          massage = "Failed to join the room, token authentication error.";
+        } else if (1002056 === loginRsp) {
+          // 用户重复进行登录。
+          massage =
+            "You are on a call in another room, please leave that room first.";
+        } else {
+          massage =
+            "Failed to join the room, please try again.(error code:" +
+            loginRsp +
+            ")";
+        }
+        this.setState(
+          {
+            isJoining: false,
+          },
+          () => {
+            massage && ZegoToast({ content: massage });
+          }
+        );
+      }
+    );
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -298,29 +312,37 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
                 Join
               </button>
             </div>
-            <div className={ZegoBrowserCheckCss.inviteLink}>
-              <input
-                placeholder="inviteLink"
-                readOnly
-                value={this.props.core._config.joinScreen?.inviteURL}
-                ref={this.inviteRef}
-              ></input>
-              <button
-                className={this.state.copied ? ZegoBrowserCheckCss.copied : ""}
-                onClick={() => {
-                  this.inviteRef.current && copy(this.inviteRef.current.value);
-                  this.setState({
-                    copied: true,
-                  });
-                  setTimeout(() => {
+            {this.props.core._config.joinScreen?.inviteURL && (
+              <div className={ZegoBrowserCheckCss.inviteLink}>
+                <input
+                  placeholder="inviteLink"
+                  readOnly
+                  value={this.props.core._config.joinScreen?.inviteURL}
+                  ref={this.inviteRef}
+                ></input>
+                <button
+                  className={
+                    this.state.copied ? ZegoBrowserCheckCss.copied : ""
+                  }
+                  onClick={() => {
+                    this.inviteRef.current &&
+                      copy(this.inviteRef.current.value);
                     this.setState({
-                      copied: false,
+                      copied: true,
                     });
-                  }, 5000);
-                }}
-              ></button>
-            </div>
+                    setTimeout(() => {
+                      this.setState({
+                        copied: false,
+                      });
+                    }, 5000);
+                  }}
+                ></button>
+              </div>
+            )}
           </div>
+          {this.state.isJoining && (
+            <ZegoLoading content="Loading..."></ZegoLoading>
+          )}
         </div>
       );
     }

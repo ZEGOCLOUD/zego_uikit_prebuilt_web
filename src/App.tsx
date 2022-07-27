@@ -12,17 +12,20 @@ export default class App extends React.Component {
     // @es
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
     this.myMeeting = async (element: HTMLDivElement) => {
-      const { token } = await generateToken(
+      let { token } = await generateToken(
         "https://choui-prebuilt.herokuapp.com",
         randomID(5),
         roomID,
         randomID(5)
       );
+      // token =
+      //   "04AAAAAGLiKBcAEDFnZnlqZDV3bHQwNDZrZG4AcMdjPKlN5VTcl8PDi9mwY+rY1pZs4h1HKQKow/i1ZaZmoNNvF+mq6L/mm4ootCh5pEHmMg4S+PB70H1VReSgbBpb5QaH9FobMo1snaAxft66+T3DxUCThSuSEYxavGLO2fwWIEALNNPNvg+hO/o58G0=#eyJ1c2VyX2lkIjoiMTIzZmFkcyIsInJvb21faWQiOiJmYXNmIiwidXNlcl9uYW1lIjoiZmFqZmQiLCJhcHBfaWQiOiIxNDg0NjQ3OTM5In0=";
       const zp = ZegoPrebuilt.init(token);
-      zp.joinRoom({
-        container: element,
-        notification: { unreadMessageTips: true, userOnlineOfflineTips: true },
+      const param: ZegoCloudRoomConfig = {
+        // @ts-ignore
+        container: element, // 挂载容器
         joinScreen: {
+          // 通话前检测页面是否需要，默认需要
           inviteURL:
             window.location.origin +
             window.location.pathname +
@@ -31,59 +34,29 @@ export default class App extends React.Component {
           visible: true,
           title: "Join Room",
         },
-        // micEnabled: false, // 是否开启自己的麦克风,默认开启
-        // cameraEnabled: true, // 是否开启自己的摄像头 ,默认开启
-        // userCanToggleSelfCamera: false, // 是否可以控制自己的麦克风,默认开启
-        // userCanToggleSelfMic: false, // 是否可以控制体自己的摄像头,默认开启
-        // deviceSettings: false, // 是否显示设置,默认显示
-        // chatEnabled: false, // 是否开启聊天，默认开启
-        // userListEnabled: false, //是否显示成员列表，默认展示
+        micEnabled: true, // 是否开启自己的麦克风,默认开启
+        cameraEnabled: true, // 是否开启自己的摄像头 ,默认开启
+        userCanToggleSelfCamera: true, // 是否可以控制自己的麦克风,默认开启
+        userCanToggleSelfMic: true, // 是否可以控制体自己的摄像头,默认开启
+        deviceSettings: true,
+        chatEnabled: true, // 是否开启聊天，默认开启
+        userListEnabled: true, //是否显示成员列表，默认不展示
+        notification: {
+          userOnlineOfflineTips: true, //是否显示成员进出，默认不显示
+          unreadMessageTips: true, // 是否显示未读消息，默认不显示
+        },
         leaveRoomCallback: () => {
-          //   alert("Leave Room");
+          console.log("test:leaveRoomCallback");
         }, // 退出房间回调
-        // roomTimerDisplayed: true, //是否计时，默认不计时 //TODO:
         branding: {
           logoURL:
             "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
         },
-        // leftScreen: false, // 离开房间后页面，默认有
-      });
-      // const param: ZegoCloudRoomConfig = {
-      //   // @ts-ignore
-      //   container: undefined, // 挂载容器
-      //   joinScreen: {
-      //     inviteURL:
-      //       window.location.origin +
-      //       window.location.pathname +
-      //       "?roomID=" +
-      //       roomID,
-      //     visible: true,
-      //     title: "Join Room",
-      //   },
-      //   // micEnabled: true, // 是否开启自己的麦克风,默认开启
-      //   // cameraEnabled: true, // 是否开启自己的摄像头 ,默认开启
-      //   // // userCanToggleSelfCamera: true, // 是否可以控制自己的麦克风,默认开启
-      //   // userCanToggleSelfMic: true, // 是否可以控制体自己的摄像头,默认开启
-      //   // deviceSettings: {
-      //   //   audio: true, // 是否显示音频设置
-      //   //   video: true, // 是否显示视频设置
-      //   // },
-      //   // chatEnabled: true, // 是否开启聊天，默认开启   joinScreen: boolean，// 通话前检测页面是否需要，默认需要
-      //   // userListEnabled: true, //是否显示成员列表，默认不展示
-      //   notification: {
-      //     userOnlineOfflineTips: false, //是否显示成员进出，默认不显示
-      //     unreadMessageTips: false, // 是否显示未读消息，默认不显示
-      //   },
-      //   // leaveRoomCallback: () => {}, // 退出房间回调
-      //   // roomTimerDisplayed: false, //是否计时，默认不计时
-      //   // branding: {
-      //   //   logoURL: "",
-      //   // },
-      //   // leftScreen: true, // 离开房间后页面，默认有
-      //   // i18nURL: "", // 自定义翻译文件，json地址，默认不需要，默认英文，需要先提供英文版key
-      //   // i18nJSON: "", //者json对象
-      // };
-      // zp.joinRoom(param);
+        leftScreen: true, // 离开房间后页面，默认有
+        // i18nURL: "", // 自定义翻译文件，json地址，默认不需要，默认英文，需要先提供英文版key
+        // i18nJSON: "", //者json对象
+      };
+      zp.joinRoom(param);
     };
   }
 
