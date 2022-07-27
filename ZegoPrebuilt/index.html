@@ -2,14 +2,14 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
+            <meta charset="utf-8" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Web site created using create-react-app" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <meta name="theme-color" content="#000000" />
+            <meta name="description" content="Web site created using create-react-app" />
 
 
-  <!--
+            <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
       Only files inside the `public` folder can be referenced from the HTML.
@@ -18,42 +18,40 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-  <title>ZEGOCLOUD video call Demo(prebuilt)</title>
-  <style>
-    #root {
-      width: 100vw;
-      height: 100vh;
+            <title>ZEGOCLOUD video call Demo(prebuilt)</title>
+            <style>
+                        #root {
+                                    width: 100vw;
+                                    height: 100vh;
 
-    }
+                        }
 
-    @font-face {
-      font-family: Emoji;
-      src: local("Apple Color Emoji"), local("Segoe UI Emoji"),
-        local("Segoe UI Symbol"), local("Noto Color Emoji");
-    }
+                        @font-face {
+                                    font-family: Emoji;
+                                    src: local("Apple Color Emoji"), local("Segoe UI Emoji"),
+                                                local("Segoe UI Symbol"), local("Noto Color Emoji");
+                        }
 
-    body {
-      margin: 0;
-      font-family: "PingFang SC", "Microsoft YaHei", system-ui, -apple-system,
-        "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-        "Droid Sans", "Helvetica Neue", sans-serif, Arial, Emoji;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+                        body {
+                                    margin: 0;
+                                    font-family: "PingFang SC", "Microsoft YaHei", system-ui, -apple-system,
+                                                "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+                                                "Droid Sans", "Helvetica Neue", sans-serif, Arial, Emoji;
+                                    -webkit-font-smoothing: antialiased;
+                                    -moz-osx-font-smoothing: grayscale;
+                        }
 
-    code {
-      font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-        monospace;
-    }
-  </style>
-  <script src="./crypto-js.js"></script>
-  <script src="./token.js"></script>
+                        code {
+                                    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+                                                monospace;
+                        }
+            </style>
 </head>
 
 <body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
-  <div id="root"></div>
-  <!--
+            <noscript>You need to enable JavaScript to run this app.</noscript>
+            <div id="root"></div>
+            <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
 
@@ -66,67 +64,57 @@
 </body>
 <script src="./index.umd.js"></script>
 <script>
-  // get token
-  function generateToken(tokenServerUrl, userID, roomID, userName) {
-    return Promise.resolve({
-      token:
-        generateV4Token(userID) +
-        "#" +
-        window.btoa(
-          JSON.stringify({ userID, roomID, userName, appID: 3349318446 })
-        ),
-    });
+            // get token
+            function generateToken(tokenServerUrl, userID, roomID, userName) {
+                        // Obtain the token interface provided by the App Server
+                        return fetch(
+                                    `${tokenServerUrl}/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`,
+                                    {
+                                                method: 'GET',
+                                    }
+                        ).then((res) => res.json());
+            }
 
-    // Obtain the token interface provided by the App Server
-    return fetch(
-      `${tokenServerUrl}/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`,
-      {
-        method: 'GET',
-      }
-    ).then((res) => res.json());
-  }
+            function randomID(len) {
+                        let result = '';
+                        if (result) return result;
+                        var chars = '12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP',
+                                    maxPos = chars.length,
+                                    i;
+                        len = len || 5;
+                        for (i = 0; i < len; i++) {
+                                    result += chars.charAt(Math.floor(Math.random() * maxPos));
+                        }
+                        return result;
+            }
 
+            function getUrlParams(url) {
+                        let urlStr = url.split('?')[1];
+                        const urlSearchParams = new URLSearchParams(urlStr);
+                        const result = Object.fromEntries(urlSearchParams.entries());
+                        return result;
+            }
 
-  function randomID(len) {
-    let result = '';
-    if (result) return result;
-    var chars = '12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP',
-      maxPos = chars.length,
-      i;
-    len = len || 5;
-    for (i = 0; i < len; i++) {
-      result += chars.charAt(Math.floor(Math.random() * maxPos));
-    }
-    return result;
-  }
+            async function init() {
+                        const roomID = getUrlParams(window.location.href)['roomID'] || randomID(5);
+                        const { token } = await generateToken(
+                                    'https://choui-prebuilt.herokuapp.com',
+                                    randomID(5),
+                                    roomID,
+                                    randomID(5)
+                        );
+                        const zp = ZegoPrebuilt.init(token);
+                        zp.joinRoom({
+                                    container: document.querySelector("#root"),
+                                    joinScreen: {
+                                                inviteURL:
+                                                            window.location.origin + window.location.pathname + '?roomID=' + roomID,
+                                                visible: true,
+                                    },
+                        });
+            }
 
-  function getUrlParams(url) {
-    let urlStr = url.split('?')[1];
-    const urlSearchParams = new URLSearchParams(urlStr);
-    const result = Object.fromEntries(urlSearchParams.entries());
-    return result;
-  }
-
-  async function init() {
-    const roomID = getUrlParams(window.location.href)['roomID'] || randomID(5);
-    const { token } = await generateToken(
-      'https://choui-prebuilt.herokuapp.com',
-      randomID(5),
-      roomID,
-      randomID(5)
-    );
-    const zp = ZegoPrebuilt.init(token);
-    zp.joinRoom({
-      container: document.querySelector("#root"),
-      joinScreen: {
-        inviteURL:
-          window.location.origin + window.location.pathname + '?roomID=' + roomID,
-        visible: true,
-      },
-    });
-  }
-
-  window.onload = init;
+            window.onload = init;
 
 
 </script>
