@@ -20,6 +20,7 @@
     "scripts": {
         "start": "HTTPS=true HOST=0.0.0.0 react-scripts start",
         "start:m": "REACT_APP_MOBILE='yes' npm run start",
+        "start:t": "webpack serve --config webpack.config.sample.ts",
         "build": "react-scripts build",
         "predeploy": "npm run build",
         "deploy": "gh-pages -b main -d build",
@@ -60,6 +61,7 @@
         "clean-webpack-plugin": "^4.0.0",
         "eslint-config-react-app": "^7.0.1",
         "father": "^2.30.21",
+        "filemanager-webpack-plugin": "^7.0.0",
         "jest-dom": "^4.0.0",
         "node-sass": "^7.0.1",
         "react-scripts": "5.0.1",

@@ -9,6 +9,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "declaration": true,
+    "outDir": "ZegoPrebuilt",
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -26,8 +28,8 @@
     }
   },
   "include": [
-    "src",
     "src/sdk/model",
-    "src/sdk"
+    "src/typings.d.ts",
+    "src/sdk/"
   ]
 }

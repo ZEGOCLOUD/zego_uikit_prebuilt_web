@@ -1,25 +1,24 @@
 import ReactDOM, { Root } from "react-dom/client";
 import { ZegoCloudRoomConfig } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
-import { isPc } from "./util";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 
-export class ZegoPrebuilt {
+export class ZegoUIkitPrebuiltMeeting {
   static core: ZegoCloudRTCCore;
-  static _instance: ZegoPrebuilt;
+  static _instance: ZegoUIkitPrebuiltMeeting;
 
   root: Root | undefined;
 
-  static init(token: string): ZegoPrebuilt {
-    if (!ZegoPrebuilt.core && token) {
-      ZegoPrebuilt.core = ZegoCloudRTCCore.getInstance(token);
-      ZegoPrebuilt._instance = new ZegoPrebuilt();
+  static init(token: string): ZegoUIkitPrebuiltMeeting {
+    if (!ZegoUIkitPrebuiltMeeting.core && token) {
+      ZegoUIkitPrebuiltMeeting.core = ZegoCloudRTCCore.getInstance(token);
+      ZegoUIkitPrebuiltMeeting._instance = new ZegoUIkitPrebuiltMeeting();
     }
-    return ZegoPrebuilt._instance;
+    return ZegoUIkitPrebuiltMeeting._instance;
   }
 
   joinRoom(roomConfig?: ZegoCloudRoomConfig) {
-    if (!ZegoPrebuilt.core) {
+    if (!ZegoUIkitPrebuiltMeeting.core) {
       console.error("【ZEGOCLOUD】 please call init first !!");
       return;
     }
@@ -45,17 +44,17 @@ export class ZegoPrebuilt {
       };
     }
 
-    ZegoPrebuilt.core.setConfig(roomConfig);
+    ZegoUIkitPrebuiltMeeting.core.setConfig(roomConfig);
     this.root = ReactDOM.createRoot(roomConfig.container as HTMLDivElement);
     this.root.render(
       <ZegoCloudRTCKitComponent
-        core={ZegoPrebuilt.core}
+        core={ZegoUIkitPrebuiltMeeting.core}
       ></ZegoCloudRTCKitComponent>
     );
   }
 
   destroyRoom() {
-    ZegoPrebuilt.core.leaveRoom();
+    ZegoUIkitPrebuiltMeeting.core.leaveRoom();
     this.root?.unmount();
     this.root = undefined;
   }

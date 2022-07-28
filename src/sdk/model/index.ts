@@ -12,7 +12,7 @@ export interface ZegoCloudRemoteMedia {
   state: "NO_PLAY" | "PLAY_REQUESTING" | "PLAYING";
 }
 export interface ZegoCloudRoomConfig {
-  container?: HTMLElement; // 挂载容器
+  container?: HTMLElement | undefined | null; // 挂载容器
   joinScreen?: {
     visible: boolean; // 是否显示娱乐检测页面，默认显示
     title?: string; // 标题设置，默认enter Room

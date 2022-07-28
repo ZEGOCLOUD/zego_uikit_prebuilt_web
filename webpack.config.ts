@@ -5,6 +5,7 @@ import "webpack-dev-server";
 const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+import FileManagerPlugin from "filemanager-webpack-plugin";
 
 const config: webpack.Configuration = {
   mode: "development",
@@ -106,6 +107,28 @@ const config: webpack.Configuration = {
       "process.env.REACT_APP_MOBILE": JSON.stringify("no"),
     }),
     new CleanWebpackPlugin(),
+    new FileManagerPlugin({
+      events: {
+        onStart: {
+          delete: ["./ZegoPrebuilt/idex.umd,js", "./ZegoPrebuilt/sdk"],
+        },
+        onEnd: {
+          copy: [
+            {
+              //精简
+              source: "./public/test.html",
+              destination: "./ZegoPrebuilt/index.html",
+            },
+            {
+              //精简
+              source: "./public/package.json",
+              destination: "./ZegoPrebuilt/package.json",
+            },
+          ],
+          delete: ["ZegoPrebuilt/util.d.ts"],
+        },
+      },
+    }),
   ],
 };
 export default config;

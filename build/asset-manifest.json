@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/zegocloud_prebuilt_webrtc/build/static/css/main.d190367c.css",
-    "main.js": "/zegocloud_prebuilt_webrtc/build/static/js/main.48966523.js",
+    "main.js": "/zegocloud_prebuilt_webrtc/build/static/js/main.ea25b7b2.js",
     "static/js/787.642df1d1.chunk.js": "/zegocloud_prebuilt_webrtc/build/static/js/787.642df1d1.chunk.js",
     "static/media/logo_zegocloud@2x.png": "/zegocloud_prebuilt_webrtc/build/static/media/logo_zegocloud@2x.a4c5068052a5a36bfe16.png",
     "static/media/App_logo@2x.png": "/zegocloud_prebuilt_webrtc/build/static/media/App_logo@2x.adc9e061a5eb259bc8c1.png",
     "index.html": "/zegocloud_prebuilt_webrtc/build/index.html",
     "main.d190367c.css.map": "/zegocloud_prebuilt_webrtc/build/static/css/main.d190367c.css.map",
-    "main.48966523.js.map": "/zegocloud_prebuilt_webrtc/build/static/js/main.48966523.js.map",
+    "main.ea25b7b2.js.map": "/zegocloud_prebuilt_webrtc/build/static/js/main.ea25b7b2.js.map",
     "787.642df1d1.chunk.js.map": "/zegocloud_prebuilt_webrtc/build/static/js/787.642df1d1.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d190367c.css",
-    "static/js/main.48966523.js"
+    "static/js/main.ea25b7b2.js"
   ]
 }
