@@ -1,4 +1,4 @@
-import { ZegoUIkitPrebuiltMeeting } from "@zego-uikit/prebuilt-meeting-web";
+import { ZegoUIkitPrebuilt } from "@zego-uikit/prebuilt-meeting-web";
 // get token
 function generateToken(
   tokenServerUrl: string,
@@ -43,7 +43,7 @@ async function init() {
     roomID,
     randomID(5)
   );
-  const zp = ZegoUIkitPrebuiltMeeting.init(token);
+  const zp = ZegoUIkitPrebuilt.init(token);
   zp.joinRoom({
     container: document.querySelector("#root") as HTMLDivElement,
     joinScreen: {
