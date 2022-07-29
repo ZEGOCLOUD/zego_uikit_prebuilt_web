@@ -17,8 +17,8 @@
     justify-content: space-between;
     box-sizing: border-box;
     width: 100%;
-    height: vw(152px);
-    padding: 0 vw(87px);
+    height: vw(122px);
+    padding: 0 vw(77px) 0 vw(77px);
     background: #1c1f2e;
     a {
       box-sizing: border-box;
@@ -77,12 +77,12 @@
       .popMore {
         position: absolute;
         right: vw(-20px);
-        bottom: vw(106px+25px);
+        bottom: vw(116px);
         z-index: 202;
         box-sizing: border-box;
         // width: vw(464px);
         height: vw(190px-14px);
-        padding: vw(32px) vw(55px) vw(30px) vw(55px);
+        padding: vw(32px) vw(55px) vw(30px) vw(32px);
         background-color: #1c1f2e;
         border: 1px solid #3d4054;
         border-radius: vw(18px);

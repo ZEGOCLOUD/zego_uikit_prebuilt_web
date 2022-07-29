@@ -11,9 +11,12 @@
     justify-content: center;
     padding: 0 vw(127px);
     .video {
+      display: block;
       width: vw(496px);
-      height: vw(660px);
+      height: vw(568px);
+      object-fit: cover;
       background-color: #2a2a2a;
+      border-radius: vw(24px);
     }
     .videoTip {
       position: absolute;
@@ -73,6 +76,7 @@
   .joinScreen {
     display: flex;
     flex-direction: column;
+    align-items: center;
     margin-top: vw(86px);
     .joinRoom {
       position: relative;
@@ -130,32 +134,32 @@
     .inviteLink {
       display: flex;
       align-items: center;
-      margin: vw(50px) vw(65px);
-      padding: vw(27px) vw(22px) vw(26px) vw(36px);
+      margin: vw(45px) vw(90px);
+      padding: vw(25px) vw(20px) vw(24px) vw(33px);
       background: #f5f7fa;
       border-radius: 9px;
       input {
         flex: 1;
-        width: vw(460px);
+        width: vw(443px);
         height: 23px;
         color: #666666;
         font-weight: 500;
-        font-size: 17px;
+        font-size: vw(32px);
         // font-family: PingFangSC-Medium, PingFang SC;
-        line-height: 23px;
+        line-height: vw(45px);
         background-color: #ffffff00;
         border: 0;
         outline: none;
       }
       button {
-        width: 30px;
-        height: 30px;
-        margin-left: 13px;
+        width: vw(44px);
+        height: vw(44px);
+        margin-left: vw(25px);
         background: #f5f7fa;
         background-image: url(../../../sdkMobileAssets/icon_conpy@2x.png);
         background-size: contain;
         border: 0;
-        border-radius: 9px;
+        border-radius: vw(18px);
       }
       .copied {
         background-image: url(../../../sdkMobileAssets/icon_copied@2x.png);

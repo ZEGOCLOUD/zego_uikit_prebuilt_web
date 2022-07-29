@@ -591,7 +591,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         {this.state.isNetworkPoor && (
           <div className={ZegoRoomCss.network}></div>
         )}
-        {this.state.showFooter && (
+        {(this.state.showFooter || true) && (
           <div className={ZegoRoomCss.footer}>
             {this.props.core._config.userCanToggleSelfCamera && (
               <a
@@ -603,18 +603,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 }}
               ></a>
             )}
-            {this.props.core._config.userCanToggleSelfMic && (
-              <a
-                className={
-                  this.state.micOpen
-                    ? ZegoRoomCss.toggleMic
-                    : ZegoRoomCss.micClose
-                }
-                onClick={() => {
-                  this.toggleMic();
-                }}
-              ></a>
-            )}
+
             {this.props.core._config.userCanToggleSelfCamera && (
               <a
                 className={
@@ -624,6 +613,19 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 }
                 onClick={() => {
                   this.toggleCamera();
+                }}
+              ></a>
+            )}
+
+            {this.props.core._config.userCanToggleSelfMic && (
+              <a
+                className={
+                  this.state.micOpen
+                    ? ZegoRoomCss.toggleMic
+                    : ZegoRoomCss.micClose
+                }
+                onClick={() => {
+                  this.toggleMic();
                 }}
               ></a>
             )}
@@ -643,7 +645,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                   this.openMore();
                 }}
               >
-                {this.state.showMore && (
+                {(this.state.showMore || true) && (
                   <div
                     id="ZegoRoomCssMobilePopMore"
                     className={ZegoRoomCss.popMore}

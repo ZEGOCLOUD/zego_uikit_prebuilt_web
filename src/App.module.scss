@@ -107,9 +107,17 @@
       background-size: contain;
     }
     .mobileLink {
+      a {
+        margin: 0;
+        padding: 0px;
+      }
+      a:first-child {
+        margin-right: vw(40px);
+      }
       span {
         width: vw(50px);
         height: vw(50px);
+        margin-right: 0;
       }
     }
   }
@@ -122,7 +130,7 @@
     z-index: 101;
     flex: 1;
     box-sizing: border-box;
-    padding: vw(113px) vw(146px) vw(12px) vw(146px);
+    padding: vw(94px) vw(146px) vw(12px) vw(146px);
     color: #ababb5;
     // font-family: PingFangSC-Regular, PingFang SC;
     font-weight: 400;
