@@ -591,7 +591,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         {this.state.isNetworkPoor && (
           <div className={ZegoRoomCss.network}></div>
         )}
-        {(this.state.showFooter || true) && (
+        {(this.state.showFooter || false) && (
           <div className={ZegoRoomCss.footer}>
             {this.props.core._config.userCanToggleSelfCamera && (
               <a
@@ -645,7 +645,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                   this.openMore();
                 }}
               >
-                {(this.state.showMore || true) && (
+                {(this.state.showMore || false) && (
                   <div
                     id="ZegoRoomCssMobilePopMore"
                     className={ZegoRoomCss.popMore}
