@@ -22,7 +22,12 @@ export function generateToken(
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => res.json());
+    }).then(async (res) => {
+      const result = await res.json();
+      return {
+        token: result.data.token,
+      };
+    });
   }
 }
 
