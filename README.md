@@ -8,7 +8,6 @@
 
 ### [Experience Demo online](https://zegocloud.github.io/zegocloud_prebuilt_webrtc/build/index.html)
 
-
 ### Preparation before integration
 
 1 Register a [ZEGOCLOUD ACCOUNT](https://console.zegocloud.com/account/signup)  ----- >create a project ----- > get the project AppID, ServerSecret
@@ -73,7 +72,7 @@ async function init() {
     roomID,
     randomID(5)
   );
-  const zp = ZegoPrebuilt.init(token);
+  const zp = ZegoUIkitPrebuilt.init(token);
   zp.joinRoom({
     container: appDiv,
     joinScreen: {
