@@ -73,3 +73,7 @@ export interface ZegoSettingsProps {
   onSpeakerChange: (deviceID: string) => void;
   onVideoResolutionChange: (level: string) => void;
 }
+
+export interface ZegoGridLayoutProps {
+  userList: any[];
+}

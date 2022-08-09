@@ -16,7 +16,7 @@ import {
   ZegoBroadcastMessageInfo,
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRemoteMedia, ZegoCloudRoomConfig } from "../model";
-import { SoundMeter } from "./soundmeter";
+// import { SoundMeter } from "./soundmeter";
 
 export class ZegoCloudRTCCore {
   static _instance: ZegoCloudRTCCore;

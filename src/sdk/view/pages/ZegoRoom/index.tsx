@@ -20,6 +20,7 @@ import { copy } from "../../../modules/util";
 import { userNameColor } from "../../../util";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
+import { ZegoGridLayout } from "./components/zegoGridLayout";
 export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -673,7 +674,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         )}
         <div className={ZegoRoomCss.content}>
           <div className={ZegoRoomCss.contentLeft}>
-            <ZegoOne2One
+            {/* <ZegoOne2One
               onLocalStreamPaused={async () => {
                 console.warn("onLocalStreamPaused");
                 await this.props.core.enableVideoCaptureDevice(
@@ -700,7 +701,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 micOpen: this.state.micOpen,
                 cameraOpen: this.state.cameraOpen,
               }}
-            ></ZegoOne2One>
+            ></ZegoOne2One> */}
+            <ZegoGridLayout
+              userList={new Array(11).fill({ userName: "G" })}
+            ></ZegoGridLayout>
             <div className={ZegoRoomCss.notify}>
               {this.state.notificationList
                 .slice(startIndex)
