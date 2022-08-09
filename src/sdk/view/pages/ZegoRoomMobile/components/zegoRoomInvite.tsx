@@ -20,7 +20,7 @@ export class ZegoRoomInvite extends React.Component<{
           ></div>
           Room details
         </div>
-        <div className={zegoRoomInviteCss.invitationLink}>
+        <div className={zegoRoomInviteCss.inviteURL}>
           {this.props.core._config.preJoinViewConfig?.invitationLink}
         </div>
         <div

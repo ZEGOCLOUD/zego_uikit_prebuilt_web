@@ -104,7 +104,7 @@
             roomID,
             randomID(5)
         );
-        const zp = ZegoUIKitPrebuilt.init(token);
+        const zp = ZegoUIKitPrebuilt.create(token);
         zp.joinRoom({
             container: document.querySelector("#root"),
             preJoinViewConfig: {

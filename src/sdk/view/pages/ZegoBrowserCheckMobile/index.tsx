@@ -290,7 +290,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               )}
             </div>
           </div>
-          <div className={ZegoBrowserCheckCss.preJoinViewConfig}>
+          <div className={ZegoBrowserCheckCss.joinScreen}>
             <div
               className={`${ZegoBrowserCheckCss.joinRoom} ${ZegoBrowserCheckCss.focus}`}
             >
