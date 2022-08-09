@@ -20,15 +20,15 @@ export class ZegoRoomInvite extends React.Component<{
           ></div>
           Room details
         </div>
-        <div className={zegoRoomInviteCss.inviteURL}>
-          {this.props.core._config.joinScreen?.inviteURL}
+        <div className={zegoRoomInviteCss.invitationLink}>
+          {this.props.core._config.preJoinViewConfig?.invitationLink}
         </div>
         <div
           className={zegoRoomInviteCss.inviteCopy}
           onClick={(ev) => {
             ev.stopPropagation();
-            this.props.core._config.joinScreen?.inviteURL &&
-              copy(this.props.core._config.joinScreen?.inviteURL);
+            this.props.core._config.preJoinViewConfig?.invitationLink &&
+              copy(this.props.core._config.preJoinViewConfig?.invitationLink);
 
             ZegoToast({
               content: "Copy successfully",

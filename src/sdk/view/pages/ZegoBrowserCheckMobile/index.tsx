@@ -37,8 +37,8 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       isSupportWebRTC: res,
       userName: this.props.core._expressConfig.userName,
     });
-    const videoOpen = !!this.props.core._config.cameraEnabled;
-    const audioOpen = !!this.props.core._config.micEnabled;
+    const videoOpen = !!this.props.core._config.turnOnCameraWhenJoining;
+    const audioOpen = !!this.props.core._config.turnOnMicrophoneWhenJoining;
     if (videoOpen || audioOpen) {
       await this.createStream(videoOpen, audioOpen);
     } else {
@@ -183,9 +183,9 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       },
       async () => {
         this.props.core._expressConfig.userName = this.state.userName;
-        this.props.core._config.micEnabled =
+        this.props.core._config.turnOnMicrophoneWhenJoining =
           this.state.audioOpen && !this.audioRefuse;
-        this.props.core._config.cameraEnabled =
+        this.props.core._config.turnOnCameraWhenJoining =
           this.state.videoOpen && !this.videoRefuse;
         this.props.core.status.audioRefuse = this.audioRefuse;
         this.props.core.status.videoRefuse = this.videoRefuse;
@@ -264,7 +264,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               </div>
             )}
             <div className={ZegoBrowserCheckCss.handler}>
-              {this.props.core._config.userCanToggleSelfMic && (
+              {this.props.core._config.showMyMicrophoneToggleButton && (
                 <a
                   className={
                     this.state.audioOpen
@@ -276,7 +276,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
                   }}
                 ></a>
               )}
-              {this.props.core._config.userCanToggleSelfCamera && (
+              {this.props.core._config.showMyCameraToggleButton && (
                 <a
                   className={
                     this.state.videoOpen
@@ -290,7 +290,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               )}
             </div>
           </div>
-          <div className={ZegoBrowserCheckCss.joinScreen}>
+          <div className={ZegoBrowserCheckCss.preJoinViewConfig}>
             <div
               className={`${ZegoBrowserCheckCss.joinRoom} ${ZegoBrowserCheckCss.focus}`}
             >
@@ -312,12 +312,14 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
                 Join
               </button>
             </div>
-            {this.props.core._config.joinScreen?.inviteURL && (
+            {this.props.core._config.preJoinViewConfig?.invitationLink && (
               <div className={ZegoBrowserCheckCss.inviteLink}>
                 <input
                   placeholder="inviteLink"
                   readOnly
-                  value={this.props.core._config.joinScreen?.inviteURL}
+                  value={
+                    this.props.core._config.preJoinViewConfig?.invitationLink
+                  }
                   ref={this.inviteRef}
                 ></input>
                 <button

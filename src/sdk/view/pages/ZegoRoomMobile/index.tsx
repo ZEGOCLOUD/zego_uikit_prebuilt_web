@@ -35,8 +35,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     showFooter: boolean;
     isNetworkPoor: boolean;
   } = {
-    micOpen: !!this.props.core._config.micEnabled,
-    cameraOpen: !!this.props.core._config.cameraEnabled,
+    micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
+    cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
     localStream: undefined,
     remoteStreamInfo: undefined,
     layOutStatus: "ONE_VIDEO",
@@ -50,8 +50,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     showFooter: true,
     isNetworkPoor: false,
   };
-  micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
-  cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
+  micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
+    ? 1
+    : 0;
+  cameraStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnCameraWhenJoining
+    ? 1
+    : 0;
   faceModel: 0 | 1 | -1 = 1;
   notifyTimer: NodeJS.Timeout | null = null;
   footerTimer!: NodeJS.Timeout;
@@ -131,7 +135,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     this.props.core.onRemoteUserUpdate(
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
         let notificationList: ZegoNotification[] = [];
-        if (this.props.core._config.notification?.userOnlineOfflineTips) {
+        if (
+          this.props.core._config.lowerLeftNotification?.showUserJoinAndLeave
+        ) {
           userList.map((u) => {
             notificationList.push({
               content:
@@ -212,12 +218,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             messageList: ZegoBroadcastMessageInfo[];
             notificationList: ZegoNotification[];
           }) => {
-            let notification: ZegoNotification[] = [];
+            let lowerLeftNotification: ZegoNotification[] = [];
             if (
               this.state.layOutStatus !== "MESSAGE" &&
-              this.props.core._config.notification?.unreadMessageTips
+              this.props.core._config.lowerLeftNotification?.showTextChat
             ) {
-              notification = [
+              lowerLeftNotification = [
                 ...state.notificationList,
                 ...messageList.map<ZegoNotification>((m) => {
                   return {
@@ -231,7 +237,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             }
             return {
               messageList: [...state.messageList, ...messageList],
-              notificationList: notification,
+              notificationList: lowerLeftNotification,
             };
           }
         );
@@ -263,9 +269,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
 
         this.props.core.mutePublishStreamVideo(
           localStream,
-          !this.props.core._config.cameraEnabled
+          !this.props.core._config.turnOnCameraWhenJoining
         );
-        this.props.core.muteMicrophone(!this.props.core._config.micEnabled);
+        this.props.core.muteMicrophone(
+          !this.props.core._config.turnOnMicrophoneWhenJoining
+        );
         this.setState({
           localStream,
         });
@@ -593,7 +601,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         )}
         {(this.state.showFooter || false) && (
           <div className={ZegoRoomCss.footer}>
-            {this.props.core._config.userCanToggleSelfCamera && (
+            {this.props.core._config.showMyCameraToggleButton && (
               <a
                 className={`${ZegoRoomCss.switchCamera} ${
                   this.state.cameraFront ? "" : ZegoRoomCss.switchCameraBack
@@ -604,7 +612,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               ></a>
             )}
 
-            {this.props.core._config.userCanToggleSelfCamera && (
+            {this.props.core._config.showMyCameraToggleButton && (
               <a
                 className={
                   this.state.cameraOpen
@@ -617,7 +625,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               ></a>
             )}
 
-            {this.props.core._config.userCanToggleSelfMic && (
+            {this.props.core._config.showMyMicrophoneToggleButton && (
               <a
                 className={
                   this.state.micOpen
@@ -635,9 +643,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 this.leaveRoom();
               }}
             ></a>
-            {(this.props.core._config.chatEnabled ||
-              this.props.core._config.userListEnabled ||
-              this.props.core._config.joinScreen?.inviteURL) && (
+            {(this.props.core._config.showTextChat ||
+              this.props.core._config.showUserList ||
+              this.props.core._config.preJoinViewConfig?.invitationLink) && (
               <a
                 id="ZegoRoomCssMobileMore"
                 className={ZegoRoomCss.more}
@@ -651,7 +659,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                     className={ZegoRoomCss.popMore}
                   >
                     <div className={ZegoRoomCss.popMoreContent}>
-                      {this.props.core._config.joinScreen?.inviteURL && (
+                      {this.props.core._config.preJoinViewConfig
+                        ?.invitationLink && (
                         <div
                           onClick={(ev) => {
                             ev.stopPropagation();
@@ -662,7 +671,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                           <span>Room details</span>
                         </div>
                       )}
-                      {this.props.core._config.userListEnabled && (
+                      {this.props.core._config.showUserList && (
                         <div
                           onClick={(ev) => {
                             ev.stopPropagation();
@@ -673,7 +682,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                           <span>Member</span>
                         </div>
                       )}
-                      {this.props.core._config.chatEnabled && (
+                      {this.props.core._config.showTextChat && (
                         <div
                           onClick={(ev) => {
                             ev.stopPropagation();

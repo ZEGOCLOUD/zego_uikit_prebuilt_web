@@ -14,7 +14,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
   core: ZegoCloudRTCCore;
 }> {
   state = {
-    step: this.props.core._config.joinScreen?.visible ? 0 : 1,
+    step: this.props.core._config.showPreJoinView ? 0 : 1,
   };
 
   nextPage() {
@@ -84,7 +84,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         <ZegoRoom
           core={this.props.core}
           leaveRoom={() => {
-            this.props.core._config.leftScreen && this.nextPage();
+            this.props.core._config.showLeavingView && this.nextPage();
             this.props.core._config.leaveRoomCallback &&
               this.props.core._config.leaveRoomCallback();
           }}
@@ -93,7 +93,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         <ZegoRoomMobile
           core={this.props.core}
           leaveRoom={() => {
-            this.props.core._config.leftScreen && this.nextPage();
+            this.props.core._config.showLeavingView && this.nextPage();
             this.props.core._config.leaveRoomCallback &&
               this.props.core._config.leaveRoomCallback();
           }}
