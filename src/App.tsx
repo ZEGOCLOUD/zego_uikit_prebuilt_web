@@ -49,7 +49,7 @@ export default class App extends React.Component {
             "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
         },
         showLeavingView: true, // 离开房间后页面，默认有
-        // localizationJSON: "", //者json对象
+        maxUsers: 50,
       };
       zp.joinRoom(param);
     };

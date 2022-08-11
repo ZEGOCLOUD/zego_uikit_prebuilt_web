@@ -99,6 +99,18 @@ export class ZegoCloudRTCCore {
     },
     showLeavingView: true, // 离开房间后页面，默认有
     localizationJSON: {}, //者json对象
+    ////////二期新增功能///////////////
+    maxUsers: 2, // 房间人数2～20，默认2
+    layout: "Default", // 默认Default
+
+    showNonVideoUser: true, // 是否显示不推流用户，默认显示
+
+    // // 是否现在做，跟凯华讨论下
+    //   permissions:{
+    //       showRemoteUserMicrophoneToggleOption?:boolean,// 是否允许开关用户麦克风，默认允许
+    //       showRemoteUserCameraToggleOption?: boolean,// 是否允许开关用户摄像头，默认允许
+    //   }
+    //   role?: "Host"| "Participant" // 用户角色，HOST可以关闭对方摄像头和麦克风，Participant则不可以,默认HOST
   };
   setConfig(config: ZegoCloudRoomConfig) {
     this._config = { ...this._config, ...config };
@@ -405,7 +417,7 @@ export class ZegoCloudRTCCore {
         },
         {
           userUpdate: true,
-          maxMemberCount: 2,
+          maxMemberCount: ZegoCloudRTCCore._instance._config.maxUsers,
         }
       );
     });

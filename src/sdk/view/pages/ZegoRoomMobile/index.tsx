@@ -18,12 +18,12 @@ import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoReconnect } from "./components/ZegoReconnect";
 import { ZegoToast } from "../../components/mobile/zegoToast";
+import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
-    remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
     layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
-    userList: ZegoUser[];
+    zegoCloudUserList: ZegoCloudUserList;
     messageList: ZegoBroadcastMessageInfo2[];
     notificationList: ZegoNotification[];
     micOpen: boolean;
@@ -38,9 +38,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
     cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
     localStream: undefined,
-    remoteStreamInfo: undefined,
     layOutStatus: "ONE_VIDEO",
-    userList: [],
+    zegoCloudUserList: [],
     messageList: [],
     notificationList: [],
     showMore: false,
@@ -72,9 +71,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     preProps: ZegoBrowserCheckProp,
     preState: {
       localStream: undefined | MediaStream;
-      remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
       layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
-      userList: ZegoUser[];
       messageList: ZegoBroadcastMessageInfo[];
       notificationList: ZegoNotification[];
       micOpen: boolean;
@@ -151,64 +148,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             });
           });
         }
-        if (updateType === "ADD") {
-          this.setState(
-            (state: { userList: ZegoUser[]; notificationList: string[] }) => {
-              const noRepeat: ZegoUser[] = [];
-              userList.map((user) => {
-                if (
-                  !state.userList.some((su) => {
-                    if (su.userID === user.userID) {
-                      return true;
-                    } else {
-                      return false;
-                    }
-                  })
-                ) {
-                  noRepeat.push(user);
-                }
-              });
-              return {
-                userList: [...state.userList, ...noRepeat],
-                notificationList: [
-                  ...state.notificationList,
-                  ...notificationList,
-                ],
-              };
-            }
-          );
-        } else if (updateType === "DELETE") {
-          this.setState(
-            (state: { userList: ZegoUser[]; notificationList: string[] }) => {
-              return {
-                userList: state.userList.filter(
-                  (user1) =>
-                    !userList.some((user2) => user1.userID === user2.userID)
-                ),
-                notificationList: [
-                  ...state.notificationList,
-                  ...notificationList,
-                ],
-              };
-            }
-          );
-        }
-      }
-    );
-    this.props.core.onRemoteMediaUpdate(
-      (
-        updateType: "DELETE" | "ADD" | "UPDATE",
-        streamList: ZegoCloudRemoteMedia[]
-      ) => {
-        if (updateType === "ADD" || updateType === "UPDATE") {
-          this.setState({
-            remoteStreamInfo: streamList[0],
-          });
-        } else if (updateType === "DELETE") {
-          this.setState({
-            remoteStreamInfo: undefined,
-          });
-        }
+
+        this.setState((state: { notificationList: string[] }) => {
+          return {
+            notificationList: [...state.notificationList, ...notificationList],
+          };
+        });
       }
     );
     this.props.core.onRoomMessageUpdate(
@@ -243,6 +188,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         );
       }
     );
+    this.props.core.subscribeUserList((userList) => {
+      this.setState({ zegoCloudUserList: userList });
+    });
 
     const logInRsp = await this.props.core.enterRoom();
 
@@ -523,7 +471,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       return (
         <ZegoUserList
           core={this.props.core}
-          userList={this.state.userList}
+          userList={this.state.zegoCloudUserList}
           closeCallBack={() => {
             this.setState({
               layOutStatus: "ONE_VIDEO",
@@ -566,16 +514,21 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           }, 5000);
         }}
       >
+        {this.props.core._config.layout === "Default" &&
+          this.state.zegoCloudUserList.length < 3}
         <ZegoOne2One
           localStream={this.state.localStream}
-          remoteStreamInfo={this.state.remoteStreamInfo}
+          remoteStreamInfo={
+            this.state.zegoCloudUserList[0] &&
+            this.state.zegoCloudUserList[0].streamList[0]
+          }
           remoteUserInfo={{
             userName:
-              this.state.remoteStreamInfo?.fromUser.userName ||
-              this.state.userList[0]?.userName,
+              this.state.zegoCloudUserList[0] &&
+              this.state.zegoCloudUserList[0].userName,
             userID:
-              this.state.remoteStreamInfo?.fromUser.userID ||
-              this.state.userList[0]?.userID,
+              this.state.zegoCloudUserList[0] &&
+              this.state.zegoCloudUserList[0].userID,
           }}
           selfUserInfo={{
             userName: this.props.core._expressConfig.userName,
