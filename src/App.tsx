@@ -4,7 +4,7 @@ import APP from "./App.module.scss";
 import { ZegoUIKitPrebuilt } from "./sdk/index";
 import { ZegoCloudRoomConfig } from "./sdk/model";
 import { getUrlParams, isPc } from "./sdk/util";
-import { generateToken, randomID } from "./util";
+import { generateToken, getRandomName, randomID } from "./util";
 export default class App extends React.Component {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
 
@@ -13,7 +13,7 @@ export default class App extends React.Component {
     // @es
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
     this.myMeeting = async (element: HTMLDivElement) => {
-      let { token } = await generateToken(randomID(5), roomID, randomID(5));
+      let { token } = await generateToken(randomID(5), roomID, getRandomName());
       // token =
       //   "04AAAAAGLiKBcAEDFnZnlqZDV3bHQwNDZrZG4AcMdjPKlN5VTcl8PDi9mwY+rY1pZs4h1HKQKow/i1ZaZmoNNvF+mq6L/mm4ootCh5pEHmMg4S+PB70H1VReSgbBpb5QaH9FobMo1snaAxft66+T3DxUCThSuSEYxavGLO2fwWIEALNNPNvg+hO/o58G0=#eyJ1c2VyX2lkIjoiMTIzZmFkcyIsInJvb21faWQiOiJmYXNmIiwidXNlcl9uYW1lIjoiZmFqZmQiLCJhcHBfaWQiOiIxNDg0NjQ3OTM5In0=";
       const zp = ZegoUIKitPrebuilt.create(token);
