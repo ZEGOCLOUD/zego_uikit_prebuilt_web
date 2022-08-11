@@ -118,9 +118,11 @@ export class ZegoCloudUserListManager {
           (s) => s.media === stream.media
         );
 
-        if (updateType === "DELETE") {
+        if (updateType === "ADD") {
+          this.remoteUserList[u_index].streamList.push(stream);
+        } else if (updateType === "DELETE" && s_index > -1) {
           this.remoteUserList[u_index].streamList.splice(s_index, 1);
-        } else if (updateType === "UPDATE") {
+        } else if (updateType === "UPDATE" && s_index > -1) {
           this.remoteUserList[u_index].streamList[s_index] = stream;
         }
       } else {
@@ -134,5 +136,8 @@ export class ZegoCloudUserListManager {
         }
       }
     });
+  }
+  clearUserList() {
+    this.remoteUserList = [];
   }
 }
