@@ -43,3 +43,50 @@ export function randomID(len: number): string {
   }
   return result;
 }
+
+export function getRandomName() {
+  const names = [
+    "Oliver",
+    "Jake",
+    "Noah",
+    "James",
+    "Jack",
+    "Connor",
+    "Liam",
+    "John",
+    "Harry",
+    "Callum",
+    "Mason",
+    "Robert",
+    "Jacob",
+    "Jacob",
+    "Jacob",
+    "Michael",
+    "Charlie",
+    "Kyle",
+    "William",
+    "William",
+    "Thomas",
+    "Joe",
+    "Ethan",
+    "David",
+    "George",
+    "Reece",
+    "Michael",
+    "Richard",
+    "Oscar",
+    "Rhys",
+    "Alexander",
+    "Joseph",
+    "James",
+    "Charlie",
+    "James",
+    "Charles",
+    "William",
+    "Damian",
+    "Daniel",
+    "Thomas",
+  ];
+
+  return names[Math.round(Math.random() * names.length)];
+}
