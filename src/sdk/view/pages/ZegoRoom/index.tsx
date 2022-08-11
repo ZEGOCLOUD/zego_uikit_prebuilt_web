@@ -16,7 +16,7 @@ import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import { getVideoResolution, randomNumber } from "../../../util";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
-import { copy } from "../../../modules/util";
+import { copy } from "../../../modules/tools/util";
 import { userNameColor } from "../../../util";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";

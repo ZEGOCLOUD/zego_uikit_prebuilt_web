@@ -10,6 +10,7 @@ export interface ZegoCloudRemoteMedia {
   micStatus: "OPEN" | "MUTE";
   cameraStatus: "OPEN" | "MUTE";
   state: "NO_PLAY" | "PLAY_REQUESTING" | "PLAYING";
+  streamID: string;
 }
 export interface ZegoCloudRoomConfig {
   container?: HTMLElement | undefined | null; // 挂载容器

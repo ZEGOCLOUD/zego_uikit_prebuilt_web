@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from "react";
 import zegoRoomInviteCss from "./zegoRoomInvite.module.scss";
 import { ZegoCloudRTCCore } from "../../../../modules";
-import { copy } from "../../../../modules/util";
+import { copy } from "../../../../modules/tools/util";
 import { ZegoToast } from "../../../components/mobile/zegoToast";
 export class ZegoRoomInvite extends React.Component<{
   core: ZegoCloudRTCCore;

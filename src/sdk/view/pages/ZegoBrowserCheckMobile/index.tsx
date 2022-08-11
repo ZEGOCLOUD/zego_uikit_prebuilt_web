@@ -1,6 +1,6 @@
 import React, { ChangeEvent, FocusEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
-import { copy } from "../../../modules/util";
+import { copy } from "../../../modules/tools/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoModel } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/mobile/zegoToast";

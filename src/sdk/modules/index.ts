@@ -1,4 +1,4 @@
-import { getConfig } from "./util";
+import { getConfig } from "./tools/util";
 import { randomID } from "../../util";
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import {
@@ -16,11 +16,15 @@ import {
   ZegoBroadcastMessageInfo,
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRemoteMedia, ZegoCloudRoomConfig } from "../model";
-import { SoundMeter } from "./soundmeter";
+import {
+  ZegoCloudUserList,
+  ZegoCloudUserListManager,
+} from "./tools/UserListManager";
 
 export class ZegoCloudRTCCore {
   static _instance: ZegoCloudRTCCore;
   static _zg: ZegoExpressEngine;
+  zum!: ZegoCloudUserListManager;
   _expressConfig!: {
     appID: number;
     userID: string;
@@ -40,6 +44,9 @@ export class ZegoCloudRTCCore {
         "wss://webliveroom" +
           ZegoCloudRTCCore._instance._expressConfig.appID +
           "-api.zegocloud.com/ws"
+      );
+      ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(
+        ZegoCloudRTCCore._zg
       );
     }
 
@@ -95,6 +102,24 @@ export class ZegoCloudRTCCore {
   };
   setConfig(config: ZegoCloudRoomConfig) {
     this._config = { ...this._config, ...config };
+  }
+
+  setPin(userID: string): void {
+    this.zum.setPing(userID);
+    this.subscribeUserListCallBack &&
+      this.subscribeUserListCallBack(this.zum.remoteUserList);
+  }
+
+  async setScreenNum(num: number) {
+    await this.zum.setScreenNumber(num);
+    this.subscribeUserListCallBack &&
+      this.subscribeUserListCallBack(this.zum.remoteUserList);
+  }
+
+  async setShowNonVideo(enable: boolean) {
+    await this.zum.setShowNonVideo(enable);
+    this.subscribeUserListCallBack &&
+      this.subscribeUserListCallBack(this.zum.remoteUserList);
   }
 
   getCameras(): Promise<ZegoDeviceInfo[]> {
@@ -236,6 +261,7 @@ export class ZegoCloudRTCCore {
                 cameraStatus:
                   stream.getVideoTracks().length > 0 ? "OPEN" : "MUTE",
                 state: "PLAYING",
+                streamID: streamInfo.streamID,
               };
               _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
             } catch (error) {
@@ -400,6 +426,12 @@ export class ZegoCloudRTCCore {
   ): Promise<ZegoServerResponse> {
     return ZegoCloudRTCCore._zg.replaceTrack(media, mediaStreamTrack);
   }
+
+  private subscribeUserListCallBack!: (userList: ZegoCloudUserList) => void;
+  subscribeUserList(callback: (userList: ZegoCloudUserList) => void): void {
+    this.subscribeUserListCallBack = callback;
+  }
+
   private onRemoteMediaUpdateCallBack!: (
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]
@@ -411,7 +443,15 @@ export class ZegoCloudRTCCore {
       streamList: ZegoCloudRemoteMedia[]
     ) => void
   ) {
-    this.onRemoteMediaUpdateCallBack = func;
+    this.onRemoteMediaUpdateCallBack = (
+      updateType: "DELETE" | "ADD" | "UPDATE",
+      streamList: ZegoCloudRemoteMedia[]
+    ) => {
+      func(updateType, streamList);
+      this.zum.streamNumUpdate(updateType, streamList);
+      this.subscribeUserListCallBack &&
+        this.subscribeUserListCallBack(this.zum.remoteUserList);
+    };
   }
 
   private onNetworkStatusQualityCallBack!: (
@@ -434,7 +474,16 @@ export class ZegoCloudRTCCore {
       user: ZegoUser[]
     ) => void
   ) {
-    this.onRemoteUserUpdateCallBack = func;
+    this.onRemoteUserUpdateCallBack = (
+      roomID: string,
+      updateType: "DELETE" | "ADD",
+      user: ZegoUser[]
+    ) => {
+      func(roomID, updateType, user);
+      this.zum.userUpdate(roomID, updateType, user);
+      this.subscribeUserListCallBack &&
+        this.subscribeUserListCallBack(this.zum.remoteUserList);
+    };
   }
 
   sendRoomMessage(message: string) {
