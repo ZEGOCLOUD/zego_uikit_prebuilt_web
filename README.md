@@ -1,8 +1,8 @@
 # ZEGOCLOUD Prebuilt Web SDK
 
-* 2 interfaces to quickly implement 1V1 calls
-* pure JS language, support all frameworks  (Reat, Angular, Vue,Ionic, etc.)
-* 10,000 minutes free
+- 2 interfaces to quickly implement 1V1 calls
+- pure JS language, support all frameworks (Reat, Angular, Vue,Ionic, etc.)
+- 10,000 minutes free
 
 ## Quick integration
 
@@ -10,7 +10,7 @@
 
 ### Preparation before integration
 
-1 Register a [ZEGOCLOUD ACCOUNT](https://console.zegocloud.com/account/signup)  ----- >create a project ----- > get the project AppID, ServerSecret
+1 Register a [ZEGOCLOUD ACCOUNT](https://console.zegocloud.com/account/signup) ----- >create a project ----- > get the project AppID, ServerSecret
 
 ![config](docs/images/appID.png)
 
@@ -18,7 +18,7 @@
 
 ### Deploy the authentication backend interface
 
- [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/choui666/dynamic_token_server_nodejs)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/choui666/dynamic_token_server_nodejs)
 
 1. Click the deploy link above to start
 2. Fill in your App name, APP_ID and SERVER_SECRET and press `Deploy App`
@@ -34,12 +34,12 @@
 ```javascript
 // dynamically load plugins
 function loadScript(url, callback) {
-  const script = document.createElement('script');
-  script.type = 'text/javascript';
+  const script = document.createElement("script");
+  script.type = "text/javascript";
   // Compatible with IE
   if (script.readyState) {
     script.onreadystatechange = function () {
-      if (script.readyState === 'loaded' || script.readyState === 'complete') {
+      if (script.readyState === "loaded" || script.readyState === "complete") {
         script.onreadystatechange = null;
         callback();
       }
@@ -56,7 +56,7 @@ function loadScript(url, callback) {
 
 // load plugin
 loadScript(
-  'https://zegocloud.github.io/zegocloud_prebuilt_webrtc/ZegoPrebuilt/index.umd.js',
+  "https://zegocloud.github.io/zegocloud_prebuilt_webrtc/ZegoPrebuilt/index.umd.js",
   init
 );
 ```
@@ -65,20 +65,19 @@ loadScript(
 
 ```javascript
 async function init() {
-  const roomID = getUrlParams(window.location.href)['roomID'] || randomID(5);
+  const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
   const { token } = await generateToken(
-    'https://xxxx.herokuapp.com',
+    "https://xxxx.herokuapp.com",
     randomID(5),
     roomID,
     randomID(5)
   );
-  const zp = ZegoUIkitPrebuilt.init(token);
+  const zp = ZegoUIKitPrebuilt.create(token);
   zp.joinRoom({
     container: appDiv,
-    joinScreen: {
-      inviteURL:
-        window.location.origin + window.location.pathname + '?roomID=' + roomID,
-      visible: true,
+    preJoinViewConfig: {
+      invitationLink:
+        window.location.origin + window.location.pathname + "?roomID=" + roomID,
     },
   });
 }
@@ -95,15 +94,15 @@ function generateToken(tokenServerUrl, userID, roomID, userName) {
   return fetch(
     `${tokenServerUrl}/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`,
     {
-      method: 'GET',
+      method: "GET",
     }
   ).then((res) => res.json());
 }
 
 function randomID(len) {
-  let result = '';
+  let result = "";
   if (result) return result;
-  var chars = '12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP',
+  var chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP",
     maxPos = chars.length,
     i;
   len = len || 5;
@@ -114,7 +113,7 @@ function randomID(len) {
 }
 
 function getUrlParams(url) {
-  let urlStr = url.split('?')[1];
+  let urlStr = url.split("?")[1];
   const urlSearchParams = new URLSearchParams(urlStr);
   const result = Object.fromEntries(urlSearchParams.entries());
   return result;
@@ -128,27 +127,23 @@ function getUrlParams(url) {
 ## More configuration is as follows
 
 ```typescript
- export interface ZegoCloudRoomConfig {
+export interface ZegoCloudRoomConfig {
   container?: HTMLElement; // mount the container
-  joinScreen?: {
-    visible: boolean; // Whether to display the entertainment detection page, the default display
+  preJoinViewConfig?: {
     title?: string; // title setting, default enter Room
-    inviteURL?: string; // invite link, if empty, it will not be displayed, default empty
+    invitationLink?: string; // invite link, if empty, it will not be displayed, default empty
   };
-  micEnabled?: boolean; // Whether to enable your own microphone, it is enabled by default
-  cameraEnabled?: boolean; // Whether to open your own camera, open by default
-  userCanToggleSelfCamera?: boolean; // Whether you can control your own microphone, enabled by default
-  userCanToggleSelfMic?: boolean; // Whether you can control the body's own camera, enabled by default
-  deviceSettings?: {
-    audio: boolean; // whether to show audio settings
-    video: boolean; // whether to display video settings
-  };
+  showPreJoinView?: boolean; // Whether to display the entertainment detection page, the default display
+  turnOnMicrophoneWhenJoining?: boolean; // Whether to enable your own microphone, it is enabled by default
+  turnOnCameraWhenJoining?: boolean; // Whether to open your own camera, open by default
+  showMyCameraToggleButton?: boolean; // Whether you can control your own microphone, enabled by default
+  showMyMicrophoneToggleButton?: boolean; // Whether you can control the body's own camera, enabled by default
 
-  chatEnabled?: boolean; // Whether to enable chat, the default is open joinScreen: boolean, // Check whether the page is required before the call, the default is required
-  userListEnabled?: boolean; //Whether to display the member list, not displayed by default
-  notification?: {
-    userOnlineOfflineTips?: boolean; //Whether to display member in and out, not displayed by default
-    unreadMessageTips?: boolean; // Whether to display unread messages, not displayed by default
+  showTextChat?: boolean; // Whether to enable chat, the default is open preJoinViewConfig: boolean, // Check whether the page is required before the call, the default is required
+  showUserList?: boolean; //Whether to display the member list, not displayed by default
+  lowerLeftNotification?: {
+    showUserJoinAndLeave?: boolean; //Whether to display member in and out, not displayed by default
+    showTextChat?: boolean; // Whether to display unread messages, not displayed by default
   };
   leaveRoomCallback?: () => void; // leave the room callback
 }
@@ -156,7 +151,7 @@ function getUrlParams(url) {
 
 ## Principle introduction
 
-The prebuilt sdk is based on the secondary packaging of the ZEGOCLOUD Express WebRTC SDK, so the upper limit of functions can include all the capabilities of the Express WebRTC SDK, and the same browser compatibility, error codes, weak network heavy chain, etc. are also consistent with it;  [click me](https://docs.zegocloud.com/article/12307) to see more capabilities
+The prebuilt sdk is based on the secondary packaging of the ZEGOCLOUD Express WebRTC SDK, so the upper limit of functions can include all the capabilities of the Express WebRTC SDK, and the same browser compatibility, error codes, weak network heavy chain, etc. are also consistent with it; [click me](https://docs.zegocloud.com/article/12307) to see more capabilities
 
 The source code of this project is all in the src directory, written using react + typescript + scss, you can also extend it based on the source code; or scan the whatsapp QR code below to contact me for more benefits
 

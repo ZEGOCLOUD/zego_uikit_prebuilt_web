@@ -16,7 +16,7 @@ import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import { getVideoResolution, randomNumber } from "../../../util";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
-import { copy } from "../../../modules/util";
+import { copy } from "../../../modules/tools/util";
 import { userNameColor } from "../../../util";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
@@ -46,8 +46,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     userList: [],
     messageList: [],
     notificationList: [],
-    micOpen: !!this.props.core._config.micEnabled,
-    cameraOpen: !!this.props.core._config.cameraEnabled,
+    micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
+    cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
     showSettings: false,
     isNetworkPoor: false,
     connecting: false,
@@ -61,8 +61,12 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
   moreRef: RefObject<HTMLDivElement> = React.createRef();
 
-  micStatus: -1 | 0 | 1 = !!this.props.core._config.micEnabled ? 1 : 0;
-  cameraStatus: -1 | 0 | 1 = !!this.props.core._config.cameraEnabled ? 1 : 0;
+  micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
+    ? 1
+    : 0;
+  cameraStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnCameraWhenJoining
+    ? 1
+    : 0;
   notifyTimer!: NodeJS.Timeout;
   msgDelayed = true; // 5s不显示
   componentDidMount() {
@@ -140,7 +144,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         let notificationList: ZegoNotification[] = [];
         console.warn(userList);
         if (
-          this.props.core._config.notification?.userOnlineOfflineTips &&
+          this.props.core._config.lowerLeftNotification?.showUserJoinAndLeave &&
           !this.msgDelayed
         ) {
           userList.map((u) => {
@@ -223,12 +227,12 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             messageList: ZegoBroadcastMessageInfo2[];
             notificationList: ZegoNotification[];
           }) => {
-            let notification: ZegoNotification[] = [];
+            let lowerLeftNotification: ZegoNotification[] = [];
             if (
               this.state.layOutStatus !== "MESSAGE" &&
-              this.props.core._config.notification?.unreadMessageTips
+              this.props.core._config.lowerLeftNotification?.showTextChat
             ) {
-              notification = [
+              lowerLeftNotification = [
                 ...state.notificationList,
                 ...messageList.map<ZegoNotification>((m) => {
                   return {
@@ -242,7 +246,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             }
             return {
               messageList: [...state.messageList, ...messageList],
-              notificationList: notification,
+              notificationList: lowerLeftNotification,
             };
           }
         );
@@ -273,9 +277,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
         this.props.core.enableVideoCaptureDevice(
           localStream,
-          !!this.props.core._config.cameraEnabled
+          !!this.props.core._config.turnOnCameraWhenJoining
         );
-        this.props.core.muteMicrophone(!this.props.core._config.micEnabled);
+        this.props.core.muteMicrophone(
+          !this.props.core._config.turnOnMicrophoneWhenJoining
+        );
         this.setState({
           localStream,
         });
@@ -517,8 +523,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       okText: "Confirm",
       cancelText: "Cancel",
       onOk: () => {
-        this.props.core._config.cameraEnabled = this.state.cameraOpen;
-        this.props.core._config.micEnabled = this.state.micOpen;
+        this.props.core._config.turnOnCameraWhenJoining = this.state.cameraOpen;
+        this.props.core._config.turnOnMicrophoneWhenJoining =
+          this.state.micOpen;
         this.props.core.status.micDeviceID = this.state.seletMic;
         this.props.core.status.cameraDeviceID = this.state.seletCamera;
         this.props.core.status.speakerDeviceID = this.state.seletSpeaker;
@@ -563,7 +570,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 className={ZegoRoomCss.inviteLink}
                 placeholder="inviteLink"
                 readOnly
-                value={this.props.core._config.joinScreen?.inviteURL}
+                value={
+                  this.props.core._config.preJoinViewConfig?.invitationLink
+                }
                 ref={this.inviteRef}
               ></input>
               <div
@@ -742,7 +751,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           </div>
         </div>
         <div className={ZegoRoomCss.footer}>
-          {this.props.core._config.joinScreen?.inviteURL && (
+          {this.props.core._config.preJoinViewConfig?.invitationLink && (
             <div
               className={ZegoRoomCss.inviteButton}
               onClick={() => {
@@ -752,7 +761,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           )}
 
           <div className={ZegoRoomCss.handlerMiddle}>
-            {this.props.core._config.userCanToggleSelfMic && (
+            {this.props.core._config.showMyMicrophoneToggleButton && (
               <div
                 className={`${ZegoRoomCss.micButton} ${
                   !this.state.micOpen && ZegoRoomCss.close
@@ -762,7 +771,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 }}
               ></div>
             )}
-            {this.props.core._config.userCanToggleSelfCamera && (
+            {this.props.core._config.showMyCameraToggleButton && (
               <div
                 className={`${ZegoRoomCss.cameraButton} ${
                   !this.state.cameraOpen && ZegoRoomCss.close
@@ -772,7 +781,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 }}
               ></div>
             )}
-            {this.props.core._config.deviceSettings && (
+            {this.props.core._config.showAudioVideoSettingsButton && (
               <div
                 ref={this.moreRef}
                 className={ZegoRoomCss.moreButton}
@@ -801,7 +810,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             ></div>
           </div>
           <div className={ZegoRoomCss.handlerRight}>
-            {this.props.core._config.userListEnabled && (
+            {this.props.core._config.showUserList && (
               <div
                 className={ZegoRoomCss.memberButton}
                 onClick={() => {
@@ -815,7 +824,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 </span>
               </div>
             )}
-            {this.props.core._config.chatEnabled && (
+            {this.props.core._config.showTextChat && (
               <div
                 className={ZegoRoomCss.msgButton}
                 onClick={() => {
