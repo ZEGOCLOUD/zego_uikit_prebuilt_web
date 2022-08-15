@@ -42,7 +42,6 @@
   flex: 1;
   box-sizing: border-box;
   width: 100%;
-  //   height: calc(100% - 74px - 64px);
   padding: 0 16px 10px;
   overflow: hidden;
 }
@@ -52,7 +51,7 @@
   flex: 1;
   justify-content: center;
   overflow: hidden;
-  background-color: black;
+  background-color: #1c1f2e;
   border-radius: 19px;
 }
 .network {

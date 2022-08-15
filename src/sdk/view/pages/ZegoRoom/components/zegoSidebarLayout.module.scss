@@ -1,0 +1,69 @@
+.sidebarWrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+.leftWrapper {
+  width: 100%;
+  height: 100%;
+  background-color: blue;
+  border-radius: 14px;
+  video {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+  }
+}
+.rightWrapper {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  align-content: space-between;
+  justify-content: space-between;
+  width: 15.5%;
+  min-width: 124px;
+  height: 100%;
+  margin-left: 10px;
+
+  & > div {
+    position: relative;
+    width: 100%;
+    min-width: 124px;
+    min-height: 124px;
+    background: #242736;
+    border-radius: 14px;
+  }
+  video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #242736;
+    border-radius: 14px;
+  }
+}
+.fiveRow {
+  & > div {
+    height: calc((100% - 40px) / 5);
+  }
+}
+.fourRow {
+  & > div {
+    height: calc((100% - 30px) / 4);
+  }
+}
+.threeRow {
+  & > div {
+    height: calc((100% - 20px) / 3);
+  }
+}
+.twoRow {
+  & > div {
+    height: calc((100% - 10px) / 2);
+  }
+}
+.oneRow {
+  & > div {
+    height: 100%;
+  }
+}

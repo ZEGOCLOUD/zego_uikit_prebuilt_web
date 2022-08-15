@@ -92,3 +92,8 @@ export interface ZegoGridLayoutProps {
   videoShowNumber: number;
   gridRowNumber: number;
 }
+
+export interface ZegoSidebarLayoutProps {
+  userList: any[];
+  videoShowNumber: number;
+}

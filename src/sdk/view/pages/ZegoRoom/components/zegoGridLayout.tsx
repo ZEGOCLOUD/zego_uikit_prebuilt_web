@@ -2,8 +2,7 @@ import React from "react";
 import { ZegoGridLayoutProps } from "../../../../model";
 import ZegoGridCss from "./zegoGridLayout.module.scss";
 import clsx from "clsx";
-import { userNameColor } from "../../../../util";
-
+import { OthersVideo } from "./zegoCommonComponents";
 function VideoPlayer() {
   return (
     <div>
@@ -16,31 +15,7 @@ function VideoPlayer() {
     </div>
   );
 }
-function OthersVideo(props: { users: string[]; others: number }) {
-  return (
-    <div>
-      <video muted className={ZegoGridCss.videoCommon}></video>
-      <div className={ZegoGridCss.otherVideoWrapper}>
-        <div className={ZegoGridCss.nameWrapper}>
-          {props.users.map((value, i) => (
-            <div
-              className={ZegoGridCss.nameCircle}
-              key={i}
-              style={{
-                color: userNameColor(value),
-              }}
-            >
-              {value.slice(0, 1)?.toUpperCase()}
-            </div>
-          ))}
-        </div>
-        {props.others > 0 && (
-          <p className={ZegoGridCss.othersNumber}>{props.others} others</p>
-        )}
-      </div>
-    </div>
-  );
-}
+
 export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
   render(): React.ReactNode {
     let wrapClassName;
