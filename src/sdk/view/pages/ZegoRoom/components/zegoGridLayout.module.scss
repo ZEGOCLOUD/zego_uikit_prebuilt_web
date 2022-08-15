@@ -5,17 +5,49 @@
   justify-content: center;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   background: #1e2130;
-  video {
+  & > div {
+    position: relative;
+    display: flex;
+    width: 100%;
+    min-width: 124px;
+    height: 100%;
+    min-height: 124px;
+    overflow: hidden;
+    background: #242736;
+    border-radius: 14px;
     &:not(:first-of-type) {
       margin-left: 10px;
     }
   }
-}
-.double {
-}
-.three {
   video {
+    min-width: 124px;
+    min-height: 124px;
+  }
+  .otherVideoWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+}
+.videoCommon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #242736;
+  border-radius: 14px;
+}
+// 3*3
+.three {
+  & > div {
     width: calc(50% - 5px);
     height: calc(50% - 5px);
     &:nth-of-type(3) {
@@ -24,7 +56,7 @@
   }
 }
 .six {
-  video {
+  & > div {
     width: calc((100% - 20px) / 3);
     height: calc(50% - 5px);
     &:nth-of-type(4) {
@@ -33,7 +65,7 @@
   }
 }
 .night {
-  video {
+  & > div {
     width: calc((100% - 20px) / 3);
     height: calc((100% - 20px) / 3);
     &:nth-of-type(3n + 1) {
@@ -41,8 +73,77 @@
     }
   }
 }
-.videoCommon {
-  display: block;
-  background-color: red;
-  border-radius: 14px;
+// 2 * 5
+.twoRow {
+  & > div {
+    width: calc((100% - 40px) / 5);
+    height: calc(50% - 5px);
+    &:nth-of-type(6) {
+      margin-left: 0;
+    }
+  }
+}
+.twoRowFourCol > div {
+  width: calc((100% - 30px) / 4);
+  height: calc(50% - 5px);
+  &:nth-of-type(5) {
+    margin-left: 0;
+  }
+}
+.twoRowThreeCol > div {
+  width: calc((100% - 20px) / 3);
+  height: calc(50% - 5px);
+  &:nth-of-type(4) {
+    margin-left: 0;
+  }
+}
+.twoRowTwoCol > div {
+  width: calc((100% - 10px) / 2);
+  height: calc(50% - 5px);
+  &:nth-of-type(3) {
+    margin-left: 0;
+  }
+}
+.twoRowOneCol {
+  flex-wrap: nowrap;
+}
+// 1* 10
+.singleRow {
+  flex-wrap: nowrap;
+  & > div,
+  video {
+    min-width: 160px;
+    min-height: 188px;
+  }
+}
+.otherVideoWrapper {
+  .nameWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  .nameCircle {
+    width: 94px;
+    height: 94px;
+    font-weight: 600;
+    font-size: 32px;
+
+    line-height: 94px;
+    text-align: center;
+    background: #2e2f37;
+    border: 2px solid #242736;
+    border-radius: 50%;
+    &:nth-of-type(2) {
+      margin-left: -30px;
+    }
+  }
+  .othersNumber {
+    color: #ffffff;
+    font-size: 14px;
+    font-family: MicrosoftYaHei;
+    line-height: 19px;
+    text-align: center;
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+  }
 }

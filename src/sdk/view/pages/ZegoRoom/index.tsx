@@ -14,7 +14,7 @@ import {
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { getVideoResolution, randomNumber } from "../../../util";
+import { getVideoResolution, randomNumber, throttle } from "../../../util";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { copy } from "../../../modules/util";
 import { userNameColor } from "../../../util";
@@ -39,6 +39,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     seletSpeaker: string | undefined;
     seletCamera: string | undefined;
     seletVideoResolution: string;
+    videoShowNumber: number; // 展示视频的数量
+    gridRowNumber: number; // Grid 行数
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -56,6 +58,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     seletSpeaker: this.props.core.status.speakerDeviceID,
     seletCamera: this.props.core.status.cameraDeviceID,
     seletVideoResolution: this.props.core.status.videoResolution || "360",
+    videoShowNumber: 9,
+    gridRowNumber: 3,
   };
   inviteRef: RefObject<HTMLInputElement> = React.createRef();
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -66,12 +70,14 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   notifyTimer!: NodeJS.Timeout;
   msgDelayed = true; // 5s不显示
   componentDidMount() {
+    this.computeByResize();
     setTimeout(() => {
       this.msgDelayed = false;
     }, 5000);
     this.initSDK();
     // 点击其他区域时, 隐藏更多弹窗)
     document.addEventListener("click", this.onOpenSettings);
+    window.addEventListener("resize", this.onWindowResize.bind(this));
   }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
@@ -107,6 +113,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   }
   componentWillUnmount() {
     document.removeEventListener("click", this.onOpenSettings);
+    window.removeEventListener("resize", this.onWindowResize.bind(this));
   }
   async initSDK() {
     this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
@@ -372,6 +379,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           layOutStatus:
             state.layOutStatus === layOutStatus ? "ONE_VIDEO" : layOutStatus,
         };
+      },
+      () => {
+        this.computeByResize();
       }
     );
   }
@@ -649,6 +659,44 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       );
     }
   }
+  computeByResize() {
+    const width = Math.max(document.body.clientWidth, 826);
+    const height = Math.max(document.body.clientHeight, 280);
+    console.warn(width, height);
+    if (height < 406 - (this.props.core._config.branding?.logoURL ? 0 : 64)) {
+      const videoWrapWidth =
+        width - 32 - (this.state.layOutStatus === "ONE_VIDEO" ? 0 : 350);
+      const n = parseInt(String(videoWrapWidth / 160));
+
+      this.setState({
+        videoShowNumber: Math.min(
+          n * 160 + (n - 1) * 10 <= videoWrapWidth ? n : n - 1,
+          10
+        ),
+        gridRowNumber: 1,
+      });
+    } else if (
+      height <
+      540 - (this.props.core._config.branding?.logoURL ? 0 : 64)
+    ) {
+      const videoWrapWidth =
+        width - 32 - (this.state.layOutStatus === "ONE_VIDEO" ? 0 : 350);
+      const n = parseInt(String(videoWrapWidth / 124));
+      this.setState({
+        videoShowNumber: Math.min(
+          n * 124 + (n - 1) * 10 <= videoWrapWidth ? 2 * n : 2 * (n - 1),
+          10
+        ),
+        gridRowNumber: 2,
+      });
+    } else {
+      this.setState({
+        videoShowNumber: 9,
+        gridRowNumber: 3,
+      });
+    }
+  }
+  onWindowResize = throttle(this.computeByResize.bind(this), 500);
 
   render(): React.ReactNode {
     const startIndex =
@@ -703,7 +751,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               }}
             ></ZegoOne2One> */}
             <ZegoGridLayout
-              userList={new Array(11).fill({ userName: "G" })}
+              userList={new Array(9).fill({ userName: "G" })}
+              videoShowNumber={this.state.videoShowNumber}
+              gridRowNumber={this.state.gridRowNumber}
             ></ZegoGridLayout>
             <div className={ZegoRoomCss.notify}>
               {this.state.notificationList

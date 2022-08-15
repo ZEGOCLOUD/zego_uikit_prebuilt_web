@@ -107,3 +107,16 @@ export function getVideoResolution(level: string): {
     frameRate,
   };
 }
+
+export const throttle = (fn: Function, wait: number) => {
+  let canRun = true;
+  return function () {
+    if (!canRun) return;
+    canRun = false;
+    setTimeout(() => {
+      // @ts-ignore
+      fn.apply(this, arguments);
+      canRun = true;
+    }, wait);
+  };
+};

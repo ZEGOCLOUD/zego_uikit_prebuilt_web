@@ -76,4 +76,6 @@ export interface ZegoSettingsProps {
 
 export interface ZegoGridLayoutProps {
   userList: any[];
+  videoShowNumber: number;
+  gridRowNumber: number;
 }
