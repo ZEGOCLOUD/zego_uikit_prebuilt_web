@@ -2,7 +2,6 @@ import React from "react";
 import {
   ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
-  ZegoCloudRemoteMedia,
   ZegoNotification,
 } from "../../../model";
 import ZegoRoomCss from "./index.module.scss";
@@ -19,10 +18,11 @@ import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoReconnect } from "./components/ZegoReconnect";
 import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
+import { ZegoLayout } from "./components/zegoLayout";
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
-    layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
+    layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT";
     zegoCloudUserList: ZegoCloudUserList;
     messageList: ZegoBroadcastMessageInfo2[];
     notificationList: ZegoNotification[];
@@ -356,10 +356,17 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     }
   }
 
-  toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE") {
+  toggleLayOut(
+    layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT"
+  ) {
     this.setState(
       (state: {
-        layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
+        layOutStatus:
+          | "ONE_VIDEO"
+          | "INVITE"
+          | "USER_LIST"
+          | "MESSAGE"
+          | "LAYOUT";
         showMore: boolean;
       }) => {
         return {
@@ -493,6 +500,20 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             });
           }}
         ></ZegoMessage>
+      );
+    } else if (this.state.layOutStatus === "LAYOUT") {
+      return (
+        <ZegoLayout
+          closeCallBac={() => {
+            this.setState({
+              layOutStatus: "ONE_VIDEO",
+            });
+          }}
+          selectCallBack={(selectLayout: "Default" | "Grid" | "Sidebar") => {
+            this.props.core._config.layout = selectLayout;
+            return new Promise(() => {});
+          }}
+        ></ZegoLayout>
       );
     }
   }
@@ -644,6 +665,17 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                         >
                           <i className={ZegoRoomCss.chat}></i>
                           <span>Chat</span>
+                        </div>
+                      )}
+                      {true && (
+                        <div
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            this.toggleLayOut("LAYOUT");
+                          }}
+                        >
+                          <i className={ZegoRoomCss.layout}></i>
+                          <span>Layout</span>
                         </div>
                       )}
                     </div>
