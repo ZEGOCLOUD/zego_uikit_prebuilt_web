@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from "react";
 import zegoRoomInviteCss from "./zegoRoomInvite.module.scss";
 import { ZegoCloudRTCCore } from "../../../../modules";
-import { copy } from "../../../../modules/util";
+import { copy } from "../../../../modules/tools/util";
 import { ZegoToast } from "../../../components/mobile/zegoToast";
 export class ZegoRoomInvite extends React.Component<{
   core: ZegoCloudRTCCore;
@@ -21,14 +21,14 @@ export class ZegoRoomInvite extends React.Component<{
           Room details
         </div>
         <div className={zegoRoomInviteCss.inviteURL}>
-          {this.props.core._config.joinScreen?.inviteURL}
+          {this.props.core._config.preJoinViewConfig?.invitationLink}
         </div>
         <div
           className={zegoRoomInviteCss.inviteCopy}
           onClick={(ev) => {
             ev.stopPropagation();
-            this.props.core._config.joinScreen?.inviteURL &&
-              copy(this.props.core._config.joinScreen?.inviteURL);
+            this.props.core._config.preJoinViewConfig?.invitationLink &&
+              copy(this.props.core._config.preJoinViewConfig?.invitationLink);
 
             ZegoToast({
               content: "Copy successfully",

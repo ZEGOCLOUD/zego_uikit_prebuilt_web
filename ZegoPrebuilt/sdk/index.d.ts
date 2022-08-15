@@ -1,11 +1,11 @@
 import { Root } from "react-dom/client";
 import { ZegoCloudRoomConfig } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
-export declare class ZegoUIkitPrebuilt {
+export declare class ZegoUIKitPrebuilt {
     static core: ZegoCloudRTCCore;
-    static _instance: ZegoUIkitPrebuilt;
+    static _instance: ZegoUIKitPrebuilt;
     root: Root | undefined;
-    static init(token: string): ZegoUIkitPrebuilt;
+    static create(token: string): ZegoUIKitPrebuilt;
     joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
-    destroyRoom(): void;
+    destroy(): void;
 }

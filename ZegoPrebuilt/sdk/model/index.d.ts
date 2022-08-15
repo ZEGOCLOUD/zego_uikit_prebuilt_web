@@ -9,30 +9,29 @@ export interface ZegoCloudRemoteMedia {
 }
 export interface ZegoCloudRoomConfig {
     container?: HTMLElement | undefined | null;
-    joinScreen?: {
-        visible: boolean;
+    preJoinViewConfig?: {
         title?: string;
-        inviteURL?: string;
+        invitationLink?: string;
     };
-    micEnabled?: boolean;
-    cameraEnabled?: boolean;
-    userCanToggleSelfCamera?: boolean;
-    userCanToggleSelfMic?: boolean;
-    deviceSettings?: boolean;
-    chatEnabled?: boolean;
-    userListEnabled?: boolean;
-    notification?: {
-        userOnlineOfflineTips?: boolean;
-        unreadMessageTips?: boolean;
+    showPreJoinView?: boolean;
+    turnOnMicrophoneWhenJoining?: boolean;
+    turnOnCameraWhenJoining?: boolean;
+    showMyCameraToggleButton?: boolean;
+    showMyMicrophoneToggleButton?: boolean;
+    showAudioVideoSettingsButton?: boolean;
+    showTextChat?: boolean;
+    showUserList?: boolean;
+    lowerLeftNotification?: {
+        showUserJoinAndLeave?: boolean;
+        showTextChat?: boolean;
     };
     leaveRoomCallback?: () => void;
     roomTimerDisplayed?: boolean;
     branding?: {
         logoURL?: string;
     };
-    leftScreen?: boolean;
-    i18nURL?: string;
-    i18nJSON?: string;
+    showLeavingView?: boolean;
+    localizationJSON?: object;
 }
 export interface ZegoBrowserCheckProp {
     core: ZegoCloudRTCCore;

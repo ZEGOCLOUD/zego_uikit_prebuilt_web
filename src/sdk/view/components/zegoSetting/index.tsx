@@ -154,7 +154,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
         "【ZEGOCLOUD】settings/localVideoStream failed !!",
         JSON.stringify(error)
       );
-      this.props.core._config.cameraEnabled = false;
+      this.props.core._config.turnOnCameraWhenJoining = false;
       return false;
     }
   }
@@ -184,7 +184,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
         "【ZEGOCLOUD】settings/localAudioStream failed !!",
         JSON.stringify(error)
       );
-      this.props.core._config.micEnabled = false;
+      this.props.core._config.turnOnMicrophoneWhenJoining = false;
       return false;
     }
   }
@@ -355,8 +355,9 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
           <div className={ZegoSettingsCss.content}>
             <div className={ZegoSettingsCss.left}>
               <div
-                className={`${ZegoSettingsCss.leftAudioTab} ${this.state
-                  .selectTab === "AUDIO" && ZegoSettingsCss.tabActive}`}
+                className={`${ZegoSettingsCss.leftAudioTab} ${
+                  this.state.selectTab === "AUDIO" && ZegoSettingsCss.tabActive
+                }`}
                 onClick={() => {
                   this.toggleTab("AUDIO");
                 }}
@@ -364,8 +365,9 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                 Audio
               </div>
               <div
-                className={`${ZegoSettingsCss.leftVideoTab} ${this.state
-                  .selectTab === "VIDEO" && ZegoSettingsCss.tabActive}`}
+                className={`${ZegoSettingsCss.leftVideoTab} ${
+                  this.state.selectTab === "VIDEO" && ZegoSettingsCss.tabActive
+                }`}
                 onClick={() => {
                   this.toggleTab("VIDEO");
                 }}
