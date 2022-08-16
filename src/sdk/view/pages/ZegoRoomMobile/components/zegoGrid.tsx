@@ -1,141 +1,71 @@
 import React from "react";
-import { ZegoCloudRemoteMedia } from "../../../../model";
-import { ZegoCloudRTCCore } from "../../../../modules";
+import { ZegoGridLayoutProps } from "../../../../model";
 import { userNameColor } from "../../../../util";
 import ZegoGridCss from "./zegoGrid.module.scss";
-export class ZegoGrid extends React.Component<{
-  localStream: MediaStream | undefined;
-  remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
-  core: ZegoCloudRTCCore;
-  onLocalStreamPaused: () => void;
-  remoteUserInfo: {
-    userName: string | undefined;
-    userID: string | undefined;
-  };
-  selfUserInfo: {
-    userName: string;
-    micOpen: boolean;
-    cameraOpen: boolean;
-  };
-}> {
-  getVideoScreen() {
-    if (this.props.remoteUserInfo.userID) {
-      return (
-        <>
-          <div className={ZegoGridCss.bigVideo}>
-            <video
-              style={{ width: "100%" }}
-              autoPlay
-              playsInline={true}
-              ref={(el) => {
-                el &&
-                  el.srcObject !== this.props.remoteStreamInfo?.media &&
-                  (el.srcObject = this.props.remoteStreamInfo?.media!);
-              }}
-            ></video>
-            <div className={ZegoGridCss.name}>
-              <p>{this.props.remoteStreamInfo?.fromUser.userName}</p>
-              <span
-                className={
-                  this.props.remoteStreamInfo?.micStatus === "OPEN"
-                    ? ZegoGridCss.bigVideoMicOpen
-                    : ""
-                }
-              ></span>
-            </div>
-            {this.props.remoteStreamInfo?.cameraStatus !== "OPEN" && (
-              <i
-                style={{
-                  color: userNameColor(this.props.remoteUserInfo.userName!),
-                }}
-              >
-                {this.props.remoteUserInfo.userName?.substring(0, 1)}
-              </i>
-            )}
-          </div>
-          <div className={ZegoGridCss.smallVideo}>
-            <video
-              muted
-              playsInline={true}
-              autoPlay
-              ref={(el) => {
-                el &&
-                  el.srcObject !== this.props.localStream! &&
-                  (el.srcObject = this.props.localStream!);
-              }}
-              onPause={() => {
-                this.props.onLocalStreamPaused();
-              }}
-            ></video>
-            <div className={ZegoGridCss.smallName}>
-              <p> {this.props.selfUserInfo.userName + "（YOU）"} </p>
-              <span
-                className={
-                  this.props.selfUserInfo.micOpen
-                    ? ZegoGridCss.smallVideoMicOpen
-                    : ""
-                }
-              ></span>
-            </div>
-            {!this.props.selfUserInfo.cameraOpen && (
-              <i
-                style={{
-                  color: userNameColor(this.props.core._expressConfig.userName),
-                }}
-              >
-                {this.props.core._expressConfig.userName?.substring(0, 1)}
-              </i>
-            )}
-          </div>
-        </>
-      );
-    } else {
-      return (
-        <div className={ZegoGridCss.bigVideo}>
-          <video
-            style={{
-              top: 0,
-              transform: "translateX(-50%)",
-              left: "50%",
-              position: "absolute",
-            }}
-            muted
-            autoPlay
-            playsInline={true}
-            ref={(el) => {
-              el &&
-                el.srcObject !== this.props.localStream! &&
-                (el.srcObject = this.props.localStream!);
-            }}
-            onPause={() => {
-              this.props.onLocalStreamPaused();
-            }}
-          ></video>
-          <div className={ZegoGridCss.name}>
-            <p>{this.props.selfUserInfo.userName + "（YOU）"}</p>
-            <span
-              className={
-                this.props.selfUserInfo.micOpen
-                  ? ZegoGridCss.bigVideoMicOpen
-                  : ""
-              }
-            ></span>
-          </div>
-          {!this.props.selfUserInfo.cameraOpen && (
-            <i
-              style={{
-                color: userNameColor(this.props.core._expressConfig.userName),
-              }}
-            >
-              {this.props.core._expressConfig.userName?.substring(0, 1)}
-            </i>
-          )}
-        </div>
-      );
-    }
-  }
-
+import clsx from "clsx";
+export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
   render(): React.ReactNode {
-    return <>{this.getVideoScreen()}</>;
+    let wrapClassName = clsx({
+      [ZegoGridCss.gridWrapper]: true,
+      [ZegoGridCss.double]: this.props.userList.length <= 2,
+      [ZegoGridCss.three]:
+        this.props.userList.length === 4 || this.props.userList.length === 3,
+      [ZegoGridCss.six]:
+        this.props.userList.length === 6 || this.props.userList.length === 5,
+      [ZegoGridCss.night]: this.props.userList.length >= 7,
+    });
+
+    return (
+      <div className={wrapClassName}>
+        {this.props.userList.map((value, index, arr) => {
+          if (arr.length > this.props.videoShowNumber) {
+            if (index === this.props.videoShowNumber - 1) {
+              return (
+                <div>
+                  {/* <video muted className={ZegoCommonCss.videoCommon}></video>
+                  <div className={ZegoCommonCss.otherVideoWrapper}>
+                    <div className={ZegoCommonCss.nameWrapper}>
+                      {props.users.map((value, i) => (
+                        <div
+                          className={ZegoCommonCss.nameCircle}
+                          key={i}
+                          style={{
+                            color: userNameColor(value),
+                          }}
+                        >
+                          {value.slice(0, 1)?.toUpperCase()}
+                        </div>
+                      ))}
+                    </div>
+                    {props.others > 0 && (
+                      <p className={ZegoCommonCss.othersNumber}>
+                        {props.others} others
+                      </p>
+                    )}
+                  </div> */}
+                </div>
+              );
+            }
+            if (index > this.props.videoShowNumber - 1) {
+              return <audio></audio>;
+            }
+          }
+          return (
+            <div>
+              <video
+                muted
+                autoPlay
+                className={ZegoGridCss.videoCommon}
+                ref={(el) => {
+                  el &&
+                    el.srcObject !== value.streamList[0].media &&
+                    (el.srcObject = value.streamList[0].media);
+                }}
+              ></video>
+            </div>
+          );
+        })}
+      </div>
+    );
   }
 }

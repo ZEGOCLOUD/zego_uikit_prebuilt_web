@@ -4,6 +4,7 @@ import {
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 
 import { ZegoCloudRTCCore } from "../modules";
+import { ZegoCloudUserList } from "../modules/tools/UserListManager";
 export interface ZegoCloudRemoteMedia {
   media: MediaStream;
   fromUser: ZegoUser;
@@ -88,12 +89,12 @@ export interface ZegoSettingsProps {
 }
 
 export interface ZegoGridLayoutProps {
-  userList: any[];
+  userList: ZegoCloudUserList;
   videoShowNumber: number;
-  gridRowNumber: number;
+  gridRowNumber?: number;
 }
 
 export interface ZegoSidebarLayoutProps {
-  userList: any[];
+  userList: ZegoCloudUserList;
   videoShowNumber: number;
 }

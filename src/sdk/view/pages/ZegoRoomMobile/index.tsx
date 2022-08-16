@@ -19,6 +19,7 @@ import { ZegoReconnect } from "./components/ZegoReconnect";
 import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
 import { ZegoLayout } from "./components/zegoLayout";
+import { ZegoGrid } from "./components/zegoGrid";
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -462,6 +463,42 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     });
   }
 
+  getShownUser(forceShowNonVideoUser = false) {
+    const shownUser = [
+      {
+        userID: this.props.core._expressConfig.userID,
+        userName: this.props.core._expressConfig.userName,
+        pin: false,
+        streamList: [
+          {
+            media: this.state.localStream!,
+            fromUser: {
+              userID: this.props.core._expressConfig.userID,
+              userName: this.props.core._expressConfig.userName,
+            },
+            micStatus: this.state.micOpen ? "OPEN" : "MUTE",
+            cameraStatus: this.state.cameraOpen ? "OPEN" : "MUTE",
+            state: "PLAYING",
+            streamID: "",
+          },
+        ],
+      },
+      ...this.state.zegoCloudUserList,
+    ].filter((item) => {
+      if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
+        if (item.streamList && item.streamList[0] && item.streamList[0].media) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    });
+
+    return shownUser as ZegoCloudUserList;
+  }
+
   getListScreen() {
     if (this.state.layOutStatus === "INVITE") {
       return (
@@ -478,7 +515,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       return (
         <ZegoUserList
           core={this.props.core}
-          userList={this.state.zegoCloudUserList}
+          userList={this.getShownUser(true)}
           closeCallBack={() => {
             this.setState({
               layOutStatus: "ONE_VIDEO",
@@ -518,25 +555,13 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     }
   }
 
-  render(): React.ReactNode {
-    const startIndex =
-      this.state.notificationList.length < 4
-        ? 0
-        : this.state.notificationList.length - 2;
-
-    return (
-      <div
-        className={ZegoRoomCss.ZegoRoom}
-        onClick={() => {
-          this.setState({ showFooter: true });
-          clearTimeout(this.footerTimer);
-          this.footerTimer = setTimeout(() => {
-            this.setState({ showFooter: false });
-          }, 5000);
-        }}
-      >
-        {this.props.core._config.layout === "Default" &&
-          this.state.zegoCloudUserList.length < 3}
+  getLayoutScreen() {
+    if (
+      (this.props.core._config.layout === "Default" &&
+        this.getShownUser().length < 3) ||
+      this.getShownUser().length < 2
+    ) {
+      return (
         <ZegoOne2One
           localStream={this.state.localStream}
           remoteStreamInfo={
@@ -569,7 +594,41 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             );
           }}
         ></ZegoOne2One>
+      );
+    } else if (
+      this.props.core._config.layout === "Grid" &&
+      this.getShownUser().length > 1
+    ) {
+      return (
+        <ZegoGrid userList={this.getShownUser()} videoShowNumber={6}></ZegoGrid>
+      );
+    } else if (
+      this.props.core._config.layout === "Sidebar" &&
+      this.getShownUser().length > 1
+    ) {
+      return (
+        <ZegoGrid userList={this.getShownUser()} videoShowNumber={6}></ZegoGrid>
+      );
+    }
+  }
 
+  render(): React.ReactNode {
+    const startIndex =
+      this.state.notificationList.length < 4
+        ? 0
+        : this.state.notificationList.length - 2;
+
+    return (
+      <div
+        className={ZegoRoomCss.ZegoRoom}
+        onClick={() => {
+          this.setState({ showFooter: true });
+          clearTimeout(this.footerTimer);
+          this.footerTimer = setTimeout(() => {
+            this.setState({ showFooter: false });
+          }, 5000);
+        }}
+      >
         {this.state.isNetworkPoor && (
           <div className={ZegoRoomCss.network}></div>
         )}

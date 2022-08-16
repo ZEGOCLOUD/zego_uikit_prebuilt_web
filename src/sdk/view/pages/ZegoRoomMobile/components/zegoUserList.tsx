@@ -1,11 +1,8 @@
 import React, { ChangeEvent, RefObject } from "react";
 import zegoUserListCss from "./zegoUserList.module.scss";
-import { DateFormat, userNameColor } from "../../../../util";
+import { userNameColor } from "../../../../util";
 import { ZegoCloudRTCCore } from "../../../../modules";
-import {
-  ZegoUser,
-  ZegoBroadcastMessageInfo,
-} from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 export class ZegoUserList extends React.Component<{
   userList: ZegoUser[];
   core: ZegoCloudRTCCore;
