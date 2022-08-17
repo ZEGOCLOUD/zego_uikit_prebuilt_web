@@ -35,6 +35,12 @@
 }
 
 // 3*3
+.double {
+  & > div {
+    width: calc(50% - 5px);
+    height: 100%;
+  }
+}
 .three {
   & > div {
     width: calc(50% - 5px);

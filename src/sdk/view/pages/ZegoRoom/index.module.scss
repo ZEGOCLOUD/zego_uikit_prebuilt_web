@@ -195,11 +195,13 @@
 .memberListWrapper {
   display: flex;
   flex-direction: column;
-  padding: 20px 16px;
+  padding: 20px 0;
+
   .member {
+    position: relative;
     display: flex;
     align-items: center;
-    padding: 8px 0;
+    padding: 8px 16px;
     & > span {
       flex: 0 0 auto;
       width: 36px;
@@ -212,15 +214,109 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 50%;
     }
+    &:hover {
+      background: rgba($color: #303341, $alpha: 0.7);
+    }
+    &:not(:last-of-type) {
+      margin-bottom: 6px;
+    }
+  }
+  .memberNameWrapper {
+    display: flex;
+    align-items: center;
+    width: 160px;
+    overflow: hidden;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
     & > p {
-      width: 260px;
+      box-sizing: border-box;
+      width: max-width;
+      max-width: 120px;
+      padding-right: 4px;
       overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+  .memberGuestNameWrapper {
+    & > p {
+      max-width: 160px;
+    }
+  }
+  .selfStatusWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 27px;
+    height: 18px;
+    margin-left: 73px;
+    color: #fff;
+    background: rgba($color: #0055ff, $alpha: 0.9);
+    border-radius: 4px;
+    span {
+      width: 3px;
+      height: 3px;
+      margin-left: 2px;
+      background: rgba($color: #fff, $alpha: 0.9);
+      border-radius: 50%;
+    }
+  }
+  .memberStatusWrapper {
+    display: flex;
+    align-items: center;
+    margin-left: 2px;
+    span {
+      width: 22px;
+      height: 22px;
+      margin-left: 12px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+    }
+    .memberMicIcon {
+      background-image: url("../../../sdkAssets/icon_member_mic_off@2x.png");
+    }
+    .memberMicIconOpen {
+      background-image: url("../../../sdkAssets/icon_member_mic@2x.png");
+    }
+    .memberCameraIcon {
+      background-image: url("../../../sdkAssets/icon_member_camera_off@2x.png");
+    }
+    .memberCameraIconOpen {
+      background-image: url("../../../sdkAssets/icon_member_camera@2x.png");
+    }
+    .memberPinIcon {
+      background-image: url("../../../sdkAssets/icon_member_pin@2x.png");
+    }
+    .memberPinIconOpen {
+      background-image: url("../../../sdkAssets/icon_member_pin_on@2x.png");
+    }
+  }
+  .memberMenuWrapper {
+    position: absolute;
+    top: 40px;
+    right: 5px;
+    z-index: 10;
+    display: none;
+    box-sizing: border-box;
+    width: 133px;
+    padding: 8px 6px;
+    background: #2c2f3e;
+    border: 1px solid #3d4054;
+    border-radius: 8px;
+    box-shadow: 0px 3px 6px 0px rgba(23, 24, 33, 0.75);
+    .memberMenuItem {
+      padding: 7px 8px;
       color: #ffffff;
       font-weight: 400;
       font-size: 14px;
       line-height: 20px;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+      cursor: pointer;
+      &:hover {
+        background: #36394b;
+      }
     }
   }
 }
@@ -414,5 +510,90 @@
     .nowrap {
       word-wrap: break-word;
     }
+  }
+}
+
+.layoutSettingsMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  .layoutSettingsWrapper {
+    width: 283px;
+    background: #2c2f3e;
+    border: 1px solid #3d4054;
+    border-radius: 8px;
+    box-shadow: 0px 3px 6px 0px rgba(23, 24, 33, 0.75);
+  }
+  .layoutSettingsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 20px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 16px;
+    border-bottom: 1px solid #3d4054;
+  }
+  .layoutSettingsCloseIcon {
+    width: 18px;
+    height: 18px;
+    background: url("../../../sdkAssets/icon_settings_close.png") no-repeat
+      center/cover;
+    cursor: pointer;
+  }
+  .layoutSettingsContent {
+    padding: 10px 0;
+  }
+  .layoutSettingsItemRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    min-height: 62px;
+    padding: 9px 24px;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    cursor: pointer;
+    &:not(:last-of-type) {
+      margin-bottom: 4px;
+    }
+    p {
+      display: flex;
+      align-items: center;
+    }
+    .layoutSettingsItemIcon {
+      width: 16px;
+      height: 16px;
+      margin-right: 15px;
+      background-image: url("../../../sdkAssets/icon_choose_nor@2x.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+    }
+    .layoutSettingsItemChecked {
+      background-image: url("../../../sdkAssets/icon_choose_pre@2x.png");
+    }
+    .layoutSettingsItemLoadoing {
+      background-image: url("../../../sdkAssets/icon_loading@2x.png");
+      animation: layoutLoading 1.8s linear infinite;
+    }
+    img {
+      width: 62px;
+      height: 44px;
+    }
+  }
+}
+@keyframes layoutLoading {
+  100% {
+    transform: rotateZ(360deg);
   }
 }

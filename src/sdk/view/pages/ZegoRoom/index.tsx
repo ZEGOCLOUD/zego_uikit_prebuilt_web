@@ -43,6 +43,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     videoShowNumber: number; // 展示视频的数量
     gridRowNumber: number; // Grid 行数
     layoutType: "Default" | "Grid" | "Sidebar";
+    showLayoutSettingsModel: boolean; // 是否显示布局设置弹窗
+    isLayoutChanging: boolean; // 布局是否正在变更中
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -62,7 +64,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     seletVideoResolution: this.props.core.status.videoResolution || "360",
     videoShowNumber: 9,
     gridRowNumber: 3,
-    layoutType: "Sidebar",
+    layoutType: this.props.core._config.layout || "Default",
+    showLayoutSettingsModel: false,
+    isLayoutChanging: false,
   };
   inviteRef: RefObject<HTMLInputElement> = React.createRef();
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -76,6 +80,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     : 0;
   notifyTimer!: NodeJS.Timeout;
   msgDelayed = true; // 5s不显示
+  isMemberMenuShow = false; // 当前是否有成员菜单弹出
   componentDidMount() {
     this.computeByResize();
     setTimeout(() => {
@@ -85,6 +90,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     // 点击其他区域时, 隐藏更多弹窗)
     document.addEventListener("click", this.onOpenSettings);
     window.addEventListener("resize", this.onWindowResize.bind(this));
+    document.addEventListener("click", this.collapseMemberMenu.bind(this));
   }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
@@ -98,6 +104,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       micOpen: boolean;
       cameraOpen: boolean;
       showMore: boolean;
+      layoutType: string;
     }
   ) {
     if (
@@ -116,6 +123,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           notificationList: [],
         });
       }, 3000);
+    }
+    if (preState.layoutType !== this.state.layoutType) {
+      this.computeByResize();
     }
   }
   componentWillUnmount() {
@@ -628,15 +638,49 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                     .slice(0, 1)
                     ?.toUpperCase()}
                 </span>
-                <p>{this.props.core._expressConfig.userName} (You)</p>
+                <div className={ZegoRoomCss.memberNameWrapper}>
+                  <p>{this.props.core._expressConfig.userName}</p> (You)
+                </div>
+                <div className={ZegoRoomCss.selfStatusWrapper}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <div className={ZegoRoomCss.memberMenuWrapper}>
+                  <div className={ZegoRoomCss.memberMenuItem}>Pin</div>
+                </div>
               </div>
               {this.state.userList.map((user) => {
                 return (
-                  <div className={ZegoRoomCss.member}>
+                  <div
+                    className={ZegoRoomCss.member}
+                    onClick={() => this.expandMemberMenu(user.userID)}
+                  >
                     <span style={{ color: userNameColor(user.userName || "") }}>
                       {user.userName?.slice(0, 1)?.toUpperCase()}
                     </span>
-                    <p>{user.userName}</p>
+                    <div
+                      className={`${ZegoRoomCss.memberNameWrapper} ${ZegoRoomCss.memberGuestNameWrapper}`}
+                    >
+                      <p>{user.userName}</p>
+                    </div>
+                    <div className={ZegoRoomCss.memberStatusWrapper}>
+                      <span
+                        className={`${ZegoRoomCss.memberMicIcon} ${ZegoRoomCss.memberMicIconOpen}`}
+                      ></span>
+                      <span
+                        className={`${ZegoRoomCss.memberCameraIcon} ${ZegoRoomCss.memberCameraIconOpen}`}
+                      ></span>
+                      <span
+                        className={`${ZegoRoomCss.memberPinIcon} ${ZegoRoomCss.memberPinIconOpen}`}
+                      ></span>
+                    </div>
+                    <div
+                      className={ZegoRoomCss.memberMenuWrapper}
+                      data-id={user.userID}
+                    >
+                      <div className={ZegoRoomCss.memberMenuItem}>Pin</div>
+                    </div>
                   </div>
                 );
               })}
@@ -723,12 +767,51 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     }
   }
   onWindowResize = throttle(this.computeByResize.bind(this), 500);
-
+  showLayoutSettings(show: boolean) {
+    this.setState({
+      showLayoutSettingsModel: show,
+    });
+  }
+  changeLayout(type: string) {
+    this.setState(
+      {
+        isLayoutChanging: true,
+        layoutType: type,
+      },
+      () => {
+        //   TODO
+        this.setState({
+          isLayoutChanging: false,
+        });
+      }
+    );
+  }
+  expandMemberMenu(userID: string | null) {
+    const members = document.querySelectorAll(
+      `.${ZegoRoomCss.memberMenuWrapper}`
+    );
+    console.warn(members);
+    this.isMemberMenuShow = false;
+    members.forEach((m: any) => {
+      if (m?.dataset.id === userID) {
+        this.isMemberMenuShow = m.style.display === "none";
+        m.style.display = m.style.display === "block" ? "none" : "block";
+      } else {
+        m.style.display = "none";
+      }
+    });
+  }
+  collapseMemberMenu(event: Event) {
+    if (this.isMemberMenuShow) {
+      this.expandMemberMenu(null);
+    }
+  }
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
         ? 0
         : this.state.notificationList.length - 2;
+
     return (
       <div className={ZegoRoomCss.ZegoRoom}>
         {(this.props.core._config.branding?.logoURL ||
@@ -778,7 +861,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             ></ZegoOne2One> */}
             {this.state.layoutType === "Grid" && (
               <ZegoGridLayout
-                userList={new Array(19).fill({ userName: "G" })}
+                userList={new Array(3).fill({ userName: "G" })}
                 videoShowNumber={this.state.videoShowNumber}
                 gridRowNumber={this.state.gridRowNumber}
               ></ZegoGridLayout>
@@ -871,8 +954,12 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                   }}
                   ref={this.settingsRef}
                 >
-                  {/* <div>Change the layout</div>
-                <span></span> */}
+                  {this.props.core._config.layout && (
+                    <div onClick={() => this.showLayoutSettings(true)}>
+                      Change layout
+                    </div>
+                  )}
+                  {this.props.core._config.layout && <span></span>}
                   <div onClick={() => this.handleSetting()}>Settings</div>
                 </div>
               </div>
@@ -923,6 +1010,89 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               : "There's something wrong with your network. Trying to reconnect..."}
           </p>
         </div>
+        {this.state.showLayoutSettingsModel && (
+          <div className={ZegoRoomCss.layoutSettingsMask}>
+            <div className={ZegoRoomCss.layoutSettingsWrapper}>
+              <div className={ZegoRoomCss.layoutSettingsHeader}>
+                <p>Change layout</p>
+                <span
+                  className={ZegoRoomCss.layoutSettingsCloseIcon}
+                  onClick={() => this.showLayoutSettings(false)}
+                ></span>
+              </div>
+              <div className={ZegoRoomCss.layoutSettingsContent}>
+                <div
+                  className={ZegoRoomCss.layoutSettingsItemRow}
+                  onClick={() => this.changeLayout("Default")}
+                >
+                  <p>
+                    <span
+                      className={`${ZegoRoomCss.layoutSettingsItemIcon} ${
+                        this.state.layoutType === "Default"
+                          ? ZegoRoomCss.layoutSettingsItemChecked
+                          : ""
+                      } ${
+                        this.state.isLayoutChanging &&
+                        this.state.layoutType === "Default"
+                          ? ZegoRoomCss.layoutSettingsItemLoadoing
+                          : ""
+                      }`}
+                    ></span>
+                    Default
+                  </p>
+                </div>
+                <div
+                  className={ZegoRoomCss.layoutSettingsItemRow}
+                  onClick={() => this.changeLayout("Grid")}
+                >
+                  <p>
+                    <span
+                      className={`${ZegoRoomCss.layoutSettingsItemIcon} ${
+                        this.state.layoutType === "Grid"
+                          ? ZegoRoomCss.layoutSettingsItemChecked
+                          : ""
+                      } ${
+                        this.state.isLayoutChanging &&
+                        this.state.layoutType === "Grid"
+                          ? ZegoRoomCss.layoutSettingsItemLoadoing
+                          : ""
+                      }`}
+                    ></span>
+                    Grid
+                  </p>
+                  <img
+                    src={require("../../../sdkAssets/img_layout_grid@2x.png")}
+                    alt="grid layout"
+                  />
+                </div>
+                <div
+                  className={ZegoRoomCss.layoutSettingsItemRow}
+                  onClick={() => this.changeLayout("Sidebar")}
+                >
+                  <p>
+                    <span
+                      className={`${ZegoRoomCss.layoutSettingsItemIcon} ${
+                        this.state.layoutType === "Sidebar"
+                          ? ZegoRoomCss.layoutSettingsItemChecked
+                          : ""
+                      } ${
+                        this.state.isLayoutChanging &&
+                        this.state.layoutType === "Sidebar"
+                          ? ZegoRoomCss.layoutSettingsItemLoadoing
+                          : ""
+                      }`}
+                    ></span>
+                    Sidebar
+                  </p>
+                  <img
+                    src={require("../../../sdkAssets/img_layout_sidebar@2x.png")}
+                    alt="Sidebar layout"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
