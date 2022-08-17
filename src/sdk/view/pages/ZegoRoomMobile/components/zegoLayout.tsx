@@ -39,7 +39,7 @@ export class ZegoLayout extends React.Component<{
           >
             <div className={zegoLayoutCss.layoutContentLeft}>
               <i className={zegoLayoutCss.default}></i>
-              <span>Auto</span>
+              <span>Default</span>
             </div>
             <a
               className={
