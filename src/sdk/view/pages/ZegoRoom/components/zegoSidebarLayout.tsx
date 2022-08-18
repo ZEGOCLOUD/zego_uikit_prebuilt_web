@@ -5,6 +5,10 @@ import { OthersVideo, VideoPlayer } from "./zegoCommonComponents";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 
 export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
+  get pinUser() {
+    const index = this.props.userList.findIndex((item) => item.pin);
+    return this.props.userList[index > -1 ? index : 0];
+  }
   render(): React.ReactNode {
     let wrapClassName = clsx({
       [ZegoSidebarCss.rightWrapper]: true,
@@ -17,13 +21,12 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
     return (
       <>
         <div className={ZegoSidebarCss.sidebarWrapper}>
-          <div className={ZegoSidebarCss.leftWrapper}>
-            <video
-              muted
-              autoPlay
-              src="https://resource.zegocloud.com/office/avatar.mp4"
-            ></video>
-          </div>
+          <VideoPlayer
+            myClass={ZegoSidebarCss.bigVideo}
+            userInfo={this.pinUser}
+            handlePin={() => this.props.handleSetPin!(this.pinUser.userID)}
+            muted={this.pinUser.userID === this.props.selfInfo.userID}
+          ></VideoPlayer>
           <div className={wrapClassName}>
             {this.props.userList.map((user, index, arr) => {
               if (arr.length > this.props.videoShowNumber) {
@@ -45,6 +48,7 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
                   key={user.userID}
                   userInfo={user}
                   muted={user.userID === this.props.selfInfo.userID}
+                  handlePin={() => this.props.handleSetPin!(user.userID)}
                 ></VideoPlayer>
               );
             })}

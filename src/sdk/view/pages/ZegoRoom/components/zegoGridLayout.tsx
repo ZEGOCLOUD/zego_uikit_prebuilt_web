@@ -52,7 +52,17 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
                 );
               }
               if (index > this.props.videoShowNumber - 1) {
-                return <audio key={user.userID} autoPlay></audio>;
+                return (
+                  <audio
+                    key={user.userID}
+                    autoPlay
+                    ref={(el) => {
+                      el &&
+                        el.srcObject !== user.streamList[0]?.media &&
+                        (el.srcObject = user.streamList[0]?.media);
+                    }}
+                  ></audio>
+                );
               }
             }
             return (
@@ -60,6 +70,7 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
                 key={user.userID}
                 userInfo={user}
                 muted={user.userID === this.props.selfInfo!.userID}
+                handlePin={() => this.props.handleSetPin!(user.userID)}
               ></VideoPlayer>
             );
           })}

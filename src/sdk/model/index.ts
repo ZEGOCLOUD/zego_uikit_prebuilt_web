@@ -95,9 +95,11 @@ export interface ZegoGridLayoutProps {
   selfInfo?: {
     userID: string;
   };
+  handleSetPin?: Function;
 }
 
 export interface ZegoSidebarLayoutProps {
+  handleSetPin?: Function;
   userList: ZegoCloudUserList;
   videoShowNumber: number;
   selfInfo: {

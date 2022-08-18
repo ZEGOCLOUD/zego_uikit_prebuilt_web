@@ -4,20 +4,12 @@
   width: 100%;
   height: 100%;
 }
-.leftWrapper {
-  width: 100%;
-  height: 100%;
-  background-color: blue;
-  border-radius: 14px;
-  video {
-    width: 100%;
-    height: 100%;
-    border-radius: 14px;
-  }
+.bigVideo {
+  flex: 1 1 auto;
 }
 .rightWrapper {
   display: flex;
-  flex: 1 0 auto;
+  flex: 0 0 auto;
   flex-direction: column;
   align-content: space-between;
   width: 15.5%;

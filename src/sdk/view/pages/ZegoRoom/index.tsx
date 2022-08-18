@@ -83,6 +83,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     : 0;
   notifyTimer!: NodeJS.Timeout;
   msgDelayed = true; // 5s不显示
+  localUserPin = false;
   componentDidMount() {
     this.computeByResize();
     setTimeout(() => {
@@ -589,6 +590,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     });
   }
   changeLayout(type: string) {
+    if (type === "Grid") {
+      this.props.core.setPin();
+    }
     this.setState(
       {
         isLayoutChanging: true,
@@ -608,7 +612,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       {
         userID: this.props.core._expressConfig.userID,
         userName: this.props.core._expressConfig.userName,
-        pin: false,
+        pin: this.localUserPin,
         streamList: [
           {
             media: this.state.localStream!,
@@ -658,6 +662,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           }}
           remoteUserInfo={this.getShownUser()[1] || {}}
           selfInfo={this.getShownUser()[0] || {}}
+          handleSetPin={this.handleSetPin.bind(this)}
         ></ZegoOne2One>
       );
     } else if (
@@ -672,6 +677,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           selfInfo={{
             userID: this.props.core._expressConfig.userID,
           }}
+          handleSetPin={this.handleSetPin.bind(this)}
         ></ZegoGridLayout>
       );
     } else if (
@@ -680,6 +686,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     ) {
       return (
         <ZegoSidebarLayout
+          handleSetPin={this.handleSetPin.bind(this)}
           userList={this.getShownUser()}
           videoShowNumber={this.state.videoShowNumber}
           selfInfo={{
@@ -688,6 +695,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         ></ZegoSidebarLayout>
       );
     }
+  }
+  handleSetPin(userID: string) {
+    if (userID === this.props.core._expressConfig.userID) {
+      this.localUserPin = !this.localUserPin;
+      this.props.core.setPin();
+    } else {
+      this.props.core.setPin(userID);
+    }
+    this.setState({ layout: "Sidebar" });
   }
   render(): React.ReactNode {
     const startIndex =
@@ -770,6 +786,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                   core={this.props.core}
                   userList={this.getShownUser(true)}
                   selfUserID={this.props.core._expressConfig.userID}
+                  handleSetPin={this.handleSetPin.bind(this)}
                 ></ZegoUserList>
               )}
               {this.state.layOutStatus === "MESSAGE" && (

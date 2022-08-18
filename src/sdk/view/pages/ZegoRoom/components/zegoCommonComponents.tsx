@@ -35,7 +35,6 @@ export function VideoPlayer(props: {
     streamList: ZegoCloudRemoteMedia[];
   };
   muted: boolean;
-  showPin?: boolean;
   handlePin?: Function;
   onPause?: Function;
   myClass?: string;
@@ -81,7 +80,9 @@ export function VideoPlayer(props: {
             ZegoCommonCss.close
           }`}
         >
-          <span style={{ height: "5px" }}></span>
+          {props.userInfo?.streamList[0]?.micStatus === "OPEN" && (
+            <span style={{ height: "5px" }}></span>
+          )}
         </span>
         <p>{props.userInfo.userName}</p>
         {props.muted && <span className={ZegoCommonCss.nameTag}>(You)</span>}
@@ -90,17 +91,15 @@ export function VideoPlayer(props: {
         <div className={ZegoCommonCss.moreWrapper}>
           <span className={ZegoCommonCss.moreIcon}></span>
           <div className={ZegoCommonCss.moreMenu}>
-            {!props.showPin && (
-              <div
-                className={ZegoCommonCss.moreMenuItem}
-                onClick={() => {
-                  props.handlePin && props.handlePin(props.userInfo.userID);
-                }}
-              >
-                <span className={ZegoCommonCss.moreMenuPinIcon}></span>
-                <p>{props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
-              </div>
-            )}
+            <div
+              className={ZegoCommonCss.moreMenuItem}
+              onClick={() => {
+                props.handlePin && props.handlePin(props.userInfo.userID);
+              }}
+            >
+              <span className={ZegoCommonCss.moreMenuPinIcon}></span>
+              <p>{props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
+            </div>
           </div>
         </div>
       </div>

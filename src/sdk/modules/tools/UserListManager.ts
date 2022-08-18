@@ -9,13 +9,16 @@ export type ZegoCloudUser = ZegoUser & {
 };
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}
-
   showNonVideo = true;
   screenNumber = 0;
   remoteUserList: ZegoCloudUserList = [];
-  setPing(userID?: string, pined?: boolean): void {
+  setPin(userID?: string, pined?: boolean): void {
     this.remoteUserList.map((u) => {
-      u.pin = u.userID === userID && !!pined;
+      if (u.userID === userID) {
+        u.pin = !u.pin;
+      } else {
+        u.pin = false;
+      }
     });
   }
 

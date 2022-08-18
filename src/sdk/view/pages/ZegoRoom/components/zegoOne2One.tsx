@@ -6,6 +6,7 @@ export class ZegoOne2One extends React.Component<{
   remoteUserInfo: ZegoCloudUser;
   selfInfo: ZegoCloudUser;
   onLocalStreamPaused: () => void;
+  handleSetPin: Function;
 }> {
   getVideoScreen() {
     if (this.props.remoteUserInfo.userID) {
@@ -15,12 +16,18 @@ export class ZegoOne2One extends React.Component<{
             myClass={zegoOne2OneCss.bigVideo}
             userInfo={this.props.remoteUserInfo}
             muted={false}
+            handlePin={() =>
+              this.props.handleSetPin(this.props.remoteUserInfo.userID)
+            }
           ></VideoPlayer>
           <VideoPlayer
             onPause={this.props.onLocalStreamPaused}
             myClass={zegoOne2OneCss.smallVideo}
             userInfo={this.props.selfInfo}
             muted={true}
+            handlePin={() =>
+              this.props.handleSetPin(this.props.selfInfo.userID)
+            }
           ></VideoPlayer>
         </>
       );
@@ -30,6 +37,7 @@ export class ZegoOne2One extends React.Component<{
           myClass={zegoOne2OneCss.bigVideo}
           onPause={this.props.onLocalStreamPaused}
           userInfo={this.props.selfInfo}
+          handlePin={() => this.props.handleSetPin(this.props.selfInfo.userID)}
           muted={true}
         ></VideoPlayer>
       );
