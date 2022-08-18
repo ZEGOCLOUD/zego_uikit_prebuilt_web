@@ -17,13 +17,26 @@ import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoReconnect } from "./components/ZegoReconnect";
 import { ZegoToast } from "../../components/mobile/zegoToast";
-import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
+import {
+  ZegoCloudUser,
+  ZegoCloudUserList,
+} from "../../../modules/tools/UserListManager";
 import { ZegoLayout } from "./components/zegoLayout";
+import { ZegoManage } from "./components/zegoManage";
 import { ZegoGrid } from "./components/zegoGrid";
+import { ZegoSidebar } from "./components/zegoSidebar";
+
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
-    layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT";
+    layOutStatus:
+      | "ONE_VIDEO"
+      | "INVITE"
+      | "USER_LIST"
+      | "MESSAGE"
+      | "LAYOUT"
+      | "MANAGE";
+    userLayoutStatus: "Default" | "Grid" | "Sidebar";
     zegoCloudUserList: ZegoCloudUserList;
     messageList: ZegoBroadcastMessageInfo2[];
     notificationList: ZegoNotification[];
@@ -40,6 +53,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
     localStream: undefined,
     layOutStatus: "ONE_VIDEO",
+    userLayoutStatus: this.props.core._config.layout || "Default",
     zegoCloudUserList: [],
     messageList: [],
     notificationList: [],
@@ -56,6 +70,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   cameraStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnCameraWhenJoining
     ? 1
     : 0;
+  localUserPin = false;
   faceModel: 0 | 1 | -1 = 1;
   notifyTimer: NodeJS.Timeout | null = null;
   footerTimer!: NodeJS.Timeout;
@@ -467,8 +482,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     const shownUser = [
       {
         userID: this.props.core._expressConfig.userID,
-        userName: this.props.core._expressConfig.userName,
-        pin: false,
+        userName: this.props.core._expressConfig.userName + "（You）",
+        pin: this.localUserPin,
         streamList: [
           {
             media: this.state.localStream!,
@@ -499,6 +514,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     return shownUser as ZegoCloudUserList;
   }
 
+  private _selectedUser!: ZegoCloudUser;
+
   getListScreen() {
     if (this.state.layOutStatus === "INVITE") {
       return (
@@ -516,9 +533,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         <ZegoUserList
           core={this.props.core}
           userList={this.getShownUser(true)}
-          closeCallBack={() => {
+          closeCallBack={(_user?: ZegoCloudUser) => {
+            _user && (this._selectedUser = _user);
             this.setState({
-              layOutStatus: "ONE_VIDEO",
+              layOutStatus: _user ? "MANAGE" : "ONE_VIDEO",
             });
           }}
         ></ZegoUserList>
@@ -541,23 +559,58 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     } else if (this.state.layOutStatus === "LAYOUT") {
       return (
         <ZegoLayout
+          selectLayout={this.state.userLayoutStatus}
           closeCallBac={() => {
             this.setState({
               layOutStatus: "ONE_VIDEO",
             });
           }}
           selectCallBack={(selectLayout: "Default" | "Grid" | "Sidebar") => {
-            this.props.core._config.layout = selectLayout;
-            return new Promise(() => {});
+            this.setState({
+              userLayoutStatus: selectLayout,
+            });
+            return new Promise(() => {
+              // this.props.core.setScreenNum();
+              // //...
+              // resolve(true);
+            });
           }}
         ></ZegoLayout>
+      );
+    } else if (this.state.layOutStatus === "MANAGE") {
+      return (
+        <ZegoManage
+          closeCallBac={() => {
+            this.setState({
+              layOutStatus: "ONE_VIDEO",
+            });
+          }}
+          selectCallBac={(type?: "Pin", value?: boolean) => {
+            if (type === "Pin" && typeof value != "undefined") {
+              if (
+                this._selectedUser.userID !=
+                this.props.core._expressConfig.userID
+              ) {
+                this.props.core.setPin(this._selectedUser.userID, value);
+              } else {
+                this.localUserPin = value;
+                this._selectedUser.pin = value;
+                this.props.core.setPin();
+              }
+              this.setState({
+                userLayoutStatus: "Sidebar",
+              });
+            }
+          }}
+          selectedUser={this._selectedUser}
+        ></ZegoManage>
       );
     }
   }
 
   getLayoutScreen() {
     if (
-      (this.props.core._config.layout === "Default" &&
+      (this.state.userLayoutStatus === "Default" &&
         this.getShownUser().length < 3) ||
       this.getShownUser().length < 2
     ) {
@@ -596,18 +649,23 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         ></ZegoOne2One>
       );
     } else if (
-      this.props.core._config.layout === "Grid" &&
-      this.getShownUser().length > 1
+      (this.state.userLayoutStatus === "Grid" &&
+        this.getShownUser().length > 1) ||
+      (this.state.userLayoutStatus === "Default" &&
+        this.getShownUser().length > 2)
     ) {
       return (
         <ZegoGrid userList={this.getShownUser()} videoShowNumber={6}></ZegoGrid>
       );
     } else if (
-      this.props.core._config.layout === "Sidebar" &&
+      this.state.userLayoutStatus === "Sidebar" &&
       this.getShownUser().length > 1
     ) {
       return (
-        <ZegoGrid userList={this.getShownUser()} videoShowNumber={6}></ZegoGrid>
+        <ZegoSidebar
+          userList={this.getShownUser()}
+          videoShowNumber={5}
+        ></ZegoSidebar>
       );
     }
   }
@@ -629,6 +687,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           }, 5000);
         }}
       >
+        {this.getLayoutScreen()}
         {this.state.isNetworkPoor && (
           <div className={ZegoRoomCss.network}></div>
         )}

@@ -1,13 +1,14 @@
 import React from "react";
 import zegoLayoutCss from "./zegoLayout.module.scss";
 export class ZegoLayout extends React.Component<{
+  selectLayout: "Sidebar" | "Grid" | "Default";
   closeCallBac: () => void;
   selectCallBack?: (
     selectLayout: "Sidebar" | "Grid" | "Default"
   ) => Promise<boolean>;
 }> {
   state: { selectLayout: "Sidebar" | "Grid" | "Default" } = {
-    selectLayout: "Default",
+    selectLayout: this.props.selectLayout || "Default",
   };
 
   async select(selectLayout: "Sidebar" | "Grid" | "Default") {
@@ -39,7 +40,7 @@ export class ZegoLayout extends React.Component<{
           >
             <div className={zegoLayoutCss.layoutContentLeft}>
               <i className={zegoLayoutCss.default}></i>
-              <span>Auto</span>
+              <span>Default</span>
             </div>
             <a
               className={

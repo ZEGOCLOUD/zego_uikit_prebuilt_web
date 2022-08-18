@@ -13,9 +13,9 @@ export class ZegoCloudUserListManager {
   showNonVideo = true;
   screenNumber = 0;
   remoteUserList: ZegoCloudUserList = [];
-  setPing(userID: string): void {
+  setPing(userID?: string, pined?: boolean): void {
     this.remoteUserList.map((u) => {
-      u.pin = u.userID === userID;
+      u.pin = u.userID === userID && !!pined;
     });
   }
 

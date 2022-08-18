@@ -10,9 +10,7 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
       [ZegoGridCss.double]: this.props.userList.length <= 2,
       [ZegoGridCss.three]:
         this.props.userList.length === 4 || this.props.userList.length === 3,
-      [ZegoGridCss.six]:
-        this.props.userList.length === 6 || this.props.userList.length === 5,
-      [ZegoGridCss.night]: this.props.userList.length >= 7,
+      [ZegoGridCss.six]: this.props.userList.length >= 5,
     });
 
     return (
@@ -22,46 +20,108 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
             if (index === this.props.videoShowNumber - 1) {
               return (
                 <div>
-                  {/* <video muted className={ZegoCommonCss.videoCommon}></video>
-                  <div className={ZegoCommonCss.otherVideoWrapper}>
-                    <div className={ZegoCommonCss.nameWrapper}>
-                      {props.users.map((value, i) => (
-                        <div
-                          className={ZegoCommonCss.nameCircle}
-                          key={i}
-                          style={{
-                            color: userNameColor(value),
-                          }}
-                        >
-                          {value.slice(0, 1)?.toUpperCase()}
-                        </div>
-                      ))}
+                  <audio
+                    muted
+                    className={ZegoGridCss.videoCommon}
+                    ref={(el) => {
+                      el &&
+                        value.streamList &&
+                        value.streamList[0] &&
+                        value.streamList[0] &&
+                        el.srcObject !== value.streamList[0].media &&
+                        (el.srcObject = value.streamList[0].media);
+                    }}
+                  ></audio>
+                  <div className={ZegoGridCss.noVideoWrapper}>
+                    <div className={ZegoGridCss.nameWrapper}>
+                      <div
+                        className={ZegoGridCss.nameCircle}
+                        key={value.userID}
+                        style={{
+                          color: userNameColor(value.userName!),
+                        }}
+                      >
+                        {value.userName!.slice(0, 1)?.toUpperCase()}
+                      </div>
+                      <div
+                        className={ZegoGridCss.nameCircle}
+                        key={arr[index + 1].userID}
+                        style={{
+                          color: userNameColor(arr[index + 1].userName!),
+                        }}
+                      >
+                        {arr[index + 1].userName!.slice(0, 1)?.toUpperCase()}
+                      </div>
                     </div>
-                    {props.others > 0 && (
-                      <p className={ZegoCommonCss.othersNumber}>
-                        {props.others} others
-                      </p>
-                    )}
-                  </div> */}
+
+                    <p className={ZegoGridCss.othersNumber}>
+                      {arr.length - this.props.videoShowNumber + 1} others
+                    </p>
+                  </div>
                 </div>
               );
             }
             if (index > this.props.videoShowNumber - 1) {
-              return <audio></audio>;
+              return (
+                <audio
+                  ref={(el) => {
+                    el &&
+                      value.streamList &&
+                      value.streamList[0] &&
+                      value.streamList[0] &&
+                      el.srcObject !== value.streamList[0].media &&
+                      (el.srcObject = value.streamList[0].media);
+                  }}
+                ></audio>
+              );
             }
           }
           return (
-            <div>
-              <video
-                muted
-                autoPlay
-                className={ZegoGridCss.videoCommon}
-                ref={(el) => {
-                  el &&
-                    el.srcObject !== value.streamList[0].media &&
-                    (el.srcObject = value.streamList[0].media);
-                }}
-              ></video>
+            <div key={index}>
+              {value.streamList &&
+                value.streamList[0] &&
+                value.streamList[0] &&
+                value.streamList[0].media && (
+                  <video
+                    muted
+                    autoPlay
+                    className={ZegoGridCss.videoCommon}
+                    ref={(el) => {
+                      el &&
+                        el.srcObject !== value.streamList[0].media &&
+                        (el.srcObject = value.streamList[0].media);
+                    }}
+                  ></video>
+                )}
+              {(!value.streamList ||
+                !value.streamList[0] ||
+                value.streamList[0].cameraStatus === "MUTE") && (
+                <div className={ZegoGridCss.noVideoWrapper}>
+                  <div className={ZegoGridCss.nameWrapper}>
+                    <div
+                      className={ZegoGridCss.nameCircle}
+                      key={value.userID}
+                      style={{
+                        color: userNameColor(value.userName!),
+                      }}
+                    >
+                      {value.userName!.slice(0, 1)?.toUpperCase()}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className={ZegoGridCss.name}>
+                <p>{value.userName}</p>
+                <span
+                  className={
+                    value.streamList[0] &&
+                    value.streamList[0].micStatus === "OPEN"
+                      ? ZegoGridCss.micOpen
+                      : ""
+                  }
+                ></span>
+              </div>
             </div>
           );
         })}

@@ -2,11 +2,14 @@ import React, { ChangeEvent, RefObject } from "react";
 import zegoUserListCss from "./zegoUserList.module.scss";
 import { userNameColor } from "../../../../util";
 import { ZegoCloudRTCCore } from "../../../../modules";
-import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import {
+  ZegoCloudUser,
+  ZegoCloudUserList,
+} from "../../../../modules/tools/UserListManager";
 export class ZegoUserList extends React.Component<{
-  userList: ZegoUser[];
+  userList: ZegoCloudUserList;
   core: ZegoCloudRTCCore;
-  closeCallBack: () => void;
+  closeCallBack: (user?: ZegoCloudUser) => void;
 }> {
   state: {
     message: string;
@@ -34,24 +37,27 @@ export class ZegoUserList extends React.Component<{
           Member
         </div>
         <div className={zegoUserListCss.memberListContent}>
-          <div>
-            <i
-              style={{
-                color: userNameColor(this.props.core._expressConfig.userName!),
-              }}
-            >
-              {this.props.core._expressConfig.userName.substring(0, 1)}
-            </i>
-            <a>{this.props.core._expressConfig.userName}(You)</a>
-          </div>
-
           {this.props.userList.map((user) => {
             return (
-              <div>
-                <i style={{ color: userNameColor(user.userName!) }}>
-                  {user.userName?.substring(0, 1)}
-                </i>
-                <a key={user.userID}>{user.userName}</a>{" "}
+              <div
+                key={user.userID}
+                className={zegoUserListCss.member}
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  this.props.closeCallBack(user);
+                }}
+              >
+                <div className={zegoUserListCss.memberName}>
+                  <i style={{ color: userNameColor(user.userName!) }}>
+                    {user.userName?.substring(0, 1)}
+                  </i>
+                  <a key={user.userID}>{user.userName}</a>{" "}
+                </div>
+                <div className={zegoUserListCss.memberHandlers}>
+                  <i
+                    className={user.pin ? zegoUserListCss.memberPined : ""}
+                  ></i>
+                </div>
               </div>
             );
           })}
