@@ -92,9 +92,15 @@ export interface ZegoGridLayoutProps {
   userList: ZegoCloudUserList;
   videoShowNumber: number;
   gridRowNumber?: number;
+  selfInfo?: {
+    userID: string;
+  };
 }
 
 export interface ZegoSidebarLayoutProps {
   userList: ZegoCloudUserList;
   videoShowNumber: number;
+  selfInfo: {
+    userID: string;
+  };
 }

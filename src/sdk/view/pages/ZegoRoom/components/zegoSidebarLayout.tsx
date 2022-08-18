@@ -1,20 +1,8 @@
 import React from "react";
 import clsx from "clsx";
 import { ZegoSidebarLayoutProps } from "../../../../model";
-import { OthersVideo } from "./zegoCommonComponents";
+import { OthersVideo, VideoPlayer } from "./zegoCommonComponents";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
-
-function VideoPlayer() {
-  return (
-    <div>
-      <video
-        muted
-        autoPlay
-        src="https://resource.zegocloud.com/office/avatar.mp4"
-      ></video>
-    </div>
-  );
-}
 
 export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
   render(): React.ReactNode {
@@ -37,21 +25,28 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
             ></video>
           </div>
           <div className={wrapClassName}>
-            {this.props.userList.map((value, index, arr) => {
+            {this.props.userList.map((user, index, arr) => {
               if (arr.length > this.props.videoShowNumber) {
                 if (index === this.props.videoShowNumber - 1) {
                   return (
                     <OthersVideo
+                      key={user.userID}
                       users={[arr[index].userName!, arr[index + 1]?.userName!]}
                       others={arr.length - this.props.videoShowNumber + 1}
                     ></OthersVideo>
                   );
                 }
                 if (index > this.props.videoShowNumber - 1) {
-                  return <audio></audio>;
+                  return <audio key={user.userID} autoPlay></audio>;
                 }
               }
-              return <VideoPlayer></VideoPlayer>;
+              return (
+                <VideoPlayer
+                  key={user.userID}
+                  userInfo={user}
+                  muted={user.userID === this.props.selfInfo.userID}
+                ></VideoPlayer>
+              );
             })}
           </div>
         </div>

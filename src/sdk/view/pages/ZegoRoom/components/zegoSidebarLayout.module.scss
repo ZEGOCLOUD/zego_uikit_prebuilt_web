@@ -20,7 +20,6 @@
   flex: 1 0 auto;
   flex-direction: column;
   align-content: space-between;
-  justify-content: space-between;
   width: 15.5%;
   min-width: 124px;
   height: 100%;
@@ -33,6 +32,9 @@
     min-height: 124px;
     background: #242736;
     border-radius: 14px;
+    &:not(:last-of-type) {
+      margin-bottom: 10px;
+    }
   }
   video {
     display: block;

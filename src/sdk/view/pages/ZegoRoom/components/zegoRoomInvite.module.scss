@@ -1,0 +1,48 @@
+.inviteLinkWrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px 0;
+  .title {
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .inviteLink {
+    box-sizing: border-box;
+    width: 308px;
+    height: 44px;
+    padding: 12px;
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background: rgba(48, 51, 65, 1);
+    border: 0;
+    border-radius: 10px;
+    outline: none;
+    opacity: 0.7;
+  }
+  .copyLinkButton {
+    display: flex;
+    align-items: center;
+    margin-top: 14px;
+    color: #ffb763;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    cursor: pointer;
+    &::before {
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+      background: url("../../../../sdkAssets/icon_inner_copy.png") no-repeat
+        center/cover;
+      content: "";
+    }
+  }
+}

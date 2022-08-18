@@ -1,11 +1,12 @@
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRemoteMedia } from "../../model";
-export type ZegoCloudUserList = (ZegoUser & {
+export type ZegoCloudUserList = ZegoCloudUser[];
+
+export type ZegoCloudUser = ZegoUser & {
   pin: boolean;
   streamList: ZegoCloudRemoteMedia[];
-})[];
-
+};
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}
 

@@ -2,19 +2,7 @@ import React from "react";
 import { ZegoGridLayoutProps } from "../../../../model";
 import ZegoGridCss from "./zegoGridLayout.module.scss";
 import clsx from "clsx";
-import { OthersVideo } from "./zegoCommonComponents";
-function VideoPlayer() {
-  return (
-    <div>
-      <video
-        muted
-        autoPlay
-        className={ZegoGridCss.videoCommon}
-        src="https://resource.zegocloud.com/office/avatar.mp4"
-      ></video>
-    </div>
-  );
-}
+import { OthersVideo, VideoPlayer } from "./zegoCommonComponents";
 
 export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
   render(): React.ReactNode {
@@ -52,21 +40,28 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
     return (
       <>
         <div className={wrapClassName}>
-          {this.props.userList.map((value, index, arr) => {
+          {this.props.userList.map((user, index, arr) => {
             if (arr.length > this.props.videoShowNumber) {
               if (index === this.props.videoShowNumber - 1) {
                 return (
                   <OthersVideo
+                    key={user.userID}
                     users={[arr[index].userName!, arr[index + 1]?.userName!]}
                     others={arr.length - this.props.videoShowNumber}
                   ></OthersVideo>
                 );
               }
               if (index > this.props.videoShowNumber - 1) {
-                return <audio></audio>;
+                return <audio key={user.userID} autoPlay></audio>;
               }
             }
-            return <VideoPlayer></VideoPlayer>;
+            return (
+              <VideoPlayer
+                key={user.userID}
+                userInfo={user}
+                muted={user.userID === this.props.selfInfo!.userID}
+              ></VideoPlayer>
+            );
           })}
         </div>
       </>
