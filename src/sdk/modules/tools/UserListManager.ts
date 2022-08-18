@@ -1,10 +1,11 @@
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRemoteMedia } from "../../model";
-export type ZegoCloudUserList = (ZegoUser & {
+export type ZegoCloudUser = ZegoUser & {
   pin: boolean;
   streamList: ZegoCloudRemoteMedia[];
-})[];
+};
+export type ZegoCloudUserList = ZegoCloudUser[];
 
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}
@@ -12,9 +13,9 @@ export class ZegoCloudUserListManager {
   showNonVideo = true;
   screenNumber = 0;
   remoteUserList: ZegoCloudUserList = [];
-  setPing(userID: string): void {
+  setPing(userID?: string, pined?: boolean): void {
     this.remoteUserList.map((u) => {
-      u.pin = u.userID === userID;
+      u.pin = u.userID === userID && !!pined;
     });
   }
 

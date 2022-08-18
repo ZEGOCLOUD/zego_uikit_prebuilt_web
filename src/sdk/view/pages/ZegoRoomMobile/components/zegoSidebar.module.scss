@@ -1,7 +1,7 @@
 @import "../../../../var.scss";
-.gridWrapper {
+.sidebarWrapper {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-content: space-between;
   justify-content: center;
   box-sizing: border-box;
@@ -10,23 +10,32 @@
   padding: 10px;
   overflow: hidden;
   background: #1e2130;
-  & > div {
+  .bottomWrapper {
     position: relative;
-    display: flex;
+    flex: 1;
     width: 100%;
-    min-width: 124px;
-    height: 100%;
-    min-height: 124px;
-    overflow: hidden;
-    background: #242736;
-    border-radius: vw(14px);
-    &:nth-of-type(2n) {
-      margin-left: 10px;
+    .noVideoWrapper .nameWrapper .nameCircle {
+      width: vw(160px);
+      height: vw(160px);
+      font-size: vw(46px);
+      line-height: vw(65px);
     }
   }
-  video {
-    min-width: 124px;
-    min-height: 124px;
+  .upWrapper {
+    display: flex;
+    margin-bottom: 10px;
+    & > div {
+      position: relative;
+      display: flex;
+      width: vw(175px);
+      height: vw(175px);
+      overflow: hidden;
+      background: #242736;
+      border-radius: vw(14px);
+      &:not(:first-of-type) {
+        margin-left: 10px;
+      }
+    }
   }
   .videoCommon {
     display: block;
@@ -55,18 +64,18 @@
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
-        width: vw(120.28px);
-        height: vw(120px);
-        margin-bottom: vw(16px);
+        width: vw(83.97px);
+        height: vw(84px);
+        margin-bottom: vw(12px);
         font-weight: 600;
-        font-size: vw(35px);
-        line-height: vw(49px);
+        font-size: vw(24px);
+        line-height: vw(33px);
         text-align: center;
         background: #2e2f37;
         border: 2px solid #242736;
         border-radius: 50%;
         &:nth-of-type(2) {
-          margin-left: vw(-28.28px);
+          margin-left: vw(-19.97px);
         }
       }
     }
@@ -80,8 +89,8 @@
   }
   .name {
     position: absolute;
-    right: vw(24px);
-    bottom: vw(24px);
+    right: vw(10px);
+    bottom: vw(10px);
     display: flex;
     align-items: center;
     box-sizing: border-box;
@@ -114,27 +123,5 @@
       background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
       background-size: contain;
     }
-  }
-}
-
-.double {
-  & > div {
-    height: calc(50% - 5px);
-    &:nth-of-type(2) {
-      margin-left: 0;
-    }
-  }
-}
-// 3*3
-.three {
-  & > div {
-    width: calc(50% - 5px);
-    height: calc(50% - 5px);
-  }
-}
-.six {
-  & > div {
-    width: calc(50% - 5px);
-    height: calc((100% - 20px) / 3);
   }
 }

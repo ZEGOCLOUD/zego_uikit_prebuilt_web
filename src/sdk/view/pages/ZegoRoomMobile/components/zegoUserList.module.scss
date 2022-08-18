@@ -34,35 +34,53 @@
     flex: 1;
     flex-direction: column;
     align-items: flex-start;
-    div {
+    .member {
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      width: 100vw;
       margin-top: vw(46px);
-      i {
+      padding-right: vw(41px);
+      padding-left: vw(36px);
+      .memberName {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        width: vw(56px);
-        height: vw(56px);
-        margin-right: vw(24px);
-        margin-left: vw(30px);
-        color: #557bff;
-        font-weight: 600;
-        font-size: vw(24px);
-        // font-family: PingFangSC-Semibold, PingFang SC;
-        background: rgba(216, 216, 216, 1);
-        border-radius: vw(28px);
+        i {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: vw(56px);
+          height: vw(56px);
+          margin-right: vw(24px);
+          color: #557bff;
+          font-weight: 600;
+          font-size: vw(24px);
+          background: rgba(216, 216, 216, 1);
+          border-radius: vw(28px);
+        }
+        a {
+          max-width: vw(300px);
+          overflow: hidden;
+          color: #ffffff;
+          font-weight: 500;
+          font-size: vw(32px);
+          line-height: vw(45px);
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
       }
-      a {
-        max-width: vw(300px);
-        overflow: hidden;
-        color: #ffffff;
-        font-weight: 500;
-        font-size: vw(32px);
-        // font-family: PingFangSC-Medium, PingFang SC;
-        line-height: vw(45px);
-        white-space: nowrap;
-        text-overflow: ellipsis;
+      .memberHandlers {
+        i {
+          display: inline-block;
+          width: vw(44px);
+          height: vw(44px);
+          background-image: url(../../../../sdkMobileAssets/Room_pin_mute@2x.png);
+          background-repeat: no-repeat;
+          background-size: contain;
+        }
+        .memberPined {
+          background-image: url(../../../../sdkMobileAssets/Room_pin@2x.png);
+        }
       }
     }
   }

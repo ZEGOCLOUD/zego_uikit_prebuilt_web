@@ -116,8 +116,8 @@ export class ZegoCloudRTCCore {
     this._config = { ...this._config, ...config };
   }
 
-  setPin(userID: string): void {
-    this.zum.setPing(userID);
+  setPin(userID?: string, pined?: boolean): void {
+    this.zum.setPing(userID, pined);
     this.subscribeUserListCallBack &&
       this.subscribeUserListCallBack(this.zum.remoteUserList);
   }
