@@ -1,6 +1,7 @@
 import React from "react";
 import { ZegoGridLayoutProps } from "../../../../model";
 import { userNameColor } from "../../../../util";
+import { ZegoMore } from "./zegoMore";
 import ZegoGridCss from "./zegoGrid.module.scss";
 import clsx from "clsx";
 export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
@@ -122,6 +123,7 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
                   }
                 ></span>
               </div>
+              <ZegoMore user={value} />
             </div>
           );
         })}

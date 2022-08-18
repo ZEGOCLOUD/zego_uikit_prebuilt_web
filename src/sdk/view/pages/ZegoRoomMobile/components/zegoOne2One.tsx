@@ -1,171 +1,153 @@
 import React from "react";
-import { ZegoCloudRemoteMedia } from "../../../../model";
-import { ZegoCloudRTCCore } from "../../../../modules";
 import { userNameColor } from "../../../../util";
 import zegoOne2OneCss from "./zegoOne2One.module.scss";
+import { ZegoMore } from "./zegoMore";
+import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 export class ZegoOne2One extends React.Component<{
-  localStream: MediaStream | undefined;
-  remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
-  core: ZegoCloudRTCCore;
+  userList: ZegoCloudUserList;
   onLocalStreamPaused: () => void;
-  remoteUserInfo: {
-    userName: string | undefined;
-    userID: string | undefined;
-  };
-  selfUserInfo: {
-    userName: string;
-    micOpen: boolean;
-    cameraOpen: boolean;
-  };
 }> {
   getVideoScreen() {
-    if (this.props.remoteUserInfo.userID) {
+    if (this.props.userList.length > 1) {
       return (
         <>
           <div className={zegoOne2OneCss.bigVideo}>
-            <video
-              style={{ width: "100%" }}
-              autoPlay
-              playsInline={true}
-              ref={(el) => {
-                el &&
-                  el.srcObject !== this.props.remoteStreamInfo?.media &&
-                  (el.srcObject = this.props.remoteStreamInfo?.media!);
-              }}
-            ></video>
+            {this.props.userList[1].streamList[0] &&
+              this.props.userList[1].streamList[0].media && (
+                <video
+                  style={{ width: "100%" }}
+                  autoPlay
+                  playsInline={true}
+                  ref={(el) => {
+                    el &&
+                      el.srcObject !==
+                        this.props.userList[1].streamList[0].media &&
+                      (el.srcObject =
+                        this.props.userList[1].streamList[0].media);
+                  }}
+                ></video>
+              )}
+
             <div className={zegoOne2OneCss.name}>
-              <p>{this.props.remoteStreamInfo?.fromUser.userName}</p>
+              <p>{this.props.userList[1].userName}</p>
               <span
                 className={
-                  this.props.remoteStreamInfo?.micStatus === "OPEN"
+                  this.props.userList[1].streamList[0] &&
+                  this.props.userList[1].streamList[0].micStatus === "OPEN"
                     ? zegoOne2OneCss.bigVideoMicOpen
                     : ""
                 }
               ></span>
             </div>
-            {this.props.remoteStreamInfo?.cameraStatus !== "OPEN" && (
+            {(!this.props.userList[1].streamList[0] ||
+              this.props.userList[1].streamList[0].cameraStatus !== "OPEN") && (
               <i
                 style={{
-                  color: userNameColor(this.props.remoteUserInfo.userName!),
+                  color: userNameColor(this.props.userList[1].userName!),
                 }}
               >
-                {this.props.remoteUserInfo.userName?.substring(0, 1)}
+                {this.props.userList[1].userName?.substring(0, 1)}
               </i>
             )}
+            <ZegoMore user={this.props.userList[1]} />
           </div>
           <div className={zegoOne2OneCss.smallVideo}>
-            <video
-              muted
-              playsInline={true}
-              autoPlay
-              ref={(el) => {
-                el &&
-                  el.srcObject !== this.props.localStream! &&
-                  (el.srcObject = this.props.localStream!);
-              }}
-              onPause={() => {
-                this.props.onLocalStreamPaused();
-              }}
-            ></video>
+            {this.props.userList[0].streamList[0] &&
+              this.props.userList[0].streamList[0].media && (
+                <video
+                  muted
+                  playsInline={true}
+                  autoPlay
+                  ref={(el) => {
+                    el &&
+                      el.srcObject !==
+                        this.props.userList[0].streamList[0].media &&
+                      (el.srcObject =
+                        this.props.userList[0].streamList[0].media);
+                  }}
+                  onPause={() => {
+                    this.props.onLocalStreamPaused();
+                  }}
+                ></video>
+              )}
+
             <div className={zegoOne2OneCss.smallName}>
-              <p> {this.props.selfUserInfo.userName + "（YOU）"} </p>
+              <p> {this.props.userList[0].userName + "（YOU）"} </p>
               <span
                 className={
-                  this.props.selfUserInfo.micOpen
+                  this.props.userList[0].streamList[0] &&
+                  this.props.userList[0].streamList[0].micStatus === "OPEN"
                     ? zegoOne2OneCss.smallVideoMicOpen
                     : ""
                 }
               ></span>
             </div>
-            {!this.props.selfUserInfo.cameraOpen && (
+            {(!this.props.userList[0].streamList[0] ||
+              this.props.userList[0].streamList[0].cameraStatus !== "OPEN") && (
               <i
                 style={{
-                  color: userNameColor(this.props.core._expressConfig.userName),
+                  color: userNameColor(this.props.userList[0].userName!),
                 }}
               >
-                {this.props.core._expressConfig.userName?.substring(0, 1)}
+                {this.props.userList[0].userName!.substring(0, 1)}
               </i>
             )}
+            <ZegoMore user={this.props.userList[0]} />
           </div>
         </>
       );
     } else {
       return (
         <div className={zegoOne2OneCss.bigVideo}>
-          <video
-            style={{
-              top: 0,
-              transform: "translateX(-50%)",
-              left: "50%",
-              position: "absolute",
-            }}
-            muted
-            autoPlay
-            playsInline={true}
-            ref={(el) => {
-              el &&
-                el.srcObject !== this.props.localStream! &&
-                (el.srcObject = this.props.localStream!);
-            }}
-            onPause={() => {
-              this.props.onLocalStreamPaused();
-            }}
-          ></video>
+          {this.props.userList[0].streamList[0] &&
+            this.props.userList[0].streamList[0].media && (
+              <video
+                style={{
+                  top: 0,
+                  transform: "translateX(-50%)",
+                  left: "50%",
+                  position: "absolute",
+                }}
+                muted
+                autoPlay
+                playsInline={true}
+                ref={(el) => {
+                  el &&
+                    el.srcObject !==
+                      this.props.userList[0].streamList[0].media &&
+                    (el.srcObject = this.props.userList[0].streamList[0].media);
+                }}
+                onPause={() => {
+                  this.props.onLocalStreamPaused();
+                }}
+              ></video>
+            )}
+
           <div className={zegoOne2OneCss.name}>
-            <p>{this.props.selfUserInfo.userName + "（YOU）"}</p>
+            <p>{this.props.userList[0].userName + "（YOU）"}</p>
             <span
               className={
-                this.props.selfUserInfo.micOpen
+                this.props.userList[0].streamList[0] &&
+                this.props.userList[0].streamList[0].micStatus === "OPEN"
                   ? zegoOne2OneCss.bigVideoMicOpen
                   : ""
               }
             ></span>
           </div>
-          {!this.props.selfUserInfo.cameraOpen && (
+          {(!this.props.userList[0].streamList[0] ||
+            this.props.userList[0].streamList[0].cameraStatus === "MUTE") && (
             <i
               style={{
-                color: userNameColor(this.props.core._expressConfig.userName),
+                color: userNameColor(this.props.userList[0].userName!),
               }}
             >
-              {this.props.core._expressConfig.userName?.substring(0, 1)}
+              {this.props.userList[0].userName?.substring(0, 1)}
             </i>
           )}
+          <ZegoMore user={this.props.userList[0]} />
         </div>
       );
     }
-
-    // else if (this.props.remoteStreamInfo) {
-    //   return (
-    //     <div className={zegoOne2OneCss.bigVideo}>
-    //       <video
-    //         autoPlay
-    //         playsInline={true}
-    //         className={zegoOne2OneCss.bigVideo}
-    //         ref={(el) => {
-    //           el &&
-    //             el.srcObject !== this.props.remoteStreamInfo!.media &&
-    //             (el.srcObject = this.props.remoteStreamInfo!.media);
-    //         }}
-    //       ></video>
-    //       {/* <div className={zegoOne2OneCss.name}>
-    //         {this.props.remoteStreamInfo.fromUser.userName}
-    //       </div> */}
-    //       {this.props.remoteStreamInfo?.media.getVideoTracks().length === 0 && (
-    //         <i
-    //           style={{
-    //             color: userNameColor(
-    //               this.props.remoteStreamInfo.fromUser.userName!
-    //             ),
-    //           }}
-    //         >
-    //           {this.props.remoteStreamInfo.fromUser.userName?.substring(0, 1)}
-    //         </i>
-    //       )}
-    //     </div>
-    //   );
-    // } else {
-    //   return undefined;
-    // }
   }
 
   render(): React.ReactNode {
