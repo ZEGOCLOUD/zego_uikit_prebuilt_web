@@ -3,6 +3,7 @@ import { ZegoGridLayoutProps } from "../../../../model";
 import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 import { userNameColor } from "../../../../util";
 import ZegoSidebarCss from "./zegoSidebar.module.scss";
+import { ZegoMore } from "./zegoMore";
 
 export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
   get userList(): ZegoCloudUserList {
@@ -118,6 +119,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
                     }
                   ></span>
                 </div>
+                <ZegoMore user={value} />
               </div>
             );
           })}
@@ -166,6 +168,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
               }
             ></span>
           </div>
+          <ZegoMore user={this.pinUser} />
         </div>
       </div>
     );

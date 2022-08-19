@@ -1,7 +1,7 @@
 import React from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
-import { ZegoUIKitPrebuilt } from "./sdk/index";
+import { ZegoPrebuiltUIKit } from "./sdk/index";
 import { ZegoCloudRoomConfig } from "./sdk/model";
 import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, getRandomName, randomID } from "./util";
@@ -16,7 +16,7 @@ export default class App extends React.Component {
       let { token } = await generateToken(randomID(5), roomID, getRandomName());
       // token =
       //   "04AAAAAGLiKBcAEDFnZnlqZDV3bHQwNDZrZG4AcMdjPKlN5VTcl8PDi9mwY+rY1pZs4h1HKQKow/i1ZaZmoNNvF+mq6L/mm4ootCh5pEHmMg4S+PB70H1VReSgbBpb5QaH9FobMo1snaAxft66+T3DxUCThSuSEYxavGLO2fwWIEALNNPNvg+hO/o58G0=#eyJ1c2VyX2lkIjoiMTIzZmFkcyIsInJvb21faWQiOiJmYXNmIiwidXNlcl9uYW1lIjoiZmFqZmQiLCJhcHBfaWQiOiIxNDg0NjQ3OTM5In0=";
-      const zp = ZegoUIKitPrebuilt.create(token);
+      const zp = ZegoPrebuiltUIKit.create(token);
       const param: ZegoCloudRoomConfig = {
         // @ts-ignore
         container: element, // 挂载容器
