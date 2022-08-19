@@ -44,7 +44,7 @@ export interface ZegoCloudRoomConfig {
   maxUsers?: number; // 房间人数2～20，默认2
   layout?: "Sidebar" | "Grid" | "Default"; // 默认Default
 
-  showNonVideoUser?: true; // 是否显示不推流用户，默认显示
+  showNonVideoUser?: boolean; // 是否显示不推流用户，默认显示
 
   // 是否现在做，跟凯华讨论下
   // permissions: {

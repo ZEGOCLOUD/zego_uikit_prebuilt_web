@@ -27,7 +27,7 @@ export class ZegoCloudUserListManager {
     return this.updateStream();
   }
 
-  async setScreenNumber(num: number): Promise<boolean> {
+  async setMaxScreenNum(num: number): Promise<boolean> {
     this.screenNumber = num;
     return this.updateStream();
   }
@@ -41,7 +41,12 @@ export class ZegoCloudUserListManager {
       ) {
         count++;
       }
-      if (count > this.screenNumber) {
+      if (
+        count > this.screenNumber ||
+        (count === this.screenNumber &&
+          this.remoteUserList[index + 1] &&
+          this.remoteUserList[index + 1].streamList.length > 0)
+      ) {
         if (this.remoteUserList[index].streamList.length) {
           for (
             let s_index = 0;

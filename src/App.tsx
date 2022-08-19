@@ -12,10 +12,9 @@ export default class App extends React.Component {
     super(props);
     // @es
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
+    const role = getUrlParams(window.location.href)["role"] || "HOST";
     this.myMeeting = async (element: HTMLDivElement) => {
       let { token } = await generateToken(randomID(5), roomID, getRandomName());
-      // token =
-      //   "04AAAAAGLiKBcAEDFnZnlqZDV3bHQwNDZrZG4AcMdjPKlN5VTcl8PDi9mwY+rY1pZs4h1HKQKow/i1ZaZmoNNvF+mq6L/mm4ootCh5pEHmMg4S+PB70H1VReSgbBpb5QaH9FobMo1snaAxft66+T3DxUCThSuSEYxavGLO2fwWIEALNNPNvg+hO/o58G0=#eyJ1c2VyX2lkIjoiMTIzZmFkcyIsInJvb21faWQiOiJmYXNmIiwidXNlcl9uYW1lIjoiZmFqZmQiLCJhcHBfaWQiOiIxNDg0NjQ3OTM5In0=";
       const zp = ZegoPrebuiltUIKit.create(token);
       const param: ZegoCloudRoomConfig = {
         // @ts-ignore
@@ -29,18 +28,19 @@ export default class App extends React.Component {
             roomID,
           title: "Join Room",
         },
-        showPreJoinView: true, // 是否显示预览检测页面，默认显示
-        turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
-        turnOnCameraWhenJoining: true, // 是否开启自己的摄像头 ,默认开启
-        showMyCameraToggleButton: true, // 是否可以控制自己的麦克风,默认开启
-        showMyMicrophoneToggleButton: true, // 是否可以控制体自己的摄像头,默认开启
-        showAudioVideoSettingsButton: true,
+        showPreJoinView: role === "HOST", // 是否显示预览检测页面，默认显示
+        turnOnMicrophoneWhenJoining: role === "HOST", // 是否开启自己的麦克风,默认开启
+        turnOnCameraWhenJoining: role === "HOST", // 是否开启自己的摄像头 ,默认开启
+        showMyCameraToggleButton: role === "HOST", // 是否可以控制自己的麦克风,默认开启
+        showMyMicrophoneToggleButton: role === "HOST", // 是否可以控制体自己的摄像头,默认开启
+        showAudioVideoSettingsButton: role === "HOST",
         showTextChat: true, // 是否开启聊天，默认开启
         showUserList: true, //是否显示成员列表，默认不展示
         lowerLeftNotification: {
           showUserJoinAndLeave: true, //是否显示成员进出，默认不显示
           showTextChat: true, // 是否显示未读消息，默认不显示
         },
+        showNonVideoUser: role === "HOST" && false,
         leaveRoomCallback: () => {
           console.log("test:leaveRoomCallback");
         }, // 退出房间回调

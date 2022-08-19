@@ -88,5 +88,5 @@ export function getRandomName() {
     "Thomas",
   ];
 
-  return names[Math.round(Math.random() * names.length)];
+  return names[Math.round(Math.random() * names.length) - 1];
 }

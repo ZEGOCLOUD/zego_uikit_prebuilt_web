@@ -96,7 +96,7 @@ export class ZegoOne2One extends React.Component<{
           </div>
         </>
       );
-    } else {
+    } else if (this.props.userList.length > 0) {
       return (
         <div className={zegoOne2OneCss.bigVideo}>
           {this.props.userList[0].streamList[0] &&
@@ -124,7 +124,7 @@ export class ZegoOne2One extends React.Component<{
             )}
 
           <div className={zegoOne2OneCss.name}>
-            <p>{this.props.userList[0].userName + "（YOU）"}</p>
+            <p>{this.props.userList[0].userName}</p>
             <span
               className={
                 this.props.userList[0].streamList[0] &&

@@ -7,7 +7,6 @@ import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
 import { getVideoResolution } from "../../../util";
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
-    isSupportWebRTC: undefined,
     localStream: undefined,
     localVideoStream: undefined,
     localAudioStream: undefined,
@@ -38,12 +37,10 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async componentDidMount() {
-    const res = await this.props.core.checkWebRTC();
     this.setState({
-      isSupportWebRTC: res,
       userName: this.props.core._expressConfig.userName,
     });
-    if (!res) return;
+
     const devices = await this.getDevices();
     this.setState(
       {
@@ -348,162 +345,142 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   render(): React.ReactNode {
-    let page;
-    if (this.state.isSupportWebRTC === false) {
-      page = (
-        <ZegoModel
-          header={"Browser not supported"}
-          contentText={
-            /Firefox/.test(window.navigator.userAgent)
-              ? "Your browser version does not support the features or something wrong with your network. Please check them and try again."
-              : "The current browser is not available for you to join the room."
-          }
-        ></ZegoModel>
-      );
-    } else if (this.state.isSupportWebRTC === true) {
-      page = (
-        <div className={ZegoBrowserCheckCss.support}>
-          <div className={ZegoBrowserCheckCss.supportWrapper}>
-            <div className={ZegoBrowserCheckCss.videoWrapper}>
-              <video
-                className={ZegoBrowserCheckCss.video}
-                autoPlay
-                muted
-                ref={this.videoRef}
-              ></video>
-              {!this.state.videoOpen && !this.state.isVideoOpening && (
-                <div className={ZegoBrowserCheckCss.videoTip}>
-                  Camera is off
-                </div>
-              )}
-              {this.state.isVideoOpening && (
-                <div className={ZegoBrowserCheckCss.videoTip}>
-                  Camera is starting…
-                </div>
-              )}
-
-              <div className={ZegoBrowserCheckCss.toolsWrapper}>
-                {this.props.core._config.showMyMicrophoneToggleButton && (
-                  <div
-                    className={`${ZegoBrowserCheckCss.audioButton} ${
-                      !this.state.audioOpen && ZegoBrowserCheckCss.close
-                    }`}
-                    onClick={() => {
-                      this.toggleStream("audio");
-                    }}
-                  >
-                    <span className={ZegoBrowserCheckCss.buttonTip}>
-                      {this.state.audioOpen
-                        ? "Turn off microphone"
-                        : "Turn on microphone"}
-                    </span>
-                  </div>
-                )}
-                {this.props.core._config.showMyCameraToggleButton && (
-                  <div
-                    className={`${ZegoBrowserCheckCss.videoButton} ${
-                      !this.state.videoOpen && ZegoBrowserCheckCss.close
-                    }`}
-                    onClick={() => {
-                      this.toggleStream("video");
-                    }}
-                  >
-                    <span className={ZegoBrowserCheckCss.buttonTip}>
-                      {this.state.videoOpen
-                        ? "Turn off camera"
-                        : "Turn on camera"}
-                    </span>
-                  </div>
-                )}
-                {this.props.core._config.showAudioVideoSettingsButton && (
-                  <div
-                    className={ZegoBrowserCheckCss.settingsButton}
-                    onClick={() => {
-                      this.openSettings();
-                    }}
-                  ></div>
-                )}
+    return (
+      <div className={ZegoBrowserCheckCss.support}>
+        <div className={ZegoBrowserCheckCss.supportWrapper}>
+          <div className={ZegoBrowserCheckCss.videoWrapper}>
+            <video
+              className={ZegoBrowserCheckCss.video}
+              autoPlay
+              muted
+              ref={this.videoRef}
+            ></video>
+            {!this.state.videoOpen && !this.state.isVideoOpening && (
+              <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
+            )}
+            {this.state.isVideoOpening && (
+              <div className={ZegoBrowserCheckCss.videoTip}>
+                Camera is starting…
               </div>
-            </div>
-            <div className={ZegoBrowserCheckCss.joinScreenWrapper}>
-              <div className={ZegoBrowserCheckCss.joinFormWrapper}>
-                <div className={ZegoBrowserCheckCss.title}>
-                  {this.props.core._config.preJoinViewConfig?.title}
-                </div>
-                <input
-                  className={ZegoBrowserCheckCss.userName}
-                  placeholder="Your Name"
-                  value={this.state.userName}
-                  onChange={(ev: ChangeEvent<HTMLInputElement>) => {
-                    this.handleChange(ev);
+            )}
+
+            <div className={ZegoBrowserCheckCss.toolsWrapper}>
+              {this.props.core._config.showMyMicrophoneToggleButton && (
+                <div
+                  className={`${ZegoBrowserCheckCss.audioButton} ${
+                    !this.state.audioOpen && ZegoBrowserCheckCss.close
+                  }`}
+                  onClick={() => {
+                    this.toggleStream("audio");
                   }}
-                ></input>
-                <div className={ZegoBrowserCheckCss.joinRoomButtonWrapper}>
-                  <button
-                    className={ZegoBrowserCheckCss.joinRoomButton}
-                    disabled={!this.state.userName.length}
-                    onClick={() => {
-                      this.joinRoom();
-                    }}
-                  >
-                    {this.state.isJoining && (
-                      <span
-                        className={ZegoBrowserCheckCss.joinRoomButtonLoading}
-                      ></span>
-                    )}
-                    join
-                  </button>
-                  {this.state.isJoinRoomFailed && (
-                    <div className={ZegoBrowserCheckCss.joinRoomButtonTip}>
-                      {this.state.joinRoomErrorTip}
-                    </div>
-                  )}
+                >
+                  <span className={ZegoBrowserCheckCss.buttonTip}>
+                    {this.state.audioOpen
+                      ? "Turn off microphone"
+                      : "Turn on microphone"}
+                  </span>
                 </div>
-              </div>
-
-              {this.props.core._config.preJoinViewConfig?.invitationLink && (
-                <div className={ZegoBrowserCheckCss.shareLinkWrapper}>
-                  <div className={ZegoBrowserCheckCss.title}>
-                    Share the Link
-                  </div>
-                  <div className={ZegoBrowserCheckCss.inviteLinkWrapper}>
-                    <input
-                      className={ZegoBrowserCheckCss.inviteLink}
-                      placeholder="inviteLink"
-                      readOnly
-                      value={
-                        this.props.core._config.preJoinViewConfig
-                          ?.invitationLink
-                      }
-                      ref={this.inviteRef}
-                    ></input>
-                    <button
-                      className={ZegoBrowserCheckCss.copyLinkButton}
-                      disabled={this.state.isCopied}
-                      onClick={() => {
-                        this.handleCopy();
-                      }}
-                    ></button>
-                  </div>
+              )}
+              {this.props.core._config.showMyCameraToggleButton && (
+                <div
+                  className={`${ZegoBrowserCheckCss.videoButton} ${
+                    !this.state.videoOpen && ZegoBrowserCheckCss.close
+                  }`}
+                  onClick={() => {
+                    this.toggleStream("video");
+                  }}
+                >
+                  <span className={ZegoBrowserCheckCss.buttonTip}>
+                    {this.state.videoOpen
+                      ? "Turn off camera"
+                      : "Turn on camera"}
+                  </span>
                 </div>
+              )}
+              {this.props.core._config.showAudioVideoSettingsButton && (
+                <div
+                  className={ZegoBrowserCheckCss.settingsButton}
+                  onClick={() => {
+                    this.openSettings();
+                  }}
+                ></div>
               )}
             </div>
           </div>
-          {this.state.showDeviceAuthorAlert && (
-            <ZegoModel
-              header={"Equipment authorization"}
-              contentText={
-                "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again."
-              }
-              okText="Okay"
-              onOk={() => {
-                this.setState({ showDeviceAuthorAlert: false });
-              }}
-            ></ZegoModel>
-          )}
+          <div className={ZegoBrowserCheckCss.joinScreenWrapper}>
+            <div className={ZegoBrowserCheckCss.joinFormWrapper}>
+              <div className={ZegoBrowserCheckCss.title}>
+                {this.props.core._config.preJoinViewConfig?.title}
+              </div>
+              <input
+                className={ZegoBrowserCheckCss.userName}
+                placeholder="Your Name"
+                value={this.state.userName}
+                onChange={(ev: ChangeEvent<HTMLInputElement>) => {
+                  this.handleChange(ev);
+                }}
+              ></input>
+              <div className={ZegoBrowserCheckCss.joinRoomButtonWrapper}>
+                <button
+                  className={ZegoBrowserCheckCss.joinRoomButton}
+                  disabled={!this.state.userName.length}
+                  onClick={() => {
+                    this.joinRoom();
+                  }}
+                >
+                  {this.state.isJoining && (
+                    <span
+                      className={ZegoBrowserCheckCss.joinRoomButtonLoading}
+                    ></span>
+                  )}
+                  join
+                </button>
+                {this.state.isJoinRoomFailed && (
+                  <div className={ZegoBrowserCheckCss.joinRoomButtonTip}>
+                    {this.state.joinRoomErrorTip}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {this.props.core._config.preJoinViewConfig?.invitationLink && (
+              <div className={ZegoBrowserCheckCss.shareLinkWrapper}>
+                <div className={ZegoBrowserCheckCss.title}>Share the Link</div>
+                <div className={ZegoBrowserCheckCss.inviteLinkWrapper}>
+                  <input
+                    className={ZegoBrowserCheckCss.inviteLink}
+                    placeholder="inviteLink"
+                    readOnly
+                    value={
+                      this.props.core._config.preJoinViewConfig?.invitationLink
+                    }
+                    ref={this.inviteRef}
+                  ></input>
+                  <button
+                    className={ZegoBrowserCheckCss.copyLinkButton}
+                    disabled={this.state.isCopied}
+                    onClick={() => {
+                      this.handleCopy();
+                    }}
+                  ></button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      );
-    }
-    return page;
+        {this.state.showDeviceAuthorAlert && (
+          <ZegoModel
+            header={"Equipment authorization"}
+            contentText={
+              "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again."
+            }
+            okText="Okay"
+            onOk={() => {
+              this.setState({ showDeviceAuthorAlert: false });
+            }}
+          ></ZegoModel>
+        )}
+      </div>
+    );
   }
 }

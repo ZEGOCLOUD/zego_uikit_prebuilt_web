@@ -74,9 +74,26 @@
           display: inline-block;
           width: vw(44px);
           height: vw(44px);
-          background-image: url(../../../../sdkMobileAssets/Room_pin_mute@2x.png);
+          margin-left: vw(24px);
           background-repeat: no-repeat;
           background-size: contain;
+        }
+        .memberCameraMute {
+          background-image: url(../../../../sdkMobileAssets/Room_member_camera_mute@2x.png);
+        }
+        .memberCameraOpen {
+          background-image: url(../../../../sdkMobileAssets/Room_member_camera_open@2x.png);
+        }
+
+        .memberMicMute {
+          background-image: url(../../../../sdkMobileAssets/Room_member_mic_mute@2x.png);
+        }
+        .memberMicOpen {
+          background-image: url(../../../../sdkMobileAssets/Room_member_mic_open@2x.png);
+        }
+
+        .memberUnPin {
+          background-image: url(../../../../sdkMobileAssets/Room_pin_mute@2x.png);
         }
         .memberPined {
           background-image: url(../../../../sdkMobileAssets/Room_pin@2x.png);

@@ -123,8 +123,8 @@ export class ZegoCloudRTCCore {
       this.subscribeUserListCallBack(this.zum.remoteUserList);
   }
 
-  async setScreenNum(num: number) {
-    await this.zum.setScreenNumber(num);
+  async setMaxScreenNum(num: number) {
+    await this.zum.setMaxScreenNum(num);
     this.subscribeUserListCallBack &&
       this.subscribeUserListCallBack(this.zum.remoteUserList);
   }

@@ -20,19 +20,22 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
           if (arr.length > this.props.videoShowNumber) {
             if (index === this.props.videoShowNumber - 1) {
               return (
-                <div>
-                  <audio
-                    muted
-                    className={ZegoGridCss.videoCommon}
-                    ref={(el) => {
-                      el &&
-                        value.streamList &&
-                        value.streamList[0] &&
-                        value.streamList[0] &&
-                        el.srcObject !== value.streamList[0].media &&
-                        (el.srcObject = value.streamList[0].media);
-                    }}
-                  ></audio>
+                <div key={index}>
+                  {value.streamList &&
+                    value.streamList[0] &&
+                    value.streamList[0].media && (
+                      <audio
+                        key={index}
+                        muted
+                        className={ZegoGridCss.videoCommon}
+                        ref={(el) => {
+                          el &&
+                            el.srcObject !== value.streamList[0].media &&
+                            (el.srcObject = value.streamList[0].media);
+                        }}
+                      ></audio>
+                    )}
+
                   <div className={ZegoGridCss.noVideoWrapper}>
                     <div className={ZegoGridCss.nameWrapper}>
                       <div
@@ -64,16 +67,20 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
             }
             if (index > this.props.videoShowNumber - 1) {
               return (
-                <audio
-                  ref={(el) => {
-                    el &&
-                      value.streamList &&
-                      value.streamList[0] &&
-                      value.streamList[0] &&
-                      el.srcObject !== value.streamList[0].media &&
-                      (el.srcObject = value.streamList[0].media);
-                  }}
-                ></audio>
+                value.streamList &&
+                value.streamList[0] &&
+                value.streamList[0].media && (
+                  <audio
+                    key={index}
+                    muted
+                    className={ZegoGridCss.videoCommon}
+                    ref={(el) => {
+                      el &&
+                        el.srcObject !== value.streamList[0].media &&
+                        (el.srcObject = value.streamList[0].media);
+                    }}
+                  ></audio>
+                )
               );
             }
           }

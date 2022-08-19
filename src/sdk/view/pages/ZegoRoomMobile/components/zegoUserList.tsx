@@ -55,7 +55,29 @@ export class ZegoUserList extends React.Component<{
                 </div>
                 <div className={zegoUserListCss.memberHandlers}>
                   <i
-                    className={user.pin ? zegoUserListCss.memberPined : ""}
+                    className={
+                      user.streamList &&
+                      user.streamList[0] &&
+                      user.streamList[0].cameraStatus === "OPEN"
+                        ? zegoUserListCss.memberCameraOpen
+                        : zegoUserListCss.memberCameraMute
+                    }
+                  ></i>
+                  <i
+                    className={
+                      user.streamList &&
+                      user.streamList[0] &&
+                      user.streamList[0].micStatus === "OPEN"
+                        ? zegoUserListCss.memberMicOpen
+                        : zegoUserListCss.memberMicMute
+                    }
+                  ></i>
+                  <i
+                    className={
+                      user.pin
+                        ? zegoUserListCss.memberPined
+                        : zegoUserListCss.memberUnPin
+                    }
                   ></i>
                 </div>
               </div>

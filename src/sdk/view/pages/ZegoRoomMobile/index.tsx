@@ -76,6 +76,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   faceModel: 0 | 1 | -1 = 1;
   notifyTimer: NodeJS.Timeout | null = null;
   footerTimer!: NodeJS.Timeout;
+  userUpdateCallBack = () => {};
   componentDidMount() {
     this.initSDK();
     this.footerTimer = setTimeout(() => {
@@ -207,6 +208,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.subscribeUserList((userList) => {
+      this.userUpdateCallBack();
       this.setState({ zegoCloudUserList: userList });
     });
 
@@ -216,6 +218,15 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async createStream(): Promise<boolean> {
+    if (
+      !this.props.core._config.turnOnCameraWhenJoining &&
+      !this.props.core._config.turnOnMicrophoneWhenJoining &&
+      !this.props.core._config.showMyCameraToggleButton &&
+      !this.props.core._config.showMyMicrophoneToggleButton
+    ) {
+      return false;
+    }
+
     if (
       !this.props.core.status.videoRefuse ||
       !this.props.core.status.audioRefuse
@@ -503,7 +514,13 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       ...this.state.zegoCloudUserList,
     ].filter((item) => {
       if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
-        if (item.streamList && item.streamList[0] && item.streamList[0].media) {
+        if (
+          item.streamList &&
+          item.streamList[0] &&
+          item.streamList[0].media &&
+          (item.streamList[0].micStatus === "OPEN" ||
+            item.streamList[0].cameraStatus === "OPEN")
+        ) {
           return true;
         } else {
           return false;
@@ -568,13 +585,29 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             });
           }}
           selectCallBack={(selectLayout: "Default" | "Grid" | "Sidebar") => {
+            if (selectLayout != "Sidebar") {
+              this._selectedUser && (this._selectedUser.pin = false);
+              this.props.core.setPin();
+            }
             this.setState({
               userLayoutStatus: selectLayout,
             });
-            return new Promise(() => {
-              // this.props.core.setScreenNum();
-              // //...
-              // resolve(true);
+            return new Promise((resolve, reject) => {
+              const showSelf =
+                this.props.core._config.showNonVideoUser ||
+                this.state.localStream;
+              if (selectLayout === "Grid") {
+                this.props.core.setMaxScreenNum(showSelf ? 5 : 6);
+              } else if (selectLayout === "Sidebar") {
+                this.props.core.setMaxScreenNum(showSelf ? 4 : 5);
+              }
+
+              this.userUpdateCallBack = () => {
+                resolve(true);
+              };
+              setTimeout(() => {
+                resolve(false);
+              }, 5000);
             });
           }}
         ></ZegoLayout>
@@ -723,6 +756,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                   }}
                 ></a>
               )}
+
               <a
                 className={ZegoRoomCss.leaveRoom}
                 onClick={() => {

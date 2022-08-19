@@ -28,18 +28,19 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
               if (index === this.props.videoShowNumber - 2) {
                 return (
                   <div>
-                    <audio
-                      muted
-                      className={ZegoSidebarCss.videoCommon}
-                      ref={(el) => {
-                        el &&
-                          value.streamList &&
-                          value.streamList[0] &&
-                          value.streamList[0] &&
-                          el.srcObject !== value.streamList[0].media &&
-                          (el.srcObject = value.streamList[0].media);
-                      }}
-                    ></audio>
+                    {value.streamList &&
+                      value.streamList[0] &&
+                      value.streamList[0].media && (
+                        <audio
+                          muted
+                          className={ZegoSidebarCss.videoCommon}
+                          ref={(el) => {
+                            el &&
+                              el.srcObject !== value.streamList[0].media &&
+                              (el.srcObject = value.streamList[0].media);
+                          }}
+                        ></audio>
+                      )}
                     <div className={ZegoSidebarCss.noVideoWrapper}>
                       <div className={ZegoSidebarCss.nameWrapper}>
                         <div
@@ -70,7 +71,22 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
                 );
               }
               if (index > this.props.videoShowNumber - 2) {
-                return <audio></audio>;
+                return (
+                  value.streamList &&
+                  value.streamList[0] &&
+                  value.streamList[0].media && (
+                    <audio
+                      key={index}
+                      muted
+                      className={ZegoSidebarCss.videoCommon}
+                      ref={(el) => {
+                        el &&
+                          el.srcObject !== value.streamList[0].media &&
+                          (el.srcObject = value.streamList[0].media);
+                      }}
+                    ></audio>
+                  )
+                );
               }
             }
             return (

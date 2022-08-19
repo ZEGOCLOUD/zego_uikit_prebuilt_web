@@ -11,10 +11,14 @@ export class ZegoLayout extends React.Component<{
     selectLayout: this.props.selectLayout || "Default",
   };
 
+  checking = false;
+
   async select(selectLayout: "Sidebar" | "Grid" | "Default") {
     this.setState({ selectLayout });
-    if (this.props.selectCallBack) {
+    if (this.props.selectCallBack && !this.checking) {
+      this.checking = true;
       await this.props.selectCallBack(selectLayout);
+      this.checking = false;
     }
   }
   render(): React.ReactNode {

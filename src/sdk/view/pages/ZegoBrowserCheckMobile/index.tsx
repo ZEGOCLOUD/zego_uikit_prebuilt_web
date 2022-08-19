@@ -8,7 +8,6 @@ import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoLoading } from "./components/ZegoLoading";
 export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
-    isSupportWebRTC: undefined,
     localStream: undefined,
     localVideoStream: undefined,
     localAudioStream: undefined,
@@ -32,9 +31,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
   }
 
   async componentDidMount() {
-    const res = await this.props.core.checkWebRTC();
     this.setState({
-      isSupportWebRTC: res,
       userName: this.props.core._expressConfig.userName,
     });
     const videoOpen = !!this.props.core._config.turnOnCameraWhenJoining;
@@ -234,120 +231,104 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
   }
 
   render(): React.ReactNode {
-    let page;
-    if (this.state.isSupportWebRTC === false) {
-      page = page = (
-        <ZegoModel
-          header={"Browser not supported"}
-          contentText={
-            "The current browser is not available for you to join the room."
-          }
-        ></ZegoModel>
-      );
-    } else if (this.state.isSupportWebRTC === true) {
-      page = (
-        <div className={ZegoBrowserCheckCss.ZegoBrowserCheckSupport}>
-          <div className={ZegoBrowserCheckCss.videoScree}>
-            <video
-              playsInline={true}
-              className={ZegoBrowserCheckCss.video}
-              autoPlay
-              muted
-              ref={this.videoRef}
-            ></video>
-            {!this.state.videoOpen && !this.state.isVideoOpening && (
-              <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
-            )}
-            {this.state.isVideoOpening && (
-              <div className={ZegoBrowserCheckCss.videoTip}>
-                Camera is starting…
-              </div>
-            )}
-            <div className={ZegoBrowserCheckCss.handler}>
-              {this.props.core._config.showMyMicrophoneToggleButton && (
-                <a
-                  className={
-                    this.state.audioOpen
-                      ? ZegoBrowserCheckCss.micOpen
-                      : ZegoBrowserCheckCss.micClose
-                  }
-                  onClick={() => {
-                    this.toggleStream("audio");
-                  }}
-                ></a>
-              )}
-              {this.props.core._config.showMyCameraToggleButton && (
-                <a
-                  className={
-                    this.state.videoOpen
-                      ? ZegoBrowserCheckCss.cameraOpen
-                      : ZegoBrowserCheckCss.cameraClose
-                  }
-                  onClick={() => {
-                    this.toggleStream("video");
-                  }}
-                ></a>
-              )}
+    return (
+      <div className={ZegoBrowserCheckCss.ZegoBrowserCheckSupport}>
+        <div className={ZegoBrowserCheckCss.videoScree}>
+          <video
+            playsInline={true}
+            className={ZegoBrowserCheckCss.video}
+            autoPlay
+            muted
+            ref={this.videoRef}
+          ></video>
+          {!this.state.videoOpen && !this.state.isVideoOpening && (
+            <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
+          )}
+          {this.state.isVideoOpening && (
+            <div className={ZegoBrowserCheckCss.videoTip}>
+              Camera is starting…
             </div>
-          </div>
-          <div className={ZegoBrowserCheckCss.joinScreen}>
-            <div
-              className={`${ZegoBrowserCheckCss.joinRoom} ${ZegoBrowserCheckCss.focus}`}
-            >
-              {this.state.userName && <label>Your Name</label>}
-              <input
-                placeholder="Your Name"
-                value={this.state.userName}
-                onChange={(ev: ChangeEvent<HTMLInputElement>) => {
-                  ev.target.scrollIntoView();
-                  this.handleChange(ev);
+          )}
+          <div className={ZegoBrowserCheckCss.handler}>
+            {this.props.core._config.showMyMicrophoneToggleButton && (
+              <a
+                className={
+                  this.state.audioOpen
+                    ? ZegoBrowserCheckCss.micOpen
+                    : ZegoBrowserCheckCss.micClose
+                }
+                onClick={() => {
+                  this.toggleStream("audio");
                 }}
+              ></a>
+            )}
+            {this.props.core._config.showMyCameraToggleButton && (
+              <a
+                className={
+                  this.state.videoOpen
+                    ? ZegoBrowserCheckCss.cameraOpen
+                    : ZegoBrowserCheckCss.cameraClose
+                }
+                onClick={() => {
+                  this.toggleStream("video");
+                }}
+              ></a>
+            )}
+          </div>
+        </div>
+        <div className={ZegoBrowserCheckCss.joinScreen}>
+          <div
+            className={`${ZegoBrowserCheckCss.joinRoom} ${ZegoBrowserCheckCss.focus}`}
+          >
+            {this.state.userName && <label>Your Name</label>}
+            <input
+              placeholder="Your Name"
+              value={this.state.userName}
+              onChange={(ev: ChangeEvent<HTMLInputElement>) => {
+                ev.target.scrollIntoView();
+                this.handleChange(ev);
+              }}
+            ></input>
+            <button
+              className={this.state.userName && ZegoBrowserCheckCss.active}
+              onClick={() => {
+                this.joinRoom();
+              }}
+            >
+              Join
+            </button>
+          </div>
+          {this.props.core._config.preJoinViewConfig?.invitationLink && (
+            <div className={ZegoBrowserCheckCss.inviteLink}>
+              <input
+                placeholder="inviteLink"
+                readOnly
+                value={
+                  this.props.core._config.preJoinViewConfig?.invitationLink
+                }
+                ref={this.inviteRef}
               ></input>
               <button
-                className={this.state.userName && ZegoBrowserCheckCss.active}
+                className={this.state.copied ? ZegoBrowserCheckCss.copied : ""}
                 onClick={() => {
-                  this.joinRoom();
-                }}
-              >
-                Join
-              </button>
-            </div>
-            {this.props.core._config.preJoinViewConfig?.invitationLink && (
-              <div className={ZegoBrowserCheckCss.inviteLink}>
-                <input
-                  placeholder="inviteLink"
-                  readOnly
-                  value={
-                    this.props.core._config.preJoinViewConfig?.invitationLink
-                  }
-                  ref={this.inviteRef}
-                ></input>
-                <button
-                  className={
-                    this.state.copied ? ZegoBrowserCheckCss.copied : ""
-                  }
-                  onClick={() => {
-                    this.inviteRef.current &&
-                      copy(this.inviteRef.current.value);
+                  this.inviteRef.current && copy(this.inviteRef.current.value);
+                  this.setState({
+                    copied: true,
+                  });
+                  setTimeout(() => {
                     this.setState({
-                      copied: true,
+                      copied: false,
                     });
-                    setTimeout(() => {
-                      this.setState({
-                        copied: false,
-                      });
-                    }, 5000);
-                  }}
-                ></button>
-              </div>
-            )}
-          </div>
-          {this.state.isJoining && (
-            <ZegoLoading content="Loading..."></ZegoLoading>
+                  }, 5000);
+                }}
+              ></button>
+            </div>
           )}
         </div>
-      );
-    }
-    return page;
+        {this.state.isJoining && (
+          <ZegoLoading content="Loading..."></ZegoLoading>
+        )}
+      </div>
+    );
   }
 }
