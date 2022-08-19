@@ -23,6 +23,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     seletCamera: undefined,
     seletVideoResolution: "360",
     isJoining: false, // 是否正在加入房间，防止重复点击join
+    showNonVideo: this.props.core._config.showNonVideoUser,
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -244,6 +245,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         this.props.core.status.speakerDeviceID = this.state.seletSpeaker;
         this.props.core.status.videoResolution =
           this.state.seletVideoResolution;
+        this.props.core._config.showNonVideoUser = this.state.showNonVideo;
         const loginRsp = await this.props.core.enterRoom();
 
         let massage = "";
@@ -304,6 +306,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         cam: this.state.seletCamera,
         speaker: this.state.seletSpeaker,
         videoResolve: this.state.seletVideoResolution,
+        showNonVideoUser: this.state.showNonVideo,
       },
       closeCallBack: () => {},
       onMicChange: (deviceID: string) => {
@@ -340,6 +343,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             this.createStream(this.state.videoOpen, this.state.audioOpen);
           }
         );
+      },
+      onShowNonVideoChange: (selected: boolean) => {
+        this.setState({
+          showNonVideoUser: selected,
+        });
       },
     });
   }

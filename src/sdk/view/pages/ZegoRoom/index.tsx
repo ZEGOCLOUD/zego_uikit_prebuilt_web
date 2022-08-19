@@ -43,6 +43,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     seletSpeaker: string | undefined;
     seletCamera: string | undefined;
     seletVideoResolution: string;
+    showNonVideoUser: boolean;
     videoShowNumber: number; // 展示视频的数量
     gridRowNumber: number; // Grid 行数
     layout: "Default" | "Grid" | "Sidebar";
@@ -72,6 +73,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     showLayoutSettingsModel: false,
     isLayoutChanging: false,
     soundLevel: {},
+    showNonVideoUser: this.props.core._config.showNonVideoUser as boolean,
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -461,6 +463,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         cam: this.state.seletCamera,
         speaker: this.state.seletSpeaker,
         videoResolve: this.state.seletVideoResolution,
+        showNonVideoUser: this.state.showNonVideoUser,
       },
       closeCallBack: () => {},
       onMicChange: (deviceID: string) => {
@@ -526,6 +529,12 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             }
           }
         );
+      },
+      onShowNonVideoChange: (selected: boolean) => {
+        this.props.core._config.showNonVideoUser = selected;
+        this.setState({
+          showNonVideoUser: selected,
+        });
       },
     });
   }

@@ -24,7 +24,7 @@ export class ZegoUserList extends React.Component<{
     });
   }
   getHeight(userID: string, streamID: string): number {
-    const volume = this.props.soundLevel![userID][streamID];
+    const volume = this.props.soundLevel![userID]?.[streamID];
     return volume === undefined ? 5 : Math.ceil((volume * 9) / 100);
   }
   render(): React.ReactNode {

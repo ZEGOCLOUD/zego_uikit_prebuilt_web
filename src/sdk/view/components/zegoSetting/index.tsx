@@ -28,6 +28,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     speakerVolume: number;
     isSpeakerPlaying: boolean;
     renderAudio: boolean;
+    showNonVideo: boolean | undefined;
   } = {
     visible: true,
     selectTab: "AUDIO",
@@ -44,6 +45,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     speakerVolume: 0,
     isSpeakerPlaying: false,
     renderAudio: false,
+    showNonVideo: this.props.initDevices.showNonVideoUser,
   };
   videoRef = React.createRef<HTMLDivElement>();
   speakerTimer: NodeJS.Timer | null = null;
@@ -331,6 +333,12 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       speakerVolume: 0,
     });
   }
+  handleShowNonVideo() {
+    this.props?.onShowNonVideoChange(!this.state.showNonVideo);
+    this.setState({
+      showNonVideo: !this.state.showNonVideo,
+    });
+  }
   render(): React.ReactNode {
     return (
       <div
@@ -505,6 +513,19 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                       placeholder=""
                       theme={this.props.theme}
                     ></ZegoSelect>
+                  </div>
+                  <div className={ZegoSettingsCss.device}>
+                    <div
+                      className={ZegoSettingsCss.checkboxWrapper}
+                      onClick={() => this.handleShowNonVideo()}
+                    >
+                      <span
+                        className={`${ZegoSettingsCss.checkbox} ${
+                          this.state.showNonVideo && ZegoSettingsCss.selected
+                        }`}
+                      ></span>
+                      <p>Show non-video participant</p>
+                    </div>
                   </div>
                 </div>
               )}

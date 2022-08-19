@@ -80,12 +80,14 @@ export interface ZegoSettingsProps {
     cam: string | undefined;
     speaker: string | undefined;
     videoResolve: string | undefined;
+    showNonVideoUser: boolean | undefined;
   };
   closeCallBack?: () => void;
   onMicChange: (deviceID: string) => void;
   onCameraChange: (deviceID: string) => void;
   onSpeakerChange: (deviceID: string) => void;
   onVideoResolutionChange: (level: string) => void;
+  onShowNonVideoChange: (selected: boolean) => void;
 }
 
 export interface ZegoGridLayoutProps {

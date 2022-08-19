@@ -54,8 +54,8 @@ export function VideoPlayer(props: {
         playsInline={true}
         ref={(el) => {
           el &&
-            el.srcObject !== props.userInfo?.streamList[0]?.media &&
-            (el.srcObject = props.userInfo?.streamList[0]?.media);
+            el.srcObject !== props.userInfo?.streamList?.[0]?.media &&
+            (el.srcObject = props.userInfo?.streamList?.[0]?.media);
         }}
         onPause={() => {
           props.onPause && props.onPause();
@@ -65,7 +65,7 @@ export function VideoPlayer(props: {
         className={ZegoCommonCss.cameraMask}
         style={{
           display:
-            props.userInfo?.streamList[0]?.cameraStatus === "OPEN"
+            props.userInfo?.streamList?.[0]?.cameraStatus === "OPEN"
               ? "none"
               : "flex",
         }}
@@ -82,11 +82,11 @@ export function VideoPlayer(props: {
       <div className={ZegoCommonCss.name}>
         <span
           className={`${ZegoCommonCss.micIcon} ${
-            props.userInfo?.streamList[0]?.micStatus !== "OPEN" &&
+            props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
             ZegoCommonCss.close
           }`}
         >
-          {props.userInfo?.streamList[0]?.micStatus === "OPEN" && (
+          {props.userInfo?.streamList?.[0]?.micStatus === "OPEN" && (
             <span style={{ height: height + "px" }}></span>
           )}
         </span>
