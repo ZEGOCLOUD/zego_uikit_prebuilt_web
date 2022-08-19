@@ -96,6 +96,7 @@ export interface ZegoGridLayoutProps {
     userID: string;
   };
   handleSetPin?: Function;
+  soundLevel?: SoundLevelMap;
 }
 
 export interface ZegoSidebarLayoutProps {
@@ -104,5 +105,12 @@ export interface ZegoSidebarLayoutProps {
   videoShowNumber: number;
   selfInfo: {
     userID: string;
+  };
+  soundLevel?: SoundLevelMap;
+}
+
+export interface SoundLevelMap {
+  [userID: string]: {
+    [streamID: string]: number;
   };
 }

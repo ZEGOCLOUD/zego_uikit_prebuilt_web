@@ -35,10 +35,16 @@ export function VideoPlayer(props: {
     streamList: ZegoCloudRemoteMedia[];
   };
   muted: boolean;
+  volume?: {
+    [streamID: string]: number;
+  };
   handlePin?: Function;
   onPause?: Function;
   myClass?: string;
 }) {
+  const volume = props.volume![props.userInfo?.streamList[0]?.streamID];
+  const height = volume === undefined ? 5 : Math.ceil((volume * 7) / 100);
+
   return (
     <div className={` ${ZegoCommonCss.videoPlayerWrapper} ${props.myClass}`}>
       <video
@@ -81,7 +87,7 @@ export function VideoPlayer(props: {
           }`}
         >
           {props.userInfo?.streamList[0]?.micStatus === "OPEN" && (
-            <span style={{ height: "5px" }}></span>
+            <span style={{ height: height + "px" }}></span>
           )}
         </span>
         <p>{props.userInfo.userName}</p>

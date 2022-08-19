@@ -26,6 +26,7 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
             userInfo={this.pinUser}
             handlePin={() => this.props.handleSetPin!(this.pinUser.userID)}
             muted={this.pinUser.userID === this.props.selfInfo.userID}
+            volume={this.props.soundLevel![this.pinUser.userID] || {}}
           ></VideoPlayer>
           <div className={wrapClassName}>
             {this.props.userList.map((user, index, arr) => {
@@ -49,6 +50,7 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
                   userInfo={user}
                   muted={user.userID === this.props.selfInfo.userID}
                   handlePin={() => this.props.handleSetPin!(user.userID)}
+                  volume={this.props.soundLevel![user.userID] || {}}
                 ></VideoPlayer>
               );
             })}

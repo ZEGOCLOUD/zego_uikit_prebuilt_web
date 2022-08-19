@@ -3,11 +3,13 @@ import { ZegoCloudRTCCore } from "../../../../modules";
 import { userNameColor } from "../../../../util";
 import ZegoUserListCss from "./zegoUserList.module.scss";
 import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
+import { SoundLevelMap } from "../../../../model";
 export class ZegoUserList extends React.Component<{
   core: ZegoCloudRTCCore;
   userList: ZegoCloudUserList;
   selfUserID: string;
   handleSetPin: Function;
+  soundLevel?: SoundLevelMap;
 }> {
   expandMemberMenu(userID: string | null) {
     const members = document.querySelectorAll(
@@ -21,7 +23,10 @@ export class ZegoUserList extends React.Component<{
       }
     });
   }
-
+  getHeight(userID: string, streamID: string): number {
+    const volume = this.props.soundLevel![userID][streamID];
+    return volume === undefined ? 5 : Math.ceil((volume * 9) / 100);
+  }
   render(): React.ReactNode {
     return (
       <div className={ZegoUserListCss.memberListWrapper}>
@@ -54,7 +59,19 @@ export class ZegoUserList extends React.Component<{
                       user.streamList[0].micStatus === "OPEN" &&
                       ZegoUserListCss.memberMicIconOpen
                     }`}
-                  ></span>
+                  >
+                    {user?.streamList[0]?.micStatus === "OPEN" && (
+                      <span
+                        style={{
+                          height:
+                            this.getHeight(
+                              user.userID,
+                              user?.streamList[0].streamID
+                            ) + "px",
+                        }}
+                      ></span>
+                    )}
+                  </span>
                   <span
                     className={`${ZegoUserListCss.memberCameraIcon} ${
                       user.streamList[0].cameraStatus === "OPEN" &&

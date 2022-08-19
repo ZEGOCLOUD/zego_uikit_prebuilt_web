@@ -9,6 +9,7 @@ import {
   ZegoPublishStats,
   ZegoPublishStreamConfig,
   ZegoServerResponse,
+  ZegoSoundLevelInfo,
   ZegoStreamList,
 } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 import {
@@ -249,7 +250,7 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.off("roomStateUpdate");
     ZegoCloudRTCCore._zg.off("publisherStateUpdate");
     ZegoCloudRTCCore._zg.off("publishQualityUpdate");
-
+    ZegoCloudRTCCore._zg.off("soundLevelUpdate");
     ZegoCloudRTCCore._zg.on(
       "roomStreamUpdate",
       async (
@@ -388,7 +389,13 @@ export class ZegoCloudRTCCore {
           );
       }
     );
-
+    ZegoCloudRTCCore._zg.on(
+      "soundLevelUpdate",
+      (soundLevelList: ZegoSoundLevelInfo[]) => {
+        this.onSoundLevelUpdateCallBack &&
+          this.onSoundLevelUpdateCallBack(soundLevelList);
+      }
+    );
     const resp = await new Promise<number>(async (res, rej) => {
       let code: number;
       ZegoCloudRTCCore._zg.on(
@@ -421,15 +428,15 @@ export class ZegoCloudRTCCore {
         }
       );
     });
+    ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300);
     return resp;
   }
 
-  publishLocalStream(media: MediaStream): boolean {
+  publishLocalStream(media: MediaStream): boolean | string {
     if (!media) return false;
-    return ZegoCloudRTCCore._zg.startPublishingStream(
-      this._expressConfig.userID + "_" + randomID(3),
-      media
-    );
+    const streamID = this._expressConfig.userID + "_" + randomID(3);
+    const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media);
+    return res && streamID;
   }
 
   async replaceTrack(
@@ -504,7 +511,12 @@ export class ZegoCloudRTCCore {
         this.subscribeUserListCallBack(this.zum.remoteUserList);
     };
   }
-
+  private onSoundLevelUpdateCallBack!: (
+    soundLevelList: ZegoSoundLevelInfo[]
+  ) => void;
+  onSoundLevelUpdate(func: (soundLevelList: ZegoSoundLevelInfo[]) => void) {
+    this.onSoundLevelUpdateCallBack = func;
+  }
   sendRoomMessage(message: string) {
     return ZegoCloudRTCCore._zg.sendBroadcastMessage(
       ZegoCloudRTCCore._instance._expressConfig.roomID,
@@ -565,6 +577,8 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.off("roomStateUpdate");
     ZegoCloudRTCCore._zg.off("publisherStateUpdate");
     ZegoCloudRTCCore._zg.off("publishQualityUpdate");
+    ZegoCloudRTCCore._zg.off("soundLevelUpdate");
+    ZegoCloudRTCCore._zg.setSoundLevelDelegate(false);
     this.onNetworkStatusCallBack = () => {};
     this.onRemoteMediaUpdateCallBack = (
       updateType: "DELETE" | "ADD" | "UPDATE",

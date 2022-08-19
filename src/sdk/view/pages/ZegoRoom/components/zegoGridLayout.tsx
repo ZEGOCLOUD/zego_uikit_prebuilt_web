@@ -71,6 +71,7 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
                 userInfo={user}
                 muted={user.userID === this.props.selfInfo!.userID}
                 handlePin={() => this.props.handleSetPin!(user.userID)}
+                volume={this.props.soundLevel![user.userID] || {}}
               ></VideoPlayer>
             );
           })}

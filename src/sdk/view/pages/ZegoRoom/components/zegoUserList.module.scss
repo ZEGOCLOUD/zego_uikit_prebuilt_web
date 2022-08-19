@@ -82,7 +82,17 @@
       background-size: cover;
     }
     .memberMicIcon {
+      position: relative;
       background-image: url("../../../../sdkAssets/icon_member_mic_off@2x.png");
+      & > span {
+        position: absolute;
+        bottom: 10px;
+        left: -4px;
+        width: 6px;
+        height: 5px;
+        background: #a6a7ad;
+        border-radius: 4px;
+      }
     }
     .memberMicIconOpen {
       background-image: url("../../../../sdkAssets/icon_member_mic@2x.png");

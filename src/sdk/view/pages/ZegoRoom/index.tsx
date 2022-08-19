@@ -1,5 +1,6 @@
 import React, { RefObject } from "react";
 import {
+  SoundLevelMap,
   ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
   ZegoCloudRemoteMedia,
@@ -16,8 +17,6 @@ import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import { getVideoResolution, randomNumber, throttle } from "../../../util";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
-import { copy } from "../../../modules/tools/util";
-import { userNameColor } from "../../../util";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
 import { ZegoGridLayout } from "./components/zegoGridLayout";
@@ -25,6 +24,7 @@ import { ZegoSidebarLayout } from "./components/zegoSidebarLayout";
 import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoUserList } from "./components/zegoUserList";
+import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -48,6 +48,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     layout: "Default" | "Grid" | "Sidebar";
     showLayoutSettingsModel: boolean; // 是否显示布局设置弹窗
     isLayoutChanging: boolean; // 布局是否正在变更中
+    soundLevel: SoundLevelMap;
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -70,6 +71,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     layout: this.props.core._config.layout || "Default",
     showLayoutSettingsModel: false,
     isLayoutChanging: false,
+    soundLevel: {},
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -84,6 +86,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   notifyTimer!: NodeJS.Timeout;
   msgDelayed = true; // 5s不显示
   localUserPin = false;
+  localStreamID = "";
   componentDidMount() {
     this.computeByResize();
     setTimeout(() => {
@@ -239,7 +242,24 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     this.props.core.subscribeUserList((userList) => {
       this.setState({ zegoCloudUserList: userList });
     });
-
+    this.props.core.onSoundLevelUpdate(
+      (soundLevelList: ZegoSoundLevelInfo[]) => {
+        let list: SoundLevelMap = {};
+        soundLevelList.forEach((s) => {
+          let userId = s.streamID.split("_")[0];
+          if (list[userId]) {
+            list[userId][s.streamID] = Math.floor(s.soundLevel);
+          } else {
+            list[userId] = {
+              [s.streamID]: Math.floor(s.soundLevel),
+            };
+          }
+        });
+        this.setState({
+          soundLevel: list,
+        });
+      }
+    );
     const logInRsp = await this.props.core.enterRoom();
     logInRsp === 0 && this.createStream();
   }
@@ -272,7 +292,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         this.setState({
           localStream,
         });
-        this.props.core.publishLocalStream(localStream);
+        const res = this.props.core.publishLocalStream(localStream);
+        if (res !== false) {
+          this.localStreamID = res as string;
+        }
         return true;
       } catch (error) {
         console.error(
@@ -623,7 +646,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             micStatus: this.state.micOpen ? "OPEN" : "MUTE",
             cameraStatus: this.state.cameraOpen ? "OPEN" : "MUTE",
             state: "PLAYING",
-            streamID: "",
+            streamID: this.localStreamID,
           },
         ],
       },
@@ -663,6 +686,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           remoteUserInfo={this.getShownUser()[1] || {}}
           selfInfo={this.getShownUser()[0] || {}}
           handleSetPin={this.handleSetPin.bind(this)}
+          soundLevel={this.state.soundLevel}
         ></ZegoOne2One>
       );
     } else if (
@@ -678,6 +702,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             userID: this.props.core._expressConfig.userID,
           }}
           handleSetPin={this.handleSetPin.bind(this)}
+          soundLevel={this.state.soundLevel}
         ></ZegoGridLayout>
       );
     } else if (
@@ -692,6 +717,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           selfInfo={{
             userID: this.props.core._expressConfig.userID,
           }}
+          soundLevel={this.state.soundLevel}
         ></ZegoSidebarLayout>
       );
     }
@@ -787,6 +813,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                   userList={this.getShownUser(true)}
                   selfUserID={this.props.core._expressConfig.userID}
                   handleSetPin={this.handleSetPin.bind(this)}
+                  soundLevel={this.state.soundLevel}
                 ></ZegoUserList>
               )}
               {this.state.layOutStatus === "MESSAGE" && (
