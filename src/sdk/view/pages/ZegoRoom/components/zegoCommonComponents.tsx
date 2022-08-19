@@ -42,7 +42,7 @@ export function VideoPlayer(props: {
   onPause?: Function;
   myClass?: string;
 }) {
-  const volume = props.volume![props.userInfo?.streamList[0]?.streamID];
+  const volume = props.volume?.[props.userInfo?.streamList?.[0]?.streamID];
   const height = volume === undefined ? 5 : Math.ceil((volume * 7) / 100);
 
   return (
