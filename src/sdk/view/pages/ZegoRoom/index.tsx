@@ -89,6 +89,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   msgDelayed = true; // 5s不显示
   localUserPin = false;
   localStreamID = "";
+  userUpdateCallBack = () => {};
   componentDidMount() {
     this.computeByResize();
     setTimeout(() => {
@@ -242,6 +243,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.subscribeUserList((userList) => {
+      this.userUpdateCallBack();
       this.setState({ zegoCloudUserList: userList });
     });
     this.props.core.onSoundLevelUpdate(
@@ -567,9 +569,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   computeByResize() {
     const width = Math.max(document.body.clientWidth, 826);
     const height = Math.max(document.body.clientHeight, 280);
-    console.warn(width, height);
-    // Grid
-    if (this.state.layout === "Grid") {
+    if (this.state.layout === "Grid" || this.state.layout === "Default") {
       if (height < 406 - (this.props.core._config.branding?.logoURL ? 0 : 64)) {
         const videoWrapWidth =
           width - 32 - (this.state.layOutStatus === "ONE_VIDEO" ? 0 : 350);
@@ -621,22 +621,29 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       showLayoutSettingsModel: show,
     });
   }
-  changeLayout(type: string) {
+  async changeLayout(type: string) {
+    if (this.state.isLayoutChanging) return;
     if (type === "Grid") {
       this.props.core.setPin();
     }
-    this.setState(
-      {
-        isLayoutChanging: true,
-        layout: type,
-      },
-      () => {
-        //   TODO
+    this.setState({
+      isLayoutChanging: true,
+      layout: type,
+    });
+    return new Promise((resolve, reject) => {
+      this.userUpdateCallBack = () => {
         this.setState({
           isLayoutChanging: false,
         });
-      }
-    );
+        resolve(true);
+      };
+      setTimeout(() => {
+        this.setState({
+          isLayoutChanging: false,
+        });
+        resolve(false);
+      }, 5000);
+    });
   }
 
   getShownUser(forceShowNonVideoUser = false) {
