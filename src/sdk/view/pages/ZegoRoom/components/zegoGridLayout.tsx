@@ -58,8 +58,8 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
                     autoPlay
                     ref={(el) => {
                       el &&
-                        el.srcObject !== user.streamList[0]?.media &&
-                        (el.srcObject = user.streamList[0]?.media);
+                        el.srcObject !== user.streamList?.[0]?.media &&
+                        (el.srcObject = user.streamList?.[0]?.media);
                     }}
                   ></audio>
                 );

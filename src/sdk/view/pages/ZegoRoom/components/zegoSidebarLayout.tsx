@@ -42,7 +42,17 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
                   );
                 }
                 if (index > this.props.videoShowNumber - 1) {
-                  return <audio key={user.userID} autoPlay></audio>;
+                  return (
+                    <audio
+                      key={user.userID}
+                      autoPlay
+                      ref={(el) => {
+                        el &&
+                          el.srcObject !== user?.streamList?.[0]?.media &&
+                          (el.srcObject = user?.streamList?.[0]?.media);
+                      }}
+                    ></audio>
+                  );
                 }
               }
               return (
