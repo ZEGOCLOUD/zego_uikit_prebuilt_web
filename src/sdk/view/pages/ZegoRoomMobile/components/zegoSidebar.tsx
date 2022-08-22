@@ -6,11 +6,9 @@ import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
 
 export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
   get userList(): ZegoCloudUserList {
-    if (this.props.userList.some((user) => user.pin)) {
-      return this.props.userList.filter((user) => !user.pin);
-    } else {
-      return this.props.userList.slice(1);
-    }
+    return this.props.userList.filter((item) => {
+      return item.userID !== this.pinUser.userID;
+    });
   }
 
   get pinUser() {
