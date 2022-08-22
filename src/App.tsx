@@ -40,7 +40,7 @@ export default class App extends React.Component {
           showUserJoinAndLeave: true, //是否显示成员进出，默认不显示
           showTextChat: true, // 是否显示未读消息，默认不显示
         },
-        showNonVideoUser: role === "HOST" && false,
+        showNonVideoUser: role === "HOST" && true,
         leaveRoomCallback: () => {
           console.log("test:leaveRoomCallback");
         }, // 退出房间回调

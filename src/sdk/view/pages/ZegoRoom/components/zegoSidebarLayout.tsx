@@ -1,8 +1,9 @@
 import React from "react";
 import clsx from "clsx";
 import { ZegoSidebarLayoutProps } from "../../../../model";
-import { OthersVideo, VideoPlayer } from "./zegoCommonComponents";
+import { OthersVideo } from "./zegoOthersVideo";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
+import { VideoPlayer } from "./zegoVideoPlayer";
 
 export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
   get pinUser() {

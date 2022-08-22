@@ -1,39 +1,9 @@
-import { ZegoCloudRemoteMedia } from "../../../../model";
+import React from "react";
+import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import { userNameColor } from "../../../../util";
-import ZegoCommonCss from "./zegoCommonComponents.module.scss";
-import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-
-export function OthersVideo(props: { users: string[]; others: number }) {
-  return (
-    <div>
-      <video muted className={ZegoCommonCss.videoCommon}></video>
-      <div className={ZegoCommonCss.otherVideoWrapper}>
-        <div className={ZegoCommonCss.nameWrapper}>
-          {props.users.map((value, i) => (
-            <div
-              className={ZegoCommonCss.nameCircle}
-              key={i}
-              style={{
-                color: userNameColor(value),
-              }}
-            >
-              {value.slice(0, 1)?.toUpperCase()}
-            </div>
-          ))}
-        </div>
-        {props.others > 0 && (
-          <p className={ZegoCommonCss.othersNumber}>{props.others} others</p>
-        )}
-      </div>
-    </div>
-  );
-}
-
+import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
 export function VideoPlayer(props: {
-  userInfo: ZegoUser & {
-    pin: boolean;
-    streamList: ZegoCloudRemoteMedia[];
-  };
+  userInfo: ZegoCloudUser;
   muted: boolean;
   volume?: {
     [streamID: string]: number;
@@ -46,11 +16,13 @@ export function VideoPlayer(props: {
   const height = volume === undefined ? 5 : Math.ceil((volume * 7) / 100);
 
   return (
-    <div className={` ${ZegoCommonCss.videoPlayerWrapper} ${props.myClass}`}>
+    <div
+      className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${props.myClass}`}
+    >
       <video
         muted={props.muted}
         autoPlay
-        className={ZegoCommonCss.videoCommon}
+        className={ZegoVideoPlayerCss.videoCommon}
         playsInline={true}
         ref={(el) => {
           el &&
@@ -62,7 +34,7 @@ export function VideoPlayer(props: {
         }}
       ></video>
       <div
-        className={ZegoCommonCss.cameraMask}
+        className={ZegoVideoPlayerCss.cameraMask}
         style={{
           display:
             props.userInfo?.streamList?.[0]?.cameraStatus === "OPEN"
@@ -79,11 +51,11 @@ export function VideoPlayer(props: {
         </div>
       </div>
 
-      <div className={ZegoCommonCss.name}>
+      <div className={ZegoVideoPlayerCss.name}>
         <span
-          className={`${ZegoCommonCss.micIcon} ${
+          className={`${ZegoVideoPlayerCss.micIcon} ${
             props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
-            ZegoCommonCss.close
+            ZegoVideoPlayerCss.close
           }`}
         >
           {props.userInfo?.streamList?.[0]?.micStatus === "OPEN" && (
@@ -91,19 +63,21 @@ export function VideoPlayer(props: {
           )}
         </span>
         <p>{props.userInfo.userName}</p>
-        {props.muted && <span className={ZegoCommonCss.nameTag}>(You)</span>}
+        {props.muted && (
+          <span className={ZegoVideoPlayerCss.nameTag}>(You)</span>
+        )}
       </div>
-      <div className={ZegoCommonCss.moreWrapperMask}>
-        <div className={ZegoCommonCss.moreWrapper}>
-          <span className={ZegoCommonCss.moreIcon}></span>
-          <div className={ZegoCommonCss.moreMenu}>
+      <div className={ZegoVideoPlayerCss.moreWrapperMask}>
+        <div className={ZegoVideoPlayerCss.moreWrapper}>
+          <span className={ZegoVideoPlayerCss.moreIcon}></span>
+          <div className={ZegoVideoPlayerCss.moreMenu}>
             <div
-              className={ZegoCommonCss.moreMenuItem}
+              className={ZegoVideoPlayerCss.moreMenuItem}
               onClick={() => {
                 props.handlePin && props.handlePin(props.userInfo.userID);
               }}
             >
-              <span className={ZegoCommonCss.moreMenuPinIcon}></span>
+              <span className={ZegoVideoPlayerCss.moreMenuPinIcon}></span>
               <p>{props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
             </div>
           </div>

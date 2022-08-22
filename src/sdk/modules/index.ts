@@ -397,7 +397,6 @@ export class ZegoCloudRTCCore {
       }
     );
     const resp = await new Promise<number>(async (res, rej) => {
-      let code: number;
       ZegoCloudRTCCore._zg.on(
         "roomStateUpdate",
         (

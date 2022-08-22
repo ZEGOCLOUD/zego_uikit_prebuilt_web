@@ -692,9 +692,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               this.state.cameraOpen
             );
           }}
-          remoteUserInfo={this.getShownUser()[1] || {}}
-          selfInfo={this.getShownUser()[0] || {}}
+          selfInfo={{
+            userID: this.props.core._expressConfig.userID,
+          }}
           handleSetPin={this.handleSetPin.bind(this)}
+          userList={this.getShownUser()}
           soundLevel={this.state.soundLevel}
         ></ZegoOne2One>
       );

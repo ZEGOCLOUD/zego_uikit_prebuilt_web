@@ -11,15 +11,27 @@ export class ZegoUserList extends React.Component<{
   handleSetPin: Function;
   soundLevel?: SoundLevelMap;
 }> {
-  expandMemberMenu(userID: string | null) {
-    const members = document.querySelectorAll(
-      `.${ZegoUserListCss.memberMenuWrapper}`
+  componentDidMount() {
+    document.addEventListener("click", this.onBodyClick.bind(this));
+  }
+  componentWillUnmount() {
+    document.removeEventListener("click", this.onBodyClick.bind(this));
+  }
+  onBodyClick(e: Event) {
+    const menuElement = document.querySelector(
+      `.${ZegoUserListCss.member}.${ZegoUserListCss.memberMenuShow}`
     );
+    if (menuElement && !menuElement.contains(e.target as Node)) {
+      menuElement.classList.remove(`${ZegoUserListCss.memberMenuShow}`);
+    }
+  }
+  expandMemberMenu(userID: string | null) {
+    const members = document.querySelectorAll(`.${ZegoUserListCss.member}`);
     members.forEach((m: any) => {
       if (m?.dataset.id === userID) {
-        m.style.display = m.style.display === "block" ? "none" : "block";
+        m.classList.toggle(`${ZegoUserListCss.memberMenuShow}`);
       } else {
-        m.style.display = "none";
+        m.classList.remove(`${ZegoUserListCss.memberMenuShow}`);
       }
     });
   }
@@ -36,6 +48,7 @@ export class ZegoUserList extends React.Component<{
               className={ZegoUserListCss.member}
               onClick={() => this.expandMemberMenu(user.userID)}
               key={user.userID}
+              data-id={user.userID}
             >
               <span style={{ color: userNameColor(user.userName || "") }}>
                 {user.userName?.slice(0, 1)?.toUpperCase()}
@@ -56,17 +69,17 @@ export class ZegoUserList extends React.Component<{
                 <div className={ZegoUserListCss.memberStatusWrapper}>
                   <span
                     className={`${ZegoUserListCss.memberMicIcon} ${
-                      user.streamList[0].micStatus === "OPEN" &&
+                      user.streamList?.[0]?.micStatus === "OPEN" &&
                       ZegoUserListCss.memberMicIconOpen
                     }`}
                   >
-                    {user?.streamList[0]?.micStatus === "OPEN" && (
+                    {user?.streamList?.[0]?.micStatus === "OPEN" && (
                       <span
                         style={{
                           height:
                             this.getHeight(
                               user.userID,
-                              user?.streamList[0].streamID
+                              user?.streamList?.[0]?.streamID
                             ) + "px",
                         }}
                       ></span>
@@ -74,7 +87,7 @@ export class ZegoUserList extends React.Component<{
                   </span>
                   <span
                     className={`${ZegoUserListCss.memberCameraIcon} ${
-                      user.streamList[0].cameraStatus === "OPEN" &&
+                      user.streamList?.[0]?.cameraStatus === "OPEN" &&
                       ZegoUserListCss.memberCameraIconOpen
                     }`}
                   ></span>
@@ -86,10 +99,7 @@ export class ZegoUserList extends React.Component<{
                 </div>
               )}
 
-              <div
-                className={ZegoUserListCss.memberMenuWrapper}
-                data-id={user.userID}
-              >
+              <div className={ZegoUserListCss.memberMenuWrapper}>
                 <div
                   className={ZegoUserListCss.memberMenuItem}
                   onClick={() => this.props.handleSetPin(user.userID)}

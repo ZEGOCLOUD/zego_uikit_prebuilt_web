@@ -1,0 +1,41 @@
+.otherVideoWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  .nameWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  .nameCircle {
+    box-sizing: border-box;
+    width: 94px;
+    height: 94px;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 94px;
+    text-align: center;
+    background: #2e2f37;
+    border: 2px solid #242736;
+    border-radius: 50%;
+    &:nth-of-type(2) {
+      margin-left: -30px;
+    }
+  }
+  .othersNumber {
+    color: #ffffff;
+    font-size: 14px;
+    font-family: MicrosoftYaHei;
+    line-height: 19px;
+    text-align: center;
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+  }
+}

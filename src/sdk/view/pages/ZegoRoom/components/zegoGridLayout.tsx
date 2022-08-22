@@ -2,8 +2,8 @@ import React from "react";
 import { ZegoGridLayoutProps } from "../../../../model";
 import ZegoGridCss from "./zegoGridLayout.module.scss";
 import clsx from "clsx";
-import { OthersVideo, VideoPlayer } from "./zegoCommonComponents";
-
+import { OthersVideo } from "./zegoOthersVideo";
+import { VideoPlayer } from "./zegoVideoPlayer";
 export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
   render(): React.ReactNode {
     let wrapClassName;

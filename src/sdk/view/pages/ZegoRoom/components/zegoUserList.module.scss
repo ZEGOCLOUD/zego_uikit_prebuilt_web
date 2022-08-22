@@ -1,13 +1,15 @@
 .memberListWrapper {
   display: flex;
   flex-direction: column;
-  padding: 20px 0;
+  box-sizing: border-box;
+  padding: 20px 4px;
 
   .member {
     position: relative;
     display: flex;
     align-items: center;
-    padding: 8px 16px;
+    padding: 8px 12px;
+    border-radius: 8px;
     & > span {
       flex: 0 0 auto;
       width: 36px;
@@ -25,6 +27,12 @@
     }
     &:not(:last-of-type) {
       margin-bottom: 6px;
+    }
+    &.memberMenuShow {
+      background: #36394b;
+      .memberMenuWrapper {
+        display: block;
+      }
     }
   }
   .memberNameWrapper {
