@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  SoundLevelMap,
   ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
   ZegoNotification,
@@ -26,6 +27,7 @@ import { ZegoManage } from "./components/zegoManage";
 import { ZegoGrid } from "./components/zegoGrid";
 import { ZegoSidebar } from "./components/zegoSidebar";
 import ShowManageContext from "./context/showManage";
+import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
@@ -50,6 +52,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     cameraFront: boolean;
     showFooter: boolean;
     isNetworkPoor: boolean;
+    soundLevel: SoundLevelMap;
   } = {
     micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
     cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
@@ -65,6 +68,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     cameraFront: true,
     showFooter: true,
     isNetworkPoor: false,
+    soundLevel: {},
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
@@ -77,6 +81,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   notifyTimer: NodeJS.Timeout | null = null;
   footerTimer!: NodeJS.Timeout;
   userUpdateCallBack = () => {};
+  localStreamID = "";
   componentDidMount() {
     this.initSDK();
     this.footerTimer = setTimeout(() => {
@@ -211,6 +216,24 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       this.userUpdateCallBack();
       this.setState({ zegoCloudUserList: userList });
     });
+    this.props.core.onSoundLevelUpdate(
+      (soundLevelList: ZegoSoundLevelInfo[]) => {
+        let list: SoundLevelMap = {};
+        soundLevelList.forEach((s) => {
+          let userId = s.streamID.split("_")[0];
+          if (list[userId]) {
+            list[userId][s.streamID] = Math.floor(s.soundLevel);
+          } else {
+            list[userId] = {
+              [s.streamID]: Math.floor(s.soundLevel),
+            };
+          }
+        });
+        this.setState({
+          soundLevel: list,
+        });
+      }
+    );
 
     const logInRsp = await this.props.core.enterRoom();
 
@@ -254,7 +277,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         this.setState({
           localStream,
         });
-        this.props.core.publishLocalStream(localStream);
+        const res = this.props.core.publishLocalStream(localStream);
+        if (res !== false) {
+          this.localStreamID = res as string;
+        }
         return true;
       } catch (error) {
         console.error(
@@ -507,7 +533,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             micStatus: this.state.micOpen ? "OPEN" : "MUTE",
             cameraStatus: this.state.cameraOpen ? "OPEN" : "MUTE",
             state: "PLAYING",
-            streamID: "",
+            streamID: this.localStreamID,
           },
         ],
       },
@@ -652,6 +678,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       return (
         <ZegoOne2One
           userList={this.getShownUser()}
+          soundLevel={this.state.soundLevel}
           onLocalStreamPaused={async () => {
             console.warn("onLocalStreamPaused");
             await this.props.core.enableVideoCaptureDevice(
@@ -672,7 +699,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         this.getShownUser().length > 2)
     ) {
       return (
-        <ZegoGrid userList={this.getShownUser()} videoShowNumber={6}></ZegoGrid>
+        <ZegoGrid
+          userList={this.getShownUser()}
+          videoShowNumber={6}
+          soundLevel={this.state.soundLevel}
+        ></ZegoGrid>
       );
     } else if (
       this.state.userLayoutStatus === "Sidebar" &&
@@ -682,6 +713,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         <ZegoSidebar
           userList={this.getShownUser()}
           videoShowNumber={5}
+          soundLevel={this.state.soundLevel}
         ></ZegoSidebar>
       );
     }
