@@ -1,0 +1,77 @@
+.videoCommon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #242736;
+  border-radius: 14px;
+}
+.noVideoWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  .nameWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .nameCircle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: vw(120.28px);
+      height: vw(120px);
+      margin-bottom: vw(16px);
+      font-weight: 600;
+      font-size: vw(35px);
+      line-height: vw(49px);
+      text-align: center;
+      background: #2e2f37;
+      border: 2px solid #242736;
+      border-radius: 50%;
+    }
+  }
+}
+.name {
+  position: absolute;
+  right: vw(24px);
+  bottom: vw(24px);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: vw(46px);
+  padding: vw(7px) vw(12px) vw(6px) vw(10px);
+  line-height: vw(33px);
+  text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+  background: rgba(42, 42, 42, 0.5);
+  border-radius: vw(12px);
+  p {
+    /*第一步： 溢出隐藏 */
+    overflow: hidden;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: vw(24px);
+    line-height: vw(33px);
+    /* 第二步：让文本不会换行， 在同一行继续 */
+    white-space: nowrap;
+    /* 第三步：用省略号来代表未显示完的文本 */
+    text-overflow: ellipsis;
+    text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+  }
+  span {
+    width: vw(36px);
+    height: vw(36px);
+    background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_close@2x.png);
+    background-size: contain;
+  }
+  .micOpen {
+    background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
+    background-size: contain;
+  }
+}
