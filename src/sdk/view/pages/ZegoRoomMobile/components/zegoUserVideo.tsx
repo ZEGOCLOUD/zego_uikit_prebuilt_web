@@ -6,10 +6,16 @@ import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 export class ZegoUserVideo extends React.Component<{
   user: ZegoCloudUser;
   onLocalStreamPaused?: () => void;
+  volume: {
+    [streamID: string]: number;
+  };
 }> {
   render(): React.ReactNode {
+    const volume =
+      this.props.volume?.[this.props.user?.streamList?.[0]?.streamID];
+    const height = volume === undefined ? 7 : Math.ceil((volume * 7) / 100);
     return (
-      <div key={this.props.user.userID + "_video"}>
+      <div className={zegoUserVideoCss.container}>
         {this.props.user.streamList &&
           this.props.user.streamList[0] &&
           this.props.user.streamList[0] &&
@@ -46,13 +52,17 @@ export class ZegoUserVideo extends React.Component<{
         <div className={zegoUserVideoCss.name}>
           <p>{this.props.user.userName}</p>
           <span
-            className={
-              this.props.user.streamList[0] &&
-              this.props.user.streamList[0].micStatus === "OPEN"
-                ? zegoUserVideoCss.micOpen
+            className={`${zegoUserVideoCss.micIcon}  ${
+              !this.props.user.streamList[0] ||
+              this.props.user.streamList[0].micStatus !== "OPEN"
+                ? zegoUserVideoCss.close
                 : ""
-            }
-          ></span>
+            }`}
+          >
+            {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
+              <span style={{ height: height + "px" }}></span>
+            )}
+          </span>
         </div>
         <ZegoMore user={this.props.user} />
       </div>
@@ -67,7 +77,7 @@ export class ZegoUserOtherVideo extends React.Component<{
 }> {
   render(): React.ReactNode {
     return (
-      <div>
+      <div className={zegoUserVideoCss.container}>
         {this.props.user.streamList &&
           this.props.user.streamList[0] &&
           this.props.user.streamList[0].media && (

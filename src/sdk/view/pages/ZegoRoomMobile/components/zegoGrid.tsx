@@ -1,9 +1,10 @@
 import React from "react";
-import { ZegoGridLayoutProps } from "../../../../model";
+import { ZegoGridLayoutProps } from "../../../../model/index";
 import { userNameColor } from "../../../../util";
 import { ZegoMore } from "./zegoMore";
 import ZegoGridCss from "./zegoGrid.module.scss";
 import clsx from "clsx";
+import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
 export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
   render(): React.ReactNode {
     let wrapClassName = clsx({
@@ -20,49 +21,11 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
           if (arr.length > this.props.videoShowNumber) {
             if (index === this.props.videoShowNumber - 1) {
               return (
-                <div key={index}>
-                  {value.streamList &&
-                    value.streamList[0] &&
-                    value.streamList[0].media && (
-                      <audio
-                        key={index}
-                        muted
-                        className={ZegoGridCss.videoCommon}
-                        ref={(el) => {
-                          el &&
-                            el.srcObject !== value.streamList[0].media &&
-                            (el.srcObject = value.streamList[0].media);
-                        }}
-                      ></audio>
-                    )}
-
-                  <div className={ZegoGridCss.noVideoWrapper}>
-                    <div className={ZegoGridCss.nameWrapper}>
-                      <div
-                        className={ZegoGridCss.nameCircle}
-                        key={value.userID}
-                        style={{
-                          color: userNameColor(value.userName!),
-                        }}
-                      >
-                        {value.userName!.slice(0, 1)?.toUpperCase()}
-                      </div>
-                      <div
-                        className={ZegoGridCss.nameCircle}
-                        key={arr[index + 1].userID}
-                        style={{
-                          color: userNameColor(arr[index + 1].userName!),
-                        }}
-                      >
-                        {arr[index + 1].userName!.slice(0, 1)?.toUpperCase()}
-                      </div>
-                    </div>
-
-                    <p className={ZegoGridCss.othersNumber}>
-                      {arr.length - this.props.videoShowNumber + 1} others
-                    </p>
-                  </div>
-                </div>
+                <ZegoUserOtherVideo
+                  user={value}
+                  nextUser={arr[index + 1]}
+                  othersNumber={arr.length - this.props.videoShowNumber + 1}
+                ></ZegoUserOtherVideo>
               );
             }
             if (index > this.props.videoShowNumber - 1) {
@@ -85,53 +48,11 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
             }
           }
           return (
-            <div key={index}>
-              {value.streamList &&
-                value.streamList[0] &&
-                value.streamList[0] &&
-                value.streamList[0].media && (
-                  <video
-                    muted
-                    autoPlay
-                    className={ZegoGridCss.videoCommon}
-                    ref={(el) => {
-                      el &&
-                        el.srcObject !== value.streamList[0].media &&
-                        (el.srcObject = value.streamList[0].media);
-                    }}
-                  ></video>
-                )}
-              {(!value.streamList ||
-                !value.streamList[0] ||
-                value.streamList[0].cameraStatus === "MUTE") && (
-                <div className={ZegoGridCss.noVideoWrapper}>
-                  <div className={ZegoGridCss.nameWrapper}>
-                    <div
-                      className={ZegoGridCss.nameCircle}
-                      key={value.userID}
-                      style={{
-                        color: userNameColor(value.userName!),
-                      }}
-                    >
-                      {value.userName!.slice(0, 1)?.toUpperCase()}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className={ZegoGridCss.name}>
-                <p>{value.userName}</p>
-                <span
-                  className={
-                    value.streamList[0] &&
-                    value.streamList[0].micStatus === "OPEN"
-                      ? ZegoGridCss.micOpen
-                      : ""
-                  }
-                ></span>
-              </div>
-              <ZegoMore user={value} />
-            </div>
+            <ZegoUserVideo
+              volume={this.props.soundLevel![value.userID] || {}}
+              user={value}
+              key={value.userID + "_video"}
+            ></ZegoUserVideo>
           );
         })}
       </div>
