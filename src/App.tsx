@@ -1,3 +1,4 @@
+import { type } from "os";
 import React from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
@@ -44,6 +45,9 @@ export default class App extends React.Component {
         leaveRoomCallback: () => {
           console.log("test:leaveRoomCallback");
         }, // 退出房间回调
+        userUpdateCallback: (type, users) => {
+          console.log("userUpdateCallback", type, users);
+        },
         branding: {
           logoURL:
             "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
