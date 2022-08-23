@@ -623,8 +623,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   }
   async changeLayout(type: string) {
     if (this.state.isLayoutChanging) return;
-    if (type === "Grid") {
+    if (type === "Grid" || type === "Default") {
       this.props.core.setPin();
+      this.localUserPin = false;
     }
     this.setState({
       isLayoutChanging: true,
@@ -745,6 +746,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       this.localUserPin = !this.localUserPin;
       this.props.core.setPin();
     } else {
+      this.localUserPin = false;
       this.props.core.setPin(userID);
     }
     this.setState({ layout: "Sidebar" });
