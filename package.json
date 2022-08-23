@@ -24,7 +24,7 @@
         "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' react-scripts start",
         "start:m": "REACT_APP_MOBILE='yes' REACT_APP_ENV='test' npm run start",
         "start:t": "webpack serve --config webpack.config.sample.ts",
-        "build": "react-scripts build",
+        "build": " REACT_APP_ENV='test'  react-scripts build",
         "predeploy": "npm run build",
         "deploy": "gh-pages -b main -d build",
         "test": "react-scripts test",
