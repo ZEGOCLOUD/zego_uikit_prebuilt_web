@@ -9,6 +9,9 @@ export class ZegoOne2One extends React.Component<{
   userList: ZegoCloudUserList;
   onLocalStreamPaused: () => void;
   soundLevel?: SoundLevelMap;
+  selfInfo?: {
+    userID: string;
+  };
 }> {
   getVideoScreen() {
     if (this.props.userList.length > 1) {
@@ -16,6 +19,9 @@ export class ZegoOne2One extends React.Component<{
         <>
           <div className={zegoOne2OneCss.bigVideo}>
             <ZegoUserVideo
+              muted={
+                this.props?.selfInfo?.userID === this.props.userList[1].userID
+              }
               user={this.props.userList[1]}
               onLocalStreamPaused={() => {
                 this.props.onLocalStreamPaused &&
@@ -28,6 +34,9 @@ export class ZegoOne2One extends React.Component<{
           </div>
           <div className={zegoOne2OneCss.smallVideo}>
             <ZegoUserVideo
+              muted={
+                this.props?.selfInfo?.userID === this.props.userList[0].userID
+              }
               volume={
                 this.props.soundLevel![this.props.userList[0].userID] || {}
               }
@@ -44,6 +53,9 @@ export class ZegoOne2One extends React.Component<{
       return (
         <div className={zegoOne2OneCss.bigVideo}>
           <ZegoUserVideo
+            muted={
+              this.props?.selfInfo?.userID === this.props.userList[0].userID
+            }
             volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
             user={this.props.userList[0]}
             onLocalStreamPaused={() => {

@@ -25,7 +25,8 @@ export default class App extends React.Component {
             window.location.origin +
             window.location.pathname +
             "?roomID=" +
-            roomID,
+            roomID +
+            "&role=GUEST",
           title: "Join Room",
         },
         showPreJoinView: true, // 是否显示预览检测页面，默认显示

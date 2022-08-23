@@ -678,6 +678,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     ) {
       return (
         <ZegoOne2One
+          selfInfo={{
+            userID: this.props.core._expressConfig.userID,
+          }}
           userList={this.getShownUser()}
           soundLevel={this.state.soundLevel}
           onLocalStreamPaused={async () => {
@@ -701,6 +704,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     ) {
       return (
         <ZegoGrid
+          selfInfo={{
+            userID: this.props.core._expressConfig.userID,
+          }}
           userList={this.getShownUser()}
           videoShowNumber={6}
           soundLevel={this.state.soundLevel}
@@ -712,6 +718,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     ) {
       return (
         <ZegoSidebar
+          selfInfo={{
+            userID: this.props.core._expressConfig.userID,
+          }}
           userList={this.getShownUser()}
           videoShowNumber={5}
           soundLevel={this.state.soundLevel}

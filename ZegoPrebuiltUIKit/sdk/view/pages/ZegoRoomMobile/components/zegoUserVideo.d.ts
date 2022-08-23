@@ -6,6 +6,7 @@ export declare class ZegoUserVideo extends React.Component<{
     volume: {
         [streamID: string]: number;
     };
+    muted: boolean;
 }> {
     render(): React.ReactNode;
 }

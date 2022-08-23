@@ -76,10 +76,7 @@ export class ZegoRejoinRoom extends React.Component<ZegoBrowserCheckProp> {
           )}{" "}
           Rejoin
         </button>
-        {(this.props.core._config.turnOnCameraWhenJoining ||
-          this.props.core._config.turnOnMicrophoneWhenJoining ||
-          this.props.core._config.showMyCameraToggleButton ||
-          this.props.core._config.showMyMicrophoneToggleButton) && (
+        {this.props.core._config.showPreJoinView && (
           <button
             className={ZegoRejoinRoomCss.returnHome}
             onClick={() => {

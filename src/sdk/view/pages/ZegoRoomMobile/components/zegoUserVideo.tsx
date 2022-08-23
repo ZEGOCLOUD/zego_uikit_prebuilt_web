@@ -9,6 +9,7 @@ export class ZegoUserVideo extends React.Component<{
   volume: {
     [streamID: string]: number;
   };
+  muted: boolean;
 }> {
   render(): React.ReactNode {
     const volume =
@@ -21,7 +22,7 @@ export class ZegoUserVideo extends React.Component<{
           this.props.user.streamList[0] &&
           this.props.user.streamList[0].media && (
             <video
-              muted
+              muted={this.props.muted}
               autoPlay
               className={zegoUserVideoCss.videoCommon}
               ref={(el) => {
@@ -82,7 +83,6 @@ export class ZegoUserOtherVideo extends React.Component<{
           this.props.user.streamList[0] &&
           this.props.user.streamList[0].media && (
             <audio
-              muted
               className={zegoUserVideoCss.videoCommon}
               ref={(el) => {
                 el &&

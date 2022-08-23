@@ -52,6 +52,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
             }
             return (
               <ZegoUserVideo
+                muted={this.props?.selfInfo?.userID === value.userID}
                 user={value}
                 key={value + "_video"}
                 volume={this.props.soundLevel![value.userID] || {}}
@@ -61,6 +62,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
         </div>
         <div className={ZegoSidebarCss.bottomWrapper}>
           <ZegoUserVideo
+            muted={this.props?.selfInfo?.userID === this.pinUser.userID}
             user={this.pinUser}
             key={this.pinUser.userID + "_video"}
             volume={this.props.soundLevel![this.pinUser.userID] || {}}

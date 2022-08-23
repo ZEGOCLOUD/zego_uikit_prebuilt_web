@@ -1,7 +1,5 @@
 import React from "react";
 import { ZegoGridLayoutProps } from "../../../../model/index";
-import { userNameColor } from "../../../../util";
-import { ZegoMore } from "./zegoMore";
 import ZegoGridCss from "./zegoGrid.module.scss";
 import clsx from "clsx";
 import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
@@ -49,6 +47,7 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
           }
           return (
             <ZegoUserVideo
+              muted={this.props?.selfInfo?.userID === value.userID}
               volume={this.props.soundLevel![value.userID] || {}}
               user={value}
               key={value.userID + "_video"}
