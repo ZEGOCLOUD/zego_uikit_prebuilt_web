@@ -2,7 +2,6 @@ import React, { ChangeEvent, RefObject } from "react";
 import { ZegoBrowserCheckProp } from "../../../model";
 export declare class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
     state: {
-        isSupportWebRTC: undefined;
         localStream: undefined;
         localVideoStream: undefined;
         localAudioStream: undefined;

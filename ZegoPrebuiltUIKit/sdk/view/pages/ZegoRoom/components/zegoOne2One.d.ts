@@ -1,19 +1,15 @@
 import React from "react";
-import { ZegoCloudRemoteMedia } from "../../../../model";
+import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
+import { SoundLevelMap } from "../../../../model";
 export declare class ZegoOne2One extends React.Component<{
-    localStream: MediaStream | undefined;
-    remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
-    remoteUserInfo: {
-        userName: string | undefined;
-        userID: string | undefined;
-    };
-    selfUserInfo: {
-        userName: string;
-        micOpen: boolean;
-        cameraOpen: boolean;
+    selfInfo: {
+        userID: string;
     };
     onLocalStreamPaused: () => void;
+    handleSetPin: Function;
+    soundLevel?: SoundLevelMap;
+    userList: ZegoCloudUser[];
 }> {
-    getVideoScreen(): JSX.Element;
+    getVideoScreen(): JSX.Element | null;
     render(): React.ReactNode;
 }

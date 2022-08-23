@@ -1,10 +1,10 @@
 import React, { ChangeEvent } from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
-import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 export declare class ZegoUserList extends React.Component<{
-    userList: ZegoUser[];
+    userList: ZegoCloudUserList;
     core: ZegoCloudRTCCore;
-    closeCallBack: () => void;
+    closeCallBack: (user?: ZegoCloudUser) => void;
 }> {
     state: {
         message: string;

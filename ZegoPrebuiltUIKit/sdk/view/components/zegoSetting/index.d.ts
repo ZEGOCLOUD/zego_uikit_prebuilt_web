@@ -20,6 +20,7 @@ export declare class ZegoSettings extends React.Component<ZegoSettingsProps> {
         speakerVolume: number;
         isSpeakerPlaying: boolean;
         renderAudio: boolean;
+        showNonVideo: boolean | undefined;
     };
     videoRef: React.RefObject<HTMLDivElement>;
     speakerTimer: NodeJS.Timer | null;
@@ -52,6 +53,7 @@ export declare class ZegoSettings extends React.Component<ZegoSettingsProps> {
     close(): void;
     captureMicVolume(): void;
     onTestMusicEnded(): void;
+    handleShowNonVideo(): void;
     render(): React.ReactNode;
 }
 export declare const ZegoSettingsAlert: (config: ZegoSettingsProps) => void;

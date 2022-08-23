@@ -5,7 +5,9 @@ export declare class ZegoCloudRTCKitComponent extends React.Component<{
 }> {
     state: {
         step: number;
+        isSupportWebRTC: boolean;
     };
+    componentDidMount(): Promise<void>;
     nextPage(): void;
     render(): React.ReactNode;
 }

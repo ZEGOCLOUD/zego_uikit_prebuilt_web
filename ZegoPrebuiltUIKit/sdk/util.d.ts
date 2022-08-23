@@ -11,3 +11,4 @@ export declare function getVideoResolution(level: string): {
     bitrate: number;
     frameRate: number;
 };
+export declare const throttle: (fn: Function, wait: number) => () => void;
