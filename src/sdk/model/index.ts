@@ -30,6 +30,7 @@ export interface ZegoCloudRoomConfig {
     showUserJoinAndLeave?: boolean; //是否显示成员进出，默认不显示
     showTextChat?: boolean; // 是否显示未读消息，默认不显示
   };
+  joinRoomCallback?: () => void;
   leaveRoomCallback?: () => void; // 退出房间回调
   userUpdateCallback?: (type: "ADD" | "DELETE", user: ZegoUser[]) => void; // 用户进入退出回调
   roomTimerDisplayed?: boolean; //是否计时，默认不计时

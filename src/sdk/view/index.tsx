@@ -80,6 +80,10 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         }
       }
 
+      setTimeout(() => {
+        this.props.core._config.joinRoomCallback &&
+          this.props.core._config?.joinRoomCallback();
+      }, 0);
       page = isPc() ? (
         <ZegoRoom
           core={this.props.core}

@@ -69,8 +69,8 @@
         // Obtain the token interface provided by the App Server
         return fetch(
             `${tokenServerUrl}/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`, {
-            method: 'GET',
-        }
+                method: 'GET',
+            }
         ).then((res) => res.json());
     }
 
@@ -109,9 +109,6 @@
             container: document.querySelector("#root"),
             preJoinViewConfig: {
                 invitationLink: window.location.origin + window.location.pathname + '?roomID=' + roomID,
-            },
-            userUpdateCallback: (type, users) => {
-                console.warn("userUpdateCallback", type, users);
             },
         });
     }
