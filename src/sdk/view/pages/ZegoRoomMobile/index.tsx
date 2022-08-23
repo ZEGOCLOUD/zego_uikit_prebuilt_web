@@ -653,6 +653,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 this.props.core._expressConfig.userID
               ) {
                 this.props.core.setPin(this._selectedUser.userID, value);
+                this.localUserPin = false;
               } else {
                 this.localUserPin = value;
                 this._selectedUser.pin = value;
