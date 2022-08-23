@@ -30,41 +30,46 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
             volume={this.props.soundLevel![this.pinUser.userID] || {}}
           ></VideoPlayer>
           <div className={wrapClassName}>
-            {this.props.userList.map((user, index, arr) => {
-              if (arr.length > this.props.videoShowNumber) {
-                if (index === this.props.videoShowNumber - 1) {
-                  return (
-                    <OthersVideo
-                      key={user.userID}
-                      users={[arr[index].userName!, arr[index + 1]?.userName!]}
-                      others={arr.length - this.props.videoShowNumber + 1}
-                    ></OthersVideo>
-                  );
+            {this.props.userList
+              .filter((u) => u.userID !== this.pinUser.userID)
+              .map((user, index, arr) => {
+                if (arr.length > this.props.videoShowNumber) {
+                  if (index === this.props.videoShowNumber - 1) {
+                    return (
+                      <OthersVideo
+                        key={user.userID}
+                        users={[
+                          arr[index].userName!,
+                          arr[index + 1]?.userName!,
+                        ]}
+                        others={arr.length - this.props.videoShowNumber + 1}
+                      ></OthersVideo>
+                    );
+                  }
+                  if (index > this.props.videoShowNumber - 1) {
+                    return (
+                      <audio
+                        key={user.userID}
+                        autoPlay
+                        ref={(el) => {
+                          el &&
+                            el.srcObject !== user?.streamList?.[0]?.media &&
+                            (el.srcObject = user?.streamList?.[0]?.media);
+                        }}
+                      ></audio>
+                    );
+                  }
                 }
-                if (index > this.props.videoShowNumber - 1) {
-                  return (
-                    <audio
-                      key={user.userID}
-                      autoPlay
-                      ref={(el) => {
-                        el &&
-                          el.srcObject !== user?.streamList?.[0]?.media &&
-                          (el.srcObject = user?.streamList?.[0]?.media);
-                      }}
-                    ></audio>
-                  );
-                }
-              }
-              return (
-                <VideoPlayer
-                  key={user.userID}
-                  userInfo={user}
-                  muted={user.userID === this.props.selfInfo.userID}
-                  handlePin={() => this.props.handleSetPin!(user.userID)}
-                  volume={this.props.soundLevel![user.userID] || {}}
-                ></VideoPlayer>
-              );
-            })}
+                return (
+                  <VideoPlayer
+                    key={user.userID}
+                    userInfo={user}
+                    muted={user.userID === this.props.selfInfo.userID}
+                    handlePin={() => this.props.handleSetPin!(user.userID)}
+                    volume={this.props.soundLevel![user.userID] || {}}
+                  ></VideoPlayer>
+                );
+              })}
           </div>
         </div>
       </>

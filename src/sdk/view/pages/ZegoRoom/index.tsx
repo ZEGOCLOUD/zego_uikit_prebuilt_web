@@ -270,6 +270,14 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
   async createStream(): Promise<boolean> {
     if (
+      !this.props.core._config.turnOnCameraWhenJoining &&
+      !this.props.core._config.turnOnMicrophoneWhenJoining &&
+      !this.props.core._config.showMyCameraToggleButton &&
+      !this.props.core._config.showMyMicrophoneToggleButton
+    ) {
+      return false;
+    }
+    if (
       !this.props.core.status.videoRefuse ||
       !this.props.core.status.audioRefuse
     ) {
@@ -879,31 +887,35 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 }}
               ></div>
             )}
-            {this.props.core._config.showAudioVideoSettingsButton && (
+
+            <div
+              ref={this.moreRef}
+              className={ZegoRoomCss.moreButton}
+              onClick={() => {
+                this.openSettings();
+              }}
+            >
               <div
-                ref={this.moreRef}
-                className={ZegoRoomCss.moreButton}
-                onClick={() => {
-                  this.openSettings();
+                className={ZegoRoomCss.settingsButtonModel}
+                style={{
+                  display: this.state.showSettings ? "block" : "none",
                 }}
+                ref={this.settingsRef}
               >
-                <div
-                  className={ZegoRoomCss.settingsButtonModel}
-                  style={{
-                    display: this.state.showSettings ? "block" : "none",
-                  }}
-                  ref={this.settingsRef}
-                >
-                  {this.state.layout && (
-                    <div onClick={() => this.showLayoutSettings(true)}>
-                      Change layout
-                    </div>
-                  )}
-                  {this.state.layout && <span></span>}
+                {this.state.layout && (
+                  <div onClick={() => this.showLayoutSettings(true)}>
+                    Change layout
+                  </div>
+                )}
+                {this.props.core._config.showAudioVideoSettingsButton && (
+                  <span></span>
+                )}
+                {this.props.core._config.showAudioVideoSettingsButton && (
                   <div onClick={() => this.handleSetting()}>Settings</div>
-                </div>
+                )}
               </div>
-            )}
+            </div>
+
             <div
               className={ZegoRoomCss.leaveButton}
               onClick={() => {
