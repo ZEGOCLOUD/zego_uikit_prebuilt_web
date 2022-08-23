@@ -90,6 +90,10 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           }
         }
 
+        setTimeout(() => {
+          this.props.core._config.joinRoomCallback &&
+            this.props.core._config?.joinRoomCallback();
+        }, 0);
         page = isPc() ? (
           <ZegoRoom
             core={this.props.core}
@@ -111,38 +115,22 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         );
       } else {
         page = (
-          <ZegoRejoinRoom
-            core={this.props.core}
-            joinRoom={() => {
-              this.setState({
-                step: 1,
-              });
-            }}
-            returnHome={() => {
-              this.setState({
-                step: 0,
-              });
-            }}
-          ></ZegoRejoinRoom>
+          <ZegoModel
+            header={"Browser not supported"}
+            contentText={
+              /Firefox/.test(window.navigator.userAgent)
+                ? "Your browser version does not support the features or something wrong with your network. Please check them and try again."
+                : "The current browser is not available for you to join the room."
+            }
+          ></ZegoModel>
         );
       }
-    } else {
-      page = (
-        <ZegoModel
-          header={"Browser not supported"}
-          contentText={
-            /Firefox/.test(window.navigator.userAgent)
-              ? "Your browser version does not support the features or something wrong with your network. Please check them and try again."
-              : "The current browser is not available for you to join the room."
-          }
-        ></ZegoModel>
+
+      return (
+        <IntlProvider locale="en">
+          <div className={index.index}>{page}</div>
+        </IntlProvider>
       );
     }
-
-    return (
-      <IntlProvider locale="en">
-        <div className={index.index}>{page}</div>
-      </IntlProvider>
-    );
   }
 }

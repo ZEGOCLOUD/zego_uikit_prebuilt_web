@@ -27,7 +27,9 @@ export interface ZegoCloudRoomConfig {
         showUserJoinAndLeave?: boolean;
         showTextChat?: boolean;
     };
+    joinRoomCallback?: () => void;
     leaveRoomCallback?: () => void;
+    userUpdateCallback?: (type: "ADD" | "DELETE", user: ZegoUser[]) => void;
     roomTimerDisplayed?: boolean;
     branding?: {
         logoURL?: string;

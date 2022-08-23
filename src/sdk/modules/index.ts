@@ -93,7 +93,9 @@ export class ZegoCloudRTCCore {
       showUserJoinAndLeave: true, //是否显示成员进出，默认显示
       showTextChat: true, // 是否显示未读消息，默认显示
     },
+    joinRoomCallback: () => {}, // 点击加入房间触发
     leaveRoomCallback: () => {}, // 退出房间回调
+    userUpdateCallback: () => {},
     roomTimerDisplayed: false, //是否计时，默认不计时
     branding: {
       logoURL: "",
@@ -338,6 +340,10 @@ export class ZegoCloudRTCCore {
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
         this.onRemoteUserUpdateCallBack &&
           this.onRemoteUserUpdateCallBack(roomID, updateType, userList);
+        setTimeout(() => {
+          this._config.userUpdateCallback &&
+            this._config.userUpdateCallback(updateType, userList);
+        }, 0);
       }
     );
     ZegoCloudRTCCore._zg.on(
