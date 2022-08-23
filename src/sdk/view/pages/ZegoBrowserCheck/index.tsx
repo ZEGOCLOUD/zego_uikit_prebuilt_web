@@ -41,25 +41,31 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     this.setState({
       userName: this.props.core._expressConfig.userName,
     });
-
-    const devices = await this.getDevices();
-    this.setState(
-      {
-        ...devices,
-      },
-      async () => {
-        const videoOpen = !!this.props.core._config.turnOnCameraWhenJoining;
-        const audioOpen = !!this.props.core._config.turnOnMicrophoneWhenJoining;
-        if (videoOpen || audioOpen) {
-          await this.createStream(videoOpen, audioOpen);
-        } else {
-          this.setState({
-            audioOpen: audioOpen,
-            videoOpen: videoOpen,
-          });
+    const videoOpen = !!this.props.core._config.turnOnCameraWhenJoining;
+    const audioOpen = !!this.props.core._config.turnOnMicrophoneWhenJoining;
+    if (videoOpen || audioOpen) {
+      const devices = await this.getDevices();
+      this.setState(
+        {
+          ...devices,
+        },
+        async () => {
+          if (videoOpen || audioOpen) {
+            await this.createStream(videoOpen, audioOpen);
+          } else {
+            this.setState({
+              audioOpen: audioOpen,
+              videoOpen: videoOpen,
+            });
+          }
         }
-      }
-    );
+      );
+    } else {
+      this.setState({
+        audioOpen: audioOpen,
+        videoOpen: videoOpen,
+      });
+    }
   }
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
