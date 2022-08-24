@@ -91,7 +91,7 @@ export class ZegoCloudUserListManager {
     if (updateType === "ADD") {
       users.map((user) => {
         if (!this.remoteUserList.some((u) => u.userID === user.userID)) {
-          this.remoteUserList.push({
+          this.remoteUserList.unshift({
             userID: user.userID,
             userName: user.userName,
             streamList: [],

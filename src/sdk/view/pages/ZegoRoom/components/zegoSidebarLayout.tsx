@@ -8,7 +8,9 @@ import { VideoPlayer } from "./zegoVideoPlayer";
 export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
   get pinUser() {
     const index = this.props.userList.findIndex((item) => item.pin);
-    return this.props.userList[index > -1 ? index : 0];
+    return this.props.userList[
+      index > -1 ? index : this.props.userList.length - 1
+    ];
   }
   render(): React.ReactNode {
     let wrapClassName = clsx({

@@ -577,19 +577,18 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   computeByResize() {
     const width = Math.max(document.body.clientWidth, 826);
     const height = Math.max(document.body.clientHeight, 280);
+    let videoShowNumber = 0,
+      gridRowNumber = 0;
     if (this.state.layout === "Grid" || this.state.layout === "Default") {
       if (height < 406 - (this.props.core._config.branding?.logoURL ? 0 : 64)) {
         const videoWrapWidth =
           width - 32 - (this.state.layOutStatus === "ONE_VIDEO" ? 0 : 350);
         const n = parseInt(String(videoWrapWidth / 160));
-
-        this.setState({
-          videoShowNumber: Math.min(
-            n * 160 + (n - 1) * 10 <= videoWrapWidth ? n : n - 1,
-            10
-          ),
-          gridRowNumber: 1,
-        });
+        videoShowNumber = Math.min(
+          n * 160 + (n - 1) * 10 <= videoWrapWidth ? n : n - 1,
+          10
+        );
+        gridRowNumber = 1;
       } else if (
         height <
         540 - (this.props.core._config.branding?.logoURL ? 0 : 64)
@@ -597,29 +596,30 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         const videoWrapWidth =
           width - 32 - (this.state.layOutStatus === "ONE_VIDEO" ? 0 : 350);
         const n = parseInt(String(videoWrapWidth / 124));
-        this.setState({
-          videoShowNumber: Math.min(
-            n * 124 + (n - 1) * 10 <= videoWrapWidth ? 2 * n : 2 * (n - 1),
-            10
-          ),
-          gridRowNumber: 2,
-        });
+        videoShowNumber = Math.min(
+          n * 124 + (n - 1) * 10 <= videoWrapWidth ? 2 * n : 2 * (n - 1),
+          10
+        );
+        gridRowNumber = 2;
       } else {
-        this.setState({
-          videoShowNumber: 9,
-          gridRowNumber: 3,
-        });
+        videoShowNumber = 9;
+        gridRowNumber = 3;
       }
+      this.setState({
+        videoShowNumber: videoShowNumber,
+        gridRowNumber: gridRowNumber,
+      });
     } else if (this.state.layout === "Sidebar") {
       // Sidebar
       const videWrapHight =
         height - (this.props.core._config.branding?.logoURL ? 64 : 0) - 84;
       const n = parseInt(String(videWrapHight / 124));
+      videoShowNumber = Math.min(
+        n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1,
+        5
+      );
       this.setState({
-        videoShowNumber: Math.min(
-          n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1,
-          5
-        ),
+        videoShowNumber: videoShowNumber,
       });
     }
   }
@@ -631,14 +631,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   }
   async changeLayout(type: string) {
     if (this.state.isLayoutChanging) return;
-    if (type === "Grid" || type === "Default") {
-      this.props.core.setPin();
-      this.localUserPin = false;
-    }
-    this.setState({
-      isLayoutChanging: true,
-      layout: type,
-    });
     return new Promise((resolve, reject) => {
       this.userUpdateCallBack = () => {
         this.setState({
@@ -646,6 +638,14 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         });
         resolve(true);
       };
+      if (type === "Grid" || type === "Default") {
+        this.props.core.setPin();
+        this.localUserPin = false;
+      }
+      this.setState({
+        isLayoutChanging: true,
+        layout: type,
+      });
       setTimeout(() => {
         this.setState({
           isLayoutChanging: false,

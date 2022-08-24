@@ -113,6 +113,22 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
             }}
           ></ZegoRoomMobile>
         );
+      } else if (this.state.step === 2 && this.props.core) {
+        page = (
+          <ZegoRejoinRoom
+            core={this.props.core}
+            joinRoom={() => {
+              this.setState({
+                step: 1,
+              });
+            }}
+            returnHome={() => {
+              this.setState({
+                step: 0,
+              });
+            }}
+          ></ZegoRejoinRoom>
+        );
       } else {
         page = (
           <ZegoModel
