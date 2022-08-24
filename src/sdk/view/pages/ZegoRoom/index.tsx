@@ -113,6 +113,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       cameraOpen: boolean;
       showMore: boolean;
       layout: string;
+      videoShowNumber: number;
     }
   ) {
     if (
@@ -134,6 +135,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     }
     if (preState.layout !== this.state.layout) {
       this.computeByResize();
+    }
+    if (preState.videoShowNumber !== this.state.videoShowNumber) {
+      if (preState.zegoCloudUserList === this.state.zegoCloudUserList) {
+        this.userUpdateCallBack();
+      }
     }
   }
   componentWillUnmount() {
