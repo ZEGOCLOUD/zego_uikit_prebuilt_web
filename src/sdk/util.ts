@@ -18,6 +18,10 @@ export function isPc(): boolean {
   }
   return system.win || system.mac;
 }
+export function isIOS() {
+  let u = navigator.userAgent;
+  return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+}
 
 export function DateFormat(date: number, fmt: string) {
   const myDate = new Date(date);

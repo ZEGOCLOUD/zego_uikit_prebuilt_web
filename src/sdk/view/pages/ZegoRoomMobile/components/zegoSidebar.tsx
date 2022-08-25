@@ -13,7 +13,10 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
 
   get pinUser() {
     const index = this.props.userList.findIndex((item) => item.pin);
-    return this.props.userList[index > -1 ? index : 0];
+    const userList = this.props.userList.filter(
+      (item) => item.userID !== this.props.selfInfo?.userID
+    );
+    return userList[index > -1 ? index : userList.length - 1];
   }
 
   render(): React.ReactNode {

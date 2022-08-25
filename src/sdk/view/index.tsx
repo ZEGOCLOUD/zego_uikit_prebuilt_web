@@ -7,7 +7,7 @@ import { ZegoRoomMobile } from "./pages/ZegoRoomMobile";
 import { IntlProvider } from "react-intl";
 import index from "./index.module.scss";
 import { ZegoRejoinRoom } from "./pages/ZegoRejoinRoom";
-import { isPc } from "../util";
+import { isIOS, isPc } from "../util";
 import { ZegoModel } from "./components/zegoModel";
 
 declare const SDK_ENV: boolean;
@@ -20,9 +20,11 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
   };
 
   async componentDidMount() {
+    const notSupportPhone =
+      !isPc() && isIOS() && this.props.core._config.maxUsers! > 2;
     const res = await this.props.core.checkWebRTC();
     this.setState({
-      isSupportWebRTC: res,
+      isSupportWebRTC: res && !notSupportPhone,
     });
   }
 
@@ -129,24 +131,23 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
             }}
           ></ZegoRejoinRoom>
         );
-      } else {
-        page = (
-          <ZegoModel
-            header={"Browser not supported"}
-            contentText={
-              /Firefox/.test(window.navigator.userAgent)
-                ? "Your browser version does not support the features or something wrong with your network. Please check them and try again."
-                : "The current browser is not available for you to join the room."
-            }
-          ></ZegoModel>
-        );
       }
-
-      return (
-        <IntlProvider locale="en">
-          <div className={index.index}>{page}</div>
-        </IntlProvider>
+    } else {
+      page = (
+        <ZegoModel
+          header={"Browser not supported"}
+          contentText={
+            /Firefox/.test(window.navigator.userAgent)
+              ? "Your browser version does not support the features or something wrong with your network. Please check them and try again."
+              : "The current browser is not available for you to join the room."
+          }
+        ></ZegoModel>
       );
     }
+    return (
+      <IntlProvider locale="en">
+        <div className={index.index}>{page}</div>
+      </IntlProvider>
+    );
   }
 }
