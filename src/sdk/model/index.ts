@@ -31,6 +31,7 @@ export interface ZegoCloudRoomConfig {
     showTextChat?: boolean; // 是否显示未读消息，默认不显示
   };
   leaveRoomCallback?: () => void; // 退出房间回调
+  joinRoomCallback?: () => void; // 进入房间回调
   roomTimerDisplayed?: boolean; //是否计时，默认不计时
   branding?: {
     logoURL?: string;

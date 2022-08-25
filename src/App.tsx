@@ -7,9 +7,14 @@ import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, getRandomName, randomID } from "./util";
 export default class App extends React.Component {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
-
+  state = {
+    showPreviewHeader: "show",
+  };
   constructor(props: Readonly<{}>) {
     super(props);
+    // zegocloud.com
+    this.state.showPreviewHeader =
+      getUrlParams(window.location.href)["preHeader"] || "show";
     // @es
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
     this.myMeeting = async (element: HTMLDivElement) => {
@@ -43,7 +48,11 @@ export default class App extends React.Component {
         },
         leaveRoomCallback: () => {
           console.log("test:leaveRoomCallback");
+          window?.parent?.postMessage("leaveRoom", "*");
         }, // 退出房间回调
+        joinRoomCallback: () => {
+          window?.parent?.postMessage("joinRoom", "*");
+        },
         branding: {
           logoURL:
             "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
@@ -58,34 +67,38 @@ export default class App extends React.Component {
   render(): React.ReactNode {
     return (
       <div className={`${APP.app} ${isPc() ? "" : APP.mobileApp}`}>
-        <div className={`${APP.nav} ${isPc() ? "" : APP.mobileNav}`}>
+        {this.state.showPreviewHeader === "show" && (
           <div
-            className={`${APP.LOGO} ${isPc() ? "" : APP.mobileLOGO}`}
-            onClick={() => {
-              window.open("https://www.zegocloud.com", "_blank");
-            }}
-          ></div>
-          <div className={`${APP.link} ${isPc() ? "" : APP.mobileLink}`}>
-            <a
-              href="https://docs.zegocloud.com/article/5546"
-              target="_blank"
-              className={APP.link_item}
-              rel="noreferrer"
-            >
-              <span className={APP.icon__doc}></span>{" "}
-              {isPc() && "Documentation"}
-            </a>
-            <a
-              href="https://github.com/ZEGOCLOUD/zegocloud_prebuilt_webrtc"
-              target="_blank"
-              className={APP.link_item}
-              rel="noreferrer"
-            >
-              <span className={APP.icon__github}></span>
-              {isPc() && "View demo code"}
-            </a>
+            className={`${APP.nav} ${isPc() ? "" : APP.mobileNav} preView_nav`}
+          >
+            <div
+              className={`${APP.LOGO} ${isPc() ? "" : APP.mobileLOGO}`}
+              onClick={() => {
+                window.open("https://www.zegocloud.com", "_blank");
+              }}
+            ></div>
+            <div className={`${APP.link} ${isPc() ? "" : APP.mobileLink}`}>
+              <a
+                href="https://docs.zegocloud.com/article/5546"
+                target="_blank"
+                className={APP.link_item}
+                rel="noreferrer"
+              >
+                <span className={APP.icon__doc}></span>{" "}
+                {isPc() && "Documentation"}
+              </a>
+              <a
+                href="https://github.com/ZEGOCLOUD/zegocloud_prebuilt_webrtc"
+                target="_blank"
+                className={APP.link_item}
+                rel="noreferrer"
+              >
+                <span className={APP.icon__github}></span>
+                {isPc() && "View demo code"}
+              </a>
+            </div>
           </div>
-        </div>
+        )}
         <div
           ref={this.myMeeting}
           className={`${APP.myMeeting}  ${isPc() ? "" : APP.mobileMeeting}`}
@@ -93,7 +106,7 @@ export default class App extends React.Component {
         <div
           className={`${APP.serviceTips}  ${
             isPc() ? APP.pcServiceTips : APP.mobileServiceTips
-          }`}
+          } preView_services`}
         >
           By clicking "Join", you agree to {!isPc() && <br />} our{" "}
           <a

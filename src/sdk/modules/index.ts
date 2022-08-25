@@ -86,6 +86,7 @@ export class ZegoCloudRTCCore {
       showTextChat: true, // 是否显示未读消息，默认显示
     },
     leaveRoomCallback: () => {}, // 退出房间回调
+    joinRoomCallback: () => {}, // 进房回调
     roomTimerDisplayed: false, //是否计时，默认不计时
     branding: {
       logoURL: "",
