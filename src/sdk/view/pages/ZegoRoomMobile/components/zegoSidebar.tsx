@@ -13,10 +13,13 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
 
   get pinUser() {
     const index = this.props.userList.findIndex((item) => item.pin);
+    if (index > -1) {
+      return this.props.userList[index];
+    }
     const userList = this.props.userList.filter(
       (item) => item.userID !== this.props.selfInfo?.userID
     );
-    return userList[index > -1 ? index : userList.length - 1];
+    return userList[userList.length - 1];
   }
 
   render(): React.ReactNode {
@@ -57,7 +60,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
               <ZegoUserVideo
                 muted={this.props?.selfInfo?.userID === value.userID}
                 user={value}
-                key={value + "_video"}
+                key={value.userID + "_video"}
                 volume={this.props.soundLevel![value.userID] || {}}
               ></ZegoUserVideo>
             );
