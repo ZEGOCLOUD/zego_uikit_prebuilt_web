@@ -33,6 +33,7 @@ export declare class ZegoCloudRTCCore {
     setConfig(config: ZegoCloudRoomConfig): void;
     setPin(userID?: string, pined?: boolean): void;
     setMaxScreenNum(num: number): Promise<void>;
+    setSidebarLayOut(enable: boolean): Promise<void>;
     setShowNonVideo(enable: boolean): Promise<void>;
     getCameras(): Promise<ZegoDeviceInfo[]>;
     getMicrophones(): Promise<ZegoDeviceInfo[]>;

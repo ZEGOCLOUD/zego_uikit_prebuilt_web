@@ -50,6 +50,7 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         cameraOpen: boolean;
         showMore: boolean;
         layout: string;
+        videoShowNumber: number;
     }): void;
     componentWillUnmount(): void;
     initSDK(): Promise<void>;
