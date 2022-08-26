@@ -31,6 +31,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
               if (index === this.props.videoShowNumber - 2) {
                 return (
                   <ZegoUserOtherVideo
+                    key={value.userID + "_otherVideo"}
                     user={value}
                     nextUser={arr[index + 1]}
                     othersNumber={arr.length - this.props.videoShowNumber + 1}

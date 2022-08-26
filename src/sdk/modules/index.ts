@@ -131,6 +131,12 @@ export class ZegoCloudRTCCore {
       this.subscribeUserListCallBack(this.zum.remoteUserList);
   }
 
+  async setSidebarLayOut(enable: boolean) {
+    await this.zum.setSidebarLayOut(enable);
+    this.subscribeUserListCallBack &&
+      this.subscribeUserListCallBack(this.zum.remoteUserList);
+  }
+
   async setShowNonVideo(enable: boolean) {
     await this.zum.setShowNonVideo(enable);
     this.subscribeUserListCallBack &&

@@ -618,15 +618,18 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             this.setState({
               userLayoutStatus: selectLayout,
             });
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
               const showSelf =
                 this.props.core._config.showNonVideoUser ||
                 this.state.localStream;
-              if (selectLayout === "Grid") {
-                this.props.core.setMaxScreenNum(showSelf ? 5 : 6);
-              } else if (selectLayout === "Sidebar") {
-                this.props.core.setMaxScreenNum(showSelf ? 4 : 5);
+              if (selectLayout !== "Sidebar") {
+                await this.props.core.setMaxScreenNum(showSelf ? 5 : 6);
+              } else {
+                await this.props.core.setMaxScreenNum(showSelf ? 4 : 5);
               }
+              await this.props.core.setSidebarLayOut(
+                selectLayout === "Sidebar"
+              );
 
               this.userUpdateCallBack = () => {
                 resolve(true);
@@ -662,6 +665,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               this.setState({
                 userLayoutStatus: "Sidebar",
               });
+              this.props.core.setSidebarLayOut(true);
             }
           }}
           selectedUser={this._selectedUser}

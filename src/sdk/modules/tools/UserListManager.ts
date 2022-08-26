@@ -1,3 +1,4 @@
+import { flattenDiagnosticMessageText } from "typescript";
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRemoteMedia } from "../../model";
@@ -5,12 +6,14 @@ export type ZegoCloudUserList = ZegoCloudUser[];
 
 export type ZegoCloudUser = ZegoUser & {
   pin: boolean;
+  overScreenMuteVideo?: boolean;
   streamList: ZegoCloudRemoteMedia[];
 };
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}
   showNonVideo = true;
   screenNumber = 0;
+  sidebarEnabled = false;
   remoteUserList: ZegoCloudUserList = [];
   setPin(userID?: string, pined?: boolean): void {
     this.remoteUserList.map((u) => {
@@ -32,59 +35,74 @@ export class ZegoCloudUserListManager {
     return this.updateStream();
   }
 
+  async setSidebarLayOut(enable: boolean) {
+    this.sidebarEnabled = enable;
+    return this.updateStream();
+  }
   async updateStream(): Promise<boolean> {
-    let count = 0;
-    for (let index = 0; index < this.remoteUserList.length; index++) {
-      if (
-        this.showNonVideo ||
-        this.remoteUserList[index].streamList.length > 0
-      ) {
+    let count = 0,
+      noPinUserList = [];
+    if (this.sidebarEnabled) {
+      const pIndex = this.remoteUserList.findIndex((user) => user.pin);
+      if (pIndex > -1) {
+        noPinUserList = this.remoteUserList.filter((user) => !user.pin);
+        this.openVideo(this.remoteUserList[pIndex]);
+      } else {
+        noPinUserList = this.remoteUserList.slice(
+          0,
+          this.remoteUserList.length - 1
+        );
+        this.openVideo(this.remoteUserList[this.remoteUserList.length - 1]);
+      }
+      count++;
+    } else {
+      noPinUserList = this.remoteUserList;
+    }
+
+    for (let index = 0; index < noPinUserList.length; index++) {
+      if (this.showNonVideo || noPinUserList[index].streamList.length > 0) {
         count++;
       }
       if (
         count > this.screenNumber ||
         (count === this.screenNumber &&
-          this.remoteUserList[index + 1] &&
-          this.remoteUserList[index + 1].streamList.length > 0)
+          noPinUserList[index + 1] &&
+          noPinUserList[index + 1].streamList.length > 0)
       ) {
-        if (this.remoteUserList[index].streamList.length) {
-          for (
-            let s_index = 0;
-            s_index < this.remoteUserList[index].streamList.length;
-            s_index++
-          ) {
-            if (
-              this.remoteUserList[index].streamList[s_index].cameraStatus ===
-              "OPEN"
-            ) {
-              await this.zg.mutePlayStreamVideo(
-                this.remoteUserList[index].streamList[s_index].streamID,
-                true
-              );
-            }
-          }
-        }
+        await this.muteVideo(noPinUserList[index]);
       } else {
-        if (this.remoteUserList[index].streamList.length) {
-          for (
-            let s_index = 0;
-            s_index < this.remoteUserList[index].streamList.length;
-            s_index++
-          ) {
-            if (
-              this.remoteUserList[index].streamList[s_index].cameraStatus ===
-              "MUTE"
-            ) {
-              await this.zg.mutePlayStreamVideo(
-                this.remoteUserList[index].streamList[s_index].streamID,
-                false
-              );
-            }
-          }
-        }
+        await this.openVideo(noPinUserList[index]);
       }
     }
     return true;
+  }
+
+  async openVideo(user: ZegoCloudUser) {
+    if (user.streamList.length) {
+      for (let s_index = 0; s_index < user.streamList.length; s_index++) {
+        if (user.overScreenMuteVideo) {
+          await this.zg.mutePlayStreamVideo(
+            user.streamList[s_index].streamID,
+            false
+          );
+          user.overScreenMuteVideo = false;
+        }
+      }
+    }
+  }
+
+  async muteVideo(user: ZegoCloudUser) {
+    if (user.streamList.length) {
+      for (let s_index = 0; s_index < user.streamList.length; s_index++) {
+        if (!user.overScreenMuteVideo) {
+          await this.zg.mutePlayStreamVideo(
+            user.streamList[s_index].streamID,
+            true
+          );
+          user.overScreenMuteVideo = true;
+        }
+      }
+    }
   }
 
   userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]) {
