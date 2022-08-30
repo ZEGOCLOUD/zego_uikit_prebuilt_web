@@ -12,15 +12,24 @@ const config: webpack.Configuration = {
   entry: "./src/sdk/index.tsx",
   devServer: {
     static: {
+<<<<<<< HEAD
       directory: path.join(__dirname, "ZegoPrebuiltUIKit"),
+=======
+      directory: path.join(__dirname, "ZegoUIKitPrebuilt"),
+>>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
     },
     compress: true,
     port: 9000,
     https: true,
   },
   output: {
+<<<<<<< HEAD
     filename: "index.umd.js",
     path: path.resolve(__dirname, "./ZegoPrebuiltUIKit"),
+=======
+    filename: "zego-uikit-prebuilt.js",
+    path: path.resolve(__dirname, "./ZegoUIKitPrebuilt"),
+>>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
     libraryTarget: "umd",
     umdNamedDefine: true,
     globalObject: "typeof self !== 'undefined' ? self : this",
@@ -111,8 +120,13 @@ const config: webpack.Configuration = {
       events: {
         onStart: {
           delete: [
+<<<<<<< HEAD
             "./ZegoPrebuiltUIKit/idex.umd,js",
             "./ZegoPrebuiltUIKit/sdk",
+=======
+            "./ZegoUIKitPrebuilt/zego-uikit-prebuilt.js",
+            "./ZegoUIKitPrebuilt/sdk",
+>>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
           ],
         },
         onEnd: {
@@ -120,15 +134,26 @@ const config: webpack.Configuration = {
             {
               //精简
               source: "./public/test.html",
+<<<<<<< HEAD
               destination: "./ZegoPrebuiltUIKit/index.html",
+=======
+              destination: "./ZegoUIKitPrebuilt/index.html",
+>>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
             },
             {
               //精简
               source: "./public/package.json",
+<<<<<<< HEAD
               destination: "./ZegoPrebuiltUIKit/package.json",
             },
           ],
           delete: ["ZegoPrebuiltUIKit/util.d.ts"],
+=======
+              destination: "./ZegoUIKitPrebuilt/package.json",
+            },
+          ],
+          delete: ["ZegoUIKitPrebuilt/util.d.ts"],
+>>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
         },
       },
     }),

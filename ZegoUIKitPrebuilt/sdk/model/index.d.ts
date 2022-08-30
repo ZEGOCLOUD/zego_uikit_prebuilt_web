@@ -1,13 +1,11 @@
 import { ZegoUser, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRTCCore } from "../modules";
-import { ZegoCloudUserList } from "../modules/tools/UserListManager";
 export interface ZegoCloudRemoteMedia {
     media: MediaStream;
     fromUser: ZegoUser;
     micStatus: "OPEN" | "MUTE";
     cameraStatus: "OPEN" | "MUTE";
     state: "NO_PLAY" | "PLAY_REQUESTING" | "PLAYING";
-    streamID: string;
 }
 export interface ZegoCloudRoomConfig {
     container?: HTMLElement | undefined | null;
@@ -27,22 +25,14 @@ export interface ZegoCloudRoomConfig {
         showUserJoinAndLeave?: boolean;
         showTextChat?: boolean;
     };
-    joinRoomCallback?: () => void;
     leaveRoomCallback?: () => void;
-<<<<<<< HEAD:ZegoPrebuiltUIKit/sdk/model/index.d.ts
-    userUpdateCallback?: (type: "ADD" | "DELETE", user: ZegoUser[]) => void;
-=======
     joinRoomCallback?: () => void;
->>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile):ZegoPrebuilt/sdk/model/index.d.ts
     roomTimerDisplayed?: boolean;
     branding?: {
         logoURL?: string;
     };
     showLeavingView?: boolean;
     localizationJSON?: object;
-    maxUsers?: number;
-    layout?: "Sidebar" | "Grid" | "Default";
-    showNonVideoUser?: boolean;
 }
 export interface ZegoBrowserCheckProp {
     core: ZegoCloudRTCCore;
@@ -67,36 +57,10 @@ export interface ZegoSettingsProps {
         cam: string | undefined;
         speaker: string | undefined;
         videoResolve: string | undefined;
-        showNonVideoUser: boolean | undefined;
     };
     closeCallBack?: () => void;
     onMicChange: (deviceID: string) => void;
     onCameraChange: (deviceID: string) => void;
     onSpeakerChange: (deviceID: string) => void;
     onVideoResolutionChange: (level: string) => void;
-    onShowNonVideoChange: (selected: boolean) => void;
-}
-export interface ZegoGridLayoutProps {
-    userList: ZegoCloudUserList;
-    videoShowNumber: number;
-    gridRowNumber?: number;
-    selfInfo?: {
-        userID: string;
-    };
-    handleSetPin?: Function;
-    soundLevel?: SoundLevelMap;
-}
-export interface ZegoSidebarLayoutProps {
-    handleSetPin?: Function;
-    userList: ZegoCloudUserList;
-    videoShowNumber: number;
-    selfInfo: {
-        userID: string;
-    };
-    soundLevel?: SoundLevelMap;
-}
-export interface SoundLevelMap {
-    [userID: string]: {
-        [streamID: string]: number;
-    };
 }

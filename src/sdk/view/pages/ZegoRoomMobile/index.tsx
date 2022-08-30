@@ -18,6 +18,7 @@ import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoReconnect } from "./components/ZegoReconnect";
 import { ZegoToast } from "../../components/mobile/zegoToast";
+<<<<<<< HEAD
 import {
   ZegoCloudUser,
   ZegoCloudUserList,
@@ -29,6 +30,9 @@ import { ZegoSidebar } from "./components/zegoSidebar";
 import ShowManageContext from "./context/showManage";
 import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 
+=======
+import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
+>>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
@@ -80,8 +84,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   faceModel: 0 | 1 | -1 = 1;
   notifyTimer: NodeJS.Timeout | null = null;
   footerTimer!: NodeJS.Timeout;
+<<<<<<< HEAD
   userUpdateCallBack = () => {};
   localStreamID = "";
+=======
+  cameraDevices: ZegoDeviceInfo[] = [];
+>>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
   componentDidMount() {
     this.initSDK();
     this.footerTimer = setTimeout(() => {
@@ -237,7 +245,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
 
     const logInRsp = await this.props.core.enterRoom();
 
-    logInRsp === 0 && this.createStream();
+    if (logInRsp === 0) {
+      this.createStream();
+      this.cameraDevices = await this.props.core.getCameras();
+    }
   }
 
   async createStream(): Promise<boolean> {
@@ -386,18 +397,52 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     }
     this.faceModel = -1;
 
-    const _localStream = await this.props.core.createStream({
-      camera: {
-        video: !this.props.core.status.audioRefuse,
-        audio: false,
-        facingMode: targetModel ? "user" : "environment",
-        videoQuality: 4,
-        width: 640,
-        height: 480,
-        bitrate: 500,
-        frameRate: 15,
-      },
-    });
+    let _localStream;
+
+    if (this.cameraDevices.length < 3) {
+      _localStream = await this.props.core.createStream({
+        camera: {
+          video: !this.props.core.status.audioRefuse,
+          audio: false,
+          facingMode: targetModel ? "user" : "environment",
+          videoQuality: 4,
+          width: 640,
+          height: 480,
+          bitrate: 500,
+          frameRate: 15,
+        },
+      });
+    } else {
+      if (targetModel) {
+        _localStream = await this.props.core.createStream({
+          camera: {
+            video: !this.props.core.status.audioRefuse,
+            audio: false,
+            facingMode: "user",
+            videoQuality: 4,
+            width: 640,
+            height: 480,
+            bitrate: 500,
+            frameRate: 15,
+          },
+        });
+      } else {
+        _localStream = await this.props.core.createStream({
+          camera: {
+            video: !this.props.core.status.audioRefuse,
+            audio: false,
+            videoInput: targetModel
+              ? this.cameraDevices[0].deviceID
+              : this.cameraDevices[this.cameraDevices.length - 1].deviceID,
+            videoQuality: 4,
+            width: 640,
+            height: 480,
+            bitrate: 500,
+            frameRate: 15,
+          },
+        });
+      }
+    }
 
     if (_localStream) {
       this.props.core.replaceTrack(

@@ -1,21 +1,14 @@
 /// <reference types="node" />
 import React from "react";
-<<<<<<< HEAD:ZegoPrebuiltUIKit/sdk/view/pages/ZegoRoomMobile/index.d.ts
-import { SoundLevelMap, ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoNotification } from "../../../model";
-import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
-=======
 import { ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoCloudRemoteMedia, ZegoNotification } from "../../../model";
 import { ZegoUser, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
->>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile):ZegoPrebuilt/sdk/view/pages/ZegoRoomMobile/index.d.ts
 export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
-    static contextType: React.Context<import("./context/showManage").ShowManageType>;
     state: {
         localStream: undefined | MediaStream;
-        layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE";
-        userLayoutStatus: "Default" | "Grid" | "Sidebar";
-        zegoCloudUserList: ZegoCloudUserList;
+        remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
+        layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
+        userList: ZegoUser[];
         messageList: ZegoBroadcastMessageInfo2[];
         notificationList: ZegoNotification[];
         micOpen: boolean;
@@ -26,24 +19,19 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
         cameraFront: boolean;
         showFooter: boolean;
         isNetworkPoor: boolean;
-        soundLevel: SoundLevelMap;
     };
     micStatus: -1 | 0 | 1;
     cameraStatus: -1 | 0 | 1;
-    localUserPin: boolean;
     faceModel: 0 | 1 | -1;
     notifyTimer: NodeJS.Timeout | null;
     footerTimer: NodeJS.Timeout;
-<<<<<<< HEAD:ZegoPrebuiltUIKit/sdk/view/pages/ZegoRoomMobile/index.d.ts
-    userUpdateCallBack: () => void;
-    localStreamID: string;
-=======
     cameraDevices: ZegoDeviceInfo[];
->>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile):ZegoPrebuilt/sdk/view/pages/ZegoRoomMobile/index.d.ts
     componentDidMount(): void;
     componentDidUpdate(preProps: ZegoBrowserCheckProp, preState: {
         localStream: undefined | MediaStream;
+        remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
+        userList: ZegoUser[];
         messageList: ZegoBroadcastMessageInfo[];
         notificationList: ZegoNotification[];
         micOpen: boolean;
@@ -55,16 +43,13 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
     toggleMic(): Promise<void>;
     toggleCamera(): Promise<void>;
     switchCamera(): Promise<void>;
-    toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT"): void;
+    toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE"): void;
     sendMessage(msg: string): Promise<void>;
     onblur: (e: {
         path?: any[];
     }) => void;
     openMore(): void;
     leaveRoom(): void;
-    getShownUser(forceShowNonVideoUser?: boolean): ZegoCloudUserList;
-    private _selectedUser;
     getListScreen(): JSX.Element | undefined;
-    getLayoutScreen(): JSX.Element | undefined;
     render(): React.ReactNode;
 }
