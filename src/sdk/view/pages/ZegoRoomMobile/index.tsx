@@ -611,7 +611,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             });
           }}
           selectCallBack={(selectLayout: "Default" | "Grid" | "Sidebar") => {
-            if (selectLayout != "Sidebar") {
+            if (selectLayout !== "Sidebar") {
               this._selectedUser && (this._selectedUser.pin = false);
               this.props.core.setPin();
             }

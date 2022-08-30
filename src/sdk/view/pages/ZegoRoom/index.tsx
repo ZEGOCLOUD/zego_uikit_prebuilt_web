@@ -615,6 +615,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         videoShowNumber: videoShowNumber,
         gridRowNumber: gridRowNumber,
       });
+      this.props.core.setMaxScreenNum(
+        this.getShownUser().length > videoShowNumber
+          ? videoShowNumber - 1
+          : videoShowNumber
+      );
     } else if (this.state.layout === "Sidebar") {
       // Sidebar
       const videWrapHight =
@@ -627,6 +632,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       this.setState({
         videoShowNumber: videoShowNumber,
       });
+      this.props.core.setMaxScreenNum(
+        this.getShownUser().length > videoShowNumber + 1
+          ? videoShowNumber
+          : videoShowNumber + 1
+      );
     }
   }
   onWindowResize = throttle(this.computeByResize.bind(this), 500);
@@ -652,6 +662,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         isLayoutChanging: true,
         layout: type,
       });
+      this.props.core.setSidebarLayOut(type === "Sidebar");
       setTimeout(() => {
         this.setState({
           isLayoutChanging: false,
@@ -763,6 +774,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       this.localUserPin = false;
       this.props.core.setPin(userID);
     }
+    this.props.core.setSidebarLayOut(true);
     this.setState({ layout: "Sidebar" });
   }
   render(): React.ReactNode {
