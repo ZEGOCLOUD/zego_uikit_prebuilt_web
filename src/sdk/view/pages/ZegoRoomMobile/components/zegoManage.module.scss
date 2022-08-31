@@ -18,7 +18,7 @@
     justify-content: space-between;
     box-sizing: border-box;
     width: 100%;
-    padding: vw(15px) vw(24px) vw(13px) vw(24px);
+    padding: vw(14px) vw(24px) vw(14px) vw(40px);
     color: #ffffff;
     font-weight: 400;
     font-size: vw(36px);
@@ -53,7 +53,7 @@
         i {
           width: vw(44px);
           height: vw(44px);
-          margin-right: vw(26px);
+          margin-right: vw(28px);
           color: #557bff;
           background-image: url(../../../../sdkMobileAssets/Room_pin@2x.png);
           background-size: contain;
@@ -67,8 +67,8 @@
       }
 
       a {
-        width: vw(56px);
-        height: vw(56px);
+        width: vw(44px);
+        height: vw(44px);
       }
 
       .selected {
