@@ -42,6 +42,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       this.setState({
         audioOpen: audioOpen,
         videoOpen: videoOpen,
+        isVideoOpening: false,
       });
     }
   }

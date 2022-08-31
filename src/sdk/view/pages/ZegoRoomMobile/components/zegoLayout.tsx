@@ -14,10 +14,10 @@ export class ZegoLayout extends React.Component<{
   checking = false;
 
   async select(selectLayout: "Sidebar" | "Grid" | "Default") {
-    this.setState({ selectLayout });
     if (this.props.selectCallBack && !this.checking) {
       this.checking = true;
-      await this.props.selectCallBack(selectLayout);
+      this.setState({ selectLayout });
+      const res = await this.props.selectCallBack(selectLayout);
       this.checking = false;
     }
   }

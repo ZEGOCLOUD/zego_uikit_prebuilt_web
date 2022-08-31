@@ -669,13 +669,13 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               } else {
                 await this.props.core.setMaxScreenNum(showSelf ? 4 : 5);
               }
+              this.userUpdateCallBack = () => {
+                resolve(true);
+              };
               await this.props.core.setSidebarLayOut(
                 selectLayout === "Sidebar"
               );
 
-              this.userUpdateCallBack = () => {
-                resolve(true);
-              };
               setTimeout(() => {
                 resolve(false);
               }, 5000);

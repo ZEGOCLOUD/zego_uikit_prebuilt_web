@@ -71,7 +71,7 @@
     align-items: center;
     justify-content: flex-end;
     box-sizing: border-box;
-    width: 80%;
+    max-width: 80%;
     height: vw(46px);
     padding: vw(7px) vw(12px) vw(6px) vw(10px);
     line-height: vw(33px);
@@ -103,11 +103,9 @@
       background-size: cover;
       & > span {
         position: absolute;
-        position: absolute;
-        bottom: 8px;
-        left: 6px;
-        width: 5px;
-        height: 5px;
+        bottom: vw(16px);
+        left: vw(14px);
+        width: vw(8px);
         background: #0055ff;
         border-radius: 5px;
       }
