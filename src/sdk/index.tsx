@@ -3,22 +3,22 @@ import { ZegoCloudRoomConfig } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 
-export class ZegoPrebuiltUIKit {
+export class ZegoUIKitPrebuilt {
   static core: ZegoCloudRTCCore;
-  static _instance: ZegoPrebuiltUIKit;
+  static _instance: ZegoUIKitPrebuilt;
 
   root: Root | undefined;
 
-  static create(token: string): ZegoPrebuiltUIKit {
-    if (!ZegoPrebuiltUIKit.core && token) {
-      ZegoPrebuiltUIKit.core = ZegoCloudRTCCore.getInstance(token);
-      ZegoPrebuiltUIKit._instance = new ZegoPrebuiltUIKit();
+  static create(token: string): ZegoUIKitPrebuilt {
+    if (!ZegoUIKitPrebuilt.core && token) {
+      ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(token);
+      ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
     }
-    return ZegoPrebuiltUIKit._instance;
+    return ZegoUIKitPrebuilt._instance;
   }
 
   joinRoom(roomConfig?: ZegoCloudRoomConfig) {
-    if (!ZegoPrebuiltUIKit.core) {
+    if (!ZegoUIKitPrebuilt.core) {
       console.error("【ZEGOCLOUD】 please call init first !!");
       return;
     }
@@ -44,17 +44,17 @@ export class ZegoPrebuiltUIKit {
       };
     }
 
-    ZegoPrebuiltUIKit.core.setConfig(roomConfig);
+    ZegoUIKitPrebuilt.core.setConfig(roomConfig);
     this.root = ReactDOM.createRoot(roomConfig.container as HTMLDivElement);
     this.root.render(
       <ZegoCloudRTCKitComponent
-        core={ZegoPrebuiltUIKit.core}
+        core={ZegoUIKitPrebuilt.core}
       ></ZegoCloudRTCKitComponent>
     );
   }
 
   destroy() {
-    ZegoPrebuiltUIKit.core.leaveRoom();
+    ZegoUIKitPrebuilt.core.leaveRoom();
     this.root?.unmount();
     this.root = undefined;
   }

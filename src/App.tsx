@@ -2,7 +2,7 @@ import { type } from "os";
 import React from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
-import { ZegoPrebuiltUIKit } from "./sdk/index";
+import { ZegoUIKitPrebuilt } from "./sdk/index";
 import { ZegoCloudRoomConfig } from "./sdk/model";
 import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, getRandomName, randomID } from "./util";
@@ -21,7 +21,7 @@ export default class App extends React.Component {
     const role = getUrlParams(window.location.href)["role"] || "HOST";
     this.myMeeting = async (element: HTMLDivElement) => {
       let { token } = await generateToken(randomID(5), roomID, getRandomName());
-      const zp = ZegoPrebuiltUIKit.create(token);
+      const zp = ZegoUIKitPrebuilt.create(token);
       const param: ZegoCloudRoomConfig = {
         // @ts-ignore
         container: element, // 挂载容器
@@ -52,9 +52,6 @@ export default class App extends React.Component {
           console.log("test:leaveRoomCallback");
           window?.parent?.postMessage("leaveRoom", "*");
         }, // 退出房间回调
-        joinRoomCallback: () => {
-          window?.parent?.postMessage("joinRoom", "*");
-        },
         joinRoomCallback: () => {
           window?.parent?.postMessage("joinRoom", "*");
         },
