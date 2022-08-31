@@ -1,13 +1,14 @@
 /// <reference types="node" />
 import React, { RefObject } from "react";
-import { ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoCloudRemoteMedia, ZegoNotification } from "../../../model";
+import { SoundLevelMap, ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoCloudRemoteMedia, ZegoNotification } from "../../../model";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
 export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     state: {
         localStream: undefined | MediaStream;
         remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
-        userList: ZegoUser[];
+        zegoCloudUserList: ZegoCloudUserList;
         messageList: ZegoBroadcastMessageInfo2[];
         notificationList: ZegoNotification[];
         micOpen: boolean;
@@ -20,25 +21,36 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         seletSpeaker: string | undefined;
         seletCamera: string | undefined;
         seletVideoResolution: string;
+        showNonVideoUser: boolean;
+        videoShowNumber: number;
+        gridRowNumber: number;
+        layout: "Default" | "Grid" | "Sidebar";
+        showLayoutSettingsModel: boolean;
+        isLayoutChanging: boolean;
+        soundLevel: SoundLevelMap;
     };
-    inviteRef: RefObject<HTMLInputElement>;
     settingsRef: RefObject<HTMLDivElement>;
     moreRef: RefObject<HTMLDivElement>;
     micStatus: -1 | 0 | 1;
     cameraStatus: -1 | 0 | 1;
     notifyTimer: NodeJS.Timeout;
     msgDelayed: boolean;
+    localUserPin: boolean;
+    localStreamID: string;
+    userUpdateCallBack: () => void;
     componentDidMount(): void;
     componentDidUpdate(preProps: ZegoBrowserCheckProp, preState: {
         localStream: undefined | MediaStream;
         remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
-        userList: ZegoUser[];
+        zegoCloudUserList: ZegoUser[];
         messageList: ZegoBroadcastMessageInfo2[];
         notificationList: ZegoNotification[];
         micOpen: boolean;
         cameraOpen: boolean;
         showMore: boolean;
+        layout: string;
+        videoShowNumber: number;
     }): void;
     componentWillUnmount(): void;
     initSDK(): Promise<void>;
@@ -52,7 +64,12 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     handleSetting(): void;
     handleLeave(): void;
     leaveRoom(): void;
-    handleCopy(): void;
-    getListScreen(): JSX.Element | undefined;
+    computeByResize(): void;
+    onWindowResize: () => void;
+    showLayoutSettings(show: boolean): void;
+    changeLayout(type: string): Promise<unknown>;
+    getShownUser(forceShowNonVideoUser?: boolean): ZegoCloudUserList;
+    getLayoutScreen(): JSX.Element | undefined;
+    handleSetPin(userID: string): void;
     render(): React.ReactNode;
 }

@@ -2,7 +2,6 @@ import React, { ChangeEvent, RefObject } from "react";
 import { ZegoBrowserCheckProp } from "../../../model";
 export declare class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     state: {
-        isSupportWebRTC: undefined;
         localStream: undefined;
         localVideoStream: undefined;
         localAudioStream: undefined;
@@ -19,6 +18,7 @@ export declare class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckPr
         seletCamera: undefined;
         seletVideoResolution: string;
         isJoining: boolean;
+        showNonVideo: boolean | undefined;
     };
     videoRef: RefObject<HTMLVideoElement>;
     inviteRef: RefObject<HTMLInputElement>;

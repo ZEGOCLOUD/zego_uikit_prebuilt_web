@@ -870,6 +870,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                         {this.props.core._config.preJoinViewConfig
                           ?.invitationLink && (
                           <div
+                            className={ZegoRoomCss.roomDetail}
                             onClick={(ev) => {
                               ev.stopPropagation();
                               this.toggleLayOut("INVITE");

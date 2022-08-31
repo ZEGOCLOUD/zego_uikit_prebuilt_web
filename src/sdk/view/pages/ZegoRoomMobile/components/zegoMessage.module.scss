@@ -9,7 +9,7 @@
   align-items: flex-start;
   box-sizing: border-box;
   width: 100%;
-  height: 88vh;
+  height: 92.5vh;
   background: #242736;
   border-radius: vw(46px) vw(46px) 0px 0px;
 
@@ -27,7 +27,7 @@
     .msgHide {
       width: vw(70px);
       height: vw(70px);
-      margin-right: vw(16px);
+      margin-right: vw(21px);
       background-image: url(../../../../sdkMobileAssets/Room_member_hide@2x.png);
       background-size: contain;
     }
@@ -131,7 +131,7 @@
       width: 100vw;
 
       i {
-        margin-right: vw(30px);
+        margin-right: vw(35px);
         margin-left: vw(24px);
       }
 

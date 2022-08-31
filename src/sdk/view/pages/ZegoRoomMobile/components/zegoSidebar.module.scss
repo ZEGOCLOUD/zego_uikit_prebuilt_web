@@ -7,7 +7,7 @@
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  padding: 10px;
+  padding: vw(10px);
   overflow: hidden;
   background: #1e2130;
   .bottomWrapper {
@@ -23,7 +23,8 @@
   }
   .upWrapper {
     display: flex;
-    margin-bottom: 10px;
+    justify-content: center;
+    margin-bottom: vw(10px);
     & > div {
       position: relative;
       display: flex;
@@ -33,7 +34,7 @@
       background: #242736;
       border-radius: vw(14px);
       &:not(:first-of-type) {
-        margin-left: 10px;
+        margin-left: vw(10px);
       }
     }
   }
