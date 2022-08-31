@@ -6,7 +6,7 @@ export function generateToken(
 ): Promise<{ token: string }> {
   if (process.env.REACT_APP_ENV === "test") {
     return fetch(
-      `https://choui-prebuilt.herokuapp.com/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`,
+      `https://choui-prebuilt.herokuapp.com/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=86400`,
       {
         method: "GET",
       }
