@@ -10,11 +10,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "declaration": true,
-<<<<<<< HEAD
-    "outDir": "ZegoPrebuiltUIKit",
-=======
     "outDir": "ZegoUIKitPrebuilt",
->>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,

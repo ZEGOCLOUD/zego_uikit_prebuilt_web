@@ -18,7 +18,8 @@ import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoReconnect } from "./components/ZegoReconnect";
 import { ZegoToast } from "../../components/mobile/zegoToast";
-<<<<<<< HEAD
+import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
+
 import {
   ZegoCloudUser,
   ZegoCloudUserList,
@@ -30,9 +31,6 @@ import { ZegoSidebar } from "./components/zegoSidebar";
 import ShowManageContext from "./context/showManage";
 import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 
-=======
-import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
->>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
@@ -84,12 +82,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   faceModel: 0 | 1 | -1 = 1;
   notifyTimer: NodeJS.Timeout | null = null;
   footerTimer!: NodeJS.Timeout;
-<<<<<<< HEAD
+  cameraDevices: ZegoDeviceInfo[] = [];
+
   userUpdateCallBack = () => {};
   localStreamID = "";
-=======
-  cameraDevices: ZegoDeviceInfo[] = [];
->>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile)
+
   componentDidMount() {
     this.initSDK();
     this.footerTimer = setTimeout(() => {

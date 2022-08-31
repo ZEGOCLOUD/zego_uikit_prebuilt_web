@@ -55,6 +55,9 @@ export default class App extends React.Component {
         joinRoomCallback: () => {
           window?.parent?.postMessage("joinRoom", "*");
         },
+        joinRoomCallback: () => {
+          window?.parent?.postMessage("joinRoom", "*");
+        },
         userUpdateCallback: (type, users) => {
           console.log("userUpdateCallback", type, users);
         },
