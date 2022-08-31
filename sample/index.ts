@@ -1,4 +1,4 @@
-import { ZegoUIKitPrebuilt } from "@zego-uikit/prebuilt-meeting-web";
+import { ZegoUIKitPrebuilt } from "zego-uikit-prebuilt";
 // get token
 function generateToken(
   tokenServerUrl: string,

@@ -26,7 +26,7 @@
     .layoutHide {
       width: vw(70px);
       height: vw(70px);
-      margin-right: vw(16px);
+      margin-right: vw(21px);
       background-image: url(../../../../sdkMobileAssets/Room_member_hide@2x.png);
       background-size: contain;
     }
@@ -51,6 +51,7 @@
       padding: vw(8px) vw(36px) vw(8px) vw(35px);
       .layoutContentLeft {
         display: flex;
+        align-items: center;
         i {
           width: vw(56px);
           height: vw(56px);

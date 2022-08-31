@@ -7,7 +7,7 @@
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  padding: 10px;
+  padding: vw(10px);
   overflow: hidden;
   background: #1e2130;
   & > div {
@@ -21,7 +21,7 @@
     background: #242736;
     border-radius: vw(14px);
     &:nth-of-type(2n) {
-      margin-left: 10px;
+      margin-left: vw(10px);
     }
   }
 }

@@ -21,6 +21,7 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
               return (
                 <ZegoUserOtherVideo
                   user={value}
+                  circleSize="GRID"
                   nextUser={arr[index + 1]}
                   othersNumber={arr.length - this.props.videoShowNumber + 1}
                 ></ZegoUserOtherVideo>

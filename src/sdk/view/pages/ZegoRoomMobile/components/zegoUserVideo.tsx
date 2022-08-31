@@ -9,6 +9,7 @@ export class ZegoUserVideo extends React.Component<{
   volume: {
     [streamID: string]: number;
   };
+  circleSize?: "GRID" | "SIDEBAR";
   muted: boolean;
 }> {
   render(): React.ReactNode {
@@ -38,7 +39,11 @@ export class ZegoUserVideo extends React.Component<{
           <div className={zegoUserVideoCss.noVideoWrapper}>
             <div className={zegoUserVideoCss.nameWrapper}>
               <div
-                className={zegoUserVideoCss.nameCircle}
+                className={`${zegoUserVideoCss.nameCircle}  ${
+                  this.props.circleSize === "SIDEBAR"
+                    ? zegoUserVideoCss.sidebarCircle
+                    : ""
+                }`}
                 key={this.props.user.userID}
                 style={{
                   color: userNameColor(this.props.user.userName!),
@@ -74,6 +79,7 @@ export class ZegoUserOtherVideo extends React.Component<{
   user: ZegoCloudUser;
   nextUser: ZegoCloudUser;
   othersNumber: number;
+  circleSize?: "GRID" | "SIDEBAR";
   onLocalStreamPaused?: () => void;
 }> {
   render(): React.ReactNode {
@@ -95,7 +101,11 @@ export class ZegoUserOtherVideo extends React.Component<{
         <div className={zegoUserVideoCss.noVideoWrapper}>
           <div className={zegoUserVideoCss.nameWrapper}>
             <div
-              className={zegoUserVideoCss.nameCircle}
+              className={`${zegoUserVideoCss.nameCircle}  ${
+                this.props.circleSize === "SIDEBAR"
+                  ? zegoUserVideoCss.sidebarCircle
+                  : zegoUserVideoCss.gridCircle
+              }`}
               key={this.props.user.userID}
               style={{
                 color: userNameColor(this.props.user.userName!),
@@ -104,7 +114,11 @@ export class ZegoUserOtherVideo extends React.Component<{
               {this.props.user.userName!.slice(0, 1)?.toUpperCase()}
             </div>
             <div
-              className={zegoUserVideoCss.nameCircle}
+              className={`${zegoUserVideoCss.nameCircle}  ${
+                this.props.circleSize === "SIDEBAR"
+                  ? zegoUserVideoCss.sidebarCircle
+                  : zegoUserVideoCss.gridCircle
+              }`}
               key={this.props.nextUser.userID}
               style={{
                 color: userNameColor(this.props.nextUser.userName!),

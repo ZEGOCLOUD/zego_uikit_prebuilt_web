@@ -29,7 +29,11 @@ export interface ZegoCloudRoomConfig {
     };
     joinRoomCallback?: () => void;
     leaveRoomCallback?: () => void;
+<<<<<<< HEAD:ZegoPrebuiltUIKit/sdk/model/index.d.ts
     userUpdateCallback?: (type: "ADD" | "DELETE", user: ZegoUser[]) => void;
+=======
+    joinRoomCallback?: () => void;
+>>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile):ZegoPrebuilt/sdk/model/index.d.ts
     roomTimerDisplayed?: boolean;
     branding?: {
         logoURL?: string;

@@ -18,7 +18,7 @@
     justify-content: space-between;
     box-sizing: border-box;
     width: 100%;
-    padding: vw(15px) vw(40px) vw(13px) vw(40px);
+    padding: vw(14px) vw(24px) vw(14px) vw(40px);
     color: #ffffff;
     font-weight: 400;
     font-size: vw(36px);
@@ -39,7 +39,7 @@
     align-items: flex-start;
     box-sizing: border-box;
     width: 100vw;
-    padding: vw(10px) 0 vw(36px) 0;
+    padding: vw(36px) 0 vw(36px) 0;
 
     .manageContent {
       display: flex;
@@ -47,14 +47,13 @@
       justify-content: space-between;
       box-sizing: border-box;
       width: 100vw;
-      margin-top: vw(26px);
-      padding: vw(8px) vw(36px) vw(8px) vw(35px);
+      padding: vw(14px) vw(40px) vw(14px) vw(40px);
       .manageContentLeft {
         display: flex;
         i {
           width: vw(44px);
           height: vw(44px);
-          margin-right: vw(26px);
+          margin-right: vw(28px);
           color: #557bff;
           background-image: url(../../../../sdkMobileAssets/Room_pin@2x.png);
           background-size: contain;
@@ -68,8 +67,8 @@
       }
 
       a {
-        width: vw(56px);
-        height: vw(56px);
+        width: vw(44px);
+        height: vw(44px);
       }
 
       .selected {

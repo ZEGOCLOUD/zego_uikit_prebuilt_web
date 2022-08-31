@@ -12,15 +12,15 @@ const config: webpack.Configuration = {
   entry: "./src/sdk/index.tsx",
   devServer: {
     static: {
-      directory: path.join(__dirname, "ZegoPrebuiltUIKit"),
+      directory: path.join(__dirname, "ZegoUIKitPrebuilt"),
     },
     compress: true,
     port: 9000,
     https: true,
   },
   output: {
-    filename: "index.umd.js",
-    path: path.resolve(__dirname, "./ZegoPrebuiltUIKit"),
+    filename: "zego-uikit-prebuilt.js",
+    path: path.resolve(__dirname, "./ZegoUIKitPrebuilt"),
     libraryTarget: "umd",
     umdNamedDefine: true,
     globalObject: "typeof self !== 'undefined' ? self : this",
@@ -111,8 +111,8 @@ const config: webpack.Configuration = {
       events: {
         onStart: {
           delete: [
-            "./ZegoPrebuiltUIKit/idex.umd,js",
-            "./ZegoPrebuiltUIKit/sdk",
+            "./ZegoUIKitPrebuilt/zego-uikit-prebuilt.js",
+            "./ZegoUIKitPrebuilt/sdk",
           ],
         },
         onEnd: {
@@ -120,15 +120,15 @@ const config: webpack.Configuration = {
             {
               //精简
               source: "./public/test.html",
-              destination: "./ZegoPrebuiltUIKit/index.html",
+              destination: "./ZegoUIKitPrebuilt/index.html",
             },
             {
               //精简
               source: "./public/package.json",
-              destination: "./ZegoPrebuiltUIKit/package.json",
+              destination: "./ZegoUIKitPrebuilt/package.json",
             },
           ],
-          delete: ["ZegoPrebuiltUIKit/util.d.ts"],
+          delete: ["ZegoUIKitPrebuilt/util.d.ts"],
         },
       },
     }),

@@ -29,8 +29,8 @@
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
-        width: vw(120.28px);
-        height: vw(120px);
+        width: vw(160px);
+        height: vw(160px);
         margin-bottom: vw(16px);
         font-weight: 600;
         font-size: vw(35px);
@@ -39,8 +39,19 @@
         background: #2e2f37;
         border: 2px solid #242736;
         border-radius: 50%;
+      }
+      .gridCircle {
+        width: vw(120.28px);
+        height: vw(120px);
         &:nth-of-type(2) {
           margin-left: vw(-28.28px);
+        }
+      }
+      .sidebarCircle {
+        width: vw(84px);
+        height: vw(84px);
+        &:nth-of-type(2) {
+          margin-left: vw(-20px);
         }
       }
     }
@@ -54,8 +65,8 @@
   }
   .name {
     position: absolute;
-    right: vw(24px);
-    bottom: vw(24px);
+    right: vw(0px);
+    bottom: vw(5px);
     display: flex;
     align-items: center;
     justify-content: flex-end;

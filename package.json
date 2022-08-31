@@ -17,7 +17,8 @@
         "sass-resources-loader": "^2.2.5",
         "style-loader": "^3.3.1",
         "ts-loader": "^9.3.1",
-        "zego-express-engine-webrtc": "^2.18.0"
+        "zego-express-engine-webrtc": "^2.18.0",
+        "zego-uikit-prebuilt": "^1.0.1"
     },
     "homepage": "https://zegocloud.github.io/zegocloud_prebuilt_webrtc/build/",
     "scripts": {

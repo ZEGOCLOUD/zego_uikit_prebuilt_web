@@ -33,6 +33,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
                   <ZegoUserOtherVideo
                     key={value.userID + "_otherVideo"}
                     user={value}
+                    circleSize="SIDEBAR"
                     nextUser={arr[index + 1]}
                     othersNumber={arr.length - this.props.videoShowNumber + 1}
                   ></ZegoUserOtherVideo>
@@ -61,6 +62,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
               <ZegoUserVideo
                 muted={this.props?.selfInfo?.userID === value.userID}
                 user={value}
+                circleSize="SIDEBAR"
                 key={value.userID + "_video"}
                 volume={this.props.soundLevel![value.userID] || {}}
               ></ZegoUserVideo>
