@@ -8,7 +8,7 @@
     position: relative;
     display: flex;
     align-items: center;
-    padding: 8px 12px;
+    padding: 8px 8px 8px 12px;
     border-radius: 8px;
     & > span {
       flex: 0 0 auto;
@@ -65,7 +65,7 @@
     justify-content: center;
     width: 27px;
     height: 18px;
-    margin-left: 73px;
+    margin-left: 76px;
     color: #fff;
     background: rgba($color: #0055ff, $alpha: 0.9);
     border-radius: 4px;

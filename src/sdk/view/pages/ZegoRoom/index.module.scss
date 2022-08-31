@@ -118,8 +118,7 @@
   justify-content: space-between;
   box-sizing: border-box;
   height: 50px;
-  padding: 0 20px 0 16px;
-  padding-left: 40px;
+  padding: 0 16px;
   color: #ffffff;
   font-weight: 500;
   font-size: 16px;
@@ -262,8 +261,8 @@
   bottom: 58px;
   left: 50%;
   box-sizing: border-box;
-  width: 178px;
-  padding: 12px 6px;
+  width: 155px;
+  padding: 12px 6px 16px;
   background: #2c2f3e;
   border: 1px solid #3d4054;
   border-radius: 6px;
@@ -275,6 +274,7 @@
     font-weight: 400;
     font-size: 16px;
     line-height: 22px;
+    letter-spacing: -1px;
     border-radius: 4px;
     cursor: pointer;
     &:hover {
@@ -283,7 +283,7 @@
   }
   & > span {
     display: block;
-    width: 166px;
+    width: 141px;
     height: 1px;
     margin: 8px 0;
     background: #3d4054;
