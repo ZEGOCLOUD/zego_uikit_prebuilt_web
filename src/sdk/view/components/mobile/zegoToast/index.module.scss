@@ -1,7 +1,7 @@
 @import "../../../../var.scss";
 .ZegoToast {
   position: fixed;
-  top: 100vh;
+  top: 45vh;
   left: 0;
   z-index: 101;
   display: flex;
@@ -9,21 +9,25 @@
   justify-content: center;
   width: 100%;
   background: rgba($color: #2a2a2a, $alpha: 0);
-  transition: top 0.5s ease-in-out;
   // animation: name duration timing-function delay iteration-count direction fill-mode;
   .content {
     box-sizing: border-box;
     max-width: 60vw;
     padding: vw(14px) vw(30px);
-    color: #ffffff;
+    color: #ffffff00;
     font-weight: 400;
     font-size: vw(24px);
     // font-family: PingFangSC-Regular, PingFang SC;
     line-height: vw(33px);
-    background: rgba(42, 42, 42, 0.6);
+    background: rgba(42, 42, 42, 0);
     border-radius: vw(12px);
+    transition: color 1s ease-in-out;
+    transition: background 1s ease-in-out;
   }
 }
 .show {
-  top: vw(133px);
+  .content {
+    color: #ffffff;
+    background: rgba(42, 42, 42, 0.6);
+  }
 }

@@ -775,6 +775,37 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     }
   }
 
+  clickVideo(e: MouseEvent) {
+    // @ts-ignore
+    const className: string = e.target.className;
+    if (
+      className.includes("zegoUserVideo_videoCommon") ||
+      className.includes("zegoMore_more")
+    ) {
+      if (!this.state.showFooter) {
+        this.setState({ showFooter: true });
+      } else {
+        if (this.state.layOutStatus != "ONE_VIDEO") {
+          this.setState({
+            layOutStatus: "ONE_VIDEO",
+          });
+          clearTimeout(this.footerTimer);
+          this.footerTimer = setTimeout(() => {
+            this.setState({ showFooter: false, showMore: false });
+          }, 5000);
+        } else {
+          this.setState({ showFooter: false, showMore: false });
+        }
+      }
+      e.stopPropagation();
+    } else {
+      clearTimeout(this.footerTimer);
+      this.footerTimer = setTimeout(() => {
+        this.setState({ showFooter: false, showMore: false });
+      }, 5000);
+    }
+  }
+
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
@@ -794,12 +825,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       >
         <div
           className={ZegoRoomCss.ZegoRoom}
-          onClick={() => {
-            this.setState({ showFooter: true });
-            clearTimeout(this.footerTimer);
-            this.footerTimer = setTimeout(() => {
-              this.setState({ showFooter: false });
-            }, 5000);
+          onClick={(e) => {
+            // @ts-ignore
+            this.clickVideo(e);
           }}
         >
           {this.getLayoutScreen()}
