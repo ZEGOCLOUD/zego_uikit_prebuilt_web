@@ -695,7 +695,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       ...this.state.zegoCloudUserList,
     ].filter((item) => {
       if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
-        if (item.streamList && item.streamList[0] && item.streamList[0].media) {
+        if (
+          item.streamList?.[0]?.media &&
+          item.streamList?.[0]?.cameraStatus !== "MUTE"
+        ) {
           return true;
         } else {
           return false;
