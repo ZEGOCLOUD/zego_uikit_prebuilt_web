@@ -7,7 +7,7 @@ import { ZegoRoomMobile } from "./pages/ZegoRoomMobile";
 import { IntlProvider } from "react-intl";
 import index from "./index.module.scss";
 import { ZegoRejoinRoom } from "./pages/ZegoRejoinRoom";
-import { isIOS, isPc } from "../util";
+import { isIOS, isPc, IsSafari } from "../util";
 import { ZegoModel } from "./components/zegoModel";
 
 declare const SDK_ENV: boolean;
@@ -21,7 +21,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
 
   async componentDidMount() {
     const notSupportPhone =
-      !isPc() && isIOS() && this.props.core._config.maxUsers! > 2;
+      !isPc() && isIOS() && IsSafari() && this.props.core._config.maxUsers! > 2;
     const res = await this.props.core.checkWebRTC();
     this.setState({
       isSupportWebRTC: res && !notSupportPhone,

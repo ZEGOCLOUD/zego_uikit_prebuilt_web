@@ -23,6 +23,12 @@ export function isIOS() {
   return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 }
 
+export function IsSafari() {
+  const is_safari = navigator.userAgent.toLowerCase().indexOf("safari/") > -1;
+  const is_chrome = navigator.userAgent.match("CriOS");
+  return is_safari && !is_chrome;
+}
+
 export function DateFormat(date: number, fmt: string) {
   const myDate = new Date(date);
   const o = {
