@@ -58,5 +58,6 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
     private _selectedUser;
     getListScreen(): JSX.Element | undefined;
     getLayoutScreen(): JSX.Element | undefined;
+    clickVideo(e: MouseEvent): void;
     render(): React.ReactNode;
 }
