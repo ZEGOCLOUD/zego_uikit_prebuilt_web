@@ -157,7 +157,7 @@ export class ZegoCloudUserListManager {
           this.remoteUserList.push({
             userID: stream.fromUser.userID,
             userName: stream.fromUser.userName,
-            streamList: [],
+            streamList: [stream],
             pin: false,
           });
         }

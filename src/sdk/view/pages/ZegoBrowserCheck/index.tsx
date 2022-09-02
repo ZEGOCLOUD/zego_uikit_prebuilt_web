@@ -257,8 +257,10 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
         let massage = "";
         if (loginRsp === 0) {
-          this.state.localStream &&
-            this.props.core.destroyStream(this.state.localStream);
+          this.state.localAudioStream &&
+            this.props.core.destroyStream(this.state.localAudioStream);
+          this.state.localVideoStream &&
+            this.props.core.destroyStream(this.state.localVideoStream);
           this.props.joinRoom && this.props.joinRoom();
         } else if (loginRsp === 1002034) {
           // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。

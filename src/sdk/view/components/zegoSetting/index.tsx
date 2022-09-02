@@ -91,6 +91,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       this.micTimer && clearTimeout(this.micTimer);
       this.micSounder.stop();
     }
+    this.state.localVideoStream &&
+      this.props.core.destroyStream(this.state.localVideoStream);
     const dom = document.querySelector("#speakerAudioTest") as HTMLMediaElement;
     dom?.removeEventListener("ended", this.onTestMusicEnded.bind(this));
   }
