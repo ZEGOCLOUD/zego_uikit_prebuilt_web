@@ -18,6 +18,8 @@ export default class App extends React.Component {
       getUrlParams(window.location.href)["preHeader"] || "show";
     // @es
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
+    const showNonVideoUser =
+      getUrlParams(window.location.href)["showNonVideoUser"] || "true";
     const role = getUrlParams(window.location.href)["role"] || "HOST";
     this.myMeeting = async (element: HTMLDivElement) => {
       let { token } = await generateToken(randomID(5), roomID, getRandomName());
@@ -47,7 +49,7 @@ export default class App extends React.Component {
           showUserJoinAndLeave: true, //是否显示成员进出，默认不显示
           showTextChat: true, // 是否显示未读消息，默认不显示
         },
-        showNonVideoUser: role === "HOST",
+        showNonVideoUser: showNonVideoUser == "true",
         leaveRoomCallback: () => {
           console.log("test:leaveRoomCallback");
           window?.parent?.postMessage("leaveRoom", "*");

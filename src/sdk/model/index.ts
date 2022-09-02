@@ -46,8 +46,8 @@ export interface ZegoCloudRoomConfig {
   maxUsers?: number; // 房间人数2～20，默认2
   layout?: "Sidebar" | "Grid" | "Default"; // 默认Default
 
-  showNonVideoUser?: boolean; // 是否显示不推流用户，默认显示
-
+  showNonVideoUser?: boolean; // 是否显示无视频用户，默认显示
+  showOnlyAudioUser?: boolean; // 是否显示纯音频用户，默认显示
   // 是否现在做，跟凯华讨论下
   // permissions: {
   //   showRemoteUserMicrophoneToggleOption?: boolean; // 是否允许开关用户麦克风，默认允许

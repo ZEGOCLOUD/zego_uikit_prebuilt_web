@@ -60,18 +60,23 @@ export class ZegoCloudUserListManager {
     }
 
     for (let index = 0; index < noPinUserList.length; index++) {
-      if (this.showNonVideo || noPinUserList[index].streamList.length > 0) {
-        count++;
-      }
       if (
-        count > this.screenNumber ||
-        (count === this.screenNumber &&
-          noPinUserList[index + 1] &&
-          noPinUserList[index + 1].streamList.length > 0)
+        this.showNonVideo ||
+        (noPinUserList[index].streamList.length > 0 &&
+          (noPinUserList[index].streamList[0].cameraStatus === "OPEN" ||
+            noPinUserList[index].overScreenMuteVideo))
       ) {
-        await this.muteVideo(noPinUserList[index]);
-      } else {
-        await this.openVideo(noPinUserList[index]);
+        count++;
+        if (
+          count > this.screenNumber ||
+          (count === this.screenNumber &&
+            noPinUserList[index + 1] &&
+            noPinUserList[index + 1].streamList.length > 0)
+        ) {
+          await this.muteVideo(noPinUserList[index]);
+        } else {
+          await this.openVideo(noPinUserList[index]);
+        }
       }
     }
     return true;

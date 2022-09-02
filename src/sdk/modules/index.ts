@@ -106,8 +106,8 @@ export class ZegoCloudRTCCore {
     maxUsers: 2, // 房间人数2～20，默认2
     layout: "Default", // 默认Default
 
-    showNonVideoUser: true, // 是否显示不推流用户，默认显示
-
+    showNonVideoUser: true, // 是否显示无视频用户，默认显示
+    showOnlyAudioUser: false, // 是否显示纯音频用户，默认显示
     // // 是否现在做，跟凯华讨论下
     //   permissions:{
     //       showRemoteUserMicrophoneToggleOption?:boolean,// 是否允许开关用户麦克风，默认允许
