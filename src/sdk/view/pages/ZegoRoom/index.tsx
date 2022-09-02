@@ -695,11 +695,17 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       ...this.state.zegoCloudUserList,
     ].filter((item) => {
       if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
-        if (
-          item.streamList?.[0]?.media &&
-          item.streamList?.[0]?.cameraStatus !== "MUTE"
-        ) {
-          return true;
+        if (item.streamList && item.streamList[0] && item.streamList[0].media) {
+          if (item.streamList[0].cameraStatus === "OPEN") {
+            return true;
+          } else if (
+            this.props.core._config.showOnlyAudioUser &&
+            item.streamList[0].micStatus === "OPEN"
+          ) {
+            return true;
+          } else {
+            return false;
+          }
         } else {
           return false;
         }
@@ -710,7 +716,62 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
     return shownUser as ZegoCloudUserList;
   }
+  getHiddenUser() {
+    const hiddenUser = [
+      {
+        userID: this.props.core._expressConfig.userID,
+        userName: this.props.core._expressConfig.userName + "（You）",
+        pin: this.localUserPin,
+        streamList: [
+          {
+            media: this.state.localStream!,
+            fromUser: {
+              userID: this.props.core._expressConfig.userID,
+              userName: this.props.core._expressConfig.userName,
+            },
+            micStatus: this.state.micOpen ? "OPEN" : "MUTE",
+            cameraStatus: this.state.cameraOpen ? "OPEN" : "MUTE",
+            state: "PLAYING",
+            streamID: this.localStreamID,
+          },
+        ],
+      },
+      ...this.state.zegoCloudUserList,
+    ].filter((item) => {
+      if (
+        !this.props.core._config.showNonVideoUser &&
+        item.streamList &&
+        item.streamList[0] &&
+        item.streamList[0].media &&
+        item.streamList[0].cameraStatus !== "OPEN" &&
+        !this.props.core._config.showOnlyAudioUser &&
+        item.streamList[0].micStatus === "OPEN"
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    });
 
+    return (
+      <>
+        {hiddenUser.map((user) => {
+          return (
+            <audio
+              autoPlay
+              muted={user.userID === this.props.core._expressConfig.userID}
+              key={user.userID + "_hiddenAudio"}
+              ref={(el) => {
+                el &&
+                  el.srcObject !== user.streamList[0].media &&
+                  (el.srcObject = user.streamList[0].media);
+              }}
+            ></audio>
+          );
+        })}
+      </>
+    );
+  }
   getLayoutScreen() {
     if (
       (this.state.layout === "Default" && this.getShownUser().length < 3) ||
@@ -806,6 +867,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         <div className={ZegoRoomCss.content}>
           <div className={ZegoRoomCss.contentLeft}>
             {this.getLayoutScreen()}
+            {this.getHiddenUser()}
             <div className={ZegoRoomCss.notify}>
               {this.state.notificationList
                 .slice(startIndex)
