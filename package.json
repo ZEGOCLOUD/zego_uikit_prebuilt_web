@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@zegocloud/zego-uikit-prebuilt": "^1.0.1",
         "clipboard": "^2.0.11",
         "clsx": "^1.2.1",
         "css-loader": "^6.7.1",

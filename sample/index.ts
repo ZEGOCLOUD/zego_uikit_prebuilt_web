@@ -1,4 +1,4 @@
-import { ZegoUIKitPrebuilt } from "zego-uikit-prebuilt";
+import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 // get token
 function generateToken(
   tokenServerUrl: string,
