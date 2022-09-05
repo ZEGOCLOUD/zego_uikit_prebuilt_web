@@ -20,7 +20,18 @@ export default class App extends React.Component {
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
     const showNonVideoUser =
       getUrlParams(window.location.href)["showNonVideoUser"] || "true";
-    const role = getUrlParams(window.location.href)["role"] || "HOST";
+    let role = getUrlParams(window.location.href)["role"] || "HOST";
+    let maxUsers = 2;
+    if (process.env.BUILD_PATH === "call") {
+      role = "HOST";
+      maxUsers = 2;
+    } else if (process.env.BUILD_PATH === "live") {
+      maxUsers = 50;
+    } else if (process.env.BUILD_PATH === "meeting") {
+      role = "HOST";
+      maxUsers = 50;
+    }
+
     this.myMeeting = async (element: HTMLDivElement) => {
       let { token } = await generateToken(randomID(5), roomID, getRandomName());
       const zp = ZegoUIKitPrebuilt.create(token);
@@ -34,7 +45,8 @@ export default class App extends React.Component {
             window.location.pathname +
             "?roomID=" +
             roomID +
-            "&role=GUEST",
+            "&role=" +
+            role,
           title: "Join Room",
         },
         // facingMode: "environment",
@@ -66,7 +78,7 @@ export default class App extends React.Component {
             "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
         },
         showLeavingView: true, // 离开房间后页面，默认有
-        maxUsers: 50,
+        maxUsers,
       };
       zp.joinRoom(param);
     };
