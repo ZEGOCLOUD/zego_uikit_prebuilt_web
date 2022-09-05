@@ -1,14 +1,11 @@
 /// <reference types="node" />
 import React from "react";
-<<<<<<< HEAD:ZegoPrebuiltUIKit/sdk/view/pages/ZegoRoomMobile/index.d.ts
 import { SoundLevelMap, ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoNotification } from "../../../model";
-import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+
 import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
-=======
-import { ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoCloudRemoteMedia, ZegoNotification } from "../../../model";
+
 import { ZegoUser, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
->>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile):ZegoPrebuilt/sdk/view/pages/ZegoRoomMobile/index.d.ts
 export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     static contextType: React.Context<import("./context/showManage").ShowManageType>;
     state: {
@@ -34,12 +31,9 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
     faceModel: 0 | 1 | -1;
     notifyTimer: NodeJS.Timeout | null;
     footerTimer: NodeJS.Timeout;
-<<<<<<< HEAD:ZegoPrebuiltUIKit/sdk/view/pages/ZegoRoomMobile/index.d.ts
     userUpdateCallBack: () => void;
     localStreamID: string;
-=======
     cameraDevices: ZegoDeviceInfo[];
->>>>>>> ae8a171 (🚀  fix  switch camera not working in some mobile):ZegoPrebuilt/sdk/view/pages/ZegoRoomMobile/index.d.ts
     componentDidMount(): void;
     componentDidUpdate(preProps: ZegoBrowserCheckProp, preState: {
         localStream: undefined | MediaStream;
