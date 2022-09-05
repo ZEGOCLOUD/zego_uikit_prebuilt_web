@@ -1,5 +1,5 @@
 {
-            "name": "zego-uikit-prebuilt",
+            "name": "@zegocloud/zego-uikit-prebuilt",
             "version": "1.0.0",
             "description": "zegocloud prebuilt meeting webrtc sdk",
             "main": "./index.umd.js",
