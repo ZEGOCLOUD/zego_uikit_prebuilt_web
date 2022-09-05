@@ -39,6 +39,7 @@ export interface ZegoCloudRoomConfig {
     maxUsers?: number;
     layout?: "Sidebar" | "Grid" | "Default";
     showNonVideoUser?: boolean;
+    showOnlyAudioUser?: boolean;
 }
 export interface ZegoBrowserCheckProp {
     core: ZegoCloudRTCCore;

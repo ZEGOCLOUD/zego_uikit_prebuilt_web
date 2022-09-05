@@ -55,6 +55,7 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
     openMore(): void;
     leaveRoom(): void;
     getShownUser(forceShowNonVideoUser?: boolean): ZegoCloudUserList;
+    getHiddenUser(): JSX.Element;
     private _selectedUser;
     getListScreen(): JSX.Element | undefined;
     getLayoutScreen(): JSX.Element | undefined;

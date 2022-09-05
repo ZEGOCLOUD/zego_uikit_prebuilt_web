@@ -69,6 +69,7 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     showLayoutSettings(show: boolean): void;
     changeLayout(type: string): Promise<unknown>;
     getShownUser(forceShowNonVideoUser?: boolean): ZegoCloudUserList;
+    getHiddenUser(): JSX.Element;
     getLayoutScreen(): JSX.Element | undefined;
     handleSetPin(userID: string): void;
     render(): React.ReactNode;
