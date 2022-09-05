@@ -31,6 +31,12 @@ export class ZegoUserVideo extends React.Component<{
                   el.srcObject !== this.props.user.streamList[0].media &&
                   (el.srcObject = this.props.user.streamList[0].media);
               }}
+              onPause={(el) => {
+                alert("video paused");
+                alert(el.target);
+                // @ts-ignore
+                (el.target as HTMLVideoElement).captureStream();
+              }}
             ></video>
           )}
         {(!this.props.user.streamList ||

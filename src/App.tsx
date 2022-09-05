@@ -37,6 +37,7 @@ export default class App extends React.Component {
             "&role=GUEST",
           title: "Join Room",
         },
+        facingMode: "environment",
         showPreJoinView: true, // 是否显示预览检测页面，默认显示
         turnOnMicrophoneWhenJoining: role === "HOST", // 是否开启自己的麦克风,默认开启
         turnOnCameraWhenJoining: role === "HOST", // 是否开启自己的摄像头 ,默认开启

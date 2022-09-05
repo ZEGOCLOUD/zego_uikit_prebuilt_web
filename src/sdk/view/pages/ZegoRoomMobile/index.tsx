@@ -79,7 +79,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     ? 1
     : 0;
   localUserPin = false;
-  faceModel: 0 | 1 | -1 = 1;
+  faceModel: 0 | 1 | -1 = this.props.core._config.facingMode === "user" ? 1 : 0;
   notifyTimer: NodeJS.Timeout | null = null;
   footerTimer!: NodeJS.Timeout;
   cameraDevices: ZegoDeviceInfo[] = [];
@@ -268,6 +268,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             video: !this.props.core.status.videoRefuse,
             audio: !this.props.core.status.audioRefuse,
             videoQuality: 4,
+            facingMode: this.faceModel ? "user" : "environment",
             width: 640,
             height: 480,
             bitrate: 500,
@@ -382,7 +383,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       return;
     }
 
-    if (!this.state.localStream) {
+    if (!this.state.localStream || this.cameraDevices.length < 2) {
       return;
     }
 
@@ -394,94 +395,22 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     }
     this.faceModel = -1;
 
-    let _localStream;
+    let targetCameraID;
+    if (this.cameraDevices.length < 4) {
+      targetCameraID = targetModel
+        ? this.cameraDevices[this.cameraDevices.length - 2].deviceID
+        : this.cameraDevices[this.cameraDevices.length - 1].deviceID;
+    } else {
+      targetCameraID = targetModel
+        ? this.cameraDevices[0].deviceID
+        : this.cameraDevices[this.cameraDevices.length - 1].deviceID;
+    }
 
-    // if (this.cameraDevices.length < 3) {
-    //   try {
-    //     _localStream = await this.props.core.createStream({
-    //       camera: {
-    //         video: !this.props.core.status.audioRefuse,
-    //         audio: false,
-    //         facingMode: targetModel ? "user" : "environment",
-    //         videoQuality: 4,
-    //         width: 640,
-    //         height: 480,
-    //         bitrate: 500,
-    //         frameRate: 15,
-    //       },
-    //     });
-    //   } catch (error) {
-    //     this.state.localStream.getTracks().map((s) => s.stop());
-    //     // _localStream = await this.props.core.createStream({
-    //     //   camera: {
-    //     //     video: true,
-    //     //     audio: false,
-    //     //     videoInput: targetModel
-    //     //       ? this.cameraDevices[0].deviceID
-    //     //       : this.cameraDevices[this.cameraDevices.length - 1].deviceID,
-    //     //     videoQuality: 4,
-    //     //     width: 640,
-    //     //     height: 480,
-    //     //     bitrate: 500,
-    //     //     frameRate: 15,
-    //     //   },
-    //     // });
-
-    //     try {
-    //       this.cameraDevices = await this.props.core.getCameras();
-    //       _localStream = await navigator.mediaDevices.getUserMedia({
-    //         video: {
-    //           deviceId: {
-    //             exact: targetModel
-    //               ? this.cameraDevices[0].deviceID
-    //               : this.cameraDevices[this.cameraDevices.length - 1].deviceID,
-    //           },
-    //         },
-    //         audio: true,
-    //       });
-    //     } catch (error) {
-    //       console.error(error);
-    //     }
-    //   }
-    // } else {
-    //   if (targetModel) {
-    //     _localStream = await this.props.core.createStream({
-    //       camera: {
-    //         video: !this.props.core.status.audioRefuse,
-    //         audio: false,
-    //         facingMode: "user",
-    //         videoQuality: 4,
-    //         width: 640,
-    //         height: 480,
-    //         bitrate: 500,
-    //         frameRate: 15,
-    //       },
-    //     });
-    //   } else {
-    //     _localStream = await this.props.core.createStream({
-    //       camera: {
-    //         video: !this.props.core.status.audioRefuse,
-    //         audio: false,
-    //         videoInput: targetModel
-    //           ? this.cameraDevices[0].deviceID
-    //           : this.cameraDevices[this.cameraDevices.length - 1].deviceID,
-    //         videoQuality: 4,
-    //         width: 640,
-    //         height: 480,
-    //         bitrate: 500,
-    //         frameRate: 15,
-    //       },
-    //     });
-    //   }
-    // }
-
-    const targetCameraID = targetModel
-      ? this.cameraDevices[0].deviceID
-      : this.cameraDevices[this.cameraDevices.length - 1].deviceID;
     await this.props.core.useCameraDevice(
       this.state.localStream,
       targetCameraID
     );
+
     this.faceModel = targetModel ? 1 : 0;
     this.setState({
       cameraFront: targetModel,

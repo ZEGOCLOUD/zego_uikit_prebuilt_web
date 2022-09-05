@@ -63,7 +63,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
           camera: {
             video: true,
             audio: false,
-            facingMode: "user",
+            facingMode: this.props.core._config.facingMode,
             videoQuality: 4,
             width: 640,
             height: 480,

@@ -82,6 +82,7 @@ export class ZegoCloudRTCCore {
       invitationLink: window.location.href, // 邀请链接，空则不显示，默认空
     },
     showPreJoinView: true, // 是否显示预览检测页面，默认显示
+    facingMode: "user",
     turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
     turnOnCameraWhenJoining: true, // 是否开启自己的摄像头 ,默认开启
     showMyCameraToggleButton: true, // 是否可以控制自己的麦克风,默认开启
