@@ -36,6 +36,7 @@ export declare class ZegoCloudRTCCore {
     setSidebarLayOut(enable: boolean): Promise<void>;
     setShowNonVideo(enable: boolean): Promise<void>;
     getCameras(): Promise<ZegoDeviceInfo[]>;
+    useVideoDevice(localStream: MediaStream, deviceID: string): Promise<ZegoServerResponse>;
     getMicrophones(): Promise<ZegoDeviceInfo[]>;
     getSpeakers(): Promise<ZegoDeviceInfo[]>;
     setVolume(media: HTMLVideoElement, volume: number): void;

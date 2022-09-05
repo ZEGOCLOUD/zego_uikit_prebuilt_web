@@ -146,6 +146,14 @@ export class ZegoCloudRTCCore {
   getCameras(): Promise<ZegoDeviceInfo[]> {
     return ZegoCloudRTCCore._zg.getCameras();
   }
+
+  useVideoDevice(
+    localStream: MediaStream,
+    deviceID: string
+  ): Promise<ZegoServerResponse> {
+    return ZegoCloudRTCCore._zg.useVideoDevice(localStream, deviceID);
+  }
+
   getMicrophones(): Promise<ZegoDeviceInfo[]> {
     return ZegoCloudRTCCore._zg.getMicrophones();
   }
