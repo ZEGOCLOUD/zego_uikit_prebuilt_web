@@ -47,7 +47,7 @@ export default class App extends React.Component {
             "?roomID=" +
             roomID +
             "&role=" +
-            role,
+            (process.env.REACT_APP_PATH === "live" ? "GUEST" : role),
           title: "Join Room",
         },
         // facingMode: "environment",
