@@ -29,7 +29,7 @@
         "build:call": "REACT_APP_ENV='test' BUILD_PATH='call'  react-scripts build",
         "build:live": "REACT_APP_ENV='test' BUILD_PATH='live'  react-scripts build",
         "build:meeting": "REACT_APP_ENV='test' BUILD_PATH='meeting'  react-scripts build",
-        "predeploy": "npm run build & npm run build:call & npm run build:live & npm run build:meeting",
+        "build:all": "npm run build & npm run build:call & npm run build:live & npm run build:meeting",
         "deploy": "gh-pages -b main -d build",
         "eject": "react-scripts eject",
         "build:lib": "webpack"

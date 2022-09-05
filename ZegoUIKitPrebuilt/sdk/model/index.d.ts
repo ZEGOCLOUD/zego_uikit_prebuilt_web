@@ -15,6 +15,7 @@ export interface ZegoCloudRoomConfig {
         title?: string;
         invitationLink?: string;
     };
+    facingMode?: "user" | "environment";
     showPreJoinView?: boolean;
     turnOnMicrophoneWhenJoining?: boolean;
     turnOnCameraWhenJoining?: boolean;
