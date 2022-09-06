@@ -849,7 +849,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         }}
       >
         <div
-          className={ZegoRoomCss.ZegoRoom}
+          className={`${ZegoRoomCss.ZegoRoom}  ZegoRoomMobile_ZegoRoom`}
           onClick={(e) => {
             // @ts-ignore
             this.clickVideo(e);

@@ -9,7 +9,7 @@ export class ZegoMore extends React.Component<{ user: ZegoCloudUser }> {
     let { show } = this.context;
     return (
       <div
-        className={ZegoMoreCss.more}
+        className={`${ZegoMoreCss.more} zegoMore_more`}
         onClick={() => {
           show(this.props.user);
         }}

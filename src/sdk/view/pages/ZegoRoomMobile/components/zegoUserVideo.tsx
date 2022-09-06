@@ -25,7 +25,7 @@ export class ZegoUserVideo extends React.Component<{
             <video
               muted={this.props.muted}
               autoPlay
-              className={zegoUserVideoCss.videoCommon}
+              className={`${zegoUserVideoCss.videoCommon} zegoUserVideo_videoCommon`}
               ref={(el) => {
                 el &&
                   el.srcObject !== this.props.user.streamList[0].media &&
