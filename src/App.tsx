@@ -19,7 +19,7 @@ export default class App extends React.Component {
     const userName = getUrlParams(window.location.href)["UserName"];
     // @es
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
-    const showNonVideoUser =
+    let showNonVideoUser =
       getUrlParams(window.location.href)["showNonVideoUser"] || "true";
     let role = getUrlParams(window.location.href)["role"] || "HOST";
     let maxUsers = 2;
@@ -29,6 +29,7 @@ export default class App extends React.Component {
       maxUsers = 2;
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       maxUsers = 50;
+      showNonVideoUser = "false";
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       role = "HOST";
       maxUsers = 50;
@@ -54,7 +55,7 @@ export default class App extends React.Component {
             "?roomID=" +
             roomID +
             "&role=" +
-            (process.env.REACT_APP_PATH === "live" ? "GUEST" : role),
+            (process.env.REACT_APP_PATH === "live_stream" ? "GUEST" : role),
           title: "Join Room",
         },
         // facingMode: "environment",
