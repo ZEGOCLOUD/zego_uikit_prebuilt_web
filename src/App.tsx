@@ -24,12 +24,12 @@ export default class App extends React.Component {
     let role = getUrlParams(window.location.href)["role"] || "HOST";
     let maxUsers = 2;
     console.warn("process.env.REACT_APP_PATH:", process.env.REACT_APP_PATH);
-    if (process.env.REACT_APP_PATH === "call") {
+    if (process.env.REACT_APP_PATH === "1on1_call") {
       role = "HOST";
       maxUsers = 2;
-    } else if (process.env.REACT_APP_PATH === "live") {
+    } else if (process.env.REACT_APP_PATH === "live_stream") {
       maxUsers = 50;
-    } else if (process.env.REACT_APP_PATH === "meeting") {
+    } else if (process.env.REACT_APP_PATH === "video_conference") {
       role = "HOST";
       maxUsers = 50;
     }
