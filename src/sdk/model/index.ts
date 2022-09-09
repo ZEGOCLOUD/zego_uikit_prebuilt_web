@@ -4,7 +4,10 @@ import {
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 
 import { ZegoCloudRTCCore } from "../modules";
-import { ZegoCloudUserList } from "../modules/tools/UserListManager";
+import {
+  ZegoCloudUser,
+  ZegoCloudUserList,
+} from "../modules/tools/UserListManager";
 export interface ZegoCloudRemoteMedia {
   media: MediaStream;
   fromUser: ZegoUser;
@@ -115,7 +118,17 @@ export interface ZegoSidebarLayoutProps {
   };
   soundLevel?: SoundLevelMap;
 }
-
+export interface ZegoScreenSharingLayoutProps {
+  handleSetPin?: Function;
+  userList: ZegoCloudUserList;
+  videoShowNumber: number;
+  selfInfo: {
+    userID: string;
+  };
+  screenSharingUser: ZegoCloudUser;
+  soundLevel?: SoundLevelMap;
+  handleFullScreen?: (fullScreen: boolean) => void;
+}
 export interface SoundLevelMap {
   [userID: string]: {
     [streamID: string]: number;

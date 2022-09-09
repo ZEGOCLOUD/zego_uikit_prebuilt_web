@@ -14,6 +14,7 @@ export class ZegoCloudUserListManager {
   screenNumber = 0;
   sidebarEnabled = false;
   remoteUserList: ZegoCloudUserList = [];
+  remoteScreenStreamList: ZegoCloudUserList = [];
   setPin(userID?: string, pined?: boolean): void {
     this.remoteUserList.map((u) => {
       if (u.userID === userID) {
@@ -137,6 +138,7 @@ export class ZegoCloudUserListManager {
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]
   ): void {
+    console.warn("streamList", streamList);
     streamList.map((stream) => {
       // 已经在列表中才处理删除和更新，否则只处理新增
       if (
@@ -167,6 +169,45 @@ export class ZegoCloudUserListManager {
         }
       }
     });
+  }
+  screenStreamUpdate(
+    updateType: "DELETE" | "ADD" | "UPDATE",
+    streamList: ZegoCloudRemoteMedia[]
+  ): void {
+    streamList
+      .filter((s) => s.streamID.includes("screensharing"))
+      .map((stream) => {
+        // 已经在列表中才处理删除和更新，否则只处理新增
+        if (
+          this.remoteScreenStreamList.some(
+            (u) => u.userID === stream.fromUser.userID
+          )
+        ) {
+          const u_index = this.remoteScreenStreamList.findIndex(
+            (u) => u.userID === stream.fromUser.userID
+          );
+          const s_index = this.remoteScreenStreamList[
+            u_index
+          ].streamList.findIndex((s) => s.media === stream.media);
+
+          if (updateType === "ADD") {
+            this.remoteScreenStreamList[u_index].streamList.push(stream);
+          } else if (updateType === "DELETE" && s_index > -1) {
+            this.remoteScreenStreamList.splice(u_index, 1);
+          } else if (updateType === "UPDATE" && s_index > -1) {
+            this.remoteScreenStreamList[u_index].streamList[s_index] = stream;
+          }
+        } else {
+          if (updateType === "ADD") {
+            this.remoteScreenStreamList.push({
+              userID: stream.fromUser.userID,
+              userName: stream.fromUser.userName,
+              streamList: [stream],
+              pin: false,
+            });
+          }
+        }
+      });
   }
   clearUserList() {
     this.remoteUserList = [];

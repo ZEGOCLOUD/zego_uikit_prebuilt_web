@@ -61,3 +61,25 @@
     height: 100%;
   }
 }
+
+// screenSharing layout
+.bigVideoWrapper {
+  position: relative;
+  flex: 1 1 auto;
+  .bigVideo {
+    width: 100%;
+    height: 100%;
+  }
+}
+.fullScreenBtn {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  z-index: 15;
+  padding: 10px 20px;
+  color: #242736;
+  background-color: #fff;
+  border: 1px solid #242736;
+  border-radius: 8px;
+  cursor: pointer;
+}

@@ -231,6 +231,9 @@
 }
 .screenButton {
   background-image: url("../../../sdkAssets/icon_inner_camera.png");
+  &.sharing {
+    background-image: url("../../../sdkAssets/icon_inner_camera_close.png");
+  }
 }
 .moreButton {
   position: relative;
