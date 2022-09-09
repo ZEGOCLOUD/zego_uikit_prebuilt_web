@@ -80,6 +80,7 @@ export default class App extends React.Component {
         },
         showLeavingView: true, // 离开房间后页面，默认有
         maxUsers,
+        showScreenSharingButton: true,
       };
       zp.joinRoom(param);
     };

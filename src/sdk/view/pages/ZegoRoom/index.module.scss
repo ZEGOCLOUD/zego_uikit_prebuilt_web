@@ -229,6 +229,9 @@
     background-image: url("../../../sdkAssets/icon_inner_camera_close.png");
   }
 }
+.screenButton {
+  background-image: url("../../../sdkAssets/icon_inner_camera.png");
+}
 .moreButton {
   position: relative;
   background-image: url("../../../sdkAssets/icon_inner_more.png");
@@ -419,7 +422,7 @@
     .layoutSettingsItemChecked {
       background-image: url("../../../sdkAssets/icon_choose_pre@2x.png");
     }
-    .layoutSettingsItemLoadoing {
+    .layoutSettingsItemLoading {
       background-image: url("../../../sdkAssets/icon_loading@2x.png");
       animation: layoutLoading 1.8s linear infinite;
     }

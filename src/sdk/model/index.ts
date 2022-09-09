@@ -55,6 +55,8 @@ export interface ZegoCloudRoomConfig {
   //   showRemoteUserCameraToggleOption?: boolean; // 是否允许开关用户摄像头，默认允许
   // };
   // role?: "Host" | "Participant"; // 用户角色，HOST可以关闭对方摄像头和麦克风，Participant则不可以,默认HOST
+  ////////三期新增配置 ///////////////
+  showScreenSharingButton?: boolean; // 是否显示屏幕共享按钮
 }
 
 export interface ZegoBrowserCheckProp {
@@ -118,4 +120,9 @@ export interface SoundLevelMap {
   [userID: string]: {
     [streamID: string]: number;
   };
+}
+export enum ZegoStreamType {
+  main,
+  media,
+  screensharing,
 }

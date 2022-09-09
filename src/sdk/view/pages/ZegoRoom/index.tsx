@@ -15,7 +15,12 @@ import {
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { getVideoResolution, randomNumber, throttle } from "../../../util";
+import {
+  getBrowser,
+  getVideoResolution,
+  randomNumber,
+  throttle,
+} from "../../../util";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
@@ -50,6 +55,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     showLayoutSettingsModel: boolean; // 是否显示布局设置弹窗
     isLayoutChanging: boolean; // 布局是否正在变更中
     soundLevel: SoundLevelMap;
+    isScreenSharing: boolean; // 是否正在屏幕共享
+    screenSharingStream: undefined | MediaStream; // 本地屏幕共享流
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -74,6 +81,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     isLayoutChanging: false,
     soundLevel: {},
     showNonVideoUser: this.props.core._config.showNonVideoUser as boolean,
+    isScreenSharing: false,
+    screenSharingStream: undefined,
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -89,6 +98,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   msgDelayed = true; // 5s不显示
   localUserPin = false;
   localStreamID = "";
+  screenSharingStreamID = "";
+  isCreatingScreenSharing = false;
   userUpdateCallBack = () => {};
   componentDidMount() {
     this.computeByResize();
@@ -256,7 +267,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       (soundLevelList: ZegoSoundLevelInfo[]) => {
         let list: SoundLevelMap = {};
         soundLevelList.forEach((s) => {
-          let userId = s.streamID.split("_")[0];
+          let userId = s.streamID.split("_")[1];
           if (list[userId]) {
             list[userId][s.streamID] = Math.floor(s.soundLevel);
           } else {
@@ -270,6 +281,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         });
       }
     );
+    this.props.core.onScreenSharingEnded((stream: MediaStream) => {
+      if (stream === this.state.screenSharingStream) {
+        this.screenSharingStreamID = "";
+        this.setState({
+          isScreenSharing: false,
+          screenSharingStream: undefined,
+        });
+      }
+    });
     const logInRsp = await this.props.core.enterRoom();
     logInRsp === 0 && this.createStream();
   }
@@ -396,7 +416,80 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     }
     return !!result;
   }
-
+  async toggleScreenSharing() {
+    // TODO
+    if (this.state.isScreenSharing) {
+      this.closeScreenSharing();
+    } else {
+      this.createScreenSharing();
+    }
+  }
+  async createScreenSharing() {
+    // 判断浏览器是否支持屏幕共享
+    const { browser, version } = getBrowser();
+    const v = parseInt(version);
+    console.warn(browser, version);
+    if (
+      (browser === "Chrome" && v < 72) ||
+      (browser === "Edge" && v < 79) ||
+      (browser === "Firefox" && v < 66) ||
+      (browser === "Safari" && v < 13) ||
+      (browser === "Opera" && v < 66)
+    ) {
+      return;
+    }
+    //TODO 判断当前是否已有屏幕共享
+    if (0) {
+      ZegoToast({
+        content: `xxx is presenting now. You cannot share your screen.`,
+      });
+      return;
+    }
+    if (this.isCreatingScreenSharing) return;
+    this.isCreatingScreenSharing = true;
+    try {
+      const screenSharingStream = await this.props.core.createStream({
+        screen: { videoQuality: 2, bitRate: 1500, frameRate: 15, audio: true },
+      });
+      const streamID = this.props.core.publishLocalStream(
+        screenSharingStream,
+        "screensharing"
+      );
+      streamID && (this.screenSharingStreamID = streamID as string);
+      this.setState({
+        isScreenSharing: true,
+        screenSharingStream: screenSharingStream,
+      });
+    } catch (error: any) {
+      console.error(error);
+      if (error?.code === 1103043) {
+        ZegoModelShow({
+          header: "Notice",
+          contentText: "Your browser does not support screen sharing.",
+          okText: "Okay",
+        });
+      }
+      if (error?.code === 1103010 && error?.msg.includes("Permission"))
+        ZegoModelShow({
+          header: "Grant access to share your screen",
+          contentText:
+            "Your system does not have access to share a screen from the browser. Please grant access to share your screen on your system settings.",
+          okText: "Okay",
+        });
+    }
+    this.isCreatingScreenSharing = false;
+  }
+  async closeScreenSharing() {
+    this.screenSharingStreamID &&
+      this.props.core.stopPublishingStream(this.screenSharingStreamID);
+    this.state.screenSharingStream &&
+      this.props.core.destroyStream(this.state.screenSharingStream);
+    this.screenSharingStreamID = "";
+    this.setState({
+      isScreenSharing: false,
+      screenSharingStream: undefined,
+    });
+  }
   toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE") {
     this.setState(
       (state: {
@@ -970,7 +1063,14 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 }}
               ></div>
             )}
-
+            {this.props.core._config.showScreenSharingButton && (
+              <div
+                className={`${ZegoRoomCss.screenButton}`}
+                onClick={() => {
+                  this.toggleScreenSharing();
+                }}
+              ></div>
+            )}
             <div
               ref={this.moreRef}
               className={ZegoRoomCss.moreButton}
@@ -1069,7 +1169,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                       } ${
                         this.state.isLayoutChanging &&
                         this.state.layout === "Default"
-                          ? ZegoRoomCss.layoutSettingsItemLoadoing
+                          ? ZegoRoomCss.layoutSettingsItemLoading
                           : ""
                       }`}
                     ></span>
@@ -1089,7 +1189,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                       } ${
                         this.state.isLayoutChanging &&
                         this.state.layout === "Grid"
-                          ? ZegoRoomCss.layoutSettingsItemLoadoing
+                          ? ZegoRoomCss.layoutSettingsItemLoading
                           : ""
                       }`}
                     ></span>
@@ -1113,7 +1213,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                       } ${
                         this.state.isLayoutChanging &&
                         this.state.layout === "Sidebar"
-                          ? ZegoRoomCss.layoutSettingsItemLoadoing
+                          ? ZegoRoomCss.layoutSettingsItemLoading
                           : ""
                       }`}
                     ></span>

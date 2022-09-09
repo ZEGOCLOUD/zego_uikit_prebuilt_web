@@ -1,4 +1,3 @@
-import { flattenDiagnosticMessageText } from "typescript";
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRemoteMedia } from "../../model";
