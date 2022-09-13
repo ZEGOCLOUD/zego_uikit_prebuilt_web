@@ -508,7 +508,7 @@ export class ZegoCloudRTCCore {
       streamList: ZegoCloudRemoteMedia[]
     ) => {
       func(updateType, streamList);
-      this.zum.streamNumUpdate(updateType, streamList);
+      this.zum.mainStreamUpdate(updateType, streamList);
       this.zum.screenStreamUpdate(updateType, streamList);
       this.subscribeUserListCallBack &&
         this.subscribeUserListCallBack(this.zum.remoteUserList);

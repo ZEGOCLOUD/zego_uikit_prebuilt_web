@@ -134,41 +134,43 @@ export class ZegoCloudUserListManager {
     }
   }
 
-  streamNumUpdate(
+  mainStreamUpdate(
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]
   ): void {
     console.warn("streamList", streamList);
-    streamList.map((stream) => {
-      // 已经在列表中才处理删除和更新，否则只处理新增
-      if (
-        this.remoteUserList.some((u) => u.userID === stream.fromUser.userID)
-      ) {
-        const u_index = this.remoteUserList.findIndex(
-          (u) => u.userID === stream.fromUser.userID
-        );
-        const s_index = this.remoteUserList[u_index].streamList.findIndex(
-          (s) => s.media === stream.media
-        );
+    streamList
+      .filter((s) => s.streamID.includes("_main"))
+      .forEach((stream) => {
+        // 已经在列表中才处理删除和更新，否则只处理新增
+        if (
+          this.remoteUserList.some((u) => u.userID === stream.fromUser.userID)
+        ) {
+          const u_index = this.remoteUserList.findIndex(
+            (u) => u.userID === stream.fromUser.userID
+          );
+          const s_index = this.remoteUserList[u_index].streamList.findIndex(
+            (s) => s.media === stream.media
+          );
 
-        if (updateType === "ADD") {
-          this.remoteUserList[u_index].streamList.push(stream);
-        } else if (updateType === "DELETE" && s_index > -1) {
-          this.remoteUserList[u_index].streamList.splice(s_index, 1);
-        } else if (updateType === "UPDATE" && s_index > -1) {
-          this.remoteUserList[u_index].streamList[s_index] = stream;
+          if (updateType === "ADD") {
+            this.remoteUserList[u_index].streamList.push(stream);
+          } else if (updateType === "DELETE" && s_index > -1) {
+            this.remoteUserList[u_index].streamList.splice(s_index, 1);
+          } else if (updateType === "UPDATE" && s_index > -1) {
+            this.remoteUserList[u_index].streamList[s_index] = stream;
+          }
+        } else {
+          if (updateType === "ADD") {
+            this.remoteUserList.push({
+              userID: stream.fromUser.userID,
+              userName: stream.fromUser.userName,
+              streamList: [stream],
+              pin: false,
+            });
+          }
         }
-      } else {
-        if (updateType === "ADD") {
-          this.remoteUserList.push({
-            userID: stream.fromUser.userID,
-            userName: stream.fromUser.userName,
-            streamList: [stream],
-            pin: false,
-          });
-        }
-      }
-    });
+      });
   }
   screenStreamUpdate(
     updateType: "DELETE" | "ADD" | "UPDATE",
@@ -176,7 +178,7 @@ export class ZegoCloudUserListManager {
   ): void {
     streamList
       .filter((s) => s.streamID.includes("screensharing"))
-      .map((stream) => {
+      .forEach((stream) => {
         // 已经在列表中才处理删除和更新，否则只处理新增
         if (
           this.remoteScreenStreamList.some(

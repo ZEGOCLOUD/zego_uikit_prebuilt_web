@@ -8,7 +8,13 @@ import { VideoPlayer } from "./zegoVideoPlayer";
 export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLayoutProps> {
   state = {
     fullScreen: false,
+    loadingMask: true,
   };
+  onCanPlay() {
+    this.setState({
+      loadingMask: false,
+    });
+  }
   render(): React.ReactNode {
     let wrapClassName = clsx({
       [ZegoSidebarCss.rightWrapper]: true,
@@ -23,7 +29,7 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
         <div className={ZegoSidebarCss.sidebarWrapper}>
           <div className={ZegoSidebarCss.bigVideoWrapper}>
             <VideoPlayer
-              myClass={ZegoSidebarCss.bigVideo}
+              myClass={ZegoSidebarCss.screenVideo}
               userInfo={this.props.screenSharingUser}
               handlePin={() =>
                 this.props.handleSetPin!(this.props.screenSharingUser.userID)
@@ -33,7 +39,20 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
                 this.props.selfInfo.userID
               }
               volume={{}}
+              hiddenMore={true}
+              hiddenName={true}
+              onCanPlay={this.onCanPlay.bind(this)}
             ></VideoPlayer>
+            {this.state.loadingMask && (
+              <div className={ZegoSidebarCss.screenVideoLoading}>
+                <p>
+                  {this.props.screenSharingUser.userID ===
+                  this.props.selfInfo.userID
+                    ? "You are presenting your screen"
+                    : `${this.props.screenSharingUser.userName} is presenting the screen`}
+                </p>
+              </div>
+            )}
             <div
               className={ZegoSidebarCss.fullScreenBtn}
               onClick={() => {
