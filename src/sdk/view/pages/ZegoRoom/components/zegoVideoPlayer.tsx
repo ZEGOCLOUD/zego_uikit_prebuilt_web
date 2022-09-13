@@ -27,7 +27,7 @@ export function VideoPlayer(props: {
         ref={(el) => {
           el &&
             el.srcObject !== props.userInfo?.streamList?.[0]?.media &&
-            (el.srcObject = props.userInfo?.streamList?.[0]?.media);
+            (el.srcObject = props.userInfo?.streamList?.[0]?.media!);
         }}
         onPause={() => {
           props.onPause && props.onPause();
@@ -67,22 +67,26 @@ export function VideoPlayer(props: {
           <span className={ZegoVideoPlayerCss.nameTag}>(You)</span>
         )}
       </div>
-      <div className={ZegoVideoPlayerCss.moreWrapperMask}>
-        <div className={ZegoVideoPlayerCss.moreWrapper}>
-          <span className={ZegoVideoPlayerCss.moreIcon}></span>
-          <div className={ZegoVideoPlayerCss.moreMenu}>
-            <div
-              className={ZegoVideoPlayerCss.moreMenuItem}
-              onClick={() => {
-                props.handlePin && props.handlePin(props.userInfo.userID);
-              }}
-            >
-              <span className={ZegoVideoPlayerCss.moreMenuPinIcon}></span>
-              <p>{props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
+      {props.handlePin && (
+        <div className={ZegoVideoPlayerCss.moreWrapperMask}>
+          <div className={ZegoVideoPlayerCss.moreWrapper}>
+            <span className={ZegoVideoPlayerCss.moreIcon}></span>
+            <div className={ZegoVideoPlayerCss.moreMenu}>
+              {props.handlePin && (
+                <div
+                  className={ZegoVideoPlayerCss.moreMenuItem}
+                  onClick={() => {
+                    props.handlePin && props.handlePin(props.userInfo.userID);
+                  }}
+                >
+                  <span className={ZegoVideoPlayerCss.moreMenuPinIcon}></span>
+                  <p>{props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

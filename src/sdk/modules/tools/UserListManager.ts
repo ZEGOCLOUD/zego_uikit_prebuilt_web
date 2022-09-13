@@ -1,7 +1,6 @@
-import { flattenDiagnosticMessageText } from "typescript";
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { ZegoCloudRemoteMedia } from "../../model";
+import { LiveRole, ScenarioModel, ZegoCloudRemoteMedia } from "../../model";
 export type ZegoCloudUserList = ZegoCloudUser[];
 
 export type ZegoCloudUser = ZegoUser & {
@@ -171,5 +170,74 @@ export class ZegoCloudUserListManager {
   }
   clearUserList() {
     this.remoteUserList = [];
+  }
+
+  waitingPullStreams: { streamID: string; userID: string }[] = [];
+  isLive: 1 | 0 = 0;
+
+  async setLiveStates(state: 1 | 0) {
+    if (
+      this.scenario === ScenarioModel.LiveStreaming &&
+      this.role === LiveRole.Audience
+    ) {
+      this.isLive = state;
+      if (state === 1) {
+        for (let index = 0; index < this.waitingPullStreams.length; index++) {
+          try {
+            const stream = await this.zg.startPlayingStream(
+              this.waitingPullStreams[index].streamID
+            );
+            const u_index = this.remoteUserList.findIndex(
+              (u) => u.userID === this.waitingPullStreams[index].userID
+            );
+            const s_index = this.remoteUserList[u_index].streamList.findIndex(
+              (s) => s.streamID === this.waitingPullStreams[index].streamID
+            );
+            this.remoteUserList[u_index].streamList[s_index].media = stream;
+          } catch (error) {
+            console.warn("【ZEGOCLOUD】 playStream failed ,ignore continue !!");
+          }
+        }
+      } else {
+        this.remoteUserList = this.remoteUserList.map((remoteUser) => {
+          remoteUser.streamList = remoteUser.streamList.map((mediaInfo) => {
+            this.zg.stopPlayingStream(mediaInfo.streamID);
+            this.waitingPullStreams.push({
+              streamID: mediaInfo.streamID,
+              userID: mediaInfo.fromUser.userID,
+            });
+            mediaInfo.media = undefined;
+            return mediaInfo;
+          });
+          return remoteUser;
+        });
+      }
+    }
+  }
+
+  scenario: ScenarioModel = ScenarioModel.OneONoneCall;
+  role: LiveRole = LiveRole.Host;
+
+  async startPullStream(
+    userID: string,
+    streamID: string
+  ): Promise<MediaStream | undefined> {
+    if (
+      this.scenario === ScenarioModel.LiveStreaming &&
+      this.role === LiveRole.Audience
+    ) {
+      if (this.isLive === 1) {
+        const stream = await this.zg.startPlayingStream(streamID);
+        return stream;
+      } else if (this.isLive === 0) {
+        this.waitingPullStreams.push({ streamID, userID });
+        return undefined;
+      }
+    } else {
+      const stream = await this.zg.startPlayingStream(streamID);
+      return stream;
+    }
+
+    return undefined;
   }
 }

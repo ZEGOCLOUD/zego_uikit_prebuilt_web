@@ -29,7 +29,7 @@ export class ZegoUserVideo extends React.Component<{
               ref={(el) => {
                 el &&
                   el.srcObject !== this.props.user.streamList[0].media &&
-                  (el.srcObject = this.props.user.streamList[0].media);
+                  (el.srcObject = this.props.user.streamList[0].media!);
               }}
             ></video>
           )}
@@ -93,7 +93,7 @@ export class ZegoUserOtherVideo extends React.Component<{
               ref={(el) => {
                 el &&
                   el.srcObject !== this.props.user.streamList[0].media &&
-                  (el.srcObject = this.props.user.streamList[0].media);
+                  (el.srcObject = this.props.user.streamList[0].media!);
               }}
             ></audio>
           )}

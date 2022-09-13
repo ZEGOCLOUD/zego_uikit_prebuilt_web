@@ -1,5 +1,7 @@
 import React, { RefObject } from "react";
 import {
+  LiveRole,
+  ScenarioModel,
   SoundLevelMap,
   ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
@@ -50,6 +52,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     showLayoutSettingsModel: boolean; // 是否显示布局设置弹窗
     isLayoutChanging: boolean; // 布局是否正在变更中
     soundLevel: SoundLevelMap;
+    liveCountdown: number;
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -74,6 +77,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     isLayoutChanging: false,
     soundLevel: {},
     showNonVideoUser: this.props.core._config.showNonVideoUser as boolean,
+    liveCountdown: 3,
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -99,6 +103,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     // 点击其他区域时, 隐藏更多弹窗)
     document.addEventListener("click", this.onOpenSettings);
     window.addEventListener("resize", this.onWindowResize.bind(this));
+    this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
+      this.toggleLayOut("MESSAGE");
   }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
@@ -764,7 +771,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               ref={(el) => {
                 el &&
                   el.srcObject !== user.streamList[0].media &&
-                  (el.srcObject = user.streamList[0].media);
+                  (el.srcObject = user.streamList[0].media!);
               }}
             ></audio>
           );
@@ -792,7 +799,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           selfInfo={{
             userID: this.props.core._expressConfig.userID,
           }}
-          handleSetPin={this.handleSetPin.bind(this)}
+          handleSetPin={
+            this.props.core._config.showPinButton
+              ? this.handleSetPin.bind(this)
+              : undefined
+          }
           userList={this.getShownUser()}
           soundLevel={this.state.soundLevel}
         ></ZegoOne2One>
@@ -809,7 +820,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           selfInfo={{
             userID: this.props.core._expressConfig.userID,
           }}
-          handleSetPin={this.handleSetPin.bind(this)}
+          handleSetPin={
+            this.props.core._config.showPinButton
+              ? this.handleSetPin.bind(this)
+              : undefined
+          }
           soundLevel={this.state.soundLevel}
         ></ZegoGridLayout>
       );
@@ -819,7 +834,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     ) {
       return (
         <ZegoSidebarLayout
-          handleSetPin={this.handleSetPin.bind(this)}
+          handleSetPin={
+            this.props.core._config.showPinButton
+              ? this.handleSetPin.bind(this)
+              : undefined
+          }
           userList={this.getShownUser()}
           videoShowNumber={this.state.videoShowNumber}
           selfInfo={{
@@ -841,6 +860,36 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     this.props.core.setSidebarLayOut(true);
     this.setState({ layout: "Sidebar" });
   }
+
+  async setLive() {
+    if (this.state.liveCountdown === 0) {
+      // stop live
+      const res = await this.props.core.setLive("stop");
+      this.setState({
+        liveCountdown: 3,
+      });
+    } else if (this.state.liveCountdown === 3) {
+      this.liveCountdownTimer();
+    }
+  }
+  liveCountdownTimer() {
+    setTimeout(() => {
+      this.setState(
+        (preState: { liveCountdown: number }) => {
+          return {
+            liveCountdown: preState.liveCountdown - 1,
+          };
+        },
+        async () => {
+          if (this.state.liveCountdown === 0) {
+            const res = await this.props.core.setLive("live");
+          } else {
+            this.liveCountdownTimer();
+          }
+        }
+      );
+    }, 1000);
+  }
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
@@ -859,6 +908,22 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 alt="logo"
               />
             )}
+            {this.props.core._config.scenario?.mode ===
+              ScenarioModel.LiveStreaming &&
+              this.props.core._config.scenario?.config?.role ===
+                LiveRole.Host && (
+                <button
+                  onClick={() => {
+                    this.setLive();
+                  }}
+                >
+                  {this.state.liveCountdown === 3
+                    ? "goLive"
+                    : this.state.liveCountdown === 0
+                    ? "Stop broadcast"
+                    : "start stream"}
+                </button>
+              )}
             {this.props.core._config.roomTimerDisplayed && (
               <ZegoTimer></ZegoTimer>
             )}
@@ -971,34 +1036,36 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               ></div>
             )}
 
-            <div
-              ref={this.moreRef}
-              className={ZegoRoomCss.moreButton}
-              onClick={() => {
-                this.openSettings();
-              }}
-            >
+            {(this.props.core._config.showAudioVideoSettingsButton ||
+              this.props.core._config.showLayoutButton) && (
               <div
-                className={ZegoRoomCss.settingsButtonModel}
-                style={{
-                  display: this.state.showSettings ? "block" : "none",
+                ref={this.moreRef}
+                className={ZegoRoomCss.moreButton}
+                onClick={() => {
+                  this.openSettings();
                 }}
-                ref={this.settingsRef}
               >
-                {this.state.layout && (
-                  <div onClick={() => this.showLayoutSettings(true)}>
-                    Change layout
-                  </div>
-                )}
-                {this.props.core._config.showAudioVideoSettingsButton && (
-                  <span></span>
-                )}
-                {this.props.core._config.showAudioVideoSettingsButton && (
-                  <div onClick={() => this.handleSetting()}>Settings</div>
-                )}
+                <div
+                  className={ZegoRoomCss.settingsButtonModel}
+                  style={{
+                    display: this.state.showSettings ? "block" : "none",
+                  }}
+                  ref={this.settingsRef}
+                >
+                  {this.props.core._config.showLayoutButton && (
+                    <div onClick={() => this.showLayoutSettings(true)}>
+                      Change layout
+                    </div>
+                  )}
+                  {this.props.core._config.showAudioVideoSettingsButton && (
+                    <span></span>
+                  )}
+                  {this.props.core._config.showAudioVideoSettingsButton && (
+                    <div onClick={() => this.handleSetting()}>Settings</div>
+                  )}
+                </div>
               </div>
-            </div>
-
+            )}
             <div
               className={ZegoRoomCss.leaveButton}
               onClick={() => {

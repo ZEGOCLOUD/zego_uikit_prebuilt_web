@@ -299,33 +299,37 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               Join
             </button>
           </div>
-          {this.props.core._config.preJoinViewConfig?.invitationLink && (
-            <div className={ZegoBrowserCheckCss.inviteLink}>
-              <input
-                placeholder="inviteLink"
-                readOnly
-                value={
-                  this.props.core._config.preJoinViewConfig?.invitationLink
-                }
-                ref={this.inviteRef}
-              ></input>
-              <button
-                className={this.state.copied ? ZegoBrowserCheckCss.copied : ""}
-                onClick={() => {
-                  this.inviteRef.current && copy(this.inviteRef.current.value);
-                  this.setState({
-                    copied: true,
-                  });
-                  setTimeout(() => {
+          {this.props.core._config.sharedLinks?.map((link) => {
+            return (
+              <div className={ZegoBrowserCheckCss.inviteLink}>
+                <input
+                  placeholder="inviteLink"
+                  readOnly
+                  value={link.url}
+                  ref={this.inviteRef}
+                ></input>
+                <button
+                  className={
+                    this.state.copied ? ZegoBrowserCheckCss.copied : ""
+                  }
+                  onClick={() => {
+                    this.inviteRef.current &&
+                      copy(this.inviteRef.current.value);
                     this.setState({
-                      copied: false,
+                      copied: true,
                     });
-                  }, 5000);
-                }}
-              ></button>
-            </div>
-          )}
+                    setTimeout(() => {
+                      this.setState({
+                        copied: false,
+                      });
+                    }, 5000);
+                  }}
+                ></button>
+              </div>
+            );
+          })}
         </div>
+
         {this.state.isJoining && (
           <ZegoLoading content="Loading..."></ZegoLoading>
         )}

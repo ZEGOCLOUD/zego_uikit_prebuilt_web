@@ -6,6 +6,9 @@ import { ZegoCloudRTCKitComponent } from "./view/index";
 export class ZegoUIKitPrebuilt {
   static core: ZegoCloudRTCCore;
   static _instance: ZegoUIKitPrebuilt;
+  static Host = "Host";
+  static Cohost = "Cohost";
+  static Audience = "Audience";
 
   root: Root | undefined;
 

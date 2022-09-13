@@ -18,7 +18,10 @@ import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoReconnect } from "./components/ZegoReconnect";
 import { ZegoToast } from "../../components/mobile/zegoToast";
-import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
+import {
+  ZegoDeviceInfo,
+  ZegoSoundLevelInfo,
+} from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 
 import {
   ZegoCloudUser,
@@ -29,7 +32,6 @@ import { ZegoManage } from "./components/zegoManage";
 import { ZegoGrid } from "./components/zegoGrid";
 import { ZegoSidebar } from "./components/zegoSidebar";
 import ShowManageContext from "./context/showManage";
-import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
@@ -616,7 +618,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               ref={(el) => {
                 el &&
                   el.srcObject !== user.streamList[0].media &&
-                  (el.srcObject = user.streamList[0].media);
+                  (el.srcObject = user.streamList[0].media!);
               }}
             ></audio>
           );

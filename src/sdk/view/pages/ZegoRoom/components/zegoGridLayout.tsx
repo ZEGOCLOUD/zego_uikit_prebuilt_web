@@ -59,7 +59,7 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
                     ref={(el) => {
                       el &&
                         el.srcObject !== user.streamList?.[0]?.media &&
-                        (el.srcObject = user.streamList?.[0]?.media);
+                        (el.srcObject = user.streamList?.[0]?.media!);
                     }}
                   ></audio>
                 );
@@ -70,7 +70,11 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
                 key={user.userID}
                 userInfo={user}
                 muted={user.userID === this.props.selfInfo!.userID}
-                handlePin={() => this.props.handleSetPin!(user.userID)}
+                handlePin={
+                  this.props.handleSetPin
+                    ? () => this.props.handleSetPin!(user.userID)
+                    : undefined
+                }
                 volume={this.props.soundLevel![user.userID] || {}}
               ></VideoPlayer>
             );

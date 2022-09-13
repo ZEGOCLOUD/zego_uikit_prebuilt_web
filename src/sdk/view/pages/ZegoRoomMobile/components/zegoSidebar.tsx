@@ -51,7 +51,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
                       ref={(el) => {
                         el &&
                           el.srcObject !== value.streamList[0].media &&
-                          (el.srcObject = value.streamList[0].media);
+                          (el.srcObject = value.streamList[0].media!);
                       }}
                     ></audio>
                   )

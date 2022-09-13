@@ -27,7 +27,11 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
           <VideoPlayer
             myClass={ZegoSidebarCss.bigVideo}
             userInfo={this.pinUser}
-            handlePin={() => this.props.handleSetPin!(this.pinUser.userID)}
+            handlePin={
+              this.props.handleSetPin
+                ? () => this.props.handleSetPin!(this.pinUser.userID)
+                : undefined
+            }
             muted={this.pinUser.userID === this.props.selfInfo.userID}
             volume={this.props.soundLevel![this.pinUser.userID] || {}}
           ></VideoPlayer>
@@ -56,7 +60,7 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
                         ref={(el) => {
                           el &&
                             el.srcObject !== user?.streamList?.[0]?.media &&
-                            (el.srcObject = user?.streamList?.[0]?.media);
+                            (el.srcObject = user?.streamList?.[0]?.media!);
                         }}
                       ></audio>
                     );
@@ -67,7 +71,11 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
                     key={user.userID}
                     userInfo={user}
                     muted={user.userID === this.props.selfInfo.userID}
-                    handlePin={() => this.props.handleSetPin!(user.userID)}
+                    handlePin={
+                      this.props.handleSetPin
+                        ? () => this.props.handleSetPin!(this.pinUser.userID)
+                        : undefined
+                    }
                     volume={this.props.soundLevel![user.userID] || {}}
                   ></VideoPlayer>
                 );
