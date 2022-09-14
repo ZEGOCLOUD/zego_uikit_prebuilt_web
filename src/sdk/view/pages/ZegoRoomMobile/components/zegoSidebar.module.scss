@@ -20,6 +20,19 @@
       font-size: vw(46px);
       line-height: vw(65px);
     }
+    .screenLoadingWrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      color: #fff;
+      background-color: #1e2130;
+    }
   }
   .upWrapper {
     display: flex;

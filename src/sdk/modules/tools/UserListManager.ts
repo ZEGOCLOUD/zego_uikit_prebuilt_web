@@ -40,6 +40,7 @@ export class ZegoCloudUserListManager {
     return this.updateStream();
   }
   async updateStream(): Promise<boolean> {
+    if (!this.remoteUserList.length) return true;
     let count = 0,
       noPinUserList = [];
     if (this.sidebarEnabled) {
@@ -112,7 +113,7 @@ export class ZegoCloudUserListManager {
 
   userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]) {
     if (updateType === "ADD") {
-      users.map((user) => {
+      users.forEach((user) => {
         if (!this.remoteUserList.some((u) => u.userID === user.userID)) {
           this.remoteUserList.unshift({
             userID: user.userID,
@@ -125,7 +126,7 @@ export class ZegoCloudUserListManager {
         }
       });
     } else if (updateType === "DELETE") {
-      users.map((user) => {
+      users.forEach((user) => {
         const index = this.remoteUserList.findIndex(
           (u) => u.userID === user.userID
         );
@@ -138,7 +139,6 @@ export class ZegoCloudUserListManager {
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]
   ): void {
-    console.warn("streamList", streamList);
     streamList
       .filter((s) => s.streamID.includes("_main"))
       .forEach((stream) => {
@@ -177,7 +177,7 @@ export class ZegoCloudUserListManager {
     streamList: ZegoCloudRemoteMedia[]
   ): void {
     streamList
-      .filter((s) => s.streamID.includes("screensharing"))
+      .filter((s) => s.streamID.includes("_screensharing"))
       .forEach((stream) => {
         // 已经在列表中才处理删除和更新，否则只处理新增
         if (

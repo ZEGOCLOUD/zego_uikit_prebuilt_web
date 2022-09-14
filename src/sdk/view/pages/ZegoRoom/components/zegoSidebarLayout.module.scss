@@ -90,10 +90,17 @@
   top: 20px;
   right: 10px;
   z-index: 15;
-  padding: 10px 20px;
-  color: #242736;
-  background-color: #fff;
-  border: 1px solid #242736;
-  border-radius: 8px;
+  padding: 8px 10px;
+  overflow: hidden;
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+  text-align: center;
+  background: #2c2f3e;
+  border: 1px solid #3d4054;
+  border-radius: 6px;
+  box-shadow: 0px 3px 6px 0px rgba(23, 24, 33, 0.75);
   cursor: pointer;
 }

@@ -495,7 +495,14 @@ export class ZegoCloudRTCCore {
   ) => void = (
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]
-  ) => {};
+  ) => {
+    this.zum.mainStreamUpdate(updateType, streamList);
+    this.zum.screenStreamUpdate(updateType, streamList);
+    this.subscribeUserListCallBack &&
+      this.subscribeUserListCallBack(this.zum.remoteUserList);
+    this.subscribeScreenStreamCallBack &&
+      this.subscribeScreenStreamCallBack(this.zum.remoteScreenStreamList);
+  };
 
   onRemoteMediaUpdate(
     func: (
@@ -626,7 +633,14 @@ export class ZegoCloudRTCCore {
     this.onRemoteMediaUpdateCallBack = (
       updateType: "DELETE" | "ADD" | "UPDATE",
       streamList: ZegoCloudRemoteMedia[]
-    ) => {};
+    ) => {
+      this.zum.mainStreamUpdate(updateType, streamList);
+      this.zum.screenStreamUpdate(updateType, streamList);
+      this.subscribeUserListCallBack &&
+        this.subscribeUserListCallBack(this.zum.remoteUserList);
+      this.subscribeScreenStreamCallBack &&
+        this.subscribeScreenStreamCallBack(this.zum.remoteScreenStreamList);
+    };
     this.onRemoteUserUpdateCallBack = () => {};
     this.onRoomMessageUpdateCallBack = () => {};
     this.subscribeUserListCallBack = () => {};

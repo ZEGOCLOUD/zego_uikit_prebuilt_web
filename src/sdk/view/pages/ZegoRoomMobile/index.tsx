@@ -30,6 +30,7 @@ import { ZegoGrid } from "./components/zegoGrid";
 import { ZegoSidebar } from "./components/zegoSidebar";
 import ShowManageContext from "./context/showManage";
 import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
+import { ZegoScreen } from "./components/zegoScreen";
 
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
@@ -55,6 +56,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     showFooter: boolean;
     isNetworkPoor: boolean;
     soundLevel: SoundLevelMap;
+    screenSharingUserList: ZegoCloudUserList;
   } = {
     micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
     cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
@@ -71,6 +73,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     showFooter: true,
     isNetworkPoor: false,
     soundLevel: {},
+    screenSharingUserList: [],
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
@@ -106,6 +109,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       micOpen: boolean;
       cameraOpen: boolean;
       showMore: boolean;
+      screenSharingUserList: ZegoCloudUserList;
     }
   ) {
     if (
@@ -220,6 +224,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     this.props.core.subscribeUserList((userList) => {
       this.userUpdateCallBack();
       this.setState({ zegoCloudUserList: userList });
+    });
+    this.props.core.subscribeScreenStream((userList) => {
+      if (userList.length !== this.state.screenSharingUserList.length) {
+        this.handleLayoutChange(this.state.userLayoutStatus);
+      }
+      this.setState({ screenSharingUserList: userList });
     });
     this.props.core.onSoundLevelUpdate(
       (soundLevelList: ZegoSoundLevelInfo[]) => {
@@ -626,7 +636,40 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   private _selectedUser!: ZegoCloudUser;
+  async handleLayoutChange(
+    selectLayout: "Default" | "Grid" | "Sidebar"
+  ): Promise<boolean> {
+    if (selectLayout !== "Sidebar") {
+      this._selectedUser && (this._selectedUser.pin = false);
+      this.props.core.setPin();
+    }
+    this.setState({
+      userLayoutStatus: selectLayout,
+    });
+    return new Promise(async (resolve, reject) => {
+      const showSelf =
+        this.props.core._config.showNonVideoUser || this.state.localStream;
+      if (this.state.screenSharingUserList.length) {
+        await this.props.core.setMaxScreenNum(showSelf ? 3 : 4);
+      } else if (selectLayout !== "Sidebar") {
+        await this.props.core.setMaxScreenNum(showSelf ? 5 : 6);
+      } else {
+        await this.props.core.setMaxScreenNum(showSelf ? 4 : 5);
+      }
+      this.userUpdateCallBack = () => {
+        resolve(true);
+      };
+      await this.props.core.setSidebarLayOut(
+        this.state.screenSharingUserList.length
+          ? selectLayout === "Sidebar"
+          : false
+      );
 
+      setTimeout(() => {
+        resolve(false);
+      }, 5000);
+    });
+  }
   getListScreen() {
     if (this.state.layOutStatus === "INVITE") {
       return (
@@ -676,35 +719,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               layOutStatus: "ONE_VIDEO",
             });
           }}
-          selectCallBack={(selectLayout: "Default" | "Grid" | "Sidebar") => {
-            if (selectLayout !== "Sidebar") {
-              this._selectedUser && (this._selectedUser.pin = false);
-              this.props.core.setPin();
-            }
-            this.setState({
-              userLayoutStatus: selectLayout,
-            });
-            return new Promise(async (resolve, reject) => {
-              const showSelf =
-                this.props.core._config.showNonVideoUser ||
-                this.state.localStream;
-              if (selectLayout !== "Sidebar") {
-                await this.props.core.setMaxScreenNum(showSelf ? 5 : 6);
-              } else {
-                await this.props.core.setMaxScreenNum(showSelf ? 4 : 5);
-              }
-              this.userUpdateCallBack = () => {
-                resolve(true);
-              };
-              await this.props.core.setSidebarLayOut(
-                selectLayout === "Sidebar"
-              );
-
-              setTimeout(() => {
-                resolve(false);
-              }, 5000);
-            });
-          }}
+          selectCallBack={this.handleLayoutChange.bind(this)}
         ></ZegoLayout>
       );
     } else if (this.state.layOutStatus === "MANAGE") {
@@ -718,7 +733,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           selectCallBac={(type?: "Pin", value?: boolean) => {
             if (type === "Pin" && typeof value != "undefined") {
               if (
-                this._selectedUser.userID !=
+                this._selectedUser.userID !==
                 this.props.core._expressConfig.userID
               ) {
                 this.props.core.setPin(this._selectedUser.userID, value);
@@ -731,7 +746,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               this.setState({
                 userLayoutStatus: "Sidebar",
               });
-              this.props.core.setSidebarLayOut(true);
+              this.props.core.setSidebarLayOut(
+                !this.state.screenSharingUserList.length
+              );
             }
           }}
           selectedUser={this._selectedUser}
@@ -741,6 +758,19 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   getLayoutScreen() {
+    if (this.state.screenSharingUserList.length > 0) {
+      return (
+        <ZegoScreen
+          selfInfo={{
+            userID: this.props.core._expressConfig.userID,
+          }}
+          userList={this.getShownUser()}
+          screenSharingUser={this.state.screenSharingUserList[0]}
+          videoShowNumber={5}
+          soundLevel={this.state.soundLevel}
+        ></ZegoScreen>
+      );
+    }
     if (
       (this.state.userLayoutStatus === "Default" &&
         this.getShownUser().length < 3) ||

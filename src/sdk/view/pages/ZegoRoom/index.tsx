@@ -34,7 +34,6 @@ import { ZegoScreenSharingLayout } from "./components/ZegoScreenSharingLayout";
 export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
-    remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
     layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
     zegoCloudUserList: ZegoCloudUserList;
     messageList: ZegoBroadcastMessageInfo2[];
@@ -61,7 +60,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     screenSharingUserList: ZegoCloudUserList; // 屏幕共享列表
   } = {
     localStream: undefined,
-    remoteStreamInfo: undefined,
     layOutStatus: "ONE_VIDEO",
     zegoCloudUserList: [],
     messageList: [],
@@ -119,7 +117,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     preProps: ZegoBrowserCheckProp,
     preState: {
       localStream: undefined | MediaStream;
-      remoteStreamInfo: ZegoCloudRemoteMedia | undefined;
       layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
       zegoCloudUserList: ZegoCloudUserList;
       messageList: ZegoBroadcastMessageInfo2[];
@@ -150,7 +147,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         });
       }, 3000);
     }
-    if (preState.layout !== this.state.layout) {
+    if (
+      preState.layout !== this.state.layout ||
+      preState.isScreenSharingBySelf !== this.state.isScreenSharingBySelf
+    ) {
       this.computeByResize();
     }
     if (preState.videoShowNumber !== this.state.videoShowNumber) {
@@ -217,22 +217,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         });
       }
     );
-    this.props.core.onRemoteMediaUpdate(
-      (
-        updateType: "DELETE" | "ADD" | "UPDATE",
-        streamList: ZegoCloudRemoteMedia[]
-      ) => {
-        if (updateType === "ADD" || updateType === "UPDATE") {
-          this.setState({
-            remoteStreamInfo: streamList[0],
-          });
-        } else if (updateType === "DELETE") {
-          this.setState({
-            remoteStreamInfo: undefined,
-          });
-        }
-      }
-    );
     this.props.core.onRoomMessageUpdate(
       (roomID: string, messageList: ZegoBroadcastMessageInfo[]) => {
         this.setState(
@@ -270,7 +254,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       this.setState({ zegoCloudUserList: userList });
     });
     this.props.core.subscribeScreenStream((userList) => {
-      this.setState({ screenSharingUserList: userList });
+      this.setState({ screenSharingUserList: userList }, () => {
+        this.computeByResize();
+      });
     });
     this.props.core.onSoundLevelUpdate(
       (soundLevelList: ZegoSoundLevelInfo[]) => {
@@ -676,6 +662,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     const height = Math.max(document.body.clientHeight, 280);
     let videoShowNumber = 0,
       gridRowNumber = 0;
+    const showSelf =
+      this.props.core._config.showNonVideoUser || this.state.localStream;
     if (this.getScreenSharingUser.length > 0) {
       //Screen Sidebar
       const videWrapHight =
@@ -692,9 +680,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         this.props.core.setMaxScreenNum(0);
       } else {
         this.props.core.setMaxScreenNum(
-          this.getShownUser().length > videoShowNumber
-            ? videoShowNumber - 1
-            : videoShowNumber
+          showSelf ? videoShowNumber - 1 : videoShowNumber
         );
       }
       this.props.core.setSidebarLayOut(false);
@@ -715,9 +701,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       });
 
       this.props.core.setMaxScreenNum(
-        this.getShownUser().length > videoShowNumber + 1
-          ? videoShowNumber
-          : videoShowNumber + 1
+        showSelf ? videoShowNumber : videoShowNumber + 1
       );
       return;
     }
@@ -753,11 +737,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         videoShowNumber: videoShowNumber,
         gridRowNumber: gridRowNumber,
       });
-
       this.props.core.setMaxScreenNum(
-        this.getShownUser().length > videoShowNumber
-          ? videoShowNumber - 1
-          : videoShowNumber
+        showSelf ? videoShowNumber - 1 : videoShowNumber
       );
       return;
     }
