@@ -12,7 +12,7 @@ import {
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { randomNumber } from "../../../util";
+import { randomNumber, userNameColor } from "../../../util";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
@@ -760,15 +760,33 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   getLayoutScreen() {
     if (this.state.screenSharingUserList.length > 0) {
       return (
-        <ZegoScreen
-          selfInfo={{
-            userID: this.props.core._expressConfig.userID,
-          }}
-          userList={this.getShownUser()}
-          screenSharingUser={this.state.screenSharingUserList[0]}
-          videoShowNumber={5}
-          soundLevel={this.state.soundLevel}
-        ></ZegoScreen>
+        <>
+          <div className={ZegoRoomCss.screenTopBar}>
+            <span
+              style={{
+                color: userNameColor(
+                  this.state.screenSharingUserList[0].userName as string
+                ),
+              }}
+            >
+              {this.state.screenSharingUserList[0].userName
+                ?.slice(0, 1)
+                ?.toUpperCase()}
+            </span>
+            <p>
+              {this.state.screenSharingUserList[0].userName + " is presenting"}
+            </p>
+          </div>
+          <ZegoScreen
+            selfInfo={{
+              userID: this.props.core._expressConfig.userID,
+            }}
+            userList={this.getShownUser()}
+            screenSharingUser={this.state.screenSharingUserList[0]}
+            videoShowNumber={5}
+            soundLevel={this.state.soundLevel}
+          ></ZegoScreen>
+        </>
       );
     }
     if (

@@ -211,4 +211,29 @@
     border-radius: vw(15px);
     backdrop-filter: blur(vw(15px));
   }
+  .screenTopBar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: vw(68px);
+    background: #353847;
+    p {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 400;
+      font-size: vw(28px);
+      line-height: vw(40px);
+    }
+    span {
+      width: vw(42px);
+      height: vw(42px);
+      margin-right: vw(16px);
+      margin-left: vw(24px);
+      font-weight: 600;
+      font-size: vw(20px);
+      line-height: vw(42px);
+      text-align: center;
+      background: rgba($color: #fff, $alpha: 0.1);
+      border-radius: 50%;
+    }
+  }
 }

@@ -14,11 +14,7 @@ import {
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import {
-  getVideoResolution,
-  randomNumber,
-  throttle,
-} from "../../../util";
+import { getVideoResolution, randomNumber, throttle } from "../../../util";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
@@ -665,10 +661,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     if (this.getScreenSharingUser.length > 0) {
       //Screen Sidebar
       const videWrapHight =
-        height - (this.props.core._config.branding?.logoURL ? 64 : 0) - 84;
-      const n = parseInt(String(videWrapHight / 124));
+        height - (this.props.core._config.branding?.logoURL ? 64 : 0) - 84 - 38;
+      const n = parseInt(String(videWrapHight / 124)) || 1;
       videoShowNumber = Math.min(
-        n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1,
+        n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
         5
       );
       this.setState({
@@ -688,9 +684,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       // Sidebar
       const videWrapHight =
         height - (this.props.core._config.branding?.logoURL ? 64 : 0) - 84;
-      const n = parseInt(String(videWrapHight / 124));
+      const n = parseInt(String(videWrapHight / 124)) || 1;
       videoShowNumber = Math.min(
-        n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1,
+        n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
         5
       );
       this.props.core.setSidebarLayOut(true);
@@ -1090,6 +1086,28 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             </div>
           </div>
         </div>
+        {this.getScreenSharingUser.length > 0 && (
+          <div className={ZegoRoomCss.screenBottomBar}>
+            <div className={ZegoRoomCss.screenBottomBarLeft}>
+              <span></span>
+              <p>
+                {this.state.isScreenSharingBySelf
+                  ? "You’re presenting to everyone"
+                  : `${this.state.screenSharingUserList[0].userName} is presenting the screen`}
+              </p>
+            </div>
+            {this.state.isScreenSharingBySelf && (
+              <div
+                className={ZegoRoomCss.screenBottomBarRight}
+                onClick={() => {
+                  this.toggleScreenSharing();
+                }}
+              >
+                Stop Presenting
+              </div>
+            )}
+          </div>
+        )}
         <div className={ZegoRoomCss.footer}>
           <div className={ZegoRoomCss.handlerMiddle}>
             {this.props.core._config.showMyMicrophoneToggleButton && (

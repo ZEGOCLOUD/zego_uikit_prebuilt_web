@@ -75,6 +75,7 @@ export class ZegoScreen extends React.Component<ZegoScreenSharingLayoutProps> {
           ></ZegoUserVideo>
           {this.state.loading && (
             <div className={ZegoSidebarCss.screenLoadingWrapper}>
+              <span></span>
               <p>
                 {this.props.screenSharingUser.userName +
                   " is presenting the screen"}
