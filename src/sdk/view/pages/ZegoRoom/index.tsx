@@ -3,7 +3,6 @@ import {
   SoundLevelMap,
   ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
-  ZegoCloudRemoteMedia,
   ZegoNotification,
 } from "../../../model";
 import ZegoRoomCss from "./index.module.scss";
@@ -16,7 +15,6 @@ import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import {
-  getBrowser,
   getVideoResolution,
   randomNumber,
   throttle,
@@ -44,10 +42,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     isNetworkPoor: boolean;
     connecting: boolean;
     firstLoading: boolean;
-    seletMic: string | undefined;
-    seletSpeaker: string | undefined;
-    seletCamera: string | undefined;
-    seletVideoResolution: string;
+    selectMic: string | undefined;
+    selectSpeaker: string | undefined;
+    selectCamera: string | undefined;
+    selectVideoResolution: string;
     showNonVideoUser: boolean;
     videoShowNumber: number; // 展示视频的数量
     gridRowNumber: number; // Grid 行数
@@ -70,10 +68,10 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     isNetworkPoor: false,
     connecting: false,
     firstLoading: true,
-    seletMic: this.props.core.status.micDeviceID,
-    seletSpeaker: this.props.core.status.speakerDeviceID,
-    seletCamera: this.props.core.status.cameraDeviceID,
-    seletVideoResolution: this.props.core.status.videoResolution || "360",
+    selectMic: this.props.core.status.micDeviceID,
+    selectSpeaker: this.props.core.status.speakerDeviceID,
+    selectCamera: this.props.core.status.cameraDeviceID,
+    selectVideoResolution: this.props.core.status.videoResolution || "360",
     videoShowNumber: 9,
     gridRowNumber: 3,
     layout: this.props.core._config.layout || "Default",
@@ -196,7 +194,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         if (
           this.props.core._config.lowerLeftNotification?.showUserJoinAndLeave
         ) {
-          userList.map((u) => {
+          userList.forEach((u) => {
             notificationList.push({
               content:
                 u.userName +
@@ -299,13 +297,13 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       !this.props.core.status.audioRefuse
     ) {
       try {
-        const solution = getVideoResolution(this.state.seletVideoResolution);
+        const solution = getVideoResolution(this.state.selectVideoResolution);
         const localStream = await this.props.core.createStream({
           camera: {
             video: !this.props.core.status.videoRefuse,
             audio: !this.props.core.status.audioRefuse,
-            videoInput: this.state.seletCamera,
-            audioInput: this.state.seletMic,
+            videoInput: this.state.selectCamera,
+            audioInput: this.state.selectMic,
             videoQuality: 4,
             ...solution,
           },
@@ -551,17 +549,17 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       core: this.props.core,
       theme: "black",
       initDevices: {
-        mic: this.state.seletMic,
-        cam: this.state.seletCamera,
-        speaker: this.state.seletSpeaker,
-        videoResolve: this.state.seletVideoResolution,
+        mic: this.state.selectMic,
+        cam: this.state.selectCamera,
+        speaker: this.state.selectSpeaker,
+        videoResolve: this.state.selectVideoResolution,
         showNonVideoUser: this.state.showNonVideoUser,
       },
       closeCallBack: () => {},
       onMicChange: (deviceID: string) => {
         this.setState(
           {
-            seletMic: deviceID,
+            selectMic: deviceID,
           },
           () => {
             if (this.state.localStream) {
@@ -576,7 +574,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       onCameraChange: (deviceID: string) => {
         this.setState(
           {
-            seletCamera: deviceID,
+            selectCamera: deviceID,
           },
           async () => {
             if (this.state.localStream) {
@@ -594,7 +592,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       onSpeakerChange: (deviceID: string) => {
         this.setState(
           {
-            seletSpeaker: deviceID,
+            selectSpeaker: deviceID,
           },
           () => {
             document
@@ -606,7 +604,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       onVideoResolutionChange: (level: string) => {
         this.setState(
           {
-            seletVideoResolution: level,
+            selectVideoResolution: level,
           },
           () => {
             if (this.state.localStream) {
@@ -640,11 +638,11 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         this.props.core._config.turnOnCameraWhenJoining = this.state.cameraOpen;
         this.props.core._config.turnOnMicrophoneWhenJoining =
           this.state.micOpen;
-        this.props.core.status.micDeviceID = this.state.seletMic;
-        this.props.core.status.cameraDeviceID = this.state.seletCamera;
-        this.props.core.status.speakerDeviceID = this.state.seletSpeaker;
+        this.props.core.status.micDeviceID = this.state.selectMic;
+        this.props.core.status.cameraDeviceID = this.state.selectCamera;
+        this.props.core.status.speakerDeviceID = this.state.selectSpeaker;
         this.props.core.status.videoResolution =
-          this.state.seletVideoResolution;
+          this.state.selectVideoResolution;
         this.leaveRoom();
       },
     });
@@ -905,17 +903,20 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   getLayoutScreen() {
     if (this.getScreenSharingUser.length > 0) {
       return (
-        <ZegoScreenSharingLayout
-          handleSetPin={this.handleSetPin.bind(this)}
-          userList={this.getShownUser()}
-          videoShowNumber={this.state.videoShowNumber}
-          selfInfo={{
-            userID: this.props.core._expressConfig.userID,
-          }}
-          screenSharingUser={this.getScreenSharingUser[0]}
-          soundLevel={this.state.soundLevel}
-          handleFullScreen={this.handleFullScreen.bind(this)}
-        ></ZegoScreenSharingLayout>
+        <>
+          <ZegoScreenSharingLayout
+            handleSetPin={this.handleSetPin.bind(this)}
+            userList={this.getShownUser()}
+            videoShowNumber={this.state.videoShowNumber}
+            selfInfo={{
+              userID: this.props.core._expressConfig.userID,
+            }}
+            screenSharingUser={this.getScreenSharingUser[0]}
+            soundLevel={this.state.soundLevel}
+            handleFullScreen={this.handleFullScreen.bind(this)}
+            roomID={this.props.core._expressConfig.roomID}
+          ></ZegoScreenSharingLayout>
+        </>
       );
     }
     if (
@@ -1090,15 +1091,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           </div>
         </div>
         <div className={ZegoRoomCss.footer}>
-          {this.props.core._config.preJoinViewConfig?.invitationLink && (
-            <div
-              className={ZegoRoomCss.inviteButton}
-              onClick={() => {
-                this.toggleLayOut("INVITE");
-              }}
-            ></div>
-          )}
-
           <div className={ZegoRoomCss.handlerMiddle}>
             {this.props.core._config.showMyMicrophoneToggleButton && (
               <div
@@ -1166,6 +1158,14 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             ></div>
           </div>
           <div className={ZegoRoomCss.handlerRight}>
+            {this.props.core._config.preJoinViewConfig?.invitationLink && (
+              <div
+                className={ZegoRoomCss.inviteButton}
+                onClick={() => {
+                  this.toggleLayOut("INVITE");
+                }}
+              ></div>
+            )}
             {this.props.core._config.showUserList && (
               <div
                 className={ZegoRoomCss.memberButton}

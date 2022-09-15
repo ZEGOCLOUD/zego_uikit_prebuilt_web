@@ -9,11 +9,28 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
   state = {
     fullScreen: false,
     loadingMask: true,
+    showBottomTip: false,
   };
+  componentDidMount() {
+    const showBottomTip = sessionStorage.getItem(
+      `screen_bottom_tip_${this.props.roomID}`
+    );
+    if (!showBottomTip) {
+      this.setState({
+        showBottomTip: true,
+      });
+    }
+  }
   onCanPlay() {
     this.setState({
       loadingMask: false,
     });
+  }
+  handleIgnore() {
+    this.setState({
+      showBottomTip: false,
+    });
+    sessionStorage.setItem(`screen_bottom_tip_${this.props.roomID}`, "1");
   }
   render(): React.ReactNode {
     let wrapClassName = clsx({
@@ -45,6 +62,7 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
             ></VideoPlayer>
             {this.state.loadingMask && (
               <div className={ZegoSidebarCss.screenVideoLoading}>
+                <i></i>
                 <p>
                   {this.props.screenSharingUser.userID ===
                   this.props.selfInfo.userID
@@ -54,7 +72,9 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
               </div>
             )}
             <div
-              className={ZegoSidebarCss.fullScreenBtn}
+              className={`${ZegoSidebarCss.fullScreenBtn} ${
+                this.state.fullScreen ? ZegoSidebarCss.expend : ""
+              }`}
               onClick={() => {
                 this.props.handleFullScreen &&
                   this.props.handleFullScreen(!this.state.fullScreen);
@@ -63,8 +83,19 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
                 });
               }}
             >
-              {!this.state.fullScreen ? "Full screen" : "Exit full screen"}
+              <p>
+                {this.state.fullScreen ? "Exit full screen" : "Full screen"}
+              </p>
             </div>
+            {this.state.showBottomTip && (
+              <div className={ZegoSidebarCss.screenTipWrapper}>
+                <p>
+                  To avoid an infinity mirror, we suggest you not to share your
+                  entire screen or browser window.
+                </p>
+                <div onClick={this.handleIgnore.bind(this)}>Ignore</div>
+              </div>
+            )}
           </div>
 
           {!this.state.fullScreen && (

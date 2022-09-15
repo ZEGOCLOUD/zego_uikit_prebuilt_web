@@ -125,6 +125,7 @@ export interface ZegoScreenSharingLayoutProps {
   selfInfo: {
     userID: string;
   };
+  roomID?: String;
   screenSharingUser: ZegoCloudUser;
   soundLevel?: SoundLevelMap;
   handleFullScreen?: (fullScreen: boolean) => void;

@@ -15,10 +15,10 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   state: {
     visible: boolean;
     selectTab: "AUDIO" | "VIDEO";
-    seletMic: string | undefined;
-    seletSpeaker: string | undefined;
-    seletCamera: string | undefined;
-    seletVideoResolution: string | undefined;
+    selectMic: string | undefined;
+    selectSpeaker: string | undefined;
+    selectCamera: string | undefined;
+    selectVideoResolution: string | undefined;
     micDevices: ZegoDeviceInfo[];
     speakerDevices: ZegoDeviceInfo[];
     cameraDevices: ZegoDeviceInfo[];
@@ -32,15 +32,15 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   } = {
     visible: true,
     selectTab: "AUDIO",
-    seletMic: undefined,
-    seletSpeaker: undefined,
-    seletCamera: undefined,
+    selectMic: undefined,
+    selectSpeaker: undefined,
+    selectCamera: undefined,
     micDevices: [],
     speakerDevices: [],
     cameraDevices: [],
     localVideoStream: undefined,
     localAudioStream: undefined,
-    seletVideoResolution: "360",
+    selectVideoResolution: "360",
     audioVolume: 0,
     speakerVolume: 0,
     isSpeakerPlaying: false,
@@ -126,24 +126,24 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       micDevices: micDevices.filter((device) => device.deviceID),
       speakerDevices: speakerDevices.filter((device) => device.deviceID),
       cameraDevices: cameraDevices.filter((device) => device.deviceID),
-      seletMic: mic[0]?.deviceID || micDevices[0]?.deviceID || undefined,
-      seletSpeaker:
+      selectMic: mic[0]?.deviceID || micDevices[0]?.deviceID || undefined,
+      selectSpeaker:
         speaker[0]?.deviceID || speakerDevices[0]?.deviceID || undefined,
-      seletCamera: cam[0]?.deviceID || cameraDevices[0]?.deviceID || undefined,
-      seletVideoResolution: this.props.initDevices.videoResolve || undefined,
+      selectCamera: cam[0]?.deviceID || cameraDevices[0]?.deviceID || undefined,
+      selectVideoResolution: this.props.initDevices.videoResolve || undefined,
     };
   }
 
   async createVideoStream(): Promise<boolean> {
     try {
       const config = getVideoResolution(
-        this.state.seletVideoResolution as string
+        this.state.selectVideoResolution as string
       );
       const source: ZegoLocalStreamConfig = {
         camera: {
           video: true,
           audio: false,
-          videoInput: this.state.seletCamera,
+          videoInput: this.state.selectCamera,
           videoQuality: 4,
           ...config,
         },
@@ -169,7 +169,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
         camera: {
           video: false,
           audio: true,
-          audioInput: this.state.seletMic,
+          audioInput: this.state.selectMic,
         },
       };
       const localAudioStream = await this.props.core.createStream(source);
@@ -222,12 +222,12 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     this.micTimer && clearTimeout(this.micTimer);
     this.captureMicVolume();
     if (res.errorCode === 0) {
-      this.setState({ seletMic: deviceID });
+      this.setState({ selectMic: deviceID });
       this.props.onMicChange(deviceID);
     }
   }
   async toggleSpeaker(deviceID: string) {
-    this.setState({ seletSpeaker: deviceID });
+    this.setState({ selectSpeaker: deviceID });
     this.props.onSpeakerChange(deviceID);
   }
   async toggleCamera(deviceID: string) {
@@ -238,13 +238,13 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       deviceID
     );
     if (res.errorCode === 0) {
-      this.setState({ seletCamera: deviceID });
+      this.setState({ selectCamera: deviceID });
       this.props.onCameraChange(deviceID);
     }
   }
   async toggleVideoResolution(level: string) {
     this.createVideoStream();
-    this.setState({ seletVideoResolution: level });
+    this.setState({ selectVideoResolution: level });
     this.props.onVideoResolutionChange(level);
   }
   toggleSpeakerTest() {
@@ -262,7 +262,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
         const playDom = document.querySelector("#speakerAudio") as any;
         if (dom.paused) {
           playDom?.setSinkId &&
-            (await playDom?.setSinkId(this.state.seletSpeaker));
+            (await playDom?.setSinkId(this.state.selectSpeaker));
           playDom.play();
           dom.play();
           this.speakerSounder.connectToElementSource(dom, (error: any) => {
@@ -291,12 +291,12 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     );
   }
   close() {
-    sessionStorage.setItem("seletMic", this.state.seletMic || "");
-    sessionStorage.setItem("seletCamera", this.state.seletCamera || "");
-    sessionStorage.setItem("seletSpeaker", this.state.seletSpeaker || "");
+    sessionStorage.setItem("selectMic", this.state.selectMic || "");
+    sessionStorage.setItem("selectCamera", this.state.selectCamera || "");
+    sessionStorage.setItem("selectSpeaker", this.state.selectSpeaker || "");
     sessionStorage.setItem(
-      "seletVideoResolution",
-      this.state.seletVideoResolution || ""
+      "selectVideoResolution",
+      this.state.selectVideoResolution || ""
     );
     this.setState({ visible: false });
     this.props.closeCallBack && this.props.closeCallBack();
@@ -398,7 +398,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                       onChange={(value: string) => {
                         this.toggleMic(value);
                       }}
-                      initValue={this.state.seletMic}
+                      initValue={this.state.selectMic}
                       placeholder="No microphone detected"
                       theme={this.props.theme}
                     ></ZegoSelect>
@@ -434,7 +434,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                       onChange={(value: string) => {
                         this.toggleSpeaker(value);
                       }}
-                      initValue={this.state.seletSpeaker}
+                      initValue={this.state.selectSpeaker}
                       placeholder="No speaker detected"
                       theme={this.props.theme}
                     ></ZegoSelect>
@@ -482,7 +482,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                       onChange={(value: string) => {
                         this.toggleCamera(value);
                       }}
-                      initValue={this.state.seletCamera}
+                      initValue={this.state.selectCamera}
                       placeholder="No camera detected"
                       theme={this.props.theme}
                     ></ZegoSelect>
@@ -511,7 +511,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                       onChange={(value: string) => {
                         this.toggleVideoResolution(value);
                       }}
-                      initValue={this.state.seletVideoResolution}
+                      initValue={this.state.selectVideoResolution}
                       placeholder=""
                       theme={this.props.theme}
                     ></ZegoSelect>
@@ -542,10 +542,10 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                 // @ts-ignore
                 el.sinkId &&
                 // @ts-ignore
-                el.sinkId !== this.state.seletSpeaker
+                el.sinkId !== this.state.selectSpeaker
               ) {
                 // @ts-ignore
-                // el.setSinkId(this.state.seletSpeaker);
+                // el.setSinkId(this.state.selectSpeaker);
               }
             }}
             src={audioBase64}
@@ -560,10 +560,10 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                 // @ts-ignore
                 el.sinkId &&
                 // @ts-ignore
-                el.sinkId !== this.state.seletSpeaker
+                el.sinkId !== this.state.selectSpeaker
               ) {
                 // @ts-ignore
-                // el.setSinkId(this.state.seletSpeaker);
+                // el.setSinkId(this.state.selectSpeaker);
               }
             }}
             src={audioBase64}
