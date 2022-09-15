@@ -16,7 +16,7 @@ export class ZegoRoomInvite extends React.Component<{
   render(): React.ReactNode {
     return this.props.core._config.sharedLinks?.map((link) => {
       return (
-        <div className={ZegoRoomInviteCss.inviteLinkWrapper} key={link.url}>
+        <div className={ZegoRoomInviteCss.inviteLinkWrapper} key={link.name}>
           <div className={ZegoRoomInviteCss.title}>{link.name}</div>
           <input
             className={ZegoRoomInviteCss.inviteLink}

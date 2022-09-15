@@ -22,6 +22,7 @@
     height: vw(122px);
     padding: 0 vw(77px) 0 vw(77px);
     background: #1c1f2e;
+    border: 1px solid #3d4054;
     a {
       box-sizing: border-box;
       width: vw(76px);
@@ -65,6 +66,13 @@
     .leaveRoom {
       background-color: rgba(232, 84, 59, 1);
       background-image: url(../../../sdkMobileAssets/Room_leaveRoom@2x.png);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(56px) vw(56px);
+    }
+    .goLive {
+      width: vw(152px);
+      // background-image: url(../../../sdkMobileAssets/Room_mic_close@2x.png);
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
@@ -150,11 +158,14 @@
         .popMoreArray {
           position: absolute;
           right: vw(42px);
-          bottom: vw(-10px);
+          bottom: vw(-12px);
           z-index: -1;
           width: vw(20px);
           height: vw(20px);
           background-color: #1c1f2e;
+          border-right: 1px solid #3d4054;
+          border-bottom: 1px solid #3d4054;
+          box-shadow: 0px vw(3px) vw(6px) 0px rgba(23, 24, 33, 0.35);
           transform: rotate(45deg);
         }
       }
@@ -164,6 +175,7 @@
     position: fixed;
     bottom: vw(146px);
     left: vw(24px);
+    z-index: 1010;
     display: flex;
     flex-direction: column;
     align-items: flex-start;

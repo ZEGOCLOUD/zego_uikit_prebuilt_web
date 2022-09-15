@@ -17,6 +17,13 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
     copied: false,
     isVideoOpening: true,
     isJoining: false,
+    sharedLinks: this.props.core._config.sharedLinks?.map((link) => {
+      return {
+        name: link.name,
+        url: link.url,
+        copied: false,
+      };
+    }),
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -237,7 +244,9 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
         <div className={ZegoBrowserCheckCss.videoScree}>
           <video
             playsInline={true}
-            className={ZegoBrowserCheckCss.video}
+            className={`${ZegoBrowserCheckCss.video} ${
+              this.state.videoOpen ? "" : ZegoBrowserCheckCss.hideVideo
+            }`}
             autoPlay
             muted
             ref={this.videoRef}
@@ -299,28 +308,38 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               Join
             </button>
           </div>
-          {this.props.core._config.sharedLinks?.map((link) => {
+          {this.state.sharedLinks?.map((link) => {
             return (
-              <div className={ZegoBrowserCheckCss.inviteLink}>
+              <div className={ZegoBrowserCheckCss.inviteLink} key={link.name}>
                 <input
                   placeholder="inviteLink"
                   readOnly
                   value={link.url}
-                  ref={this.inviteRef}
                 ></input>
                 <button
-                  className={
-                    this.state.copied ? ZegoBrowserCheckCss.copied : ""
-                  }
+                  className={link.copied ? ZegoBrowserCheckCss.copied : ""}
                   onClick={() => {
-                    this.inviteRef.current &&
-                      copy(this.inviteRef.current.value);
-                    this.setState({
-                      copied: true,
+                    copy(link.url);
+                    this.setState((preState: { sharedLinks: any[] }) => {
+                      return {
+                        sharedLinks: preState.sharedLinks.map((l) => {
+                          if (l.name === link.name) {
+                            l.copied = true;
+                          }
+                          return l;
+                        }),
+                      };
                     });
                     setTimeout(() => {
-                      this.setState({
-                        copied: false,
+                      this.setState((preState: { sharedLinks: any[] }) => {
+                        return {
+                          sharedLinks: preState.sharedLinks.map((l) => {
+                            if (l.name === link.name) {
+                              l.copied = false;
+                            }
+                            return l;
+                          }),
+                        };
                       });
                     }, 5000);
                   }}

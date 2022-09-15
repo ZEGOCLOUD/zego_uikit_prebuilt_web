@@ -1,14 +1,18 @@
 import ReactDOM, { Root } from "react-dom/client";
-import { ZegoCloudRoomConfig } from "./model/index";
+import { LiveRole, ScenarioModel, ZegoCloudRoomConfig } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 
 export class ZegoUIKitPrebuilt {
   static core: ZegoCloudRTCCore;
   static _instance: ZegoUIKitPrebuilt;
-  static Host = "Host";
-  static Cohost = "Cohost";
-  static Audience = "Audience";
+  static Host = LiveRole.Host;
+  static Cohost = LiveRole.Cohost;
+  static Audience = LiveRole.Audience;
+
+  static OneONoneCall = ScenarioModel.OneONoneCall;
+  static LiveStreaming = ScenarioModel.LiveStreaming;
+  static VideoConference = ScenarioModel.VideoConference;
 
   root: Root | undefined;
 

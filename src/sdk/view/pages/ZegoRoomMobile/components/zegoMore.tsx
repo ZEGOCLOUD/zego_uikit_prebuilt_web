@@ -13,11 +13,7 @@ export class ZegoMore extends React.Component<{ user: ZegoCloudUser }> {
         onClick={() => {
           show(this.props.user);
         }}
-      >
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      ></div>
     );
   }
 }

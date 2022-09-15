@@ -1,4 +1,3 @@
-import { type } from "os";
 import React from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
@@ -29,11 +28,12 @@ export default class App extends React.Component {
         : LiveRole.Audience;
 
     let sharedLinks: { name: string; url: string }[] = [];
-
+    let maxUsers = 50;
     console.warn("process.env.REACT_APP_PATH:", process.env.REACT_APP_PATH);
 
     let mode = ScenarioModel.OneONoneCall;
     if (process.env.REACT_APP_PATH === "1on1_call") {
+      maxUsers = 2;
       sharedLinks.push({
         name: "Join As Host",
         url:
@@ -45,7 +45,6 @@ export default class App extends React.Component {
       });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       mode = ScenarioModel.LiveStreaming;
-
       if (role === LiveRole.Host) {
         sharedLinks.push({
           name: "Join As Cohost",
@@ -94,6 +93,7 @@ export default class App extends React.Component {
         preJoinViewConfig: {
           title: "Join Room",
         },
+        maxUsers,
         leaveRoomCallback: () => {
           console.log("test:leaveRoomCallback");
           window?.parent?.postMessage("leaveRoom", "*");

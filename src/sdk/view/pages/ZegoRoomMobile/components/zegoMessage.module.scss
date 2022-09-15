@@ -59,9 +59,9 @@
         color: #557bff;
         font-weight: 600;
         font-size: vw(24px);
-        // font-family: PingFangSC-Semibold, PingFang SC;
+        font-style: normal;
         line-height: vw(33px);
-        background: rgba(216, 216, 216, 1);
+        background: rgba(255, 255, 255, 0.1);
         border-radius: vw(28px);
       }
 
@@ -94,6 +94,7 @@
           i {
             width: vw(40px);
             height: vw(40px);
+            font-style: normal;
             background-color: #f0f8ff00;
           }
 
@@ -133,6 +134,7 @@
       i {
         margin-right: vw(35px);
         margin-left: vw(24px);
+        font-style: normal;
       }
 
       .msgContentRight {
@@ -161,6 +163,9 @@
       margin-right: vw(18px);
       padding: vw(19px) vw(24px);
       color: #a4a4a4;
+
+      // &:focus {
+      color: #ffffff;
       font-weight: 500;
       font-size: vw(28px);
       //   font-family: PingFangSC-Medium, PingFang SC;
@@ -168,11 +173,8 @@
       background: #303341;
       border: 0px;
       border-radius: vw(16px);
-
-      &:focus {
-        color: #ffffff;
-        outline: none;
-      }
+      outline: none;
+      // }
     }
 
     button {

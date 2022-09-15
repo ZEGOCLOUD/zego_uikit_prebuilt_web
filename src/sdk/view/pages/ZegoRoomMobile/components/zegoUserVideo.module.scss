@@ -6,8 +6,13 @@
     display: block;
     width: 100%;
     height: 100%;
+    // object-fit: cover;
     background: #242736;
     border-radius: 14px;
+  }
+  .hideVideo {
+    width: 1px;
+    height: 1px;
   }
   .noVideoWrapper {
     position: absolute;
@@ -20,6 +25,8 @@
     justify-content: center;
     width: 100%;
     height: 100%;
+    background: #242736;
+    border-radius: 14px;
     .nameWrapper {
       display: flex;
       align-items: center;
@@ -67,6 +74,7 @@
     position: absolute;
     right: vw(0px);
     bottom: vw(5px);
+    z-index: 11;
     display: flex;
     align-items: center;
     justify-content: flex-end;

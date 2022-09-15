@@ -139,6 +139,7 @@ export class ZegoMessage extends React.Component<{
             onChange={(event) => {
               this.messageInput(event);
             }}
+            placeholder={"Send a message to everyone"}
             onKeyPress={(event) => {
               if (event.key === "Enter") {
                 this.handleSend();

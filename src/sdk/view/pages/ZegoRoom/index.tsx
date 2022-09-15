@@ -863,32 +863,40 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
   async setLive() {
     if (this.state.liveCountdown === 0) {
-      // stop live
-      const res = await this.props.core.setLive("stop");
-      this.setState({
-        liveCountdown: 3,
+      ZegoModelShow({
+        header: "Stop broadcast",
+        contentText: "Are you sure to stop broadcasting??",
+        okText: "Stop",
+        cancelText: "Cancel",
+        onOk: async () => {
+          // stop live
+          const res = await this.props.core.setLive("stop");
+          this.setState({
+            liveCountdown: 3,
+          });
+        },
       });
     } else if (this.state.liveCountdown === 3) {
       this.liveCountdownTimer();
     }
   }
   liveCountdownTimer() {
-    setTimeout(() => {
-      this.setState(
-        (preState: { liveCountdown: number }) => {
-          return {
-            liveCountdown: preState.liveCountdown - 1,
-          };
-        },
-        async () => {
-          if (this.state.liveCountdown === 0) {
-            const res = await this.props.core.setLive("live");
-          } else {
+    this.setState(
+      (preState: { liveCountdown: number }) => {
+        return {
+          liveCountdown: preState.liveCountdown - 1,
+        };
+      },
+      async () => {
+        if (this.state.liveCountdown === 0) {
+          const res = await this.props.core.setLive("live");
+        } else {
+          setTimeout(() => {
             this.liveCountdownTimer();
-          }
+          }, 1000);
         }
-      );
-    }, 1000);
+      }
+    );
   }
   render(): React.ReactNode {
     const startIndex =

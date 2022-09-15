@@ -14,7 +14,7 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
     });
 
     return (
-      <div className={wrapClassName}>
+      <div className={`${wrapClassName} zegoUserVideo_click`}>
         {this.props.userList.map((value, index, arr) => {
           if (arr.length > this.props.videoShowNumber) {
             if (index === this.props.videoShowNumber - 1) {
@@ -34,7 +34,6 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
                 value.streamList[0].media && (
                   <audio
                     key={index}
-                    muted
                     className={ZegoGridCss.videoCommon}
                     ref={(el) => {
                       el &&

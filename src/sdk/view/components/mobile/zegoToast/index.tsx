@@ -7,49 +7,46 @@ export class ZegoToastComponents extends React.Component<{
   content?: string;
   duration: number;
 }> {
-  state = {
-    mounted: false,
-  };
-  componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        mounted: true,
-      });
-    }, 500);
-
-    setTimeout(() => {
-      this.props.closeCallBack();
-    }, this.props.duration * 1000 + 500);
-  }
   render(): React.ReactNode {
     return (
-      <div
-        className={`${ZegoToastCss.ZegoToast} ${
-          this.state.mounted ? ZegoToastCss.show : ""
-        }`}
-      >
+      <div className={`${ZegoToastCss.ZegoToast} ${ZegoToastCss.show}`}>
         <div className={ZegoToastCss.content}>{this.props.content}</div>
       </div>
     );
   }
 }
 
-export const ZegoToast = (config?: {
-  closeCallBack?: () => void;
-  content?: string;
-  duration?: number;
-}) => {
+export const ZegoToast = (function () {
   const div = document.createElement("div");
   document.body.appendChild(div);
-  const root = ReactDOM.createRoot(div);
-  root.render(
-    <ZegoToastComponents
-      closeCallBack={() => {
-        root.unmount();
-        config && config.closeCallBack && config.closeCallBack();
-      }}
-      content={config?.content || ""}
-      duration={config?.duration || 3}
-    ></ZegoToastComponents>
-  );
-};
+  let root: ReactDOM.Root | null;
+  let timer: NodeJS.Timeout | undefined;
+  return (config?: {
+    closeCallBack?: () => void;
+    content?: string;
+    duration?: number;
+  }) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      config && config.closeCallBack && config.closeCallBack();
+      root?.unmount();
+      root = null;
+    }, config?.duration || 3000);
+
+    if (root) {
+      root.unmount();
+      config && config.closeCallBack && config.closeCallBack();
+    }
+
+    root = ReactDOM.createRoot(div);
+    root.render(
+      <ZegoToastComponents
+        closeCallBack={() => {}}
+        content={config?.content || ""}
+        duration={config?.duration || 3}
+      ></ZegoToastComponents>
+    );
+  };
+})();
