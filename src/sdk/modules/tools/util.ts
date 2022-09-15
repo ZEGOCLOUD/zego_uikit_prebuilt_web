@@ -1,3 +1,5 @@
+import { ZegoStreamType } from "../../model";
+
 export function generateVideoView(
   isVideo: boolean,
   userID: string
@@ -66,4 +68,13 @@ export function formatTime(s: number): string {
   return [s / 3600, s / 60, s % 60]
     .map((item) => (item < 10 ? "0" : "") + Math.floor(item))
     .join(":");
+}
+
+export function generateStreamID(
+  userID: string,
+  roomID: string,
+  type?: "main" | "media" | "screensharing"
+): string {
+  type = type || "main";
+  return `${roomID}_${userID}_${type}`;
 }

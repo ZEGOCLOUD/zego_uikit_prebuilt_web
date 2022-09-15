@@ -9,7 +9,6 @@ export function randomNumber(len: number): number {
   }
   return Number.parseInt(result);
 }
-
 export function isPc(): boolean {
   const p = navigator.platform;
   let system = { win: p.indexOf("Win") === 0, mac: p.indexOf("Mac") === 0 };
@@ -130,3 +129,34 @@ export const throttle = (fn: Function, wait: number) => {
     }, wait);
   };
 };
+
+export function getBrowser(): { browser: string; version: string } {
+  let sys: any = {};
+  const ua = navigator.userAgent.toLowerCase();
+  let s;
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-cond-assign
+  (s = ua.match(/edge\/([\d.]+)/))
+    ? (sys.edge = s[1])
+    : (s = ua.match(/rv:([\d.]+)\) like gecko/))
+    ? (sys.ie = s[1])
+    : (s = ua.match(/msie ([\d.]+)/))
+    ? (sys.ie = s[1])
+    : (s = ua.match(/firefox\/([\d.]+)/))
+    ? (sys.firefox = s[1])
+    : (s = ua.match(/chrome\/([\d.]+)/))
+    ? (sys.chrome = s[1])
+    : (s = ua.match(/opera.([\d.]+)/))
+    ? (sys.opera = s[1])
+    : (s = ua.match(/version\/([\d.]+).*safari/))
+    ? (sys.safari = s[1])
+    : 0;
+
+  if (sys.edge) return { browser: "Edge", version: sys.edge };
+  if (sys.ie) return { browser: "IE", version: sys.ie };
+  if (sys.firefox) return { browser: "Firefox", version: sys.firefox };
+  if (sys.chrome) return { browser: "Chrome", version: sys.chrome };
+  if (sys.opera) return { browser: "Opera", version: sys.opera };
+  if (sys.safari) return { browser: "Safari", version: sys.safari };
+
+  return { browser: "", version: "0" };
+}

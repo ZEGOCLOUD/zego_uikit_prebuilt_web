@@ -4,7 +4,10 @@ import {
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 
 import { ZegoCloudRTCCore } from "../modules";
-import { ZegoCloudUserList } from "../modules/tools/UserListManager";
+import {
+  ZegoCloudUser,
+  ZegoCloudUserList,
+} from "../modules/tools/UserListManager";
 export interface ZegoCloudRemoteMedia {
   media: MediaStream;
   fromUser: ZegoUser;
@@ -55,6 +58,8 @@ export interface ZegoCloudRoomConfig {
   //   showRemoteUserCameraToggleOption?: boolean; // 是否允许开关用户摄像头，默认允许
   // };
   // role?: "Host" | "Participant"; // 用户角色，HOST可以关闭对方摄像头和麦克风，Participant则不可以,默认HOST
+  ////////三期新增配置 ///////////////
+  showScreenSharingButton?: boolean; // 是否显示屏幕共享按钮
 }
 
 export interface ZegoBrowserCheckProp {
@@ -113,9 +118,25 @@ export interface ZegoSidebarLayoutProps {
   };
   soundLevel?: SoundLevelMap;
 }
-
+export interface ZegoScreenSharingLayoutProps {
+  handleSetPin?: Function;
+  userList: ZegoCloudUserList;
+  videoShowNumber: number;
+  selfInfo: {
+    userID: string;
+  };
+  roomID?: String;
+  screenSharingUser: ZegoCloudUser;
+  soundLevel?: SoundLevelMap;
+  handleFullScreen?: (fullScreen: boolean) => void;
+}
 export interface SoundLevelMap {
   [userID: string]: {
     [streamID: string]: number;
   };
+}
+export enum ZegoStreamType {
+  main,
+  media,
+  screensharing,
 }

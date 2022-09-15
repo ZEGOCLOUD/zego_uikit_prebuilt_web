@@ -1,5 +1,4 @@
-import { getConfig } from "./tools/util";
-import { randomID } from "../../util";
+import { generateStreamID, getConfig } from "./tools/util";
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import {
   ZegoDeviceInfo,
@@ -115,6 +114,8 @@ export class ZegoCloudRTCCore {
     //       showRemoteUserCameraToggleOption?: boolean,// 是否允许开关用户摄像头，默认允许
     //   }
     //   role?: "Host"| "Participant" // 用户角色，HOST可以关闭对方摄像头和麦克风，Participant则不可以,默认HOST
+    // /////// 三期新增功能 ///////
+    showScreenSharingButton: true, // 是否显示屏幕共享按钮
   };
   setConfig(config: ZegoCloudRoomConfig) {
     this._config = { ...this._config, ...config };
@@ -194,7 +195,9 @@ export class ZegoCloudRTCCore {
   ) {
     return ZegoCloudRTCCore._zg.setVideoConfig(media, constraints);
   }
-
+  stopPublishingStream(streamID: string): boolean {
+    return ZegoCloudRTCCore._zg.stopPublishingStream(streamID);
+  }
   destroyStream(stream: MediaStream): void {
     ZegoCloudRTCCore._zg.destroyStream(stream);
   }
@@ -417,6 +420,10 @@ export class ZegoCloudRTCCore {
           this.onSoundLevelUpdateCallBack(soundLevelList);
       }
     );
+    ZegoCloudRTCCore._zg.on("screenSharingEnded", (stream: MediaStream) => {
+      this.onScreenSharingEndedCallBack &&
+        this.onScreenSharingEndedCallBack(stream);
+    });
     const resp = await new Promise<number>(async (res, rej) => {
       ZegoCloudRTCCore._zg.on(
         "roomStateUpdate",
@@ -452,9 +459,16 @@ export class ZegoCloudRTCCore {
     return resp;
   }
 
-  publishLocalStream(media: MediaStream): boolean | string {
+  publishLocalStream(
+    media: MediaStream,
+    streamType?: "main" | "media" | "screensharing"
+  ): boolean | string {
     if (!media) return false;
-    const streamID = this._expressConfig.userID + "_" + randomID(3);
+    const streamID = generateStreamID(
+      this._expressConfig.userID,
+      this._expressConfig.roomID,
+      streamType
+    );
     const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media);
     return res && streamID;
   }
@@ -471,6 +485,10 @@ export class ZegoCloudRTCCore {
     this.subscribeUserListCallBack = callback;
   }
 
+  private subscribeScreenStreamCallBack!: (userList: ZegoCloudUserList) => void;
+  subscribeScreenStream(callback: (userList: ZegoCloudUserList) => void): void {
+    this.subscribeScreenStreamCallBack = callback;
+  }
   private onRemoteMediaUpdateCallBack: (
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]
@@ -478,9 +496,12 @@ export class ZegoCloudRTCCore {
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]
   ) => {
-    this.zum.streamNumUpdate(updateType, streamList);
+    this.zum.mainStreamUpdate(updateType, streamList);
+    this.zum.screenStreamUpdate(updateType, streamList);
     this.subscribeUserListCallBack &&
       this.subscribeUserListCallBack(this.zum.remoteUserList);
+    this.subscribeScreenStreamCallBack &&
+      this.subscribeScreenStreamCallBack(this.zum.remoteScreenStreamList);
   };
 
   onRemoteMediaUpdate(
@@ -494,9 +515,12 @@ export class ZegoCloudRTCCore {
       streamList: ZegoCloudRemoteMedia[]
     ) => {
       func(updateType, streamList);
-      this.zum.streamNumUpdate(updateType, streamList);
+      this.zum.mainStreamUpdate(updateType, streamList);
+      this.zum.screenStreamUpdate(updateType, streamList);
       this.subscribeUserListCallBack &&
         this.subscribeUserListCallBack(this.zum.remoteUserList);
+      this.subscribeScreenStreamCallBack &&
+        this.subscribeScreenStreamCallBack(this.zum.remoteScreenStreamList);
     };
   }
 
@@ -553,6 +577,10 @@ export class ZegoCloudRTCCore {
     this.onRoomMessageUpdateCallBack = func;
   }
 
+  private onScreenSharingEndedCallBack!: (stream: MediaStream) => void;
+  onScreenSharingEnded(func: (stream: MediaStream) => void) {
+    this.onScreenSharingEndedCallBack = func;
+  }
   NetworkStatusTimer: NodeJS.Timer | null = null;
   private onNetworkStatusCallBack!: (
     roomID: string,
@@ -598,15 +626,20 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.off("publisherStateUpdate");
     ZegoCloudRTCCore._zg.off("publishQualityUpdate");
     ZegoCloudRTCCore._zg.off("soundLevelUpdate");
+    ZegoCloudRTCCore._zg.off("screenSharingEnded");
+
     ZegoCloudRTCCore._zg.setSoundLevelDelegate(false);
     this.onNetworkStatusCallBack = () => {};
     this.onRemoteMediaUpdateCallBack = (
       updateType: "DELETE" | "ADD" | "UPDATE",
       streamList: ZegoCloudRemoteMedia[]
     ) => {
-      this.zum.streamNumUpdate(updateType, streamList);
+      this.zum.mainStreamUpdate(updateType, streamList);
+      this.zum.screenStreamUpdate(updateType, streamList);
       this.subscribeUserListCallBack &&
         this.subscribeUserListCallBack(this.zum.remoteUserList);
+      this.subscribeScreenStreamCallBack &&
+        this.subscribeScreenStreamCallBack(this.zum.remoteScreenStreamList);
     };
     this.onRemoteUserUpdateCallBack = () => {};
     this.onRoomMessageUpdateCallBack = () => {};

@@ -6,11 +6,14 @@ import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 export class ZegoUserVideo extends React.Component<{
   user: ZegoCloudUser;
   onLocalStreamPaused?: () => void;
+  onCanPlay?: () => void;
   volume: {
     [streamID: string]: number;
   };
   circleSize?: "GRID" | "SIDEBAR";
   muted: boolean;
+  hiddenName?: boolean;
+  hiddenMore?: boolean;
 }> {
   render(): React.ReactNode {
     const volume =
@@ -30,6 +33,9 @@ export class ZegoUserVideo extends React.Component<{
                 el &&
                   el.srcObject !== this.props.user.streamList[0].media &&
                   (el.srcObject = this.props.user.streamList[0].media);
+              }}
+              onCanPlay={() => {
+                this.props.onCanPlay && this.props.onCanPlay();
               }}
             ></video>
           )}
@@ -55,22 +61,24 @@ export class ZegoUserVideo extends React.Component<{
           </div>
         )}
 
-        <div className={zegoUserVideoCss.name}>
-          <p>{this.props.user.userName}</p>
-          <span
-            className={`${zegoUserVideoCss.micIcon}  ${
-              !this.props.user.streamList[0] ||
-              this.props.user.streamList[0].micStatus !== "OPEN"
-                ? zegoUserVideoCss.close
-                : ""
-            }`}
-          >
-            {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
-              <span style={{ height: height + "px" }}></span>
-            )}
-          </span>
-        </div>
-        <ZegoMore user={this.props.user} />
+        {!this.props.hiddenName && (
+          <div className={zegoUserVideoCss.name}>
+            <p>{this.props.user.userName}</p>
+            <span
+              className={`${zegoUserVideoCss.micIcon}  ${
+                !this.props.user.streamList[0] ||
+                this.props.user.streamList[0].micStatus !== "OPEN"
+                  ? zegoUserVideoCss.close
+                  : ""
+              }`}
+            >
+              {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
+                <span style={{ height: height + "px" }}></span>
+              )}
+            </span>
+          </div>
+        )}
+        {!this.props.hiddenMore && <ZegoMore user={this.props.user} />}
       </div>
     );
   }

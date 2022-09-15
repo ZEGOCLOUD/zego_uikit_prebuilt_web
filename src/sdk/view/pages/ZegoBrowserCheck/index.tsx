@@ -18,10 +18,10 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     isJoinRoomFailed: false, // 是否加入房间失败
     joinRoomErrorTip: `Failed to join the room.`, // 加入房间失败提示
     showDeviceAuthorAlert: false, // 控制设备权限警告弹窗
-    seletMic: undefined,
-    seletSpeaker: undefined,
-    seletCamera: undefined,
-    seletVideoResolution: "360",
+    selectMic: undefined,
+    selectSpeaker: undefined,
+    selectCamera: undefined,
+    selectVideoResolution: "360",
     isJoining: false, // 是否正在加入房间，防止重复点击join
     showNonVideo: this.props.core._config.showNonVideoUser,
   };
@@ -86,21 +86,21 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     }
     // 防止设备移出后，再次使用缓存设备ID
     const mic = micDevices.filter(
-      (device) => device.deviceID === sessionStorage.getItem("seletMic")
+      (device) => device.deviceID === sessionStorage.getItem("selectMic")
     );
     const cam = cameraDevices.filter(
-      (device) => device.deviceID === sessionStorage.getItem("seletCamera")
+      (device) => device.deviceID === sessionStorage.getItem("selectCamera")
     );
     const speaker = speakerDevices.filter(
-      (device) => device.deviceID === sessionStorage.getItem("seletSpeaker")
+      (device) => device.deviceID === sessionStorage.getItem("selectSpeaker")
     );
     return {
-      seletMic: mic[0]?.deviceID || micDevices[0]?.deviceID || undefined,
-      seletSpeaker:
+      selectMic: mic[0]?.deviceID || micDevices[0]?.deviceID || undefined,
+      selectSpeaker:
         speaker[0]?.deviceID || speakerDevices[0]?.deviceID || undefined,
-      seletCamera: cam[0]?.deviceID || cameraDevices[0]?.deviceID || undefined,
-      seletVideoResolution:
-        sessionStorage.getItem("seletVideoResolution") || "360",
+      selectCamera: cam[0]?.deviceID || cameraDevices[0]?.deviceID || undefined,
+      selectVideoResolution:
+        sessionStorage.getItem("selectVideoResolution") || "360",
     };
   }
   async createStream(
@@ -115,12 +115,12 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         this.setState({
           isVideoOpening: true,
         });
-        const solution = getVideoResolution(this.state.seletVideoResolution);
+        const solution = getVideoResolution(this.state.selectVideoResolution);
         localVideoStream = await this.props.core.createStream({
           camera: {
             video: true,
             audio: false,
-            videoInput: this.state.seletCamera,
+            videoInput: this.state.selectCamera,
             videoQuality: 4,
             ...solution,
           },
@@ -150,7 +150,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           camera: {
             video: false,
             audio: true,
-            audioInput: this.state.seletMic,
+            audioInput: this.state.selectMic,
           },
         });
         localAudioStream?.getAudioTracks().map((track) => {
@@ -247,11 +247,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         this.props.core.status.audioRefuse = this.audioRefuse;
         this.props.core.status.videoRefuse = this.videoRefuse;
 
-        this.props.core.status.micDeviceID = this.state.seletMic;
-        this.props.core.status.cameraDeviceID = this.state.seletCamera;
-        this.props.core.status.speakerDeviceID = this.state.seletSpeaker;
+        this.props.core.status.micDeviceID = this.state.selectMic;
+        this.props.core.status.cameraDeviceID = this.state.selectCamera;
+        this.props.core.status.speakerDeviceID = this.state.selectSpeaker;
         this.props.core.status.videoResolution =
-          this.state.seletVideoResolution;
+          this.state.selectVideoResolution;
         this.props.core._config.showNonVideoUser = this.state.showNonVideo;
         const loginRsp = await this.props.core.enterRoom();
 
@@ -311,17 +311,17 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     ZegoSettingsAlert({
       core: this.props.core,
       initDevices: {
-        mic: this.state.seletMic,
-        cam: this.state.seletCamera,
-        speaker: this.state.seletSpeaker,
-        videoResolve: this.state.seletVideoResolution,
+        mic: this.state.selectMic,
+        cam: this.state.selectCamera,
+        speaker: this.state.selectSpeaker,
+        videoResolve: this.state.selectVideoResolution,
         showNonVideoUser: this.state.showNonVideo,
       },
       closeCallBack: () => {},
       onMicChange: (deviceID: string) => {
         this.setState(
           {
-            seletMic: deviceID,
+            selectMic: deviceID,
           },
           () => {
             this.createStream(this.state.videoOpen, this.state.audioOpen);
@@ -331,7 +331,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       onCameraChange: (deviceID: string) => {
         this.setState(
           {
-            seletCamera: deviceID,
+            selectCamera: deviceID,
           },
           () => {
             this.createStream(this.state.videoOpen, this.state.audioOpen);
@@ -340,13 +340,13 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       },
       onSpeakerChange: (deviceID: string) => {
         this.setState({
-          seletSpeaker: deviceID,
+          selectSpeaker: deviceID,
         });
       },
       onVideoResolutionChange: (level: string) => {
         this.setState(
           {
-            seletVideoResolution: level,
+            selectVideoResolution: level,
           },
           () => {
             this.createStream(this.state.videoOpen, this.state.audioOpen);

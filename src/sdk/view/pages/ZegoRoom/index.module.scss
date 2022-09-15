@@ -29,8 +29,8 @@
   padding: 0 20px;
   background-color: #1c1f2e;
   .logo {
-    width: 182px;
-    height: 37px;
+    width: 154px;
+    height: 32px;
     object-fit: contain;
   }
   .timer {
@@ -162,9 +162,10 @@
   height: 50px;
 }
 .footer {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   box-sizing: border-box;
   width: 100%;
   height: 74px;
@@ -174,20 +175,22 @@
 @mixin toolButton {
   width: 42px;
   height: 42px;
-  background-color: #2c2f3e;
+  background-color: #313443;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 28px 28px;
   border-radius: 10px;
   cursor: pointer;
   &:hover {
-    background-color: #3d4154;
+    background-color: #404352;
   }
 }
 
 .handlerMiddle {
+  position: relative;
   display: flex;
   flex: 1;
+  align-items: center;
   justify-content: center;
   & > div {
     @include toolButton;
@@ -203,8 +206,13 @@
   }
 }
 .handlerRight {
+  position: absolute;
+  top: 0;
+  right: 30px;
   display: flex;
+  align-items: center;
   justify-content: center;
+  height: 74px;
   & > div {
     @include toolButton;
     &:not(:last-of-type) {
@@ -227,6 +235,12 @@
   background-image: url("../../../sdkAssets/icon_inner_camera.png");
   &.close {
     background-image: url("../../../sdkAssets/icon_inner_camera_close.png");
+  }
+}
+.screenButton {
+  background-image: url("../../../sdkAssets/icon_inner_screen.png");
+  &.sharing {
+    background-image: url("../../../sdkAssets/icon_inner_screen_close.png");
   }
 }
 .moreButton {
@@ -419,7 +433,7 @@
     .layoutSettingsItemChecked {
       background-image: url("../../../sdkAssets/icon_choose_pre@2x.png");
     }
-    .layoutSettingsItemLoadoing {
+    .layoutSettingsItemLoading {
       background-image: url("../../../sdkAssets/icon_loading@2x.png");
       animation: layoutLoading 1.8s linear infinite;
     }
@@ -432,5 +446,40 @@
 @keyframes layoutLoading {
   100% {
     transform: rotateZ(360deg);
+  }
+}
+.screenBottomBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 100%;
+  height: 38px;
+  padding: 0 16px;
+  background: #353847;
+  .screenBottomBarLeft {
+    display: flex;
+    align-items: center;
+
+    span {
+      width: 28px;
+      height: 28px;
+      margin-right: 10px;
+      background: url("../../../sdkAssets/icon_inner_screen.png") no-repeat
+        center/cover;
+    }
+    p {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+    }
+  }
+  .screenBottomBarRight {
+    color: #ff4a50;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 17px;
+    cursor: pointer;
   }
 }
