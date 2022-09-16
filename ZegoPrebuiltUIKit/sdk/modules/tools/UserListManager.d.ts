@@ -31,4 +31,5 @@ export declare class ZegoCloudUserListManager {
     streamList: ZegoCloudRemoteMedia[]
   ): void;
   clearUserList(): void;
+  clearScreenStreamList(): void;
 }
