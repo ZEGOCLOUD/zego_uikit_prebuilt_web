@@ -18,20 +18,21 @@ export class ZegoRoomInvite extends React.Component<{
       return (
         <div className={ZegoRoomInviteCss.inviteLinkWrapper} key={link.name}>
           <div className={ZegoRoomInviteCss.title}>{link.name}</div>
-          <input
-            className={ZegoRoomInviteCss.inviteLink}
-            placeholder="inviteLink"
-            readOnly
-            value={link.url}
-            ref={this.inviteRef}
-          ></input>
-          <div
-            className={ZegoRoomInviteCss.copyLinkButton}
-            onClick={() => {
-              this.handleCopy(link.url);
-            }}
-          >
-            Copy
+          <div className={ZegoRoomInviteCss.inviteLink}>
+            <input
+              placeholder="inviteLink"
+              readOnly
+              value={link.url}
+              ref={this.inviteRef}
+            ></input>
+            <div
+              className={ZegoRoomInviteCss.copyLinkButton}
+              onClick={() => {
+                this.handleCopy(link.url);
+              }}
+            >
+              Copy
+            </div>
           </div>
         </div>
       );

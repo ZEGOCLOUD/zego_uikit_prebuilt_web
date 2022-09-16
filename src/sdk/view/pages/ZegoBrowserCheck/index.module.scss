@@ -1,66 +1,66 @@
 .notSupport {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 10000;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
   background: rgba($color: #2a2a2a, $alpha: 0.5);
   .content {
-    width: 302px;
     box-sizing: border-box;
-    background: #ffffff;
-    box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.2);
-    border-radius: 4px;
+    width: 302px;
     padding: 26px;
+    background: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.2);
   }
   .tipsHeader {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2a2a2a;
-    line-height: 16px;
     margin-bottom: 18px;
+    color: #2a2a2a;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 16px;
   }
   .tipsText {
-    font-size: 14px;
-    font-weight: 400;
     color: #2a2a2a;
+    font-weight: 400;
+    font-size: 14px;
     line-height: 20px;
   }
 }
 .support {
-  width: 100%;
-  height: 100%;
-  min-width: 1000px;
-  min-height: 666px;
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 1000px;
+  height: 100%;
+  min-height: 666px;
 }
 .supportWrapper {
-  width: 960px;
-  height: 530px;
-  background: #ffffff;
-  box-shadow: 0px 14px 24px 0px #eaecf1;
-  border-radius: 20px;
-  border: 1px solid #e8eaef;
-  box-sizing: border-box;
-  padding: 10px 0 10px 10px;
   display: flex;
 
   flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 960px;
+  height: 530px;
+  padding: 10px 0 10px 10px;
+  background: #ffffff;
+  border: 1px solid #e8eaef;
+  border-radius: 20px;
+  box-shadow: 0px 14px 24px 0px #eaecf1;
 }
 .videoWrapper {
+  position: relative;
+  flex: 0 0 auto;
   width: 480px;
   height: 100%;
-  border-radius: 14px;
-  background: #333;
-  position: relative;
   overflow: hidden;
-  flex: 0 0 auto;
+  background: #333;
+  border-radius: 14px;
 }
 .video {
   width: 100%;
@@ -68,22 +68,49 @@
   object-fit: cover;
 }
 .videoTip {
-  text-align: center;
-  width: 100%;
-  font-size: 26px;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 37px;
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   z-index: 1;
+  width: 100%;
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 37px;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+.noCamera {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 136px;
+  width: 136px;
+  height: 136px;
+  height: 136px;
+  color: #557bff;
+  font-weight: 600;
+  font-size: 46px;
+  line-height: 65px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 78px;
+  transform: translate(-50%, -50%);
 }
 .toolsWrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-self: center;
+  justify-content: center;
+  box-sizing: border-box;
   width: 100%;
   height: 72px;
-  box-sizing: border-box;
   padding-top: 15px;
   background: linear-gradient(
     180deg,
@@ -91,27 +118,21 @@
     rgba(51, 51, 51, 0.6) 100%
   );
   border-radius: 0px 0px 14px 14px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-self: center;
   & > div {
+    position: relative;
+    box-sizing: border-box;
     width: 48px;
     height: 48px;
-    box-sizing: border-box;
-    border: 1px solid rgba($color: #fff, $alpha: 0.9);
     margin: 0 12px;
-    border-radius: 50%;
-    background-size: 28px 28px;
     background-repeat: no-repeat;
     background-position: center;
-    position: relative;
+    background-size: 28px 28px;
+    border: 1px solid rgba($color: #fff, $alpha: 0.9);
+    border-radius: 50%;
     cursor: pointer;
     &:hover {
-      border-color: #fff;
       background-color: #2a2a2a26;
+      border-color: #fff;
       & > span {
         display: block;
       }
@@ -119,19 +140,19 @@
   }
 }
 .buttonTip {
-  font-size: 12px;
-  font-weight: 400;
-  color: #ffffff;
-  line-height: 17px;
-  padding: 6px 10px;
-  display: none;
   position: absolute;
   top: -36px;
   left: 50%;
-  transform: translateX(-50%);
+  display: none;
+  padding: 6px 10px;
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 17px;
   white-space: nowrap;
   background-color: rgba($color: #2a2a2a, $alpha: 0.6);
   border-radius: 6px;
+  transform: translateX(-50%);
 }
 .audioButton {
   background-image: url("../../../sdkAssets/icon_out_audio.png");
@@ -158,17 +179,17 @@
   }
 }
 .joinScreenWrapper {
-  padding: 83px 60px;
   display: flex;
+  flex: 1 0 auto;
   flex-direction: column;
   justify-content: center;
-  flex: 1 0 auto;
+  padding: 83px 60px;
   .title {
-    font-size: 22px;
-    font-weight: 600;
-    color: #333333;
-    line-height: 30px;
     margin-bottom: 26px;
+    color: #333333;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 30px;
   }
 }
 .joinFormWrapper {
@@ -176,20 +197,20 @@
   flex-direction: column;
 }
 .userName {
-  width: 350px;
-  border-radius: 10px;
-  border: 2px solid #333333;
   box-sizing: border-box;
+  width: 350px;
   padding: 10px 18px;
-  font-size: 16px;
-  font-weight: 500;
   color: #2a2a2a;
+  font-weight: 500;
+  font-size: 16px;
   line-height: 22px;
+  border: 2px solid #333333;
+  border-radius: 10px;
   outline: #0055ff;
   &::placeholder {
-    font-size: 16px;
-    font-weight: 500;
     color: #ababb5;
+    font-weight: 500;
+    font-size: 16px;
     line-height: 22px;
   }
   &:hover,
@@ -204,19 +225,19 @@
   margin-top: 22px;
 }
 .joinRoomButton {
-  width: 350px;
-  height: 46px;
-  background: #0055ff;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #ffffff;
-  line-height: 46px;
-  text-align: center;
-  border: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 350px;
+  height: 46px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 46px;
+  text-align: center;
+  background: #0055ff;
+  border: 0;
+  border-radius: 10px;
   cursor: pointer;
   &[disabled] {
     background: rgba($color: #0055ff, $alpha: 0.3);
@@ -224,9 +245,9 @@
   }
 }
 .joinRoomButtonLoading {
-  margin-right: 8px;
   width: 20px;
   height: 20px;
+  margin-right: 8px;
   background: url("../../../sdkAssets/icon_loading@2x.png") no-repeat
     center/cover;
   animation: joinLoading 1.8s linear infinite;
@@ -237,19 +258,19 @@
   }
 }
 .joinRoomButtonTip {
-  width: 332px;
-  background: rgba($color: #2a2a2a, $alpha: 0.6);
-  border-radius: 6px;
+  position: absolute;
+  top: 54px;
+  left: 9px;
   box-sizing: border-box;
+  width: 332px;
   padding: 6px 10px;
-  font-size: 14px;
-  font-weight: 400;
   color: #ffffff;
+  font-weight: 400;
+  font-size: 14px;
   line-height: 19px;
   text-align: center;
-  position: absolute;
-  left: 9px;
-  top: 54px;
+  background: rgba($color: #2a2a2a, $alpha: 0.6);
+  border-radius: 6px;
 }
 .shareLinkWrapper {
   margin-top: 72px;
@@ -257,32 +278,45 @@
 .inviteLinkWrapper {
   display: flex;
   align-items: center;
-}
-.inviteLink {
-  width: 292px;
-  height: 46px;
+  margin-bottom: 20px;
   background: #f5f7fa;
   border-radius: 10px;
-  border: 0;
-  outline: none;
-  font-size: 16px;
-  font-weight: 400;
-  color: #666666;
-  line-height: 22px;
-  padding: 10px 18px;
+  .inviteLinkWrapperLeft {
+    padding: 12px 6px 12px 18px;
+    h3 {
+      color: #2a2a2a;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 22px;
+    }
+  }
+}
+.inviteLink {
   box-sizing: border-box;
+  width: 284px;
+  height: 20px;
+  padding: 10px 18px;
+  padding: 0;
+  color: #a4a4a4;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  background: #f5f7fa;
+  border: 0;
+  border-radius: 10px;
+  outline: none;
 }
 .copyLinkButton {
   width: 46px;
   height: 46px;
-  margin-left: 12px;
-  background-color: #0055ff;
-  border-radius: 10px;
+  margin-left: 5px;
+  background-color: #f5f7fa;
   background-image: url("../../../sdkAssets/icon_out_copy.png");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 26px 26px;
+  background-size: 24px 24px;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
   &[disabled] {
     background-image: url("../../../sdkAssets/icon_out_copied.png");
@@ -292,9 +326,9 @@
 @media screen and (max-height: 730px) {
   .serviceTips {
     position: relative;
+    bottom: 0;
     left: 0;
     margin-bottom: 10px;
     transform: translateX(0);
-    bottom: 0;
   }
 }
