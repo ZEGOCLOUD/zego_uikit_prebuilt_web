@@ -214,4 +214,7 @@ export class ZegoCloudUserListManager {
   clearUserList() {
     this.remoteUserList = [];
   }
+  clearScreenStreamList() {
+    this.remoteScreenStreamList = [];
+  }
 }
