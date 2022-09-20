@@ -119,10 +119,10 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
                       <audio
                         key={user.userID}
                         autoPlay
-                        ref={(el) => {
+                        ref={(el: HTMLAudioElement) => {
                           el &&
                             el.srcObject !== user?.streamList?.[0]?.media &&
-                            (el.srcObject = user?.streamList?.[0]?.media);
+                            (el.srcObject = user?.streamList?.[0]?.media!);
                         }}
                       ></audio>
                     );

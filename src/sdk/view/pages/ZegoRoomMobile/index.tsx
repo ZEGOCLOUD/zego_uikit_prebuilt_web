@@ -1,5 +1,7 @@
 import React from "react";
 import {
+  LiveRole,
+  ScenarioModel,
   SoundLevelMap,
   ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
@@ -12,13 +14,22 @@ import {
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { randomNumber, userNameColor } from "../../../util";
+import {
+  isIOS,
+  isPc,
+  IsSafari,
+  randomNumber,
+  userNameColor,
+} from "../../../util";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoReconnect } from "./components/ZegoReconnect";
 import { ZegoToast } from "../../components/mobile/zegoToast";
-import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
+import {
+  ZegoDeviceInfo,
+  ZegoSoundLevelInfo,
+} from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 
 import {
   ZegoCloudUser,
@@ -29,7 +40,7 @@ import { ZegoManage } from "./components/zegoManage";
 import { ZegoGrid } from "./components/zegoGrid";
 import { ZegoSidebar } from "./components/zegoSidebar";
 import ShowManageContext from "./context/showManage";
-import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
+import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoScreen } from "./components/zegoScreen";
 
 export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
@@ -56,6 +67,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     showFooter: boolean;
     isNetworkPoor: boolean;
     soundLevel: SoundLevelMap;
+    liveCountdown: number;
+    liveStatus: 1 | 0;
     screenSharingUserList: ZegoCloudUserList;
   } = {
     micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
@@ -73,6 +86,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     showFooter: true,
     isNetworkPoor: false,
     soundLevel: {},
+    liveCountdown: -1,
+    liveStatus: 0,
     screenSharingUserList: [],
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
@@ -89,6 +104,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
 
   userUpdateCallBack = () => {};
   localStreamID = "";
+  safariLimitationNoticed: -1 | 0 | 1 = -1;
 
   componentDidMount() {
     this.initSDK();
@@ -223,8 +239,42 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     );
     this.props.core.subscribeUserList((userList) => {
       this.userUpdateCallBack();
-      this.setState({ zegoCloudUserList: userList });
+      const notSupportPhone =
+        !isPc() &&
+        isIOS() &&
+        IsSafari() &&
+        userList.filter((u) => {
+          return u.streamList.length > 0;
+        }).length > 1;
+      if (notSupportPhone) {
+        console.warn("userList", userList[0]);
+        let targetUsers = userList.reverse();
+        console.warn("reverse userList", targetUsers[0]);
+        let targetUser = targetUsers.find((u) => u.streamList.length > 0);
+        console.warn("find user", targetUser);
+        if (this.safariLimitationNoticed === -1) {
+          this.safariLimitationNoticed = 0;
+          ZegoModelShow({
+            header: "Notice",
+            contentText:
+              "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
+
+            okText: "Okay",
+            onOk: () => {
+              this.safariLimitationNoticed = 1;
+              this.setState({
+                zegoCloudUserList: [targetUser],
+              });
+            },
+          });
+        } else if (this.safariLimitationNoticed != 0) {
+          this.setState({ zegoCloudUserList: [targetUser] });
+        }
+      } else {
+        this.setState({ zegoCloudUserList: userList });
+      }
     });
+
     this.props.core.subscribeScreenStream((userList) => {
       if (userList.length !== this.state.screenSharingUserList.length) {
         this.handleLayoutChange(this.state.userLayoutStatus);
@@ -249,12 +299,25 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         });
       }
     );
-
+    this.props.core.onRoomLiveStateUpdate((res: 1 | 0) => {
+      this.setState((preState: { liveCountdown: number }) => {
+        return {
+          liveStatus: res,
+          liveCountdown:
+            preState.liveCountdown === -1 || preState.liveCountdown == 0
+              ? res == 1
+                ? 0
+                : -1
+              : preState.liveCountdown,
+        };
+      });
+    });
     const logInRsp = await this.props.core.enterRoom();
 
     if (logInRsp === 0) {
       this.createStream();
-      this.cameraDevices = await this.props.core.getCameras();
+      this.props.core._config.showMyCameraToggleButton &&
+        (this.cameraDevices = await this.props.core.getCameras());
     }
   }
 
@@ -280,8 +343,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             videoQuality: 4,
             facingMode: this.faceModel ? "user" : "environment",
             width: 640,
-            height: 480,
-            bitrate: 500,
+            height: 360,
+            bitrate: 400,
             frameRate: 15,
           },
         });
@@ -499,6 +562,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       document.removeEventListener("click", this.onblur);
     }
   };
+
   openMore() {
     this.setState(
       (state: { showMore: boolean }) => {
@@ -534,11 +598,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     });
   }
 
-  getShownUser(forceShowNonVideoUser = false) {
-    const shownUser = [
+  getAllUser() {
+    return [
       {
         userID: this.props.core._expressConfig.userID,
-        userName: this.props.core._expressConfig.userName + "（You）",
+        userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
         streamList: [
           {
@@ -555,7 +619,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         ],
       },
       ...this.state.zegoCloudUserList,
-    ].filter((item) => {
+    ];
+  }
+
+  getShownUser(forceShowNonVideoUser = false) {
+    const shownUser = this.getAllUser().filter((item) => {
       if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
         if (item.streamList && item.streamList[0] && item.streamList[0].media) {
           if (item.streamList[0].cameraStatus === "OPEN") {
@@ -580,27 +648,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   getHiddenUser() {
-    const hiddenUser = [
-      {
-        userID: this.props.core._expressConfig.userID,
-        userName: this.props.core._expressConfig.userName + "（You）",
-        pin: this.localUserPin,
-        streamList: [
-          {
-            media: this.state.localStream!,
-            fromUser: {
-              userID: this.props.core._expressConfig.userID,
-              userName: this.props.core._expressConfig.userName,
-            },
-            micStatus: this.state.micOpen ? "OPEN" : "MUTE",
-            cameraStatus: this.state.cameraOpen ? "OPEN" : "MUTE",
-            state: "PLAYING",
-            streamID: this.localStreamID,
-          },
-        ],
-      },
-      ...this.state.zegoCloudUserList,
-    ].filter((item) => {
+    const hiddenUser = this.getAllUser().filter((item) => {
       if (
         !this.props.core._config.showNonVideoUser &&
         item.streamList &&
@@ -627,7 +675,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               ref={(el) => {
                 el &&
                   el.srcObject !== user.streamList[0].media &&
-                  (el.srcObject = user.streamList[0].media);
+                  (el.srcObject = user.streamList[0].media!);
               }}
             ></audio>
           );
@@ -759,6 +807,35 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   getLayoutScreen() {
+    if (
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
+      this.state.liveStatus != 1
+    ) {
+      return (
+        <div className={`${ZegoRoomCss.liveNotStart} zegoUserVideo_click`}>
+          <i></i>
+          <span>The Live has not started yet</span>
+        </div>
+      );
+    } else if (
+      !this.getAllUser().some((u) => {
+        if (u.streamList) {
+          return u.streamList.some((s) => {
+            return s.cameraStatus === "OPEN" || s.micStatus === "OPEN";
+          });
+        }
+        return false;
+      })
+    ) {
+      return (
+        <div className={`${ZegoRoomCss.noOneStreaming} zegoUserVideo_click`}>
+          <i></i>
+          <span>No one has turned on the camera or microphone yet.</span>
+        </div>
+      );
+    }
+
     if (this.state.screenSharingUserList.length > 0) {
       return (
         <>
@@ -854,7 +931,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     if (
       className.includes("zegoUserVideo_videoCommon") ||
       className.includes("zegoMore_more") ||
-      className.includes("ZegoRoomMobile_ZegoRoom")
+      className.includes("ZegoRoomMobile_ZegoRoom") ||
+      className.includes("zegoUserVideo_click")
     ) {
       if (!this.state.showFooter) {
         this.setState({ showFooter: true });
@@ -880,6 +958,54 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     }
   }
 
+  async setLive() {
+    if (this.state.liveCountdown === 0) {
+      ZegoModelShow({
+        header: "Stop broadcast",
+        contentText: "Are you sure to stop broadcasting?",
+        okText: "Stop",
+        cancelText: "Cancel",
+        onOk: async () => {
+          // stop live
+          const res = await this.props.core.setLive("stop");
+          this.setState({
+            liveCountdown: -1,
+          });
+        },
+      });
+    } else if (this.state.liveCountdown === -1) {
+      this.setState(
+        {
+          liveCountdown: 3,
+        },
+        () => {
+          setTimeout(() => {
+            this.liveCountdownTimer();
+          }, 1000);
+        }
+      );
+    }
+  }
+
+  liveCountdownTimer() {
+    this.setState(
+      (preState: { liveCountdown: number }) => {
+        return {
+          liveCountdown: preState.liveCountdown - 1,
+        };
+      },
+      async () => {
+        if (this.state.liveCountdown === 0) {
+          const res = await this.props.core.setLive("live");
+        } else {
+          setTimeout(() => {
+            this.liveCountdownTimer();
+          }, 1000);
+        }
+      }
+    );
+  }
+
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
@@ -895,6 +1021,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               layOutStatus: _user ? "MANAGE" : "ONE_VIDEO",
             });
           },
+          showPinButton: !!this.props.core._config.showPinButton,
         }}
       >
         <div
@@ -910,16 +1037,18 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           )}
           {(this.state.showFooter || false) && (
             <div className={ZegoRoomCss.footer}>
-              {this.props.core._config.showMyCameraToggleButton && (
-                <a
-                  className={`${ZegoRoomCss.switchCamera} ${
-                    this.state.cameraFront ? "" : ZegoRoomCss.switchCameraBack
-                  }`}
-                  onClick={() => {
-                    this.switchCamera();
-                  }}
-                ></a>
-              )}
+              {this.props.core._config.showMyCameraToggleButton &&
+                this.props.core._config.scenario?.mode !==
+                  ScenarioModel.LiveStreaming && (
+                  <a
+                    className={`${ZegoRoomCss.switchCamera} ${
+                      this.state.cameraFront ? "" : ZegoRoomCss.switchCameraBack
+                    }`}
+                    onClick={() => {
+                      this.switchCamera();
+                    }}
+                  ></a>
+                )}
 
               {this.props.core._config.showMyCameraToggleButton && (
                 <a
@@ -948,14 +1077,20 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               )}
 
               <a
-                className={ZegoRoomCss.leaveRoom}
+                className={
+                  this.props.core._config.scenario?.mode ===
+                  ScenarioModel.LiveStreaming
+                    ? ZegoRoomCss.liveLeaveButton
+                    : ZegoRoomCss.leaveRoom
+                }
                 onClick={() => {
                   this.leaveRoom();
                 }}
               ></a>
+
               {(this.props.core._config.showTextChat ||
                 this.props.core._config.showUserList ||
-                this.props.core._config.preJoinViewConfig?.invitationLink) && (
+                this.props.core._config.sharedLinks) && (
                 <a
                   id="ZegoRoomCssMobileMore"
                   className={ZegoRoomCss.more}
@@ -966,9 +1101,25 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                   {(this.state.showMore || false) && (
                     <div
                       id="ZegoRoomCssMobilePopMore"
-                      className={ZegoRoomCss.popMore}
+                      className={`${ZegoRoomCss.popMore} ${ZegoRoomCss.popLiveMore}`}
                     >
                       <div className={ZegoRoomCss.popMoreContent}>
+                        {this.props.core._config.showMyCameraToggleButton &&
+                          this.props.core._config.scenario?.mode ===
+                            ScenarioModel.LiveStreaming && (
+                            <div
+                              className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}
+                              onClick={() => {
+                                this.switchCamera();
+                              }}
+                            >
+                              <i
+                                className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}
+                              ></i>
+                              <span>Flip</span>
+                            </div>
+                          )}
+
                         {this.props.core._config.preJoinViewConfig
                           ?.invitationLink && (
                           <div
@@ -982,6 +1133,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                             <span>Room details</span>
                           </div>
                         )}
+
                         {this.props.core._config.showUserList && (
                           <div
                             onClick={(ev) => {
@@ -1004,7 +1156,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                             <span>Chat</span>
                           </div>
                         )}
-                        {true && (
+                        {this.props.core._config.showLayoutButton && (
                           <div
                             onClick={(ev) => {
                               ev.stopPropagation();
@@ -1016,11 +1168,36 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                           </div>
                         )}
                       </div>
-                      <div className={ZegoRoomCss.popMoreArray}></div>
                     </div>
+                  )}
+                  {(this.state.showMore || false) && (
+                    <div className={ZegoRoomCss.popMoreArray}></div>
                   )}
                 </a>
               )}
+
+              {this.props.core._config.scenario?.mode ===
+                ScenarioModel.LiveStreaming &&
+                this.props.core._config.scenario.config?.role ===
+                  LiveRole.Host && (
+                  <a
+                    className={`${ZegoRoomCss.goLive}  ${
+                      this.state.liveCountdown === 0
+                        ? ZegoRoomCss.goLiveEnabled
+                        : ""
+                    }`}
+                    onClick={() => {
+                      this.setLive();
+                    }}
+                  >
+                    {this.state.liveCountdown === 3 ||
+                    this.state.liveCountdown === -1
+                      ? "Go Live"
+                      : this.state.liveCountdown === 0
+                      ? "Stop"
+                      : "Go Live"}
+                  </a>
+                )}
             </div>
           )}
           {this.getListScreen()}
@@ -1049,15 +1226,28 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               }
             })}
           </div>
-          {this.state.connecting && (
+
+          {this.state.liveCountdown > 0 && (
+            <div className={ZegoRoomCss.countDown}>
+              <div>{this.state.liveCountdown}</div>
+            </div>
+          )}
+
+          {(this.state.connecting || false) && (
             <ZegoReconnect
               content={
-                this.state.firstLoading
+                this.state.firstLoading || false
                   ? "Joining Room"
                   : "Trying to reconnect..."
               }
             ></ZegoReconnect>
           )}
+
+          {this.props.core._config.scenario?.mode ===
+            ScenarioModel.LiveStreaming &&
+            (this.state.liveCountdown === 0 || this.state.liveStatus == 1) && (
+              <button className={ZegoRoomCss.LiveStateButton}>Live</button>
+            )}
         </div>
       </ShowManageContext.Provider>
     );

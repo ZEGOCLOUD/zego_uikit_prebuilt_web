@@ -19,7 +19,7 @@ export class ZegoToastComponents extends React.Component<{
   }
 }
 
-export const ZegoToast = (function() {
+export const ZegoToast = (function () {
   const div = document.createElement("div");
   document.body.appendChild(div);
   let root: ReactDOM.Root | null;

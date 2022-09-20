@@ -56,7 +56,7 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
                         ref={(el) => {
                           el &&
                             el.srcObject !== user?.streamList?.[0]?.media &&
-                            (el.srcObject = user?.streamList?.[0]?.media);
+                            (el.srcObject = user?.streamList?.[0]?.media!);
                         }}
                       ></audio>
                     );
@@ -67,7 +67,9 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
                     key={user.userID}
                     userInfo={user}
                     muted={user.userID === this.props.selfInfo.userID}
-                    handlePin={() => this.props.handleSetPin!(user.userID)}
+                    handlePin={() =>
+                      this.props.handleSetPin!(this.pinUser.userID)
+                    }
                     volume={this.props.soundLevel![user.userID] || {}}
                   ></VideoPlayer>
                 );

@@ -6,18 +6,15 @@ export class ZegoMore extends React.Component<{ user: ZegoCloudUser }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
   render(): React.ReactNode {
-    let { show } = this.context;
+    let { show, showPinButton } = this.context;
     return (
       <div
+        style={{ display: showPinButton ? "block" : "none" }}
         className={`${ZegoMoreCss.more} zegoMore_more`}
         onClick={() => {
           show(this.props.user);
         }}
-      >
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      ></div>
     );
   }
 }

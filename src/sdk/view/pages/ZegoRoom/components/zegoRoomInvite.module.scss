@@ -10,6 +10,9 @@
     line-height: 20px;
   }
   .inviteLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     box-sizing: border-box;
     width: 308px;
     height: 44px;
@@ -26,11 +29,17 @@
     border-radius: 10px;
     outline: none;
     opacity: 0.7;
+    input {
+      width: 77%;
+      color: #ffffff;
+      background: #303341;
+      border: 0;
+      outline: none;
+    }
   }
   .copyLinkButton {
     display: flex;
     align-items: center;
-    margin-top: 14px;
     color: #ffb763;
     font-weight: 400;
     font-size: 14px;

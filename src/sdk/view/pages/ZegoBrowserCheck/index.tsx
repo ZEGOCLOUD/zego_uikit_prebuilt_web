@@ -1,7 +1,7 @@
 import React, { ChangeEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/tools/util";
-import { ZegoBrowserCheckProp } from "../../../model";
+import { ScenarioModel, ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
 import { getVideoResolution } from "../../../util";
@@ -24,6 +24,13 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     selectVideoResolution: "360",
     isJoining: false, // 是否正在加入房间，防止重复点击join
     showNonVideo: this.props.core._config.showNonVideoUser,
+    sharedLinks: this.props.core._config.sharedLinks?.map((link) => {
+      return {
+        name: link.name,
+        url: link.url,
+        copied: false,
+      };
+    }),
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -295,18 +302,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   handleChange(event: ChangeEvent<HTMLInputElement>) {
     this.setState({ userName: event.target.value.trim().substring(0, 255) });
   }
-  handleCopy() {
-    if (this.state.isCopied) return;
-    setTimeout(() => {
-      this.setState({
-        isCopied: false,
-      });
-    }, 5000);
-    this.inviteRef.current && copy(this.inviteRef.current.value);
-    this.setState({
-      isCopied: true,
-    });
-  }
+
   openSettings() {
     ZegoSettingsAlert({
       core: this.props.core,
@@ -372,9 +368,22 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               muted
               ref={this.videoRef}
             ></video>
-            {!this.state.videoOpen && !this.state.isVideoOpening && (
-              <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
-            )}
+            {!this.props.core._config.showMyCameraToggleButton &&
+              !this.props.core._config.turnOnCameraWhenJoining && (
+                <div className={ZegoBrowserCheckCss.noCamera}>
+                  {this.state.userName.substring(0, 1) ||
+                    this.props.core._expressConfig.userName.substring(0, 1) ||
+                    "Z"}
+                </div>
+              )}
+            {(this.props.core._config.showMyCameraToggleButton ||
+              this.props.core._config.turnOnCameraWhenJoining) &&
+              !this.state.videoOpen &&
+              !this.state.isVideoOpening && (
+                <div className={ZegoBrowserCheckCss.videoTip}>
+                  Camera is off
+                </div>
+              )}
             {this.state.isVideoOpening && (
               <div className={ZegoBrowserCheckCss.videoTip}>
                 Camera is starting…
@@ -460,29 +469,57 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               </div>
             </div>
 
-            {this.props.core._config.preJoinViewConfig?.invitationLink && (
-              <div className={ZegoBrowserCheckCss.shareLinkWrapper}>
-                <div className={ZegoBrowserCheckCss.title}>Share the Link</div>
-                <div className={ZegoBrowserCheckCss.inviteLinkWrapper}>
-                  <input
-                    className={ZegoBrowserCheckCss.inviteLink}
-                    placeholder="inviteLink"
-                    readOnly
-                    value={
-                      this.props.core._config.preJoinViewConfig?.invitationLink
-                    }
-                    ref={this.inviteRef}
-                  ></input>
-                  <button
-                    className={ZegoBrowserCheckCss.copyLinkButton}
-                    disabled={this.state.isCopied}
-                    onClick={() => {
-                      this.handleCopy();
-                    }}
-                  ></button>
-                </div>
-              </div>
-            )}
+            <div className={ZegoBrowserCheckCss.shareLinkWrapper}>
+              <div className={ZegoBrowserCheckCss.title}>Share the link</div>
+              {this.state.sharedLinks?.map((link) => {
+                return (
+                  <div
+                    className={ZegoBrowserCheckCss.inviteLinkWrapper}
+                    key={link.name}
+                  >
+                    <div className={ZegoBrowserCheckCss.inviteLinkWrapperLeft}>
+                      <h3>{link.name}</h3>
+                      <input
+                        className={ZegoBrowserCheckCss.inviteLink}
+                        placeholder="inviteLink"
+                        readOnly
+                        value={link.url}
+                      ></input>
+                    </div>
+                    <button
+                      className={ZegoBrowserCheckCss.copyLinkButton}
+                      disabled={link.copied}
+                      onClick={() => {
+                        copy(link.url);
+                        this.setState((preState: { sharedLinks: any[] }) => {
+                          return {
+                            sharedLinks: preState.sharedLinks.map((l) => {
+                              if (l.name === link.name) {
+                                l.copied = true;
+                              }
+                              return l;
+                            }),
+                          };
+                        });
+
+                        setTimeout(() => {
+                          this.setState((preState: { sharedLinks: any[] }) => {
+                            return {
+                              sharedLinks: preState.sharedLinks.map((l) => {
+                                if (l.name === link.name) {
+                                  l.copied = false;
+                                }
+                                return l;
+                              }),
+                            };
+                          });
+                        }, 5000);
+                      }}
+                    ></button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
         {this.state.showDeviceAuthorAlert && (

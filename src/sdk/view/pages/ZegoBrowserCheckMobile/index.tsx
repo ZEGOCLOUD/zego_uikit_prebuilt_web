@@ -17,6 +17,13 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
     copied: false,
     isVideoOpening: true,
     isJoining: false,
+    sharedLinks: this.props.core._config.sharedLinks?.map((link) => {
+      return {
+        name: link.name,
+        url: link.url,
+        copied: false,
+      };
+    }),
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -66,8 +73,8 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
             facingMode: this.props.core._config.facingMode,
             videoQuality: 4,
             width: 640,
-            height: 480,
-            bitrate: 500,
+            height: 360,
+            bitrate: 400,
             frameRate: 15,
           },
         });
@@ -237,14 +244,28 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
         <div className={ZegoBrowserCheckCss.videoScree}>
           <video
             playsInline={true}
-            className={ZegoBrowserCheckCss.video}
+            className={`${ZegoBrowserCheckCss.video} ${
+              this.state.videoOpen ? "" : ZegoBrowserCheckCss.hideVideo
+            }`}
             autoPlay
             muted
             ref={this.videoRef}
           ></video>
-          {!this.state.videoOpen && !this.state.isVideoOpening && (
-            <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
-          )}
+          {!this.props.core._config.showMyCameraToggleButton &&
+            !this.props.core._config.turnOnCameraWhenJoining && (
+              <div className={ZegoBrowserCheckCss.noCamera}>
+                {this.state.userName.substring(0, 1) ||
+                  this.props.core._expressConfig.userName.substring(0, 1) ||
+                  "Z"}
+              </div>
+            )}
+
+          {(this.props.core._config.showMyCameraToggleButton ||
+            this.props.core._config.turnOnCameraWhenJoining) &&
+            !this.state.videoOpen &&
+            !this.state.isVideoOpening && (
+              <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
+            )}
           {this.state.isVideoOpening && (
             <div className={ZegoBrowserCheckCss.videoTip}>
               Camera is starting…
@@ -299,33 +320,50 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               Join
             </button>
           </div>
-          {this.props.core._config.preJoinViewConfig?.invitationLink && (
-            <div className={ZegoBrowserCheckCss.inviteLink}>
-              <input
-                placeholder="inviteLink"
-                readOnly
-                value={
-                  this.props.core._config.preJoinViewConfig?.invitationLink
-                }
-                ref={this.inviteRef}
-              ></input>
-              <button
-                className={this.state.copied ? ZegoBrowserCheckCss.copied : ""}
-                onClick={() => {
-                  this.inviteRef.current && copy(this.inviteRef.current.value);
-                  this.setState({
-                    copied: true,
-                  });
-                  setTimeout(() => {
-                    this.setState({
-                      copied: false,
+          {this.state.sharedLinks?.map((link) => {
+            return (
+              <div className={ZegoBrowserCheckCss.inviteLink} key={link.name}>
+                <div className={ZegoBrowserCheckCss.inviteLinkWrapperLeft}>
+                  <h3>{link.name}</h3>
+                  <input
+                    placeholder="inviteLink"
+                    readOnly
+                    value={link.url}
+                  ></input>
+                </div>
+                <button
+                  className={link.copied ? ZegoBrowserCheckCss.copied : ""}
+                  onClick={() => {
+                    copy(link.url);
+                    this.setState((preState: { sharedLinks: any[] }) => {
+                      return {
+                        sharedLinks: preState.sharedLinks.map((l) => {
+                          if (l.name === link.name) {
+                            l.copied = true;
+                          }
+                          return l;
+                        }),
+                      };
                     });
-                  }, 5000);
-                }}
-              ></button>
-            </div>
-          )}
+                    setTimeout(() => {
+                      this.setState((preState: { sharedLinks: any[] }) => {
+                        return {
+                          sharedLinks: preState.sharedLinks.map((l) => {
+                            if (l.name === link.name) {
+                              l.copied = false;
+                            }
+                            return l;
+                          }),
+                        };
+                      });
+                    }, 5000);
+                  }}
+                ></button>
+              </div>
+            );
+          })}
         </div>
+
         {this.state.isJoining && (
           <ZegoLoading content="Loading..."></ZegoLoading>
         )}

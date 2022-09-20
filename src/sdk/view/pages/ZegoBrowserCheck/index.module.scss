@@ -36,7 +36,9 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  min-width: 1000px;
   height: 100%;
+  min-height: 666px;
 }
 .supportWrapper {
   display: flex;
@@ -76,6 +78,25 @@
   font-size: 26px;
   line-height: 37px;
   text-align: center;
+  transform: translate(-50%, -50%);
+}
+.noCamera {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 136px;
+  height: 136px;
+  color: #557bff;
+  font-weight: 600;
+  font-size: 46px;
+  line-height: 65px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 78px;
   transform: translate(-50%, -50%);
 }
 .toolsWrapper {
@@ -255,16 +276,29 @@
 .inviteLinkWrapper {
   display: flex;
   align-items: center;
+  margin-bottom: 20px;
+  background: #f5f7fa;
+  border-radius: 10px;
+  .inviteLinkWrapperLeft {
+    padding: 12px 6px 12px 18px;
+    h3 {
+      color: #2a2a2a;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 22px;
+    }
+  }
 }
 .inviteLink {
   box-sizing: border-box;
-  width: 292px;
-  height: 46px;
+  width: 284px;
+  height: 20px;
   padding: 10px 18px;
-  color: #666666;
+  padding: 0;
+  color: #a4a4a4;
   font-weight: 400;
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 14px;
+  line-height: 20px;
   background: #f5f7fa;
   border: 0;
   border-radius: 10px;
@@ -273,12 +307,12 @@
 .copyLinkButton {
   width: 46px;
   height: 46px;
-  margin-left: 12px;
-  background-color: #0055ff;
+  margin-left: 5px;
+  background-color: #f5f7fa;
   background-image: url("../../../sdkAssets/icon_out_copy.png");
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 26px 26px;
+  background-size: 24px 24px;
   border: none;
   border-radius: 10px;
   cursor: pointer;

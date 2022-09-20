@@ -9,14 +9,22 @@
   .videoScree {
     position: relative;
     justify-content: center;
-    padding: 0 vw(127px);
+    width: vw(496px);
+    height: vw(568px);
+    margin: 0 vw(127px);
+    background-color: #2a2a2a;
+    border-radius: vw(24px);
     .video {
       display: block;
-      width: vw(496px);
-      height: vw(568px);
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       background-color: #2a2a2a;
       border-radius: vw(24px);
+    }
+    .hideVideo {
+      width: 1px;
+      height: 1px;
     }
     .videoTip {
       position: absolute;
@@ -29,6 +37,25 @@
       font-size: vw(32px);
       line-height: vw(45px);
       text-align: center;
+      transform: translate(-50%, -50%);
+    }
+    .noCamera {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: vw(136px);
+      height: vw(136px);
+      color: #557bff;
+      font-weight: 600;
+      font-size: vw(46px);
+      line-height: vw(65px);
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: vw(78px);
       transform: translate(-50%, -50%);
     }
     .handler {
@@ -82,6 +109,7 @@
       position: relative;
       display: flex;
       flex-direction: row;
+      margin-bottom: vw(37px);
       padding: 0 vw(90px);
       input {
         box-sizing: border-box;
@@ -134,22 +162,32 @@
     .inviteLink {
       display: flex;
       align-items: center;
-      margin: vw(45px) vw(90px);
-      padding: vw(25px) vw(20px) vw(24px) vw(33px);
+      margin: vw(13px) vw(90px) vw(13px) vw(90px);
+      padding: vw(18px) vw(25px) vw(18px) vw(32px);
       background: #f5f7fa;
       border-radius: 9px;
-      input {
-        flex: 1;
-        width: vw(443px);
-        height: 23px;
-        color: #666666;
-        font-weight: 500;
-        font-size: vw(32px);
-        // font-family: PingFangSC-Medium, PingFang SC;
-        line-height: vw(45px);
-        background-color: #ffffff00;
-        border: 0;
-        outline: none;
+      .inviteLinkWrapperLeft {
+        h3 {
+          color: #2a2a2a;
+          font-weight: 500;
+          font-size: vw(32px);
+          line-height: vw(45px);
+        }
+        input {
+          flex: 1;
+          width: vw(443px);
+          height: 23px;
+          color: #a4a4a4;
+          font-weight: 400;
+          font-size: vw(26px);
+          line-height: vw(37px);
+          background-color: #ffffff00;
+          border: 0;
+          outline: none;
+          :focus {
+            color: rgba(42, 42, 42, 1);
+          }
+        }
       }
       button {
         width: vw(44px);

@@ -8,7 +8,7 @@ import { ZegoCloudRTCCore } from "../../../modules";
 import ZegoSettingsCss from "./index.module.scss";
 import { ZegoSelect } from "../../components/zegoSelect";
 import { audioBase64 } from "./speakerFile";
-import { ZegoSettingsProps } from "../../../model";
+import { ScenarioModel, ZegoSettingsProps } from "../../../model";
 import { getVideoResolution } from "../../../util";
 import { SoundMeter } from "../../../modules/soundmeter";
 export class ZegoSettings extends React.Component<ZegoSettingsProps> {
@@ -516,19 +516,22 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                       theme={this.props.theme}
                     ></ZegoSelect>
                   </div>
-                  <div className={ZegoSettingsCss.device}>
-                    <div
-                      className={ZegoSettingsCss.checkboxWrapper}
-                      onClick={() => this.handleShowNonVideo()}
-                    >
-                      <span
-                        className={`${ZegoSettingsCss.checkbox} ${
-                          this.state.showNonVideo && ZegoSettingsCss.selected
-                        }`}
-                      ></span>
-                      <p>Show non-video participant</p>
+                  {this.props.core._config.scenario?.mode !==
+                    ScenarioModel.LiveStreaming && (
+                    <div className={ZegoSettingsCss.device}>
+                      <div
+                        className={ZegoSettingsCss.checkboxWrapper}
+                        onClick={() => this.handleShowNonVideo()}
+                      >
+                        <span
+                          className={`${ZegoSettingsCss.checkbox} ${
+                            this.state.showNonVideo && ZegoSettingsCss.selected
+                          }`}
+                        ></span>
+                        <p>Show non-video participant</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               )}
             </div>

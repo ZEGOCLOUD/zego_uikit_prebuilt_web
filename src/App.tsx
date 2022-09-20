@@ -1,9 +1,8 @@
-import { type } from "os";
 import React from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
 import { ZegoUIKitPrebuilt } from "./sdk/index";
-import { ZegoCloudRoomConfig } from "./sdk/model";
+import { LiveRole, ScenarioModel, ZegoCloudRoomConfig } from "./sdk/model";
 import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, getRandomName, randomID } from "./util";
 export default class App extends React.Component {
@@ -17,22 +16,66 @@ export default class App extends React.Component {
     this.state.showPreviewHeader =
       getUrlParams(window.location.href)["preHeader"] || "show";
     const userName = getUrlParams(window.location.href)["UserName"];
-    // @es
+
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
-    let showNonVideoUser =
-      getUrlParams(window.location.href)["showNonVideoUser"] || "true";
-    let role = getUrlParams(window.location.href)["role"] || "HOST";
-    let maxUsers = 2;
+
+    let role_p = getUrlParams(window.location.href)["role"] || "Host";
+    let role: LiveRole =
+      role_p === "Host"
+        ? LiveRole.Host
+        : role_p === "Cohost"
+        ? LiveRole.Cohost
+        : LiveRole.Audience;
+
+    let sharedLinks: { name: string; url: string }[] = [];
+    let maxUsers = 50;
     console.warn("process.env.REACT_APP_PATH:", process.env.REACT_APP_PATH);
+
+    let mode = ScenarioModel.OneONoneCall;
     if (process.env.REACT_APP_PATH === "1on1_call") {
-      role = "HOST";
       maxUsers = 2;
+      sharedLinks.push({
+        name: "Join As Host",
+        url:
+          window.location.origin +
+          window.location.pathname +
+          "?roomID=" +
+          roomID +
+          "&role=Host",
+      });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
-      maxUsers = 50;
-      showNonVideoUser = "false";
+      mode = ScenarioModel.LiveStreaming;
+      if (role === LiveRole.Host || role === LiveRole.Cohost) {
+        sharedLinks.push({
+          name: "Join As Cohost",
+          url:
+            window.location.origin +
+            window.location.pathname +
+            "?roomID=" +
+            roomID +
+            "&role=Cohost",
+        });
+      }
+      sharedLinks.push({
+        name: "Join As Audience",
+        url:
+          window.location.origin +
+          window.location.pathname +
+          "?roomID=" +
+          roomID +
+          "&role=Audience",
+      });
     } else if (process.env.REACT_APP_PATH === "video_conference") {
-      role = "HOST";
-      maxUsers = 50;
+      mode = ScenarioModel.VideoConference;
+      sharedLinks.push({
+        name: "Join As Host",
+        url:
+          window.location.origin +
+          window.location.pathname +
+          "?roomID=" +
+          roomID +
+          "&role=Host",
+      });
     }
 
     this.myMeeting = async (element: HTMLDivElement) => {
@@ -48,30 +91,9 @@ export default class App extends React.Component {
         // @ts-ignore
         container: element, // 挂载容器
         preJoinViewConfig: {
-          // 通话前检测页面是否需要，默认需要
-          invitationLink:
-            window.location.origin +
-            window.location.pathname +
-            "?roomID=" +
-            roomID +
-            "&role=" +
-            (process.env.REACT_APP_PATH === "live_stream" ? "GUEST" : role),
           title: "Join Room",
         },
-        // facingMode: "environment",
-        showPreJoinView: true, // 是否显示预览检测页面，默认显示
-        turnOnMicrophoneWhenJoining: role === "HOST", // 是否开启自己的麦克风,默认开启
-        turnOnCameraWhenJoining: role === "HOST", // 是否开启自己的摄像头 ,默认开启
-        showMyCameraToggleButton: role === "HOST", // 是否可以控制自己的麦克风,默认开启
-        showMyMicrophoneToggleButton: role === "HOST", // 是否可以控制体自己的摄像头,默认开启
-        showAudioVideoSettingsButton: role === "HOST",
-        showTextChat: true, // 是否开启聊天，默认开启
-        showUserList: true, //是否显示成员列表，默认不展示
-        lowerLeftNotification: {
-          showUserJoinAndLeave: true, //是否显示成员进出，默认不显示
-          showTextChat: true, // 是否显示未读消息，默认不显示
-        },
-        showNonVideoUser: showNonVideoUser == "true",
+        maxUsers,
         leaveRoomCallback: () => {
           console.log("test:leaveRoomCallback");
           window?.parent?.postMessage("leaveRoom", "*");
@@ -79,16 +101,17 @@ export default class App extends React.Component {
         joinRoomCallback: () => {
           window?.parent?.postMessage("joinRoom", "*");
         },
-        userUpdateCallback: (type, users) => {
-          console.log("userUpdateCallback", type, users);
-        },
         branding: {
           logoURL:
             "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
         },
-        showLeavingView: true, // 离开房间后页面，默认有
-        maxUsers,
-        showScreenSharingButton: true,
+        sharedLinks,
+        scenario: {
+          mode,
+          config: {
+            role,
+          },
+        },
       };
       zp.joinRoom(param);
     };

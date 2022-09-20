@@ -6,33 +6,30 @@ import ZegoRoomInviteCss from "./zegoRoomInvite.module.scss";
 export class ZegoRoomInvite extends React.Component<{
   core: ZegoCloudRTCCore;
 }> {
-  inviteRef: RefObject<HTMLInputElement> = React.createRef();
-  handleCopy() {
-    this.inviteRef.current && copy(this.inviteRef.current.value);
+  handleCopy(url: string) {
+    copy(url);
     ZegoToast({
       content: "Copied",
     });
   }
   render(): React.ReactNode {
-    return (
-      <div className={ZegoRoomInviteCss.inviteLinkWrapper}>
-        <div className={ZegoRoomInviteCss.title}>Share the Link</div>
-        <input
-          className={ZegoRoomInviteCss.inviteLink}
-          placeholder="inviteLink"
-          readOnly
-          value={this.props.core._config.preJoinViewConfig?.invitationLink}
-          ref={this.inviteRef}
-        ></input>
-        <div
-          className={ZegoRoomInviteCss.copyLinkButton}
-          onClick={() => {
-            this.handleCopy();
-          }}
-        >
-          Copy
+    return this.props.core._config.sharedLinks?.map((link) => {
+      return (
+        <div className={ZegoRoomInviteCss.inviteLinkWrapper} key={link.name}>
+          <div className={ZegoRoomInviteCss.title}>{link.name}</div>
+          <div className={ZegoRoomInviteCss.inviteLink}>
+            <input placeholder="inviteLink" readOnly value={link.url}></input>
+            <div
+              className={ZegoRoomInviteCss.copyLinkButton}
+              onClick={() => {
+                this.handleCopy(link.url);
+              }}
+            >
+              Copy
+            </div>
+          </div>
         </div>
-      </div>
-    );
+      );
+    });
   }
 }

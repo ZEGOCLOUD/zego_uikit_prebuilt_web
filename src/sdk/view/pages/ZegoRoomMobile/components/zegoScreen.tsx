@@ -42,7 +42,7 @@ export class ZegoScreen extends React.Component<ZegoScreenSharingLayoutProps> {
                       ref={(el) => {
                         el &&
                           el.srcObject !== value.streamList[0].media &&
-                          (el.srcObject = value.streamList[0].media);
+                          (el.srcObject = value.streamList[0].media!);
                       }}
                     ></audio>
                   )
@@ -69,7 +69,9 @@ export class ZegoScreen extends React.Component<ZegoScreenSharingLayoutProps> {
             user={this.props.screenSharingUser}
             key={this.props.screenSharingUser.userID + "_video"}
             volume={{}}
-            onCanPlay={this.onCanPlay.bind(this)}
+            onCanPlay={() => {
+              this.onCanPlay.bind(this);
+            }}
             hiddenMore={true}
             hiddenName={true}
           ></ZegoUserVideo>

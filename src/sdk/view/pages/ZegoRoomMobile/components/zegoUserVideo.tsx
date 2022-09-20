@@ -27,12 +27,19 @@ export class ZegoUserVideo extends React.Component<{
           this.props.user.streamList[0].media && (
             <video
               muted={this.props.muted}
+              playsInline
               autoPlay
-              className={`${zegoUserVideoCss.videoCommon} zegoUserVideo_videoCommon`}
+              className={`${
+                zegoUserVideoCss.videoCommon
+              } zegoUserVideo_videoCommon ${
+                this.props.user.streamList[0].cameraStatus === "MUTE"
+                  ? zegoUserVideoCss.hideVideo
+                  : ""
+              }`}
               ref={(el) => {
                 el &&
                   el.srcObject !== this.props.user.streamList[0].media &&
-                  (el.srcObject = this.props.user.streamList[0].media);
+                  (el.srcObject = this.props.user.streamList[0].media!);
               }}
               onCanPlay={() => {
                 this.props.onCanPlay && this.props.onCanPlay();
@@ -42,10 +49,16 @@ export class ZegoUserVideo extends React.Component<{
         {(!this.props.user.streamList ||
           !this.props.user.streamList[0] ||
           this.props.user.streamList[0].cameraStatus === "MUTE") && (
-          <div className={zegoUserVideoCss.noVideoWrapper}>
-            <div className={zegoUserVideoCss.nameWrapper}>
+          <div
+            className={`${zegoUserVideoCss.noVideoWrapper} zegoUserVideo_click`}
+          >
+            <div
+              className={`${zegoUserVideoCss.nameWrapper} zegoUserVideo_click`}
+            >
               <div
-                className={`${zegoUserVideoCss.nameCircle}  ${
+                className={`${
+                  zegoUserVideoCss.nameCircle
+                }  zegoUserVideo_click  ${
                   this.props.circleSize === "SIDEBAR"
                     ? zegoUserVideoCss.sidebarCircle
                     : ""
@@ -101,7 +114,7 @@ export class ZegoUserOtherVideo extends React.Component<{
               ref={(el) => {
                 el &&
                   el.srcObject !== this.props.user.streamList[0].media &&
-                  (el.srcObject = this.props.user.streamList[0].media);
+                  (el.srcObject = this.props.user.streamList[0].media!);
               }}
             ></audio>
           )}

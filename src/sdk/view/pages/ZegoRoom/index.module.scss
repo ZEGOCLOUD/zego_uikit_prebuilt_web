@@ -28,10 +28,41 @@
   height: 64px;
   padding: 0 20px;
   background-color: #1c1f2e;
-  .logo {
-    width: 154px;
-    height: 32px;
-    object-fit: contain;
+  .headerLeft {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .logo {
+      width: 154px;
+      height: 32px;
+      object-fit: contain;
+    }
+    .liveState {
+      margin-left: 3px;
+      padding: 2px 11px;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      background: #313443;
+      border-radius: 12px;
+    }
+  }
+
+  .goLive {
+    height: 36px;
+    margin-right: 30px;
+    padding: 8px 16.5px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    background: #0055ff;
+    border: 0;
+    border-radius: 10px;
+  }
+  .goLiveEnabled {
+    background: #ff4a50;
   }
   .timer {
     margin-right: 20px;
@@ -95,6 +126,32 @@
     font-size: 16px;
     line-height: 22px;
     text-align: center;
+  }
+}
+.countDown {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($color: #2a2a2a, $alpha: 0.6);
+  & > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 146px;
+    height: 146px;
+    color: #2a2a2a;
+    font-weight: 600;
+    font-size: 60px;
+    line-height: 84px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 73px;
   }
 }
 @keyframes netLoading {
@@ -202,6 +259,20 @@
     background-image: url("../../../sdkAssets/icon_inner_leave.png");
     &:hover {
       background-color: #ff5d42;
+    }
+  }
+  .liveLeaveButton {
+    width: 42px;
+    height: 42px;
+    background-color: #2c2f3e;
+    background-image: url("../../../sdkAssets/live_inner_leave@2x.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 28px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    &:hover {
+      background-color: #3d4154;
     }
   }
 }
@@ -481,5 +552,36 @@
     font-size: 12px;
     line-height: 17px;
     cursor: pointer;
+  }
+}
+
+.liveNotStart,
+.noOneStreaming {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #dfe0e2;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 33px;
+  background: #1e2130;
+  i {
+    width: 76px;
+    height: 76px;
+    background-size: contain;
+  }
+}
+.liveNotStart {
+  i {
+    background-image: url(../../../sdkAssets/Room_live_notstart@2x.png);
+  }
+}
+.noOneStreaming {
+  i {
+    background-image: url(../../../sdkAssets/Room_nobody_stream@2x.png);
   }
 }
