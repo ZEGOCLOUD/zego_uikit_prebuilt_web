@@ -73,8 +73,8 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
             facingMode: this.props.core._config.facingMode,
             videoQuality: 4,
             width: 640,
-            height: 480,
-            bitrate: 500,
+            height: 360,
+            bitrate: 400,
             frameRate: 15,
           },
         });
@@ -251,9 +251,21 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
             muted
             ref={this.videoRef}
           ></video>
-          {!this.state.videoOpen && !this.state.isVideoOpening && (
-            <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
-          )}
+          {!this.props.core._config.showMyCameraToggleButton &&
+            !this.props.core._config.turnOnCameraWhenJoining && (
+              <div className={ZegoBrowserCheckCss.noCamera}>
+                {this.state.userName.substring(0, 1) ||
+                  this.props.core._expressConfig.userName.substring(0, 1) ||
+                  "Z"}
+              </div>
+            )}
+
+          {(this.props.core._config.showMyCameraToggleButton ||
+            this.props.core._config.turnOnCameraWhenJoining) &&
+            !this.state.videoOpen &&
+            !this.state.isVideoOpening && (
+              <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>
+            )}
           {this.state.isVideoOpening && (
             <div className={ZegoBrowserCheckCss.videoTip}>
               Camera is starting…
@@ -311,11 +323,14 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
           {this.state.sharedLinks?.map((link) => {
             return (
               <div className={ZegoBrowserCheckCss.inviteLink} key={link.name}>
-                <input
-                  placeholder="inviteLink"
-                  readOnly
-                  value={link.url}
-                ></input>
+                <div className={ZegoBrowserCheckCss.inviteLinkWrapperLeft}>
+                  <h3>{link.name}</h3>
+                  <input
+                    placeholder="inviteLink"
+                    readOnly
+                    value={link.url}
+                  ></input>
+                </div>
                 <button
                   className={link.copied ? ZegoBrowserCheckCss.copied : ""}
                   onClick={() => {

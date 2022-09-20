@@ -53,6 +53,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     isLayoutChanging: boolean; // 布局是否正在变更中
     soundLevel: SoundLevelMap;
     liveCountdown: number;
+    liveStatus: 1 | 0;
   } = {
     localStream: undefined,
     remoteStreamInfo: undefined,
@@ -78,6 +79,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     soundLevel: {},
     showNonVideoUser: this.props.core._config.showNonVideoUser as boolean,
     liveCountdown: -1,
+    liveStatus: 0,
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -121,6 +123,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       showMore: boolean;
       layout: string;
       videoShowNumber: number;
+      liveStatus: 1 | 0;
     }
   ) {
     if (
@@ -257,12 +260,20 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     );
     this.props.core.subscribeUserList((userList) => {
       this.userUpdateCallBack();
+      this.setState({
+        zegoCloudUserList: userList,
+      });
+    });
+
+    this.props.core.onRoomLiveStateUpdate((res: 1 | 0) => {
       this.setState((preState: { liveCountdown: number }) => {
         return {
-          zegoCloudUserList: userList,
+          liveStatus: res,
           liveCountdown:
-            this.props.core.roomExtraInfo.live_status.v == 1
-              ? 0
+            preState.liveCountdown === -1 || preState.liveCountdown == 0
+              ? res == 1
+                ? 0
+                : -1
               : preState.liveCountdown,
         };
       });
@@ -774,8 +785,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     if (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
-      this.props.core.roomExtraInfo &&
-      this.props.core.roomExtraInfo.live_status.v != 1
+      this.state.liveStatus != 1
     ) {
       return (
         <div className={ZegoRoomCss.liveNotStart}>
@@ -886,7 +896,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     if (this.state.liveCountdown === 0) {
       ZegoModelShow({
         header: "Stop broadcast",
-        contentText: "Are you sure to stop broadcasting??",
+        contentText: "Are you sure to stop broadcasting?",
         okText: "Stop",
         cancelText: "Cancel",
         onOk: async () => {
@@ -951,8 +961,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               {this.props.core._config.scenario?.mode ===
                 ScenarioModel.LiveStreaming &&
                 (this.state.liveCountdown === 0 ||
-                  (this.props.core.roomExtraInfo.live_status &&
-                    this.props.core.roomExtraInfo.live_status.v == 1)) && (
+                  this.state.liveStatus == 1) && (
                   <div className={ZegoRoomCss.liveState}>Live</div>
                 )}
             </div>
@@ -979,6 +988,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                     : "start stream"}
                 </button>
               )}
+
             {this.props.core._config.roomTimerDisplayed && (
               <ZegoTimer></ZegoTimer>
             )}
@@ -1177,7 +1187,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           className={ZegoRoomCss.countDown}
           style={{
             display: this.state.liveCountdown > 0 ? "flex" : "none",
-            backgroundColor: this.state.firstLoading ? "#1C1F2E" : "",
+            backgroundColor: "#1C1F2E",
           }}
         >
           <div>{this.state.liveCountdown}</div>

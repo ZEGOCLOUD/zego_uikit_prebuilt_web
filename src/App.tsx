@@ -45,7 +45,7 @@ export default class App extends React.Component {
       });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       mode = ScenarioModel.LiveStreaming;
-      if (role === LiveRole.Host) {
+      if (role === LiveRole.Host || role === LiveRole.Cohost) {
         sharedLinks.push({
           name: "Join As Cohost",
           url:

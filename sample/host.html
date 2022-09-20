@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+<style>
+            #root {
+                        width: 100vw;
+                        height: 100vh;
+            }
+</style>
+
+<body>
+            <div id="root"></div>
+            <script src="https://resource.zegocloud.com/prebuilt/crypto-js.js"></script>
+            <script src="https://resource.zegocloud.com/prebuilt/prebuiltToken.js"></script>
+            <script src="https://resource.zegocloud.com/office/sdk_static/zego-uikit-prebuilt.js"></script>
+            <script>
+                        const TOKEN = generatePrebuiltToken(1484647939, "22076fd0a8388f31dc1f6e344171b2b1", 'choui', 'userID-' + Math.random(), 'userName' + Math.random());
+                        const zp = ZegoUIKitPrebuilt.create(TOKEN);
+
+
+                        // Here's the code for a viewer to join a room:
+                        zp.joinRoom({
+                                    container: document.querySelector("#root"),
+                                    preJoinViewConfig: {
+                                                invitationLink:
+                                                            window.location.origin +
+                                                            window.location.pathname +
+                                                            '?roomID=choui&role=VIEWER',
+                                    },
+                                    showNonVideoUser: false
+                        });    
+            </script>
+</body>
+
+</html>

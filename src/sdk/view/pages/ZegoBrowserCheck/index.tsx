@@ -371,7 +371,9 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             {!this.props.core._config.showMyCameraToggleButton &&
               !this.props.core._config.turnOnCameraWhenJoining && (
                 <div className={ZegoBrowserCheckCss.noCamera}>
-                  {this.props.core._expressConfig.userName.substring(0, 1)}
+                  {this.state.userName.substring(0, 1) ||
+                    this.props.core._expressConfig.userName.substring(0, 1) ||
+                    "Z"}
                 </div>
               )}
             {(this.props.core._config.showMyCameraToggleButton ||

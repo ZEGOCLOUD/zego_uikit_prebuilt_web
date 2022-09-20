@@ -170,6 +170,7 @@ export class ZegoCloudUserListManager {
   }
   clearUserList() {
     this.remoteUserList = [];
+    this.waitingPullStreams = [];
   }
 
   waitingPullStreams: { streamID: string; userID: string }[] = [];

@@ -20,7 +20,37 @@ export class ZegoRoomInvite extends React.Component<{
           ></div>
           Room details
         </div>
-        <div className={zegoRoomInviteCss.inviteURL}>
+        {this.props.core._config.sharedLinks?.map((link) => {
+          return (
+            <div
+              className={zegoRoomInviteCss.inviteLinkWrapper}
+              key={link.name}
+            >
+              <div className={zegoRoomInviteCss.title}>{link.name}</div>
+              <div className={zegoRoomInviteCss.inviteLink}>
+                <input
+                  placeholder="inviteLink"
+                  readOnly
+                  value={link.url}
+                ></input>
+                <div
+                  className={zegoRoomInviteCss.copyLinkButton}
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    copy(link.url);
+                    ZegoToast({
+                      content: "Copy successfully",
+                      duration: 3000,
+                    });
+                  }}
+                >
+                  Copy
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {/* <div className={zegoRoomInviteCss.inviteURL}>
           {this.props.core._config.sharedLinks &&
             this.props.core._config.sharedLinks[0] &&
             this.props.core._config.sharedLinks[0].url}
@@ -44,7 +74,7 @@ export class ZegoRoomInvite extends React.Component<{
         >
           <i></i>
           <span>Copy the link</span>
-        </div>
+        </div> */}
       </div>
     );
   }

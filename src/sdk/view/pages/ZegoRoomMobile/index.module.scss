@@ -16,11 +16,11 @@
     z-index: 100;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     box-sizing: border-box;
     width: 100%;
     height: vw(122px);
-    padding: 0 vw(77px) 0 vw(77px);
+    padding: 0 vw(57px);
     background: #1c1f2e;
     border: 1px solid #3d4054;
     a {
@@ -70,13 +70,28 @@
       background-position: center;
       background-size: vw(56px) vw(56px);
     }
-    .goLive {
-      width: vw(152px);
-      // background-image: url(../../../sdkMobileAssets/Room_mic_close@2x.png);
+    .liveLeaveButton {
+      background-image: url(../../../sdkMobileAssets/Room_leaveRoom_live@2x.png);
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
     }
+    .goLive {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: vw(120px);
+      color: #ffffff;
+      font-weight: 500;
+      font-size: vw(24px);
+      line-height: vw(33px);
+      background: #0055ff;
+      border-radius: vw(18px);
+    }
+    .goLiveEnabled {
+      background-color: rgba(255, 74, 80, 1);
+    }
+
     .more {
       position: relative;
       background-image: url(../../../sdkMobileAssets/Room_more@2x.png);
@@ -85,27 +100,30 @@
       background-size: vw(56px) vw(56px);
 
       .popMore {
-        position: absolute;
-        right: vw(-20px);
-        bottom: vw(116px);
+        position: fixed;
+        right: vw(67px);
+        bottom: vw(122px + 14px);
         z-index: 202;
         box-sizing: border-box;
-        // width: vw(464px);
-        height: vw(190px-14px);
-        padding: vw(32px) vw(55px) vw(30px) vw(32px);
+        width: max-content;
+        max-width: vw(603px);
+        padding: vw(32px) vw(55px) vw(3px) vw(55px);
         background-color: #1c1f2e;
         border: 1px solid #3d4054;
         border-radius: vw(18px);
         box-shadow: 0px vw(3px) vw(6px) 0px rgba(23, 24, 33, 0.35);
+        // transform: translateX(-50%);
         .popMoreContent {
           display: flex;
+          flex-wrap: wrap;
           justify-content: space-between;
           div {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-right: vw(63px);
+            margin-right: vw(33px);
+            margin-bottom: vw(27px);
             white-space: nowrap;
             i {
               width: vw(76px);
@@ -141,6 +159,13 @@
               background-size: contain;
               background-size: vw(56px) vw(56px);
             }
+            .switchCamera {
+              background-image: url(../../../sdkMobileAssets/Room_camera_switch@2x.png);
+              background-repeat: no-repeat;
+              background-position: center;
+              background-size: contain;
+              background-size: vw(56px) vw(56px);
+            }
             span {
               color: #ffffff;
               font-weight: 400;
@@ -155,19 +180,20 @@
             margin-right: vw(35px);
           }
         }
-        .popMoreArray {
-          position: absolute;
-          right: vw(42px);
-          bottom: vw(-12px);
-          z-index: -1;
-          width: vw(20px);
-          height: vw(20px);
-          background-color: #1c1f2e;
-          border-right: 1px solid #3d4054;
-          border-bottom: 1px solid #3d4054;
-          box-shadow: 0px vw(3px) vw(6px) 0px rgba(23, 24, 33, 0.35);
-          transform: rotate(45deg);
-        }
+      }
+
+      .popMoreArray {
+        position: absolute;
+        right: vw(24px);
+        bottom: vw(102px);
+        z-index: 202;
+        width: vw(20px);
+        height: vw(20px);
+        background-color: #1c1f2e;
+        border-right: 1px solid #3d4054;
+        border-bottom: 1px solid #3d4054;
+        box-shadow: 0px vw(3px) vw(6px) 0px rgba(23, 24, 33, 0.35);
+        transform: rotate(45deg);
       }
     }
   }
@@ -222,5 +248,79 @@
     background-size: vw(46px) vw(46px);
     border-radius: vw(15px);
     backdrop-filter: blur(vw(15px));
+  }
+  .countDown {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 103;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100%;
+    background: rgba(42, 42, 42, 0.6);
+    & > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: vw(160px);
+      height: vw(160px);
+      color: #2a2a2a;
+      font-weight: 600;
+      font-size: vw(60px);
+      line-height: vw(84px);
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: vw(80px);
+    }
+  }
+  .LiveStateButton {
+    position: fixed;
+    right: vw(20px);
+    bottom: vw(152px);
+    width: vw(113px);
+    height: vw(60px);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: vw(26px);
+    line-height: vw(37px);
+    background: rgba(70, 70, 70, 0.6);
+    border: 0;
+    border-radius: vw(36px);
+  }
+  .liveNotStart,
+  .noOneStreaming {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    color: #dfe0e2;
+    font-weight: 500;
+    font-size: vw(32px);
+    line-height: vw(45px);
+    background: #1e2130;
+    i {
+      width: vw(90px);
+      height: vw(90px);
+      background-size: contain;
+    }
+    span {
+      width: 70%;
+      text-align: center;
+    }
+  }
+  .liveNotStart {
+    i {
+      background-image: url(../../../sdkAssets/Room_live_notstart@2x.png);
+    }
+  }
+  .noOneStreaming {
+    i {
+      background-image: url(../../../sdkAssets/Room_nobody_stream@2x.png);
+    }
   }
 }

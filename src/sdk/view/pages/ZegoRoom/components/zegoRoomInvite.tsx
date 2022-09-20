@@ -6,7 +6,6 @@ import ZegoRoomInviteCss from "./zegoRoomInvite.module.scss";
 export class ZegoRoomInvite extends React.Component<{
   core: ZegoCloudRTCCore;
 }> {
-  inviteRef: RefObject<HTMLInputElement> = React.createRef();
   handleCopy(url: string) {
     copy(url);
     ZegoToast({
@@ -19,12 +18,7 @@ export class ZegoRoomInvite extends React.Component<{
         <div className={ZegoRoomInviteCss.inviteLinkWrapper} key={link.name}>
           <div className={ZegoRoomInviteCss.title}>{link.name}</div>
           <div className={ZegoRoomInviteCss.inviteLink}>
-            <input
-              placeholder="inviteLink"
-              readOnly
-              value={link.url}
-              ref={this.inviteRef}
-            ></input>
+            <input placeholder="inviteLink" readOnly value={link.url}></input>
             <div
               className={ZegoRoomInviteCss.copyLinkButton}
               onClick={() => {

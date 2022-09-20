@@ -146,6 +146,7 @@ export class ZegoCloudRTCCore {
         return false;
       }
       config.showNonVideoUser = false;
+      config.showOnlyAudioUser = true;
       if (
         config.scenario.config &&
         config.scenario.config.role === LiveRole.Host
@@ -202,6 +203,10 @@ export class ZegoCloudRTCCore {
         config.showPinButton = false;
         config.showLayoutButton = false;
         config.layout = "Grid";
+        config.lowerLeftNotification = {
+          showTextChat: false,
+          showUserJoinAndLeave: false,
+        };
       }
     }
 
@@ -258,25 +263,25 @@ export class ZegoCloudRTCCore {
   setPin(userID?: string, pined?: boolean): void {
     this.zum.setPin(userID, pined);
     this.subscribeUserListCallBack &&
-      this.subscribeUserListCallBack(this.zum.remoteUserList);
+      this.subscribeUserListCallBack([...this.zum.remoteUserList]);
   }
 
   async setMaxScreenNum(num: number) {
     await this.zum.setMaxScreenNum(num);
     this.subscribeUserListCallBack &&
-      this.subscribeUserListCallBack(this.zum.remoteUserList);
+      this.subscribeUserListCallBack([...this.zum.remoteUserList]);
   }
 
   async setSidebarLayOut(enable: boolean) {
     await this.zum.setSidebarLayOut(enable);
     this.subscribeUserListCallBack &&
-      this.subscribeUserListCallBack(this.zum.remoteUserList);
+      this.subscribeUserListCallBack([...this.zum.remoteUserList]);
   }
 
   async setShowNonVideo(enable: boolean) {
     await this.zum.setShowNonVideo(enable);
     this.subscribeUserListCallBack &&
-      this.subscribeUserListCallBack(this.zum.remoteUserList);
+      this.subscribeUserListCallBack([...this.zum.remoteUserList]);
   }
 
   getCameras(): Promise<ZegoDeviceInfo[]> {
@@ -384,6 +389,8 @@ export class ZegoCloudRTCCore {
   set roomExtraInfo(value: { [index: string]: any }) {
     this._roomExtraInfo = value;
     this.zum.setLiveStates(this._roomExtraInfo.live_status.v);
+    this.onRoomLiveStateUpdateCallBack &&
+      this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status.v);
   }
   get roomExtraInfo() {
     return this._roomExtraInfo;
@@ -418,6 +425,7 @@ export class ZegoCloudRTCCore {
   async enterRoom(): Promise<number> {
     // 已经登陆过不再登录
     if (this.status.loginRsp) return Promise.resolve(0);
+    ZegoCloudRTCCore._zg.off("roomExtraInfoUpdate");
     ZegoCloudRTCCore._zg.off("roomStreamUpdate");
     ZegoCloudRTCCore._zg.off("remoteCameraStatusUpdate");
     ZegoCloudRTCCore._zg.off("remoteMicStatusUpdate");
@@ -657,7 +665,7 @@ export class ZegoCloudRTCCore {
   ) => {
     this.zum.streamNumUpdate(updateType, streamList);
     this.subscribeUserListCallBack &&
-      this.subscribeUserListCallBack(this.zum.remoteUserList);
+      this.subscribeUserListCallBack([...this.zum.remoteUserList]);
   };
 
   onRemoteMediaUpdate(
@@ -673,7 +681,7 @@ export class ZegoCloudRTCCore {
       func(updateType, streamList);
       this.zum.streamNumUpdate(updateType, streamList);
       this.subscribeUserListCallBack &&
-        this.subscribeUserListCallBack(this.zum.remoteUserList);
+        this.subscribeUserListCallBack([...this.zum.remoteUserList]);
     };
   }
 
@@ -705,7 +713,7 @@ export class ZegoCloudRTCCore {
       func(roomID, updateType, user);
       this.zum.userUpdate(roomID, updateType, user);
       this.subscribeUserListCallBack &&
-        this.subscribeUserListCallBack(this.zum.remoteUserList);
+        this.subscribeUserListCallBack([...this.zum.remoteUserList]);
     };
   }
   private onSoundLevelUpdateCallBack!: (
@@ -713,6 +721,11 @@ export class ZegoCloudRTCCore {
   ) => void;
   onSoundLevelUpdate(func: (soundLevelList: ZegoSoundLevelInfo[]) => void) {
     this.onSoundLevelUpdateCallBack = func;
+  }
+
+  private onRoomLiveStateUpdateCallBack!: (live: 1 | 0) => void;
+  onRoomLiveStateUpdate(func: (live: 1 | 0) => void) {
+    this.onRoomLiveStateUpdateCallBack = func;
   }
   sendRoomMessage(message: string) {
     return ZegoCloudRTCCore._zg.sendBroadcastMessage(
@@ -765,6 +778,7 @@ export class ZegoCloudRTCCore {
 
   leaveRoom(): void {
     if (!this.status.loginRsp) return;
+    ZegoCloudRTCCore._zg.off("roomExtraInfoUpdate");
     ZegoCloudRTCCore._zg.off("roomStreamUpdate");
     ZegoCloudRTCCore._zg.off("remoteCameraStatusUpdate");
     ZegoCloudRTCCore._zg.off("remoteMicStatusUpdate");
@@ -787,6 +801,7 @@ export class ZegoCloudRTCCore {
     };
     this.onRemoteUserUpdateCallBack = () => {};
     this.onRoomMessageUpdateCallBack = () => {};
+    this.onRoomLiveStateUpdateCallBack = () => {};
     this.subscribeUserListCallBack = () => {};
     this.zum.clearUserList();
     for (let key in this.remoteStreamMap) {
