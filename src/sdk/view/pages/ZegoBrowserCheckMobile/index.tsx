@@ -61,62 +61,78 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
     let localVideoStream,
       localAudioStream,
       localStream = new MediaStream();
+
     try {
-      if (videoOpen) {
+      if (videoOpen && audioOpen) {
         this.setState({
           isVideoOpening: true,
         });
-        localVideoStream = await this.props.core.createStream({
+        localStream = await this.props.core.createStream({
           camera: {
             video: true,
-            audio: false,
-            facingMode: this.props.core._config.facingMode,
-            videoQuality: 4,
-            width: 640,
-            height: 360,
-            bitrate: 400,
-            frameRate: 15,
-          },
-        });
-        localVideoStream?.getVideoTracks().map((track) => {
-          localStream.addTrack(track);
-        });
-        this.setState({
-          localVideoStream,
-        });
-      }
-    } catch (error) {
-      this.videoRefuse = true;
-      this.setState({
-        isVideoOpening: false,
-      });
-      console.error(
-        "【ZEGOCLOUD】toggleStream/createStream failed !!",
-        JSON.stringify(error)
-      );
-    }
-
-    try {
-      if (audioOpen) {
-        localAudioStream = await this.props.core.createStream({
-          camera: {
-            video: false,
             audio: true,
+            facingMode: this.props.core._config.facingMode,
           },
-        });
-        localAudioStream?.getAudioTracks().map((track) => {
-          localStream.addTrack(track);
-        });
-        this.setState({
-          localAudioStream,
         });
       }
     } catch (error) {
-      this.audioRefuse = true;
-      console.error(
-        "【ZEGOCLOUD】toggleStream/createStream failed !!",
-        JSON.stringify(error)
-      );
+      try {
+        if (videoOpen) {
+          this.setState({
+            isVideoOpening: true,
+          });
+          localVideoStream = await this.props.core.createStream({
+            camera: {
+              video: true,
+              audio: false,
+              facingMode: this.props.core._config.facingMode,
+              // videoQuality: 4,
+              // width: 640,
+              // height: 360,
+              // bitrate: 400,
+              // frameRate: 15,
+            },
+          });
+          localVideoStream?.getVideoTracks().map((track) => {
+            localStream.addTrack(track);
+          });
+          this.setState({
+            localVideoStream,
+          });
+        }
+      } catch (error) {
+        this.videoRefuse = true;
+        this.setState({
+          isVideoOpening: false,
+        });
+        console.error(
+          "【ZEGOCLOUD】toggleStream/createStream failed !!",
+          JSON.stringify(error)
+        );
+      }
+
+      try {
+        if (audioOpen) {
+          localAudioStream = await this.props.core.createStream({
+            camera: {
+              video: false,
+              audio: true,
+            },
+          });
+          localAudioStream?.getAudioTracks().map((track) => {
+            localStream.addTrack(track);
+          });
+          this.setState({
+            localAudioStream,
+          });
+        }
+      } catch (error) {
+        this.audioRefuse = true;
+        console.error(
+          "【ZEGOCLOUD】toggleStream/createStream failed !!",
+          JSON.stringify(error)
+        );
+      }
     }
 
     this.setState(
@@ -136,7 +152,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
     return localStream;
   }
 
-  async toggleStream(type: "video" | "audio") {
+  async toggleStream2(type: "video" | "audio") {
     if (type === "video") {
       if (this.videoRefuse) {
         ZegoConfirm({
@@ -175,6 +191,39 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
         this.props.core.muteMicrophone(audioOpen);
       }
       this.setState({ audioOpen });
+    }
+  }
+
+  async toggleStream1(type: "video" | "audio") {
+    if (type === "video" && this.state.localStream) {
+      const videoOpen = !this.state.videoOpen;
+      const videoStream: MediaStream = this.state.localStream;
+      videoStream.getVideoTracks().map((track) => {
+        track.enabled = videoOpen;
+      });
+      this.setState({ videoOpen });
+    } else if (type === "audio" && this.state.localStream) {
+      const audioOpen = !this.state.audioOpen;
+      const audioStream: MediaStream = this.state.localStream;
+      audioStream.getAudioTracks().map((track) => {
+        track.enabled = audioOpen;
+      });
+
+      this.setState({ audioOpen });
+    }
+  }
+
+  async toggleStream(type: "video" | "audio") {
+    if (
+      this.state.videoOpen &&
+      this.state.audioOpen &&
+      this.state.localStream &&
+      !this.state.localAudioStream &&
+      !this.state.localVideoStream
+    ) {
+      this.toggleStream1(type);
+    } else {
+      this.toggleStream2(type);
     }
   }
 

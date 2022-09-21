@@ -1,3 +1,4 @@
+import "polyfill-object.fromentries";
 import React from "react";
 // @ts-ignore
 import APP from "./App.module.scss";

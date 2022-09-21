@@ -336,19 +336,33 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       !this.props.core.status.audioRefuse
     ) {
       try {
-        const localStream = await this.props.core.createStream({
-          camera: {
-            video: !this.props.core.status.videoRefuse,
-            audio: !this.props.core.status.audioRefuse,
-            videoQuality: 4,
-            facingMode: this.faceModel ? "user" : "environment",
-            width: 640,
-            height: 360,
-            bitrate: 400,
-            frameRate: 15,
-          },
-        });
+        let localStream: MediaStream | null = null;
+        try {
+          localStream = await this.props.core.createStream({
+            camera: {
+              video: !this.props.core.status.videoRefuse,
+              audio: !this.props.core.status.audioRefuse,
+              videoQuality: 4,
+              facingMode: this.faceModel ? "user" : "environment",
+              width: 640,
+              height: 360,
+              bitrate: 400,
+              frameRate: 15,
+            },
+          });
+        } catch (error) {
+          if (JSON.stringify(error).includes("constrain")) {
+            localStream = await this.props.core.createStream({
+              camera: {
+                video: !this.props.core.status.videoRefuse,
+                audio: !this.props.core.status.audioRefuse,
+                facingMode: this.faceModel ? "user" : "environment",
+              },
+            });
+          }
+        }
 
+        if (!localStream) return false;
         this.props.core.mutePublishStreamVideo(
           localStream,
           !this.props.core._config.turnOnCameraWhenJoining

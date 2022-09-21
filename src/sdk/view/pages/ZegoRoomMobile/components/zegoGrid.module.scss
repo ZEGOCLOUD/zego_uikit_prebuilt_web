@@ -36,7 +36,7 @@
 // 3*3
 .three {
   & > div {
-    width: calc(50% - 2.5px);
+    width: calc(50% - 3px);
     height: calc(50% - 2.5px);
   }
 }
