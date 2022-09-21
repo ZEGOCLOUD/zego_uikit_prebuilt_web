@@ -70,7 +70,7 @@ export class ZegoScreen extends React.Component<ZegoScreenSharingLayoutProps> {
             key={this.props.screenSharingUser.userID + "_video"}
             volume={{}}
             onCanPlay={() => {
-              this.onCanPlay.bind(this);
+              this.onCanPlay();
             }}
             hiddenMore={true}
             hiddenName={true}
