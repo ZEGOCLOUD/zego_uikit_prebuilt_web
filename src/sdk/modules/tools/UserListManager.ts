@@ -231,13 +231,29 @@ export class ZegoCloudUserListManager {
             const stream = await this.zg.startPlayingStream(
               this.waitingPullStreams[index].streamID
             );
-            const u_index = this.remoteUserList.findIndex(
-              (u) => u.userID === this.waitingPullStreams[index].userID
-            );
-            const s_index = this.remoteUserList[u_index].streamList.findIndex(
-              (s) => s.streamID === this.waitingPullStreams[index].streamID
-            );
-            this.remoteUserList[u_index].streamList[s_index].media = stream;
+
+            if (
+              this.waitingPullStreams[index].streamID.includes("_screensharing")
+            ) {
+              const u_index = this.remoteScreenStreamList.findIndex(
+                (u) => u.userID === this.waitingPullStreams[index].userID
+              );
+              const s_index = this.remoteScreenStreamList[
+                u_index
+              ].streamList.findIndex(
+                (s) => s.streamID === this.waitingPullStreams[index].streamID
+              );
+              this.remoteScreenStreamList[u_index].streamList[s_index].media =
+                stream;
+            } else {
+              const u_index = this.remoteUserList.findIndex(
+                (u) => u.userID === this.waitingPullStreams[index].userID
+              );
+              const s_index = this.remoteUserList[u_index].streamList.findIndex(
+                (s) => s.streamID === this.waitingPullStreams[index].streamID
+              );
+              this.remoteUserList[u_index].streamList[s_index].media = stream;
+            }
           } catch (error) {
             console.warn("【ZEGOCLOUD】 playStream failed ,ignore continue !!");
           }
@@ -246,15 +262,30 @@ export class ZegoCloudUserListManager {
         this.remoteUserList = this.remoteUserList.map((remoteUser) => {
           remoteUser.streamList = remoteUser.streamList.map((mediaInfo) => {
             this.zg.stopPlayingStream(mediaInfo.streamID);
-            this.waitingPullStreams.push({
-              streamID: mediaInfo.streamID,
-              userID: mediaInfo.fromUser.userID,
-            });
+            // this.waitingPullStreams.push({
+            //   streamID: mediaInfo.streamID,
+            //   userID: mediaInfo.fromUser.userID,
+            // });
             mediaInfo.media = undefined;
             return mediaInfo;
           });
           return remoteUser;
         });
+
+        this.remoteScreenStreamList = this.remoteScreenStreamList.map(
+          (remoteUser) => {
+            remoteUser.streamList = remoteUser.streamList.map((mediaInfo) => {
+              this.zg.stopPlayingStream(mediaInfo.streamID);
+              // this.waitingPullStreams.push({
+              //   streamID: mediaInfo.streamID,
+              //   userID: mediaInfo.fromUser.userID,
+              // });
+              mediaInfo.media = undefined;
+              return mediaInfo;
+            });
+            return remoteUser;
+          }
+        );
       }
     }
   }
@@ -284,6 +315,25 @@ export class ZegoCloudUserListManager {
 
     return undefined;
   }
+
+  stopPullStream(userID: string, streamID: string): void {
+    if (
+      this.scenario === ScenarioModel.LiveStreaming &&
+      this.role === LiveRole.Audience
+    ) {
+      if (this.isLive === 1) {
+        this.zg.stopPlayingStream(streamID);
+      } else if (this.isLive === 0) {
+        const _index = this.waitingPullStreams.findIndex((info) => {
+          return info.streamID === streamID;
+        });
+        _index > -1 && this.waitingPullStreams.splice(_index, 1);
+      }
+    } else {
+      this.zg.stopPlayingStream(streamID);
+    }
+  }
+
   clearScreenStreamList() {
     this.remoteScreenStreamList = [];
   }

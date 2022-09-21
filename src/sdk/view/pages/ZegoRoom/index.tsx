@@ -907,6 +907,35 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     );
   }
   getLayoutScreen() {
+    if (
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
+      this.state.liveStatus != 1
+    ) {
+      return (
+        <div className={ZegoRoomCss.liveNotStart}>
+          <i></i>
+          <span>The Live has not started yet</span>
+        </div>
+      );
+    } else if (
+      ![...this.getAllUser(), ...this.getScreenSharingUser].some((u) => {
+        if (u.streamList) {
+          return u.streamList.some((s) => {
+            return s.cameraStatus === "OPEN" || s.micStatus === "OPEN";
+          });
+        }
+        return false;
+      })
+    ) {
+      return (
+        <div className={ZegoRoomCss.noOneStreaming}>
+          <i></i>
+          <span>No one has turned on the camera or microphone yet.</span>
+        </div>
+      );
+    }
+
     if (this.getScreenSharingUser.length > 0) {
       return (
         <>
@@ -923,34 +952,6 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             roomID={this.props.core._expressConfig.roomID}
           ></ZegoScreenSharingLayout>
         </>
-      );
-    }
-    if (
-      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-      this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
-      this.state.liveStatus != 1
-    ) {
-      return (
-        <div className={ZegoRoomCss.liveNotStart}>
-          <i></i>
-          <span>The Live has not started yet</span>
-        </div>
-      );
-    } else if (
-      !this.getAllUser().some((u) => {
-        if (u.streamList) {
-          return u.streamList.some((s) => {
-            return s.cameraStatus === "OPEN" || s.micStatus === "OPEN";
-          });
-        }
-        return false;
-      })
-    ) {
-      return (
-        <div className={ZegoRoomCss.noOneStreaming}>
-          <i></i>
-          <span>No one has turned on the camera or microphone yet.</span>
-        </div>
       );
     }
 

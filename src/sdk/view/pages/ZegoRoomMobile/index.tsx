@@ -819,7 +819,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         </div>
       );
     } else if (
-      !this.getAllUser().some((u) => {
+      ![...this.getAllUser(), ...this.state.screenSharingUserList].some((u) => {
         if (u.streamList) {
           return u.streamList.some((s) => {
             return s.cameraStatus === "OPEN" || s.micStatus === "OPEN";

@@ -62,7 +62,7 @@ export class VideoPlayer extends React.Component<{
           </div>
         </div>
 
-        {!this.props.hiddenName && showPinButton && (
+        {!this.props.hiddenName && (
           <div className={ZegoVideoPlayerCss.name}>
             <span
               className={`${ZegoVideoPlayerCss.micIcon} ${
@@ -80,7 +80,7 @@ export class VideoPlayer extends React.Component<{
             )}
           </div>
         )}
-        {!this.props.hiddenMore && (
+        {!this.props.hiddenMore && showPinButton && (
           <div className={ZegoVideoPlayerCss.moreWrapperMask}>
             <div className={ZegoVideoPlayerCss.moreWrapper}>
               <span className={ZegoVideoPlayerCss.moreIcon}></span>

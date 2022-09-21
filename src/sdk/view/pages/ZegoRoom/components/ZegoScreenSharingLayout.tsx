@@ -13,9 +13,11 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
   };
   componentDidMount() {
     const showBottomTip = sessionStorage.getItem(
-      `screen_bottom_tip_${this.props.roomID}`
+      `screen_bottom_tip_${this.props.roomID}_${this.props.selfInfo.userID}`
     );
-    if (!showBottomTip) {
+    const isSelfScreen =
+      this.props.screenSharingUser.userID === this.props.selfInfo.userID;
+    if (isSelfScreen && !showBottomTip) {
       this.setState({
         showBottomTip: true,
       });
@@ -30,7 +32,10 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
     this.setState({
       showBottomTip: false,
     });
-    sessionStorage.setItem(`screen_bottom_tip_${this.props.roomID}`, "1");
+    sessionStorage.setItem(
+      `screen_bottom_tip_${this.props.roomID}_${this.props.selfInfo.userID}`,
+      "1"
+    );
   }
   render(): React.ReactNode {
     let wrapClassName = clsx({
