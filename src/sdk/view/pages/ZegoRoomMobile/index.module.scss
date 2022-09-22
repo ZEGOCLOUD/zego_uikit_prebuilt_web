@@ -107,7 +107,7 @@
         box-sizing: border-box;
         width: max-content;
         max-width: vw(603px);
-        padding: vw(32px) vw(55px) vw(3px) vw(55px);
+        padding: vw(32px) vw(33px) vw(3px) vw(33px);
         background-color: #1c1f2e;
         border: 1px solid #3d4054;
         border-radius: vw(18px);
@@ -201,7 +201,7 @@
     position: fixed;
     bottom: vw(146px);
     left: vw(24px);
-    z-index: 1010;
+    z-index: 201;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
