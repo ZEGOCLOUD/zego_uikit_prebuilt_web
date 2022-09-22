@@ -12,8 +12,8 @@
   background: #171821;
   .bottomWrapper {
     position: relative;
-    flex: 1;
     width: 100%;
+    height: calc(100% - 24.66vw);
     .noVideoWrapper .nameWrapper .nameCircle {
       width: vw(160px);
       height: vw(160px);
@@ -52,12 +52,13 @@
   .upWrapper {
     display: flex;
     justify-content: center;
+    height: vw(175px);
     margin-bottom: vw(10px);
     & > div {
       position: relative;
       display: flex;
       width: vw(175px);
-      height: vw(175px);
+      height: 100%;
       overflow: hidden;
       background: #242736;
       border-radius: vw(14px);

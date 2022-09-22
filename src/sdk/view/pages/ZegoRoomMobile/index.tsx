@@ -717,7 +717,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       } else if (selectLayout !== "Sidebar") {
         await this.props.core.setMaxScreenNum(showSelf ? 5 : 6);
       } else {
-        await this.props.core.setMaxScreenNum(showSelf ? 4 : 5);
+        await this.props.core.setMaxScreenNum(showSelf ? 1 : 2);
       }
       this.userUpdateCallBack = () => {
         resolve(true);
@@ -918,7 +918,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             userID: this.props.core._expressConfig.userID,
           }}
           userList={this.getShownUser()}
-          videoShowNumber={6}
+          videoShowNumber={3}
           soundLevel={this.state.soundLevel}
         ></ZegoGrid>
       );
