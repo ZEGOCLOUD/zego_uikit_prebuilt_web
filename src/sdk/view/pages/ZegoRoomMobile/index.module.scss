@@ -105,9 +105,8 @@
         bottom: vw(122px + 14px);
         z-index: 202;
         box-sizing: border-box;
-        width: max-content;
-        max-width: vw(603px);
-        padding: vw(32px) vw(33px) vw(3px) vw(33px);
+
+        padding: vw(32px) vw(53px) vw(3px) vw(33px);
         background-color: #1c1f2e;
         border: 1px solid #3d4054;
         border-radius: vw(18px);
@@ -117,6 +116,8 @@
           display: flex;
           flex-wrap: wrap;
           justify-content: space-between;
+          width: max-content;
+          max-width: vw(503px);
           div {
             display: flex;
             flex-direction: column;

@@ -35,7 +35,11 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
                     user={value}
                     circleSize="SIDEBAR"
                     nextUser={arr[index + 1]}
-                    othersNumber={arr.length - this.props.videoShowNumber + 1}
+                    othersNumber={
+                      this.props.userList.length -
+                      this.props.videoShowNumber +
+                      1
+                    }
                   ></ZegoUserOtherVideo>
                 );
               }
@@ -63,7 +67,9 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
                 user={value}
                 circleSize="SIDEBAR"
                 key={value.userID + "_video"}
-                volume={this.props.soundLevel![value.userID] || {}}
+                volume={
+                  this.props.soundLevel![value.streamList[0].streamID] || {}
+                }
               ></ZegoUserVideo>
             );
           })}

@@ -48,7 +48,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     showNonVideoUser: boolean;
     videoShowNumber: number; // 展示视频的数量
     gridRowNumber: number; // Grid 行数
-    layout: "Default" | "Grid" | "Sidebar";
+    layout: "Auto" | "Grid" | "Sidebar";
     showLayoutSettingsModel: boolean; // 是否显示布局设置弹窗
     isLayoutChanging: boolean; // 布局是否正在变更中
     soundLevel: SoundLevelMap;
@@ -75,7 +75,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     selectVideoResolution: this.props.core.status.videoResolution || "360",
     videoShowNumber: 9,
     gridRowNumber: 3,
-    layout: this.props.core._config.layout || "Default",
+    layout: this.props.core._config.layout || "Auto",
     showLayoutSettingsModel: false,
     isLayoutChanging: false,
     soundLevel: {},
@@ -727,7 +727,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       return;
     }
 
-    if (this.state.layout === "Grid" || this.state.layout === "Default") {
+    if (this.state.layout === "Grid" || this.state.layout === "Auto") {
       if (height < 406 - (this.props.core._config.branding?.logoURL ? 0 : 64)) {
         const videoWrapWidth =
           width - 32 - (this.state.layOutStatus === "ONE_VIDEO" ? 0 : 350);
@@ -779,7 +779,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         });
         resolve(true);
       };
-      if (type === "Grid" || type === "Default") {
+      if (type === "Grid" || type === "Auto") {
         this.props.core.setPin();
         this.localUserPin = false;
       }
@@ -956,7 +956,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     }
 
     if (
-      (this.state.layout === "Default" && this.getShownUser().length < 3) ||
+      (this.state.layout === "Auto" && this.getShownUser().length < 3) ||
       this.getShownUser().length < 2
     ) {
       return (
@@ -982,7 +982,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     }
     if (
       (this.state.layout === "Grid" && this.getShownUser().length > 1) ||
-      (this.state.layout === "Default" && this.getShownUser().length > 2)
+      (this.state.layout === "Auto" && this.getShownUser().length > 2)
     ) {
       return (
         <ZegoGridLayout
@@ -1378,22 +1378,22 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 <div className={ZegoRoomCss.layoutSettingsContent}>
                   <div
                     className={ZegoRoomCss.layoutSettingsItemRow}
-                    onClick={() => this.changeLayout("Default")}
+                    onClick={() => this.changeLayout("Auto")}
                   >
                     <p>
                       <span
                         className={`${ZegoRoomCss.layoutSettingsItemIcon} ${
-                          this.state.layout === "Default"
+                          this.state.layout === "Auto"
                             ? ZegoRoomCss.layoutSettingsItemChecked
                             : ""
                         } ${
                           this.state.isLayoutChanging &&
-                          this.state.layout === "Default"
+                          this.state.layout === "Auto"
                             ? ZegoRoomCss.layoutSettingsItemLoading
                             : ""
                         }`}
                       ></span>
-                      Default
+                      Auto
                     </p>
                   </div>
                   <div

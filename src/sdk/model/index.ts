@@ -67,7 +67,7 @@ export interface ZegoCloudRoomConfig {
   showLeavingView?: boolean; // 离开房间后页面，默认有
 
   maxUsers?: number; // 房间人数2～20，默认2
-  layout?: "Sidebar" | "Grid" | "Default"; // 默认Default
+  layout?: "Sidebar" | "Grid" | "Auto"; // 默认Default
 
   showNonVideoUser?: boolean; // 是否显示无视频用户，默认显示
   showOnlyAudioUser?: boolean; // 是否显示纯音频用户，默认显示

@@ -54,7 +54,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       | "MESSAGE"
       | "LAYOUT"
       | "MANAGE";
-    userLayoutStatus: "Default" | "Grid" | "Sidebar";
+    userLayoutStatus: "Auto" | "Grid" | "Sidebar";
     zegoCloudUserList: ZegoCloudUserList;
     messageList: ZegoBroadcastMessageInfo2[];
     notificationList: ZegoNotification[];
@@ -75,7 +75,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
     localStream: undefined,
     layOutStatus: "ONE_VIDEO",
-    userLayoutStatus: this.props.core._config.layout || "Default",
+    userLayoutStatus: this.props.core._config.layout || "Auto",
     zegoCloudUserList: [],
     messageList: [],
     notificationList: [],
@@ -285,7 +285,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       (soundLevelList: ZegoSoundLevelInfo[]) => {
         let list: SoundLevelMap = {};
         soundLevelList.forEach((s) => {
-          let userId = s.streamID.split("_")[0];
+          let userId = s.streamID.split("_")[1];
           if (list[userId]) {
             list[userId][s.streamID] = Math.floor(s.soundLevel);
           } else {
@@ -700,7 +700,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
 
   private _selectedUser!: ZegoCloudUser;
   async handleLayoutChange(
-    selectLayout: "Default" | "Grid" | "Sidebar"
+    selectLayout: "Auto" | "Grid" | "Sidebar"
   ): Promise<boolean> {
     if (selectLayout !== "Sidebar") {
       this._selectedUser && (this._selectedUser.pin = false);
@@ -723,9 +723,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         resolve(true);
       };
       await this.props.core.setSidebarLayOut(
-        this.state.screenSharingUserList.length
-          ? selectLayout === "Sidebar"
-          : false
+        this.state.screenSharingUserList.length > 0
+          ? false
+          : selectLayout === "Sidebar"
       );
 
       setTimeout(() => {
@@ -882,7 +882,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       );
     }
     if (
-      (this.state.userLayoutStatus === "Default" &&
+      (this.state.userLayoutStatus === "Auto" &&
         this.getShownUser().length < 3) ||
       this.getShownUser().length < 2
     ) {
@@ -909,8 +909,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     } else if (
       (this.state.userLayoutStatus === "Grid" &&
         this.getShownUser().length > 1) ||
-      (this.state.userLayoutStatus === "Default" &&
-        this.getShownUser().length > 2)
+      (this.state.userLayoutStatus === "Auto" && this.getShownUser().length > 2)
     ) {
       return (
         <ZegoGrid

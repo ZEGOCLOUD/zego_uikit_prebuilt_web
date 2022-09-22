@@ -1,19 +1,19 @@
 import React from "react";
 import zegoLayoutCss from "./zegoLayout.module.scss";
 export class ZegoLayout extends React.Component<{
-  selectLayout: "Sidebar" | "Grid" | "Default";
+  selectLayout: "Sidebar" | "Grid" | "Auto";
   closeCallBac: () => void;
   selectCallBack?: (
-    selectLayout: "Sidebar" | "Grid" | "Default"
+    selectLayout: "Sidebar" | "Grid" | "Auto"
   ) => Promise<boolean>;
 }> {
-  state: { selectLayout: "Sidebar" | "Grid" | "Default" } = {
-    selectLayout: this.props.selectLayout || "Default",
+  state: { selectLayout: "Sidebar" | "Grid" | "Auto" } = {
+    selectLayout: this.props.selectLayout || "Auto",
   };
 
   checking = false;
 
-  async select(selectLayout: "Sidebar" | "Grid" | "Default") {
+  async select(selectLayout: "Sidebar" | "Grid" | "Auto") {
     if (this.props.selectCallBack && !this.checking) {
       this.checking = true;
       this.setState({ selectLayout });
@@ -39,18 +39,16 @@ export class ZegoLayout extends React.Component<{
           <div
             className={zegoLayoutCss.layoutContent}
             onClick={() => {
-              this.select("Default");
+              this.select("Auto");
             }}
           >
             <div className={zegoLayoutCss.layoutContentLeft}>
               <i className={zegoLayoutCss.default}></i>
-              <span>Default</span>
+              <span>Auto</span>
             </div>
             <a
               className={
-                this.state.selectLayout === "Default"
-                  ? zegoLayoutCss.selected
-                  : ""
+                this.state.selectLayout === "Auto" ? zegoLayoutCss.selected : ""
               }
             >
               {" "}

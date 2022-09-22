@@ -108,7 +108,7 @@ export class ZegoCloudRTCCore {
     showLeavingView: true, // 离开房间后页面，默认有
 
     maxUsers: 2, // 房间人数2～20，默认2
-    layout: "Default", // 默认Default
+    layout: "Auto", // 默认Default
 
     showNonVideoUser: true, // 是否显示无视频用户，默认显示
     showOnlyAudioUser: false, // 是否显示纯音频用户，默认显示
