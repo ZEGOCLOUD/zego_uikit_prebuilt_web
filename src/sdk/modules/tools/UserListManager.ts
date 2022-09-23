@@ -88,10 +88,15 @@ export class ZegoCloudUserListManager {
     if (user.streamList.length) {
       for (let s_index = 0; s_index < user.streamList.length; s_index++) {
         if (user.overScreenMuteVideo) {
-          await this.zg.mutePlayStreamVideo(
-            user.streamList[s_index].streamID,
-            false
-          );
+          try {
+            await this.zg.mutePlayStreamVideo(
+              user.streamList[s_index].streamID,
+              false
+            );
+          } catch (error) {
+            console.error("【ZEGOCLOUD】openVideo failed:", error);
+          }
+
           user.overScreenMuteVideo = false;
         }
       }
@@ -102,10 +107,14 @@ export class ZegoCloudUserListManager {
     if (user.streamList.length) {
       for (let s_index = 0; s_index < user.streamList.length; s_index++) {
         if (!user.overScreenMuteVideo) {
-          await this.zg.mutePlayStreamVideo(
-            user.streamList[s_index].streamID,
-            true
-          );
+          try {
+            await this.zg.mutePlayStreamVideo(
+              user.streamList[s_index].streamID,
+              true
+            );
+          } catch (error) {
+            console.error("muteVideo failed:", error);
+          }
           user.overScreenMuteVideo = true;
         }
       }

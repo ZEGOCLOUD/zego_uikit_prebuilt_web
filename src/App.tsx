@@ -10,6 +10,7 @@ export default class App extends React.Component {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   state = {
     showPreviewHeader: "show",
+    docs: "https://docs.zegocloud.com/article/14728",
   };
   constructor(props: Readonly<{}>) {
     super(props);
@@ -30,13 +31,12 @@ export default class App extends React.Component {
 
     let sharedLinks: { name: string; url: string }[] = [];
     let maxUsers = 50;
-    console.warn("process.env.REACT_APP_PATH:", process.env.REACT_APP_PATH);
 
     let mode = ScenarioModel.OneONoneCall;
     if (process.env.REACT_APP_PATH === "1on1_call") {
       maxUsers = 2;
       sharedLinks.push({
-        name: "Join As Host",
+        name: "Join as Host",
         url:
           window.location.origin +
           window.location.pathname +
@@ -46,9 +46,10 @@ export default class App extends React.Component {
       });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       mode = ScenarioModel.LiveStreaming;
+      this.setState({ docs: "https://docs.zegocloud.com/article/14885" });
       if (role === LiveRole.Host || role === LiveRole.Cohost) {
         sharedLinks.push({
-          name: "Join As Cohost",
+          name: "Join as co-host",
           url:
             window.location.origin +
             window.location.pathname +
@@ -58,7 +59,7 @@ export default class App extends React.Component {
         });
       }
       sharedLinks.push({
-        name: "Join As Audience",
+        name: "Join as audience",
         url:
           window.location.origin +
           window.location.pathname +
@@ -69,7 +70,7 @@ export default class App extends React.Component {
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       mode = ScenarioModel.VideoConference;
       sharedLinks.push({
-        name: "Join As Host",
+        name: "Join as Host",
         url:
           window.location.origin +
           window.location.pathname +
@@ -133,7 +134,7 @@ export default class App extends React.Component {
             ></div>
             <div className={`${APP.link} ${isPc() ? "" : APP.mobileLink}`}>
               <a
-                href="https://docs.zegocloud.com/article/5546"
+                href={this.state.docs}
                 target="_blank"
                 className={APP.link_item}
                 rel="noreferrer"
@@ -142,7 +143,7 @@ export default class App extends React.Component {
                 {isPc() && "Documentation"}
               </a>
               <a
-                href="https://github.com/ZEGOCLOUD/zegocloud_prebuilt_webrtc"
+                href="https://github.com/ZEGOCLOUD/zego_uikit_prebuilt_web/"
                 target="_blank"
                 className={APP.link_item}
                 rel="noreferrer"

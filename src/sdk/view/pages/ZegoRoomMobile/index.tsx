@@ -686,6 +686,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               autoPlay
               muted={user.userID === this.props.core._expressConfig.userID}
               key={user.userID + "_hiddenAudio"}
+              onCanPlay={(ev) => {
+                (ev.target as HTMLAudioElement).play();
+              }}
               ref={(el) => {
                 el &&
                   el.srcObject !== user.streamList[0].media &&
@@ -711,6 +714,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       userLayoutStatus: selectLayout,
     });
     return new Promise(async (resolve, reject) => {
+      this.userUpdateCallBack = () => {
+        resolve(true);
+      };
+      setTimeout(() => {
+        resolve(false);
+      }, 5000);
       const showSelf =
         this.props.core._config.showNonVideoUser || this.state.localStream;
       if (this.state.screenSharingUserList.length) {
@@ -720,18 +729,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       } else {
         await this.props.core.setMaxScreenNum(showSelf ? 4 : 5);
       }
-      this.userUpdateCallBack = () => {
-        resolve(true);
-      };
       await this.props.core.setSidebarLayOut(
         this.state.screenSharingUserList.length > 0
           ? false
           : selectLayout === "Sidebar"
       );
-
-      setTimeout(() => {
-        resolve(false);
-      }, 5000);
     });
   }
   getListScreen() {

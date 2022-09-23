@@ -51,6 +51,9 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
                     <audio
                       key={index}
                       className={ZegoSidebarCss.videoCommon}
+                      onCanPlay={(ev) => {
+                        (ev.target as HTMLAudioElement).play();
+                      }}
                       ref={(el) => {
                         el &&
                           el.srcObject !== value.streamList[0].media &&

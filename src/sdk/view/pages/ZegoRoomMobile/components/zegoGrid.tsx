@@ -20,6 +20,7 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
             if (index === this.props.videoShowNumber - 1) {
               return (
                 <ZegoUserOtherVideo
+                  key={index}
                   user={value}
                   circleSize="GRID"
                   nextUser={arr[index + 1]}
@@ -35,6 +36,9 @@ export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
                   <audio
                     key={index}
                     className={ZegoGridCss.videoCommon}
+                    onCanPlay={(ev) => {
+                      (ev.target as HTMLAudioElement).play();
+                    }}
                     ref={(el) => {
                       el &&
                         el.srcObject !== value.streamList[0].media &&
