@@ -20,7 +20,7 @@ export class ZegoUserVideo extends React.Component<{
       this.props.volume?.[this.props.user?.streamList?.[0]?.streamID];
     const height = volume === undefined ? 7 : Math.ceil((volume * 7) / 100);
     return (
-      <div className={zegoUserVideoCss.container}>
+      <div className={`${zegoUserVideoCss.container} zegoUserVideo_click`}>
         {this.props.user.streamList &&
           this.props.user.streamList[0] &&
           this.props.user.streamList[0] &&

@@ -11,6 +11,7 @@ export class ZegoUIKitPrebuilt {
   static Audience = LiveRole.Audience;
 
   static OneONoneCall = ScenarioModel.OneONoneCall;
+  static GroupCall = ScenarioModel.GroupCall;
   static LiveStreaming = ScenarioModel.LiveStreaming;
   static VideoConference = ScenarioModel.VideoConference;
 

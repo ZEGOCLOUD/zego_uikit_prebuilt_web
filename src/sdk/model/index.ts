@@ -26,6 +26,7 @@ export enum LiveRole {
 
 export enum ScenarioModel {
   OneONoneCall = "OneONoneCall",
+  GroupCall = "GroupCall",
   VideoConference = "VideoConference",
   LiveStreaming = "LiveStreaming",
 }
@@ -35,6 +36,9 @@ export interface ScenarioConfig {
     role: LiveRole;
   };
   [ScenarioModel.OneONoneCall]: {
+    role: LiveRole;
+  };
+  [ScenarioModel.GroupCall]: {
     role: LiveRole;
   };
   [ScenarioModel.VideoConference]: {

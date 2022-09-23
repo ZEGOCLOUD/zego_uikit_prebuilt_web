@@ -103,7 +103,7 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
             )}
           </div>
 
-          {!this.state.fullScreen && (
+          {!this.state.fullScreen && this.props.userList.length > 0 && (
             <div className={wrapClassName}>
               {this.props.userList.map((user, index, arr) => {
                 if (arr.length > this.props.videoShowNumber) {
