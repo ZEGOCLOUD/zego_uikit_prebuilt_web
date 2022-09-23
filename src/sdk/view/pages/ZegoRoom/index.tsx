@@ -940,7 +940,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       return (
         <>
           <ZegoScreenSharingLayout
-            handleSetPin={this.handleSetPin.bind(this)}
+            handleSetPin={(userID: string) => {
+              this.handleSetPin(userID);
+            }}
             userList={this.getShownUser()}
             videoShowNumber={this.state.videoShowNumber}
             selfInfo={{
@@ -974,7 +976,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           selfInfo={{
             userID: this.props.core._expressConfig.userID,
           }}
-          handleSetPin={this.handleSetPin.bind(this)}
+          handleSetPin={(userID: string) => {
+            this.handleSetPin(userID);
+          }}
           userList={this.getShownUser()}
           soundLevel={this.state.soundLevel}
         ></ZegoOne2One>
@@ -992,7 +996,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           selfInfo={{
             userID: this.props.core._expressConfig.userID,
           }}
-          handleSetPin={this.handleSetPin.bind(this)}
+          handleSetPin={(userID: string) => {
+            this.handleSetPin(userID);
+          }}
           soundLevel={this.state.soundLevel}
         ></ZegoGridLayout>
       );
@@ -1000,7 +1006,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     if (this.state.layout === "Sidebar" && this.getShownUser().length > 1) {
       return (
         <ZegoSidebarLayout
-          handleSetPin={this.handleSetPin.bind(this)}
+          handleSetPin={(userID: string) => {
+            this.handleSetPin(userID);
+          }}
           userList={this.getShownUser()}
           videoShowNumber={this.state.videoShowNumber}
           selfInfo={{

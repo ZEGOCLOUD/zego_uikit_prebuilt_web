@@ -47,7 +47,7 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
                   <OthersVideo
                     key={user.userID}
                     users={[arr[index].userName!, arr[index + 1]?.userName!]}
-                    others={arr.length - this.props.videoShowNumber}
+                    others={arr.length - this.props.videoShowNumber + 1}
                   ></OthersVideo>
                 );
               }

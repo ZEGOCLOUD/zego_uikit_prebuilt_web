@@ -16,7 +16,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
 }> {
   state = {
     step: this.props.core._config.showPreJoinView ? 0 : 1,
-    isSupportWebRTC: false,
+    isSupportWebRTC: true,
   };
 
   async componentDidMount() {

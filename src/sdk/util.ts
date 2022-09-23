@@ -25,7 +25,8 @@ export function isIOS() {
 export function IsSafari() {
   const is_safari = navigator.userAgent.toLowerCase().indexOf("safari/") > -1;
   const is_chrome = navigator.userAgent.match("CriOS");
-  return is_safari && !is_chrome;
+  const is_firefox = navigator.userAgent.match("FxiOS");
+  return is_safari && !is_chrome && !is_firefox;
 }
 
 export function DateFormat(date: number, fmt: string) {
