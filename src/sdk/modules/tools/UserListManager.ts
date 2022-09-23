@@ -16,12 +16,13 @@ export class ZegoCloudUserListManager {
   remoteUserList: ZegoCloudUserList = [];
   remoteScreenStreamList: ZegoCloudUserList = [];
   setPin(userID?: string, pined?: boolean): void {
-    this.remoteUserList.forEach((u) => {
+    this.remoteUserList = this.remoteUserList.map((u) => {
       if (u.userID === userID) {
         u.pin = !u.pin;
       } else {
         u.pin = false;
       }
+      return u;
     });
   }
 

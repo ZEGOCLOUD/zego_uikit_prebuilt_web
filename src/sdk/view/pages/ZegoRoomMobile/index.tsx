@@ -616,7 +616,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     return [
       {
         userID: this.props.core._expressConfig.userID,
-        userName: this.props.core._expressConfig.userName,
+        userName: this.props.core._expressConfig.userName + "(You)",
         pin: this.localUserPin,
         streamList: [
           {
@@ -704,6 +704,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   ): Promise<boolean> {
     if (selectLayout !== "Sidebar") {
       this._selectedUser && (this._selectedUser.pin = false);
+      this.localUserPin = false;
       this.props.core.setPin();
     }
     this.setState({

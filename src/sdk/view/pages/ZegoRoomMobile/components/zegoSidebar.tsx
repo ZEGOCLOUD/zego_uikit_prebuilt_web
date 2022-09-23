@@ -67,9 +67,7 @@ export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
                 user={value}
                 circleSize="SIDEBAR"
                 key={value.userID + "_video"}
-                volume={
-                  this.props.soundLevel![value.streamList[0].streamID] || {}
-                }
+                volume={this.props.soundLevel![value.userID] || {}}
               ></ZegoUserVideo>
             );
           })}
