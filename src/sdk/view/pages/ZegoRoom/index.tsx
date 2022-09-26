@@ -678,7 +678,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     this.props.leaveRoom && this.props.leaveRoom();
   }
 
-  computeByResize() {
+  async computeByResize() {
     const width = Math.max(document.body.clientWidth, 826);
     const height = Math.max(document.body.clientHeight, 280);
     let videoShowNumber = 0,
@@ -697,14 +697,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       this.setState({
         videoShowNumber: videoShowNumber,
       });
+      await this.props.core.setSidebarLayOut(false);
       if (this.fullScreen) {
-        this.props.core.setMaxScreenNum(0);
+        await this.props.core.setMaxScreenNum(0);
       } else {
-        this.props.core.setMaxScreenNum(
+        await this.props.core.setMaxScreenNum(
           showSelf ? videoShowNumber - 1 : videoShowNumber
         );
       }
-      this.props.core.setSidebarLayOut(false);
+
       return;
     }
     if (this.state.layout === "Sidebar") {
@@ -716,12 +717,12 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
         5
       );
-      this.props.core.setSidebarLayOut(true);
+      await this.props.core.setSidebarLayOut(true);
       this.setState({
         videoShowNumber: videoShowNumber,
       });
 
-      this.props.core.setMaxScreenNum(
+      await this.props.core.setMaxScreenNum(
         showSelf ? videoShowNumber : videoShowNumber + 1
       );
       return;
@@ -753,12 +754,12 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         videoShowNumber = 9;
         gridRowNumber = 3;
       }
-      this.props.core.setSidebarLayOut(false);
+      await this.props.core.setSidebarLayOut(false);
       this.setState({
         videoShowNumber: videoShowNumber,
         gridRowNumber: gridRowNumber,
       });
-      this.props.core.setMaxScreenNum(
+      await this.props.core.setMaxScreenNum(
         showSelf ? videoShowNumber - 1 : videoShowNumber
       );
       return;
