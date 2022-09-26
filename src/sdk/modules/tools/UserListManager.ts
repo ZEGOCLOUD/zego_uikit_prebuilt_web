@@ -121,8 +121,14 @@ export class ZegoCloudUserListManager {
     }
   }
 
+  userOrderList: string[] = [];
   userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]) {
     if (updateType === "ADD") {
+      this.userOrderList = [
+        ...this.userOrderList,
+        ...users.map((u) => u.userID),
+      ];
+
       users.forEach((user) => {
         if (!this.remoteUserList.some((u) => u.userID === user.userID)) {
           this.remoteUserList.unshift({
@@ -132,15 +138,24 @@ export class ZegoCloudUserListManager {
             pin: false,
           });
         } else {
-          console.error("【ZEGOCLOUD】 repeat user add!!");
+          this.remoteUserList.sort((a, b) => {
+            return (
+              this.userOrderList.findIndex((uid) => uid === b.userID) -
+              this.userOrderList.findIndex((uid) => uid === a.userID)
+            );
+          });
+          console.error("【ZEGOCLOUD】 repeat u ser add!!");
         }
       });
     } else if (updateType === "DELETE") {
       users.forEach((user) => {
-        const index = this.remoteUserList.findIndex(
+        let index = this.remoteUserList.findIndex(
           (u) => u.userID === user.userID
         );
         index > -1 && this.remoteUserList.splice(index, 1);
+
+        index = this.userOrderList.findIndex((uid) => uid === user.userID);
+        index > -1 && this.userOrderList.splice(index, 1);
       });
     }
   }
