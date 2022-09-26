@@ -2,7 +2,10 @@ import React from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { userNameColor } from "../../../../util";
 import ZegoUserListCss from "./zegoUserList.module.scss";
-import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
+import {
+  ZegoCloudUser,
+  ZegoCloudUserList,
+} from "../../../../modules/tools/UserListManager";
 import { SoundLevelMap } from "../../../../model";
 export class ZegoUserList extends React.Component<{
   core: ZegoCloudRTCCore;
@@ -38,6 +41,19 @@ export class ZegoUserList extends React.Component<{
   getHeight(userID: string, streamID: string): number {
     const volume = this.props.soundLevel![userID]?.[streamID];
     return volume === undefined ? 5 : Math.ceil((volume * 9) / 100);
+  }
+
+  isShownPin(user: ZegoCloudUser): boolean {
+    return !!(
+      this.props.core._config.showNonVideoUser ||
+      (user.streamList &&
+        user.streamList[0] &&
+        user.streamList[0].cameraStatus === "OPEN") ||
+      (user.streamList &&
+        user.streamList[0] &&
+        user.streamList[0].micStatus === "OPEN" &&
+        !!this.props.core._config.showOnlyAudioUser)
+    );
   }
   render(): React.ReactNode {
     return (
@@ -91,11 +107,13 @@ export class ZegoUserList extends React.Component<{
                       ZegoUserListCss.memberCameraIconOpen
                     }`}
                   ></span>
-                  <span
-                    className={`${ZegoUserListCss.memberPinIcon} ${
-                      user.pin && ZegoUserListCss.memberPinIconOpen
-                    }`}
-                  ></span>
+                  {this.isShownPin(user) && (
+                    <span
+                      className={`${ZegoUserListCss.memberPinIcon} ${
+                        user.pin && ZegoUserListCss.memberPinIconOpen
+                      }`}
+                    ></span>
+                  )}
                 </div>
               )}
 

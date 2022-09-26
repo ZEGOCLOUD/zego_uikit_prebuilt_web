@@ -23,6 +23,19 @@ export class ZegoUserList extends React.Component<{
     });
   }
 
+  isShownPin(user: ZegoCloudUser): boolean {
+    return !!(
+      this.props.core._config.showNonVideoUser ||
+      (user.streamList &&
+        user.streamList[0] &&
+        user.streamList[0].cameraStatus === "OPEN") ||
+      (user.streamList &&
+        user.streamList[0] &&
+        user.streamList[0].micStatus === "OPEN" &&
+        !!this.props.core._config.showOnlyAudioUser)
+    );
+  }
+
   render(): React.ReactNode {
     return (
       <div className={zegoUserListCss.memberList}>
@@ -51,7 +64,20 @@ export class ZegoUserList extends React.Component<{
                   <i style={{ color: userNameColor(user.userName!) }}>
                     {user.userName?.substring(0, 1)}
                   </i>
-                  <a key={user.userID}>{user.userName}</a>{" "}
+                  <a
+                    key={user.userID}
+                    style={{
+                      maxWidth:
+                        this.props.core._expressConfig.userID === user.userID
+                          ? "30vw"
+                          : "45vw",
+                    }}
+                  >
+                    {user.userName}
+                  </a>
+                  {this.props.core._expressConfig.userID === user.userID && (
+                    <a key={user.userID + "_me"}>（You）</a>
+                  )}
                 </div>
                 <div className={zegoUserListCss.memberHandlers}>
                   <i
@@ -72,13 +98,16 @@ export class ZegoUserList extends React.Component<{
                         : zegoUserListCss.memberCameraMute
                     }
                   ></i>
-                  <i
-                    className={
-                      user.pin
-                        ? zegoUserListCss.memberPined
-                        : zegoUserListCss.memberUnPin
-                    }
-                  ></i>
+                  {this.isShownPin(user) && (
+                    <i
+                      className={
+                        user.pin
+                          ? zegoUserListCss.memberPined
+                          : zegoUserListCss.memberUnPin
+                      }
+                    ></i>
+                  )}
+                  {!this.isShownPin(user) && <i></i>}
                 </div>
               </div>
             );

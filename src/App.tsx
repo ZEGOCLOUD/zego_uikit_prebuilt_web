@@ -21,6 +21,18 @@ export default class App extends React.Component {
 
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
 
+    if (!getUrlParams(window.location.href)["roomID"]) {
+      window.history.replaceState(
+        "",
+        "You have logged into room: " + roomID,
+        window.location.origin +
+          window.location.pathname +
+          "?roomID=" +
+          roomID +
+          "&role=Host"
+      );
+    }
+
     let role_p = getUrlParams(window.location.href)["role"] || "Host";
     let role: LiveRole =
       role_p === "Host"
@@ -86,8 +98,7 @@ export default class App extends React.Component {
         roomID,
         userName || getRandomName()
       );
-      // token =
-      //   "04AAAAAGLiKBcAEDFnZnlqZDV3bHQwNDZrZG4AcMdjPKlN5VTcl8PDi9mwY+rY1pZs4h1HKQKow/i1ZaZmoNNvF+mq6L/mm4ootCh5pEHmMg4S+PB70H1VReSgbBpb5QaH9FobMo1snaAxft66+T3DxUCThSuSEYxavGLO2fwWIEALNNPNvg+hO/o58G0=#eyJ1c2VyX2lkIjoiMTIzZmFkcyIsInJvb21faWQiOiJmYXNmIiwidXNlcl9uYW1lIjoiZmFqZmQiLCJhcHBfaWQiOiIxNDg0NjQ3OTM5In0=";
+
       const zp = ZegoUIKitPrebuilt.create(token);
       const param: ZegoCloudRoomConfig = {
         // @ts-ignore

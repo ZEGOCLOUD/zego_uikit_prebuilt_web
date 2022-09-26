@@ -137,6 +137,16 @@
         font-style: normal;
       }
 
+      .msgContentRightHeader {
+        span {
+          max-width: vw(220px);
+          margin-right: 0 !important;
+        }
+        a {
+          margin-right: vw(14px);
+        }
+      }
+
       .msgContentRight {
         align-items: flex-end;
 

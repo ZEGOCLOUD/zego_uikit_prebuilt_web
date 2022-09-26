@@ -3,6 +3,7 @@ import { userNameColor } from "../../../../util";
 import zegoUserVideoCss from "./zegoUserVideo.module.scss";
 import { ZegoMore } from "./zegoMore";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
+import ShowManageContext, { ShowManageType } from "../context/showManage";
 export class ZegoUserVideo extends React.Component<{
   user: ZegoCloudUser;
   onLocalStreamPaused?: () => void;
@@ -15,10 +16,14 @@ export class ZegoUserVideo extends React.Component<{
   hiddenName?: boolean;
   hiddenMore?: boolean;
 }> {
+  static contextType?: React.Context<ShowManageType> = ShowManageContext;
+  context!: React.ContextType<typeof ShowManageContext>;
+
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.user?.streamList?.[0]?.streamID];
     const height = volume === undefined ? 7 : Math.ceil((volume * 7) / 100);
+    let { userInfo } = this.context;
     return (
       <div className={`${zegoUserVideoCss.container} zegoUserVideo_click`}>
         {this.props.user.streamList &&
@@ -77,6 +82,7 @@ export class ZegoUserVideo extends React.Component<{
         {!this.props.hiddenName && (
           <div className={zegoUserVideoCss.name}>
             <p>{this.props.user.userName}</p>
+            {userInfo.userID === this.props.user.userID && <p>（You）</p>}
             <span
               className={`${zegoUserVideoCss.micIcon}  ${
                 !this.props.user.streamList[0] ||
@@ -105,7 +111,7 @@ export class ZegoUserOtherVideo extends React.Component<{
 }> {
   render(): React.ReactNode {
     return (
-      <div className={zegoUserVideoCss.container}>
+      <div className={`${zegoUserVideoCss.container} zegoUserVideo_click`}>
         {this.props.user.streamList &&
           this.props.user.streamList[0] &&
           this.props.user.streamList[0].media && (
@@ -119,10 +125,14 @@ export class ZegoUserOtherVideo extends React.Component<{
             ></audio>
           )}
 
-        <div className={zegoUserVideoCss.noVideoWrapper}>
-          <div className={zegoUserVideoCss.nameWrapper}>
+        <div
+          className={`${zegoUserVideoCss.noVideoWrapper} zegoUserVideo_click`}
+        >
+          <div
+            className={`${zegoUserVideoCss.nameWrapper} zegoUserVideo_click`}
+          >
             <div
-              className={`${zegoUserVideoCss.nameCircle}  ${
+              className={`${zegoUserVideoCss.nameCircle} zegoUserVideo_click  ${
                 this.props.circleSize === "SIDEBAR"
                   ? zegoUserVideoCss.sidebarCircle
                   : zegoUserVideoCss.gridCircle
@@ -135,7 +145,7 @@ export class ZegoUserOtherVideo extends React.Component<{
               {this.props.user.userName!.slice(0, 1)?.toUpperCase()}
             </div>
             <div
-              className={`${zegoUserVideoCss.nameCircle}  ${
+              className={`${zegoUserVideoCss.nameCircle}  zegoUserVideo_click ${
                 this.props.circleSize === "SIDEBAR"
                   ? zegoUserVideoCss.sidebarCircle
                   : zegoUserVideoCss.gridCircle

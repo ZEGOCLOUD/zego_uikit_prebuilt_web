@@ -616,7 +616,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     return [
       {
         userID: this.props.core._expressConfig.userID,
-        userName: this.props.core._expressConfig.userName + "(You)",
+        userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
         streamList: [
           {
@@ -1038,6 +1038,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             });
           },
           showPinButton: !!this.props.core._config.showPinButton,
+          userInfo: { userID: this.props.core._expressConfig.userID },
         }}
       >
         <div

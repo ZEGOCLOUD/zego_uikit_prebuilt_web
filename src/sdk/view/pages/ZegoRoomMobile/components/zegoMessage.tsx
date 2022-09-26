@@ -107,6 +107,9 @@ export class ZegoMessage extends React.Component<{
                 <div className={zegoMessageCss.msgContentRight}>
                   <div className={zegoMessageCss.msgContentRightHeader}>
                     <span>{msg.fromUser.userName}</span>
+                    {this.props.userID === msg.fromUser.userID && (
+                      <a>（You）</a>
+                    )}
                     <span>
                       {`${
                         new Date(msg.sendTime).getHours() > 12 ? "PM" : "AM"
