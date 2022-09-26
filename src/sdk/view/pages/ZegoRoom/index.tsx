@@ -220,6 +220,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
             notificationList: [...state.notificationList, ...notificationList],
           };
         });
+        this.computeByResize();
       }
     );
     this.props.core.onRoomMessageUpdate(
@@ -717,7 +718,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
         5
       );
-      await this.props.core.setSidebarLayOut(true);
+      await this.props.core.setSidebarLayOut(!this.localUserPin);
       this.setState({
         videoShowNumber: videoShowNumber,
       });
@@ -1029,7 +1030,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       this.props.core.setPin(userID);
     }
     this.props.core.setSidebarLayOut(
-      this.getScreenSharingUser.length > 0 ? false : true
+      this.getScreenSharingUser.length > 0 ? false : this.localUserPin === false
     );
     this.setState({ layout: "Sidebar" });
   }
