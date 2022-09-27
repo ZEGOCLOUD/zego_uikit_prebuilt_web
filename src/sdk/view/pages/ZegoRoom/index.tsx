@@ -646,6 +646,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       },
       onShowNonVideoChange: (selected: boolean) => {
         this.props.core._config.showNonVideoUser = selected;
+        this.props.core.setShowNonVideo(selected);
         this.setState({
           showNonVideoUser: selected,
         });
@@ -1296,9 +1297,8 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                         Change layout
                       </div>
                     )}
-                    {this.props.core._config.showAudioVideoSettingsButton && (
-                      <span></span>
-                    )}
+                    {this.props.core._config.showAudioVideoSettingsButton &&
+                      this.props.core._config.showLayoutButton && <span></span>}
                     {this.props.core._config.showAudioVideoSettingsButton && (
                       <div onClick={() => this.handleSetting()}>Settings</div>
                     )}

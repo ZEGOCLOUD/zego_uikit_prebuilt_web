@@ -517,21 +517,24 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                     ></ZegoSelect>
                   </div>
                   {this.props.core._config.scenario?.mode !==
-                    ScenarioModel.LiveStreaming && (
-                    <div className={ZegoSettingsCss.device}>
-                      <div
-                        className={ZegoSettingsCss.checkboxWrapper}
-                        onClick={() => this.handleShowNonVideo()}
-                      >
-                        <span
-                          className={`${ZegoSettingsCss.checkbox} ${
-                            this.state.showNonVideo && ZegoSettingsCss.selected
-                          }`}
-                        ></span>
-                        <p>Show non-video participant</p>
+                    ScenarioModel.LiveStreaming &&
+                    this.props.core._config.scenario?.mode !==
+                      ScenarioModel.OneONoneCall && (
+                      <div className={ZegoSettingsCss.device}>
+                        <div
+                          className={ZegoSettingsCss.checkboxWrapper}
+                          onClick={() => this.handleShowNonVideo()}
+                        >
+                          <span
+                            className={`${ZegoSettingsCss.checkbox} ${
+                              this.state.showNonVideo &&
+                              ZegoSettingsCss.selected
+                            }`}
+                          ></span>
+                          <p>Show non-video participant</p>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               )}
             </div>

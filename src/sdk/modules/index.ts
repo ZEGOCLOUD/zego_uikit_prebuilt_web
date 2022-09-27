@@ -216,6 +216,8 @@ export class ZegoCloudRTCCore {
       if (!config.maxUsers) {
         config.maxUsers = 2;
       }
+      config.showLayoutButton = false;
+      config.showPinButton = false;
     }
 
     config.facingMode &&
@@ -257,6 +259,7 @@ export class ZegoCloudRTCCore {
     this.zum.scenario =
       this._config.scenario?.mode || ScenarioModel.OneONoneCall;
     this.zum.role = this._config.scenario?.config?.role || LiveRole.Host;
+    this.zum.showOnlyAudioUser = !!this._config.showOnlyAudioUser;
     this.zum.setShowNonVideo(!!this._config.showNonVideoUser);
     return true;
   }

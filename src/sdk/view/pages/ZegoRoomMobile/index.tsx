@@ -149,8 +149,8 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         });
       }, 3000);
     }
-    if(preState.userLayoutStatus !== this.state.userLayoutStatus)  {
-        this.handleLayoutChange(this.state.userLayoutStatus)
+    if (preState.userLayoutStatus !== this.state.userLayoutStatus) {
+      this.handleLayoutChange(this.state.userLayoutStatus);
     }
   }
 
@@ -605,6 +605,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       confirm: "Confirm",
       closeCallBack: (confirm: boolean) => {
         if (confirm) {
+          this.props.core._config.turnOnCameraWhenJoining =
+            this.state.cameraOpen;
+          this.props.core._config.turnOnMicrophoneWhenJoining =
+            this.state.micOpen;
           this.state.localStream &&
             this.props.core.destroyStream(this.state.localStream);
 
@@ -735,7 +739,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       await this.props.core.setSidebarLayOut(
         this.state.screenSharingUserList.length > 0
           ? false
-          : (selectLayout === "Sidebar" ? !this.localUserPin : false)
+          : selectLayout === "Sidebar"
+          ? !this.localUserPin
+          : false
       );
     });
   }

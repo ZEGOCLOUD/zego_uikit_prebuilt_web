@@ -11,6 +11,7 @@ export type ZegoCloudUser = ZegoUser & {
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}
   showNonVideo = true;
+  showOnlyAudioUser = false;
   screenNumber = 0;
   sidebarEnabled = false;
   remoteUserList: ZegoCloudUserList = [];
@@ -54,7 +55,14 @@ export class ZegoCloudUserListManager {
           if (this.showNonVideo) {
             return r;
           } else {
-            return r.streamList.length > 0;
+            if (this.showOnlyAudioUser) {
+              return r.streamList.length > 0;
+            } else {
+              return (
+                r.streamList.length > 0 &&
+                r.streamList[0].cameraStatus === "OPEN"
+              );
+            }
           }
         });
         noPinUserList = remoteUserList.slice(0, remoteUserList.length - 1);
@@ -200,6 +208,8 @@ export class ZegoCloudUserListManager {
           }
         }
       });
+
+    this.updateStream();
   }
   screenStreamUpdate(
     updateType: "DELETE" | "ADD" | "UPDATE",
