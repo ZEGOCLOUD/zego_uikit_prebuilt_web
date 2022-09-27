@@ -842,8 +842,8 @@ export class ZegoCloudRTCCore {
     this.onRoomMessageUpdateCallBack = () => {};
     this.onRoomLiveStateUpdateCallBack = () => {};
     this.subscribeUserListCallBack = () => {};
-    this.zum.clearUserList();
-    this.zum.clearScreenStreamList();
+    this.zum.reset();
+
     for (let key in this.remoteStreamMap) {
       ZegoCloudRTCCore._zg.stopPlayingStream(key);
     }

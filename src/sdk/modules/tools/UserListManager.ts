@@ -236,10 +236,6 @@ export class ZegoCloudUserListManager {
         }
       });
   }
-  clearUserList() {
-    this.remoteUserList = [];
-    this.waitingPullStreams = [];
-  }
 
   waitingPullStreams: { streamID: string; userID: string }[] = [];
   isLive: 1 | 0 = 0;
@@ -359,7 +355,14 @@ export class ZegoCloudUserListManager {
     }
   }
 
-  clearScreenStreamList() {
+  reset() {
+    this.remoteUserList = [];
+    this.waitingPullStreams = [];
+    this.isLive = 0;
+
+    this.screenNumber = 0;
+    this.sidebarEnabled = false;
+    this.remoteUserList = [];
     this.remoteScreenStreamList = [];
   }
 }
