@@ -117,6 +117,9 @@ export class ZegoUserOtherVideo extends React.Component<{
           this.props.user.streamList[0].media && (
             <audio
               className={zegoUserVideoCss.videoCommon}
+              onCanPlay={(ev) => {
+                (ev.target as HTMLAudioElement).play();
+              }}
               ref={(el) => {
                 el &&
                   el.srcObject !== this.props.user.streamList[0].media &&

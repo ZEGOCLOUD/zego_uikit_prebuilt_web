@@ -62,7 +62,9 @@ export class ZegoUserList extends React.Component<{
           return (
             <div
               className={ZegoUserListCss.member}
-              onClick={() => this.expandMemberMenu(user.userID)}
+              onClick={() => {
+                this.isShownPin(user) && this.expandMemberMenu(user.userID);
+              }}
               key={user.userID}
               data-id={user.userID}
             >
