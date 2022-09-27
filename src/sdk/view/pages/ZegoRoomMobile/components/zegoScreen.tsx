@@ -25,7 +25,7 @@ export class ZegoScreen extends React.Component<ZegoScreenSharingLayoutProps> {
                     user={value}
                     circleSize="SIDEBAR"
                     nextUser={arr[index + 1]}
-                    othersNumber={arr.length - this.props.videoShowNumber + 1}
+                    othersNumber={arr.length - this.props.videoShowNumber + 2}
                   ></ZegoUserOtherVideo>
                 );
               }

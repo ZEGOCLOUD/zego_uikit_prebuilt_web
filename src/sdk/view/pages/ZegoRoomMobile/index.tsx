@@ -126,6 +126,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       cameraOpen: boolean;
       showMore: boolean;
       screenSharingUserList: ZegoCloudUserList;
+      userLayoutStatus: "Auto" | "Grid" | "Sidebar";
     }
   ) {
     if (
@@ -147,6 +148,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           notificationList: [],
         });
       }, 3000);
+    }
+    if(preState.userLayoutStatus !== this.state.userLayoutStatus)  {
+        this.handleLayoutChange(this.state.userLayoutStatus)
     }
   }
 
@@ -276,10 +280,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     });
 
     this.props.core.subscribeScreenStream((userList) => {
-      if (userList.length !== this.state.screenSharingUserList.length) {
+      this.setState({ screenSharingUserList: userList }, () => {
         this.handleLayoutChange(this.state.userLayoutStatus);
-      }
-      this.setState({ screenSharingUserList: userList });
+      });
     });
     this.props.core.onSoundLevelUpdate(
       (soundLevelList: ZegoSoundLevelInfo[]) => {
@@ -732,7 +735,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       await this.props.core.setSidebarLayOut(
         this.state.screenSharingUserList.length > 0
           ? false
-          : selectLayout === "Sidebar"
+          : (selectLayout === "Sidebar" ? !this.localUserPin : false)
       );
     });
   }
@@ -813,7 +816,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 userLayoutStatus: "Sidebar",
               });
               this.props.core.setSidebarLayOut(
-                !this.state.screenSharingUserList.length
+                this.state.screenSharingUserList.length > 0
+                  ? false
+                  : !this.localUserPin
               );
             }
           }}
