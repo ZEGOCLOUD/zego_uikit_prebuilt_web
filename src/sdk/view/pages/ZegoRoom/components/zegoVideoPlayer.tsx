@@ -74,7 +74,15 @@ export class VideoPlayer extends React.Component<{
                 <span style={{ height: height + "px" }}></span>
               )}
             </span>
-            <p>{this.props.userInfo.userName}</p>
+            <p
+              className={
+                this.props.userInfo.overScreenMuteVideo
+                  ? "muteVideo"
+                  : "unmuteVideo"
+              }
+            >
+              {this.props.userInfo.userName}
+            </p>
             {this.props.muted && (
               <span className={ZegoVideoPlayerCss.nameTag}>(You)</span>
             )}

@@ -50,11 +50,15 @@ export class ZegoCloudUserListManager {
         noPinUserList = this.remoteUserList.filter((user) => !user.pin);
         this.openVideo(this.remoteUserList[pIndex]);
       } else {
-        noPinUserList = this.remoteUserList.slice(
-          0,
-          this.remoteUserList.length - 1
-        );
-        this.openVideo(this.remoteUserList[this.remoteUserList.length - 1]);
+        const remoteUserList = this.remoteUserList.filter((r) => {
+          if (this.showNonVideo) {
+            return r;
+          } else {
+            return r.streamList.length > 0;
+          }
+        });
+        noPinUserList = remoteUserList.slice(0, remoteUserList.length - 1);
+        this.openVideo(remoteUserList[remoteUserList.length - 1]);
       }
       count++;
     } else {

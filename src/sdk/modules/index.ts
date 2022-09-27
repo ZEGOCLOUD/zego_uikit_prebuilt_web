@@ -257,6 +257,7 @@ export class ZegoCloudRTCCore {
     this.zum.scenario =
       this._config.scenario?.mode || ScenarioModel.OneONoneCall;
     this.zum.role = this._config.scenario?.config?.role || LiveRole.Host;
+    this.zum.setShowNonVideo(!!this._config.showNonVideoUser);
     return true;
   }
 
