@@ -9,14 +9,13 @@ import { generateToken, getRandomName, randomID } from "./util";
 export default class App extends React.Component {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   state = {
-    showPreviewHeader: "show",
+    showPreviewHeader:
+      getUrlParams(window.location.href)["preHeader"] || "show",
     docs: "https://docs.zegocloud.com/article/14728",
   };
   constructor(props: Readonly<{}>) {
     super(props);
-    // zegocloud.com
-    this.state.showPreviewHeader =
-      getUrlParams(window.location.href)["preHeader"] || "show";
+
     const userName = getUrlParams(window.location.href)["UserName"];
 
     const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
