@@ -11,6 +11,7 @@ export declare class ZegoCloudUserListManager {
     private zg;
     constructor(zg: ZegoExpressEngine);
     showNonVideo: boolean;
+    showOnlyAudioUser: boolean;
     screenNumber: number;
     sidebarEnabled: boolean;
     remoteUserList: ZegoCloudUserList;
@@ -22,10 +23,10 @@ export declare class ZegoCloudUserListManager {
     updateStream(): Promise<boolean>;
     openVideo(user: ZegoCloudUser): Promise<void>;
     muteVideo(user: ZegoCloudUser): Promise<void>;
-    userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]): void;
+    userOrderList: string[];
+    userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]): Promise<boolean>;
     mainStreamUpdate(updateType: "DELETE" | "ADD" | "UPDATE", streamList: ZegoCloudRemoteMedia[]): void;
     screenStreamUpdate(updateType: "DELETE" | "ADD" | "UPDATE", streamList: ZegoCloudRemoteMedia[]): void;
-    clearUserList(): void;
     waitingPullStreams: {
         streamID: string;
         userID: string;
@@ -35,5 +36,6 @@ export declare class ZegoCloudUserListManager {
     scenario: ScenarioModel;
     role: LiveRole;
     startPullStream(userID: string, streamID: string): Promise<MediaStream | undefined>;
-    clearScreenStreamList(): void;
+    stopPullStream(userID: string, streamID: string): void;
+    reset(): void;
 }

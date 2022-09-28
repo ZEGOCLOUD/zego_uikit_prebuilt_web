@@ -16,6 +16,7 @@ export declare enum LiveRole {
 }
 export declare enum ScenarioModel {
     OneONoneCall = "OneONoneCall",
+    GroupCall = "GroupCall",
     VideoConference = "VideoConference",
     LiveStreaming = "LiveStreaming"
 }
@@ -24,6 +25,9 @@ export interface ScenarioConfig {
         role: LiveRole;
     };
     [ScenarioModel.OneONoneCall]: {
+        role: LiveRole;
+    };
+    [ScenarioModel.GroupCall]: {
         role: LiveRole;
     };
     [ScenarioModel.VideoConference]: {
@@ -53,7 +57,7 @@ export interface ZegoCloudRoomConfig {
     };
     showLeavingView?: boolean;
     maxUsers?: number;
-    layout?: "Sidebar" | "Grid" | "Default";
+    layout?: "Sidebar" | "Grid" | "Auto";
     showNonVideoUser?: boolean;
     showOnlyAudioUser?: boolean;
     useFrontFacingCamera?: boolean;

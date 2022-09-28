@@ -10,5 +10,6 @@ export declare class ZegoUserList extends React.Component<{
         message: string;
     };
     messageInput(event: ChangeEvent<HTMLInputElement>): void;
+    isShownPin(user: ZegoCloudUser): boolean;
     render(): React.ReactNode;
 }

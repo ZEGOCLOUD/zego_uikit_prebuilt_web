@@ -1121,7 +1121,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       >
         <div className={ZegoRoomCss.ZegoRoom}>
           {(this.props.core._config.branding?.logoURL ||
-            this.props.core._config.roomTimerDisplayed) && (
+            this.props.core._config.roomTimerDisplayed ||
+            this.props.core._config.scenario?.mode ===
+              ScenarioModel.LiveStreaming) && (
             <div className={ZegoRoomCss.header}>
               <div className={ZegoRoomCss.headerLeft}>
                 {this.props.core._config.branding?.logoURL && (

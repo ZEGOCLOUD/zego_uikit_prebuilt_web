@@ -183,7 +183,7 @@ export class ZegoCloudRTCCore {
       }
 
       if (!config.maxUsers) {
-        config.maxUsers = 50;
+        config.maxUsers = 5000;
       }
 
       if (
@@ -218,6 +218,12 @@ export class ZegoCloudRTCCore {
       }
       config.showLayoutButton = false;
       config.showPinButton = false;
+    }
+
+    if (config.scenario && config.scenario.mode === ScenarioModel.GroupCall) {
+      if (!config.maxUsers) {
+        config.maxUsers = 50;
+      }
     }
 
     config.facingMode &&

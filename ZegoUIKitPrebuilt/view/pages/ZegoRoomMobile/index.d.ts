@@ -9,7 +9,7 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
     state: {
         localStream: undefined | MediaStream;
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE";
-        userLayoutStatus: "Default" | "Grid" | "Sidebar";
+        userLayoutStatus: "Auto" | "Grid" | "Sidebar";
         zegoCloudUserList: ZegoCloudUserList;
         messageList: ZegoBroadcastMessageInfo2[];
         notificationList: ZegoNotification[];
@@ -46,6 +46,7 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
         cameraOpen: boolean;
         showMore: boolean;
         screenSharingUserList: ZegoCloudUserList;
+        userLayoutStatus: "Auto" | "Grid" | "Sidebar";
     }): void;
     initSDK(): Promise<void>;
     createStream(): Promise<boolean>;
@@ -78,7 +79,7 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
     getShownUser(forceShowNonVideoUser?: boolean): ZegoCloudUserList;
     getHiddenUser(): JSX.Element;
     private _selectedUser;
-    handleLayoutChange(selectLayout: "Default" | "Grid" | "Sidebar"): Promise<boolean>;
+    handleLayoutChange(selectLayout: "Auto" | "Grid" | "Sidebar"): Promise<boolean>;
     getListScreen(): JSX.Element | undefined;
     getLayoutScreen(): JSX.Element | undefined;
     clickVideo(e: MouseEvent): void;

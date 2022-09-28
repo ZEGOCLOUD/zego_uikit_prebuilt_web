@@ -25,7 +25,7 @@
     },
     "homepage": "./",
     "scripts": {
-        "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='video_conference' react-scripts start",
+        "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='1on1_call' react-scripts start",
         "start:m": "REACT_APP_MOBILE='yes'   npm run start",
         "dev": "webpack serve --config webpack.config.sample.ts",
         "build:1on1_call": "REACT_APP_ENV='prd' REACT_APP_PATH='1on1_call' BUILD_PATH='1on1_call'  react-scripts build",
@@ -34,7 +34,9 @@
         "build": "npm run build:1on1_call & npm run build:live_stream & npm run build:video_conference",
         "deploy": "gh-pages -b main -d build",
         "eject": "react-scripts eject",
-        "build:lib": "webpack"
+        "build:lib": "webpack",
+        "publish:beta": "cd ZegoUIKitPrebuilt && npm publish --tag beta",
+        "publish": "cd ZegoUIKitPrebuilt && npm publish"
     },
     "eslintConfig": {
         "extends": [
