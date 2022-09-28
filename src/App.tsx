@@ -126,8 +126,10 @@ export default class App extends React.Component {
             role,
           },
         },
-        showNonVideoUser,
       };
+      if (showNonVideoUser !== undefined) {
+        param.showNonVideoUser = showNonVideoUser;
+      }
       zp.joinRoom(param);
     };
   }

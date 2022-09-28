@@ -6,7 +6,7 @@ import {
   ZegoCloudUser,
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
-import { SoundLevelMap } from "../../../../model";
+import { LiveRole, SoundLevelMap } from "../../../../model";
 export class ZegoUserList extends React.Component<{
   core: ZegoCloudRTCCore;
   userList: ZegoCloudUserList;
@@ -44,15 +44,8 @@ export class ZegoUserList extends React.Component<{
   }
 
   isShownPin(user: ZegoCloudUser): boolean {
-    return !!(
-      this.props.core._config.showNonVideoUser ||
-      (user.streamList &&
-        user.streamList[0] &&
-        user.streamList[0].cameraStatus === "OPEN") ||
-      (user.streamList &&
-        user.streamList[0] &&
-        user.streamList[0].micStatus === "OPEN" &&
-        !!this.props.core._config.showOnlyAudioUser)
+    return (
+      this.props.core._config?.scenario?.config?.role !== LiveRole.Audience
     );
   }
   render(): React.ReactNode {

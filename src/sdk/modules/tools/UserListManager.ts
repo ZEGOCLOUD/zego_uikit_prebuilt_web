@@ -46,25 +46,24 @@ export class ZegoCloudUserListManager {
     let count = 0,
       noPinUserList = [];
     if (this.sidebarEnabled) {
-      const pIndex = this.remoteUserList.findIndex((user) => user.pin);
+      const remoteUserList = this.remoteUserList.filter((r) => {
+        if (this.showNonVideo) {
+          return r;
+        } else {
+          if (this.showOnlyAudioUser) {
+            return r.streamList.length > 0;
+          } else {
+            return (
+              r.streamList.length > 0 && r.streamList[0].cameraStatus === "OPEN"
+            );
+          }
+        }
+      });
+      const pIndex = remoteUserList.findIndex((user) => user.pin);
       if (pIndex > -1) {
         noPinUserList = this.remoteUserList.filter((user) => !user.pin);
         this.openVideo(this.remoteUserList[pIndex]);
       } else {
-        const remoteUserList = this.remoteUserList.filter((r) => {
-          if (this.showNonVideo) {
-            return r;
-          } else {
-            if (this.showOnlyAudioUser) {
-              return r.streamList.length > 0;
-            } else {
-              return (
-                r.streamList.length > 0 &&
-                r.streamList[0].cameraStatus === "OPEN"
-              );
-            }
-          }
-        });
         noPinUserList = remoteUserList.slice(0, remoteUserList.length - 1);
         this.openVideo(remoteUserList[remoteUserList.length - 1]);
       }
