@@ -737,13 +737,13 @@ export class ZegoCloudRTCCore {
       user: ZegoUser[]
     ) => void
   ) {
-    this.onRemoteUserUpdateCallBack = (
+    this.onRemoteUserUpdateCallBack = async (
       roomID: string,
       updateType: "DELETE" | "ADD",
       user: ZegoUser[]
     ) => {
       func(roomID, updateType, user);
-      this.zum.userUpdate(roomID, updateType, user);
+      await this.zum.userUpdate(roomID, updateType, user);
       this.subscribeUserListCallBack &&
         this.subscribeUserListCallBack([...this.zum.remoteUserList]);
     };

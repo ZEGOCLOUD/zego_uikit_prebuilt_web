@@ -42,7 +42,8 @@ export default class App extends React.Component {
 
     let sharedLinks: { name: string; url: string }[] = [];
     let maxUsers = 50;
-    let showNonVideoUser;
+    let showNonVideoUser =
+      getUrlParams(window.location.href)["showNonVideoUser"] || undefined;
 
     let mode = ScenarioModel.OneONoneCall;
     if (process.env.REACT_APP_PATH === "1on1_call") {
@@ -90,7 +91,6 @@ export default class App extends React.Component {
           roomID +
           "&role=Host",
       });
-      showNonVideoUser = false;
     }
 
     this.myMeeting = async (element: HTMLDivElement) => {
@@ -128,7 +128,7 @@ export default class App extends React.Component {
         },
       };
       if (showNonVideoUser !== undefined) {
-        param.showNonVideoUser = showNonVideoUser;
+        param.showNonVideoUser = showNonVideoUser == "true";
       }
       zp.joinRoom(param);
     };

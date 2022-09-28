@@ -81,7 +81,15 @@ export class ZegoUserVideo extends React.Component<{
 
         {!this.props.hiddenName && (
           <div className={zegoUserVideoCss.name}>
-            <p>{this.props.user.userName}</p>
+            <p
+              className={
+                this.props.user.overScreenMuteVideo
+                  ? "muteVideo"
+                  : "unmuteVideo"
+              }
+            >
+              {this.props.user.userName}
+            </p>
             {userInfo.userID === this.props.user.userID && <p>（You）</p>}
             <span
               className={`${zegoUserVideoCss.micIcon}  ${

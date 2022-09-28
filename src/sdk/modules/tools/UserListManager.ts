@@ -137,7 +137,7 @@ export class ZegoCloudUserListManager {
   }
 
   userOrderList: string[] = [];
-  userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]) {
+  async userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]) {
     if (updateType === "ADD") {
       this.userOrderList = [
         ...this.userOrderList,
@@ -173,6 +173,8 @@ export class ZegoCloudUserListManager {
         index > -1 && this.userOrderList.splice(index, 1);
       });
     }
+    const res = await this.updateStream();
+    return res;
   }
 
   mainStreamUpdate(
