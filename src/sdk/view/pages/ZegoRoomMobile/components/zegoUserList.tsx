@@ -57,7 +57,7 @@ export class ZegoUserList extends React.Component<{
                 className={zegoUserListCss.member}
                 onClick={(ev) => {
                   ev.stopPropagation();
-                  this.props.closeCallBack(user);
+                  this.isShownPin(user) && this.props.closeCallBack(user);
                 }}
               >
                 <div className={zegoUserListCss.memberName}>

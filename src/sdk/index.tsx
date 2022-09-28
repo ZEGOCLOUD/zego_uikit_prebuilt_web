@@ -22,7 +22,7 @@ export class ZegoUIKitPrebuilt {
       ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(token);
       ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
     }
-    console.warn("zego-uikit-prebuilt version is", "1.3.27");
+    console.warn("zego-uikit-prebuilt version is", "1.3.28");
     return ZegoUIKitPrebuilt._instance;
   }
 
