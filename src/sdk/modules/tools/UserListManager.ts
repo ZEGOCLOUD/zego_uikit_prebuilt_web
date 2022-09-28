@@ -51,7 +51,11 @@ export class ZegoCloudUserListManager {
           return r;
         } else {
           if (this.showOnlyAudioUser) {
-            return r.streamList.length > 0;
+            return (
+              r.streamList.length > 0 &&
+              (r.streamList[0].micStatus === "OPEN" ||
+                r.streamList[0].cameraStatus === "OPEN")
+            );
           } else {
             return (
               r.streamList.length > 0 && r.streamList[0].cameraStatus === "OPEN"

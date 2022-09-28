@@ -421,9 +421,14 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         content: "The microphone is " + (this.micStatus ? "on" : "off"),
       });
       result &&
-        this.setState({
-          micOpen: !!this.micStatus,
-        });
+        this.setState(
+          {
+            micOpen: !!this.micStatus,
+          },
+          () => {
+            this.handleLayoutChange(this.state.userLayoutStatus);
+          }
+        );
     }
   }
 
@@ -456,9 +461,14 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         content: "The camera is " + (this.cameraStatus ? "on" : "off"),
       });
       result &&
-        this.setState({
-          cameraOpen: !!this.cameraStatus,
-        });
+        this.setState(
+          {
+            cameraOpen: !!this.cameraStatus,
+          },
+          () => {
+            this.handleLayoutChange(this.state.userLayoutStatus);
+          }
+        );
     }
   }
 
@@ -709,6 +719,19 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
   }
 
   private _selectedUser!: ZegoCloudUser;
+  get showSelf() {
+    if (this.props.core._config.showNonVideoUser) {
+      return true;
+    } else {
+      if (this.props.core._config.showOnlyAudioUser) {
+        return (
+          this.localStreamID && (this.state.micOpen || this.state.cameraOpen)
+        );
+      } else {
+        return this.localStreamID && this.state.cameraOpen;
+      }
+    }
+  }
   async handleLayoutChange(
     selectLayout: "Auto" | "Grid" | "Sidebar"
   ): Promise<boolean> {
@@ -727,14 +750,13 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       setTimeout(() => {
         resolve(false);
       }, 5000);
-      const showSelf =
-        this.props.core._config.showNonVideoUser || this.state.localStream;
+
       if (this.state.screenSharingUserList.length) {
-        await this.props.core.setMaxScreenNum(showSelf ? 3 : 4);
+        await this.props.core.setMaxScreenNum(this.showSelf ? 3 : 4);
       } else if (selectLayout !== "Sidebar") {
-        await this.props.core.setMaxScreenNum(showSelf ? 5 : 6);
+        await this.props.core.setMaxScreenNum(this.showSelf ? 5 : 6);
       } else {
-        await this.props.core.setMaxScreenNum(showSelf ? 4 : 5);
+        await this.props.core.setMaxScreenNum(this.showSelf ? 4 : 5);
       }
       await this.props.core.setSidebarLayOut(
         this.state.screenSharingUserList.length > 0

@@ -388,9 +388,14 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         content: "The microphone is " + (this.micStatus ? "on" : "off"),
       });
       result &&
-        this.setState({
-          micOpen: !!this.micStatus,
-        });
+        this.setState(
+          {
+            micOpen: !!this.micStatus,
+          },
+          () => {
+            this.computeByResize(true);
+          }
+        );
     }
   }
 
@@ -423,10 +428,16 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         content: "The camera is " + (this.cameraStatus ? "on" : "off"),
       });
       result &&
-        this.setState({
-          cameraOpen: !!this.cameraStatus,
-        });
+        this.setState(
+          {
+            cameraOpen: !!this.cameraStatus,
+          },
+          () => {
+            this.computeByResize(true);
+          }
+        );
     }
+
     return !!result;
   }
   async toggleScreenSharing() {
@@ -679,14 +690,23 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     this.props.core.leaveRoom();
     this.props.leaveRoom && this.props.leaveRoom();
   }
-
-  async computeByResize() {
+  get showSelf() {
+    if (this.props.core._config.showNonVideoUser) {
+      return true;
+    } else {
+      if (this.props.core._config.showOnlyAudioUser) {
+        return this.localStreamID && (this.state.micOpen || this.state.cameraOpen);
+      } else {
+        return this.localStreamID && this.state.cameraOpen;
+      }
+    }
+  }
+  async computeByResize(justSetNum = false) {
     const width = Math.max(document.body.clientWidth, 826);
     const height = Math.max(document.body.clientHeight, 280);
     let videoShowNumber = 0,
       gridRowNumber = 0;
-    const showSelf =
-      this.props.core._config.showNonVideoUser || this.state.localStream;
+
     if (this.getScreenSharingUser.length > 0) {
       //Screen Sidebar
       const videWrapHight =
@@ -699,12 +719,12 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       this.setState({
         videoShowNumber: videoShowNumber,
       });
-      await this.props.core.setSidebarLayOut(false);
+      !justSetNum && (await this.props.core.setSidebarLayOut(false));
       if (this.fullScreen) {
         await this.props.core.setMaxScreenNum(0);
       } else {
         await this.props.core.setMaxScreenNum(
-          showSelf ? videoShowNumber - 1 : videoShowNumber
+          this.showSelf ? videoShowNumber - 1 : videoShowNumber
         );
       }
 
@@ -719,13 +739,14 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
         5
       );
-      await this.props.core.setSidebarLayOut(!this.localUserPin);
+      !justSetNum &&
+        (await this.props.core.setSidebarLayOut(!this.localUserPin));
       this.setState({
         videoShowNumber: videoShowNumber,
       });
 
       await this.props.core.setMaxScreenNum(
-        showSelf ? videoShowNumber : videoShowNumber + 1
+        this.showSelf ? videoShowNumber : videoShowNumber + 1
       );
       return;
     }
@@ -756,13 +777,13 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         videoShowNumber = 9;
         gridRowNumber = 3;
       }
-      await this.props.core.setSidebarLayOut(false);
+      !justSetNum && (await this.props.core.setSidebarLayOut(false));
       this.setState({
         videoShowNumber: videoShowNumber,
         gridRowNumber: gridRowNumber,
       });
       await this.props.core.setMaxScreenNum(
-        showSelf ? videoShowNumber - 1 : videoShowNumber
+        this.showSelf ? videoShowNumber - 1 : videoShowNumber
       );
       return;
     }
