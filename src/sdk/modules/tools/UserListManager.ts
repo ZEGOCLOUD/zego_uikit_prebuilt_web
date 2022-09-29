@@ -1,6 +1,7 @@
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { LiveRole, ScenarioModel, ZegoCloudRemoteMedia } from "../../model";
+import { isPc } from "../../util";
 export type ZegoCloudUserList = ZegoCloudUser[];
 
 export type ZegoCloudUser = ZegoUser & {
@@ -12,7 +13,7 @@ export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}
   showNonVideo = true;
   showOnlyAudioUser = false;
-  screenNumber = 0;
+  screenNumber = !isPc() ? 10 : 6;
   sidebarEnabled = false;
   remoteUserList: ZegoCloudUserList = [];
   remoteScreenStreamList: ZegoCloudUserList = [];
@@ -331,10 +332,17 @@ export class ZegoCloudUserListManager {
         this.remoteUserList = this.remoteUserList.map((remoteUser) => {
           remoteUser.streamList = remoteUser.streamList.map((mediaInfo) => {
             this.zg.stopPlayingStream(mediaInfo.streamID);
-            // this.waitingPullStreams.push({
-            //   streamID: mediaInfo.streamID,
-            //   userID: mediaInfo.fromUser.userID,
-            // });
+            if (
+              !this.waitingPullStreams.some(
+                (ws) => ws.streamID == mediaInfo.streamID
+              )
+            ) {
+              this.waitingPullStreams.push({
+                streamID: mediaInfo.streamID,
+                userID: mediaInfo.fromUser.userID,
+              });
+            }
+
             mediaInfo.media = undefined;
             return mediaInfo;
           });
@@ -345,10 +353,16 @@ export class ZegoCloudUserListManager {
           (remoteUser) => {
             remoteUser.streamList = remoteUser.streamList.map((mediaInfo) => {
               this.zg.stopPlayingStream(mediaInfo.streamID);
-              // this.waitingPullStreams.push({
-              //   streamID: mediaInfo.streamID,
-              //   userID: mediaInfo.fromUser.userID,
-              // });
+              if (
+                !this.waitingPullStreams.some(
+                  (ws) => ws.streamID == mediaInfo.streamID
+                )
+              ) {
+                this.waitingPullStreams.push({
+                  streamID: mediaInfo.streamID,
+                  userID: mediaInfo.fromUser.userID,
+                });
+              }
               mediaInfo.media = undefined;
               return mediaInfo;
             });
