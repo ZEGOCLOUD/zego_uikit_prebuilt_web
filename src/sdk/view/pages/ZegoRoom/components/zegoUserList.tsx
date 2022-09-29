@@ -71,12 +71,12 @@ export class ZegoUserList extends React.Component<{
               key={user.userID}
               data-id={user.userID}
             >
-              <span style={{ color: userNameColor(user.userName || "") }}>
-                {user.userName?.slice(0, 1)?.toUpperCase()}
-              </span>
               <div
                 className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper}`}
               >
+                <span style={{ color: userNameColor(user.userName || "") }}>
+                  {user.userName?.slice(0, 1)?.toUpperCase()}
+                </span>
                 <p>{user.userName}</p>
                 {user.userID === this.props.selfUserID && "(You)"}
               </div>
