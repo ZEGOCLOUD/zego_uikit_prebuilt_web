@@ -1,6 +1,6 @@
 import React from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
-import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
+import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 import { SoundLevelMap } from "../../../../model";
 export declare class ZegoUserList extends React.Component<{
     core: ZegoCloudRTCCore;
@@ -14,5 +14,6 @@ export declare class ZegoUserList extends React.Component<{
     onBodyClick(e: Event): void;
     expandMemberMenu(userID: string | null): void;
     getHeight(userID: string, streamID: string): number;
+    isShownPin(user: ZegoCloudUser): boolean;
     render(): React.ReactNode;
 }

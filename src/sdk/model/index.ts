@@ -50,7 +50,7 @@ export interface ZegoCloudRoomConfig {
   container?: HTMLElement | undefined | null; // 挂载容器
   preJoinViewConfig?: {
     title?: string; // 标题设置，默认enter Room
-    invitationLink?: string; // 邀请链接，空则不显示，默认空, 废弃中
+    invitationLink?: string;
   };
   showPreJoinView?: boolean; // 是否显示预览检测页面，默认显示
   turnOnMicrophoneWhenJoining?: boolean; // 是否开启自己的麦克风,默认开启
@@ -66,7 +66,7 @@ export interface ZegoCloudRoomConfig {
     showTextChat?: boolean; // 是否显示未读消息，默认不显示
   };
   branding?: {
-    logoURL?: string;
+    logoURL?: string; // 通话页面Logo
   };
   showLeavingView?: boolean; // 离开房间后页面，默认有
 
@@ -77,10 +77,10 @@ export interface ZegoCloudRoomConfig {
   showOnlyAudioUser?: boolean; // 是否显示纯音频用户，默认显示
 
   useFrontFacingCamera?: boolean;
-  onJoinRoom?: (users: ZegoUser[]) => void;
-  onLeaveRoom?: (users: ZegoUser[]) => void;
-  onUserJoin?: (user: ZegoUser[]) => void; // 用户进入回调
-  onUserLeave?: (user: ZegoUser[]) => void; // 用户退入回调
+  onJoinRoom?: (users: ZegoUser[]) => void; // 用户进入通话页面回调
+  onLeaveRoom?: (users: ZegoUser[]) => void; // 用户退出通话页面回调
+  onUserJoin?: (user: ZegoUser[]) => void; // 其他用户进入回调
+  onUserLeave?: (user: ZegoUser[]) => void; // 其他用户退入回调
   sharedLinks?: { name: string; url: string }[]; // 产品链接描述
   showScreenSharingButton?: boolean; // 是否显示屏幕共享按钮
   scenario?: {

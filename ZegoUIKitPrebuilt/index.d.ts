@@ -8,6 +8,7 @@ export declare class ZegoUIKitPrebuilt {
     static Cohost: LiveRole;
     static Audience: LiveRole;
     static OneONoneCall: ScenarioModel;
+    static GroupCall: ScenarioModel;
     static LiveStreaming: ScenarioModel;
     static VideoConference: ScenarioModel;
     root: Root | undefined;

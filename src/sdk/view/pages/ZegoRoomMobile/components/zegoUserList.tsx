@@ -6,6 +6,7 @@ import {
   ZegoCloudUser,
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
+import { ScenarioModel } from "../../../../model";
 export class ZegoUserList extends React.Component<{
   userList: ZegoCloudUserList;
   core: ZegoCloudRTCCore;
@@ -24,6 +25,9 @@ export class ZegoUserList extends React.Component<{
   }
 
   isShownPin(user: ZegoCloudUser): boolean {
+    if (this.props.core._config.scenario?.mode === ScenarioModel.OneONoneCall) {
+      return false;
+    }
     return !!(
       this.props.core._config.showNonVideoUser ||
       (user.streamList &&

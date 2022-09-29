@@ -34,7 +34,9 @@
         "build": "npm run build:1on1_call & npm run build:live_stream & npm run build:video_conference",
         "deploy": "gh-pages -b main -d build",
         "eject": "react-scripts eject",
-        "build:lib": "webpack"
+        "build:lib": "webpack",
+        "publish:beta": "cd ZegoUIKitPrebuilt && npm publish --tag beta",
+        "publish": "cd ZegoUIKitPrebuilt && npm publish"
     },
     "eslintConfig": {
         "extends": [

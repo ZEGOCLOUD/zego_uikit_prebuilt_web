@@ -22,7 +22,7 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         showNonVideoUser: boolean;
         videoShowNumber: number;
         gridRowNumber: number;
-        layout: "Default" | "Grid" | "Sidebar";
+        layout: "Auto" | "Grid" | "Sidebar";
         showLayoutSettingsModel: boolean;
         isLayoutChanging: boolean;
         soundLevel: SoundLevelMap;
@@ -75,7 +75,7 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     handleSetting(): void;
     handleLeave(): void;
     leaveRoom(): void;
-    computeByResize(): void;
+    computeByResize(): Promise<void>;
     onWindowResize: () => void;
     showLayoutSettings(show: boolean): void;
     changeLayout(type: string): Promise<unknown>;
