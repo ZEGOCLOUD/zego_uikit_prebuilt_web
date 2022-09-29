@@ -45,24 +45,24 @@ export class ZegoCloudUserListManager {
     if (!this.remoteUserList.length) return true;
     let count = 0,
       noPinUserList = [];
-    if (this.sidebarEnabled) {
-      const remoteUserList = this.remoteUserList.filter((r) => {
-        if (this.showNonVideo) {
-          return r;
+    const remoteUserList = this.remoteUserList.filter((r) => {
+      if (this.showNonVideo) {
+        return r;
+      } else {
+        if (this.showOnlyAudioUser) {
+          return (
+            r.streamList.length > 0 &&
+            (r.streamList[0].micStatus === "OPEN" ||
+              r.streamList[0].cameraStatus === "OPEN")
+          );
         } else {
-          if (this.showOnlyAudioUser) {
-            return (
-              r.streamList.length > 0 &&
-              (r.streamList[0].micStatus === "OPEN" ||
-                r.streamList[0].cameraStatus === "OPEN")
-            );
-          } else {
-            return (
-              r.streamList.length > 0 && r.streamList[0].cameraStatus === "OPEN"
-            );
-          }
+          return (
+            r.streamList.length > 0 && r.streamList[0].cameraStatus === "OPEN"
+          );
         }
-      });
+      }
+    });
+    if (this.sidebarEnabled) {
       const pIndex = remoteUserList.findIndex((user) => user.pin);
       if (pIndex > -1) {
         noPinUserList = this.remoteUserList.filter((user) => !user.pin);
@@ -73,7 +73,7 @@ export class ZegoCloudUserListManager {
       }
       count++;
     } else {
-      noPinUserList = this.remoteUserList;
+      noPinUserList = remoteUserList;
     }
 
     for (let index = 0; index < noPinUserList.length; index++) {
@@ -137,7 +137,11 @@ export class ZegoCloudUserListManager {
   }
 
   userOrderList: string[] = [];
-  async userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]) {
+  async userUpdate(
+    roomID: string,
+    updateType: "DELETE" | "ADD",
+    users: ZegoUser[]
+  ) {
     if (updateType === "ADD") {
       this.userOrderList = [
         ...this.userOrderList,

@@ -2,7 +2,7 @@ import React, { ChangeEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/tools/util";
 import { ScenarioModel, ZegoBrowserCheckProp } from "../../../model";
-import { ZegoSettingsAlert } from "../../components/zegoSetting";
+import { ZegoSettings, ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
 import { getVideoResolution } from "../../../util";
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
@@ -31,6 +31,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         copied: false,
       };
     }),
+    showZegoSettings: false,
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -195,12 +196,15 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   async toggleStream(type: "video" | "audio") {
     if (type === "video") {
       if (this.videoRefuse) {
-        ZegoModelShow({
-          header: "Equipment authorization",
-          contentText:
-            "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-          okText: "Okay",
-        });
+        ZegoModelShow(
+          {
+            header: "Equipment authorization",
+            contentText:
+              "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+            okText: "Okay",
+          },
+          document.querySelector(`.${ZegoBrowserCheckCss.support}`)
+        );
         return;
       }
       const videoOpen = !this.state.videoOpen;
@@ -220,12 +224,15 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       this.setState({ videoOpen });
     } else if (type === "audio") {
       if (this.audioRefuse) {
-        ZegoModelShow({
-          header: "Equipment authorization",
-          contentText:
-            "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-          okText: "Okay",
-        });
+        ZegoModelShow(
+          {
+            header: "Equipment authorization",
+            contentText:
+              "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+            okText: "Okay",
+          },
+          document.querySelector(`.${ZegoBrowserCheckCss.support}`)
+        );
         return;
       }
       const audioOpen = !this.state.audioOpen;
@@ -304,56 +311,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   openSettings() {
-    ZegoSettingsAlert({
-      core: this.props.core,
-      initDevices: {
-        mic: this.state.selectMic,
-        cam: this.state.selectCamera,
-        speaker: this.state.selectSpeaker,
-        videoResolve: this.state.selectVideoResolution,
-        showNonVideoUser: this.state.showNonVideo,
-      },
-      closeCallBack: () => {},
-      onMicChange: (deviceID: string) => {
-        this.setState(
-          {
-            selectMic: deviceID,
-          },
-          () => {
-            this.createStream(this.state.videoOpen, this.state.audioOpen);
-          }
-        );
-      },
-      onCameraChange: (deviceID: string) => {
-        this.setState(
-          {
-            selectCamera: deviceID,
-          },
-          () => {
-            this.createStream(this.state.videoOpen, this.state.audioOpen);
-          }
-        );
-      },
-      onSpeakerChange: (deviceID: string) => {
-        this.setState({
-          selectSpeaker: deviceID,
-        });
-      },
-      onVideoResolutionChange: (level: string) => {
-        this.setState(
-          {
-            selectVideoResolution: level,
-          },
-          () => {
-            this.createStream(this.state.videoOpen, this.state.audioOpen);
-          }
-        );
-      },
-      onShowNonVideoChange: (selected: boolean) => {
-        this.setState({
-          showNonVideoUser: selected,
-        });
-      },
+    this.setState({
+      showZegoSettings: true,
     });
   }
 
@@ -533,6 +492,63 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               this.setState({ showDeviceAuthorAlert: false });
             }}
           ></ZegoModel>
+        )}
+        {this.state.showZegoSettings && (
+          <ZegoSettings
+            core={this.props.core}
+            initDevices={{
+              mic: this.state.selectMic,
+              cam: this.state.selectCamera,
+              speaker: this.state.selectSpeaker,
+              videoResolve: this.state.selectVideoResolution,
+              showNonVideoUser: this.state.showNonVideo,
+            }}
+            closeCallBack={() => {
+              this.setState({
+                showZegoSettings: false,
+              });
+            }}
+            onMicChange={(deviceID: string) => {
+              this.setState(
+                {
+                  selectMic: deviceID,
+                },
+                () => {
+                  this.createStream(this.state.videoOpen, this.state.audioOpen);
+                }
+              );
+            }}
+            onCameraChange={(deviceID: string) => {
+              this.setState(
+                {
+                  selectCamera: deviceID,
+                },
+                () => {
+                  this.createStream(this.state.videoOpen, this.state.audioOpen);
+                }
+              );
+            }}
+            onSpeakerChange={(deviceID: string) => {
+              this.setState({
+                selectSpeaker: deviceID,
+              });
+            }}
+            onVideoResolutionChange={(level: string) => {
+              this.setState(
+                {
+                  selectVideoResolution: level,
+                },
+                () => {
+                  this.createStream(this.state.videoOpen, this.state.audioOpen);
+                }
+              );
+            }}
+            onShowNonVideoChange={(selected: boolean) => {
+              this.setState({
+                showNonVideoUser: selected,
+              });
+            }}
+          ></ZegoSettings>
         )}
       </div>
     );

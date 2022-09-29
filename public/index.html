@@ -56,7 +56,10 @@
 
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- <div style="width: 1000px;height: 800px;margin: 10px auto;"> -->
     <div id="root"></div>
+    <!-- </div> -->
+
 
 
     <!--
@@ -71,8 +74,16 @@
     -->
 </body>
 <script>
-    !function (t) { function e() { var e = this || self; e.globalThis = e, delete t.prototype._T_ } "object" != typeof globalThis && (this ? e() : (t.defineProperty(t.prototype, "_T_", { configurable: !0, get: e }), _T_)) }(Object);
-
+    ! function (t) {
+        function e() {
+            var e = this || self;
+            e.globalThis = e, delete t.prototype._T_
+        }
+        "object" != typeof globalThis && (this ? e() : (t.defineProperty(t.prototype, "_T_", {
+            configurable: !0,
+            get: e
+        }), _T_))
+    }(Object);
 </script>
 <script src="https://resource.zegocloud.com/prebuilt/crypto-js.js"></script>
 <script src="https://resource.zegocloud.com/prebuilt/prebuiltToken.js"></script>

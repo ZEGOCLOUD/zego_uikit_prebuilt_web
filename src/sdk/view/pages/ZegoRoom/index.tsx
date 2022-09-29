@@ -17,7 +17,7 @@ import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import { getVideoResolution, randomNumber, throttle } from "../../../util";
-import { ZegoSettingsAlert } from "../../components/zegoSetting";
+import { ZegoSettings, ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
 import { ZegoGridLayout } from "./components/zegoGridLayout";
@@ -57,6 +57,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     isScreenSharingBySelf: boolean; // 自己是否正在屏幕共享
     screenSharingStream: undefined | MediaStream; // 本地屏幕共享流
     screenSharingUserList: ZegoCloudUserList; // 屏幕共享列表
+    showZegoSettings: boolean;
   } = {
     localStream: undefined,
     layOutStatus: "ONE_VIDEO",
@@ -85,6 +86,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     isScreenSharingBySelf: false,
     screenSharingStream: undefined,
     screenSharingUserList: [],
+    showZegoSettings: false,
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -362,12 +364,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
   async toggleMic() {
     if (this.props.core.status.audioRefuse) {
-      ZegoModelShow({
-        header: "Equipment authorization",
-        contentText:
-          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        okText: "Okay",
-      });
+      ZegoModelShow(
+        {
+          header: "Equipment authorization",
+          contentText:
+            "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+          okText: "Okay",
+        },
+        document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+      );
       return;
     }
 
@@ -401,12 +406,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
   async toggleCamera(): Promise<boolean> {
     if (this.props.core.status.videoRefuse) {
-      ZegoModelShow({
-        header: "Equipment authorization",
-        contentText:
-          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        okText: "Okay",
-      });
+      ZegoModelShow(
+        {
+          header: "Equipment authorization",
+          contentText:
+            "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+          okText: "Okay",
+        },
+        document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+      );
       return Promise.resolve(false);
     }
     if (this.cameraStatus === -1) return Promise.resolve(false);
@@ -471,18 +479,24 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       });
     } catch (error: any) {
       if (error?.code === 1103043) {
-        ZegoModelShow({
-          header: "Notice",
-          contentText: "Your browser does not support screen sharing.",
-          okText: "Okay",
-        });
+        ZegoModelShow(
+          {
+            header: "Notice",
+            contentText: "Your browser does not support screen sharing.",
+            okText: "Okay",
+          },
+          document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+        );
       } else if (error?.code === 1103010 && error?.msg.includes("Permission")) {
-        ZegoModelShow({
-          header: "Grant access to share your screen",
-          contentText:
-            "Your system does not have access to share a screen from the browser. Please grant access to share your screen on your system settings.",
-          okText: "Okay",
-        });
+        ZegoModelShow(
+          {
+            header: "Grant access to share your screen",
+            contentText:
+              "Your system does not have access to share a screen from the browser. Please grant access to share your screen on your system settings.",
+            okText: "Okay",
+          },
+          document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+        );
       } else if (error?.code !== 1103042) {
         ZegoToast({
           content: `Failed to present your screen. error code: ${
@@ -580,108 +594,32 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     }
   };
   handleSetting() {
-    ZegoSettingsAlert({
-      core: this.props.core,
-      theme: "black",
-      initDevices: {
-        mic: this.state.selectMic,
-        cam: this.state.selectCamera,
-        speaker: this.state.selectSpeaker,
-        videoResolve: this.state.selectVideoResolution,
-        showNonVideoUser: this.state.showNonVideoUser,
-      },
-      closeCallBack: () => {},
-      onMicChange: (deviceID: string) => {
-        this.setState(
-          {
-            selectMic: deviceID,
-          },
-          () => {
-            if (this.state.localStream) {
-              this.props.core.useMicrophoneDevice(
-                this.state.localStream,
-                deviceID
-              );
-            }
-          }
-        );
-      },
-      onCameraChange: (deviceID: string) => {
-        this.setState(
-          {
-            selectCamera: deviceID,
-          },
-          async () => {
-            if (this.state.localStream) {
-              await this.props.core.useCameraDevice(
-                this.state.localStream,
-                deviceID
-              );
-              this.setState({
-                cameraOpen: true,
-              });
-            }
-          }
-        );
-      },
-      onSpeakerChange: (deviceID: string) => {
-        this.setState(
-          {
-            selectSpeaker: deviceID,
-          },
-          () => {
-            document
-              .querySelectorAll("video")
-              .forEach((el: any) => el.setSinkId(deviceID));
-          }
-        );
-      },
-      onVideoResolutionChange: (level: string) => {
-        this.setState(
-          {
-            selectVideoResolution: level,
-          },
-          () => {
-            if (this.state.localStream) {
-              const { width, height, bitrate, frameRate } =
-                getVideoResolution(level);
-              this.props.core.setVideoConfig(this.state.localStream, {
-                width,
-                height,
-                maxBitrate: bitrate,
-                frameRate,
-              });
-            }
-          }
-        );
-      },
-      onShowNonVideoChange: (selected: boolean) => {
-        this.props.core._config.showNonVideoUser = selected;
-        this.props.core.setShowNonVideo(selected);
-        this.setState({
-          showNonVideoUser: selected,
-        });
-      },
+    this.setState({
+      showZegoSettings: true,
     });
   }
   handleLeave() {
-    ZegoModelShow({
-      header: "Leave the room",
-      contentText: "Are you sure to leave the room?",
-      okText: "Confirm",
-      cancelText: "Cancel",
-      onOk: () => {
-        this.props.core._config.turnOnCameraWhenJoining = this.state.cameraOpen;
-        this.props.core._config.turnOnMicrophoneWhenJoining =
-          this.state.micOpen;
-        this.props.core.status.micDeviceID = this.state.selectMic;
-        this.props.core.status.cameraDeviceID = this.state.selectCamera;
-        this.props.core.status.speakerDeviceID = this.state.selectSpeaker;
-        this.props.core.status.videoResolution =
-          this.state.selectVideoResolution;
-        this.leaveRoom();
+    ZegoModelShow(
+      {
+        header: "Leave the room",
+        contentText: "Are you sure to leave the room?",
+        okText: "Confirm",
+        cancelText: "Cancel",
+        onOk: () => {
+          this.props.core._config.turnOnCameraWhenJoining =
+            this.state.cameraOpen;
+          this.props.core._config.turnOnMicrophoneWhenJoining =
+            this.state.micOpen;
+          this.props.core.status.micDeviceID = this.state.selectMic;
+          this.props.core.status.cameraDeviceID = this.state.selectCamera;
+          this.props.core.status.speakerDeviceID = this.state.selectSpeaker;
+          this.props.core.status.videoResolution =
+            this.state.selectVideoResolution;
+          this.leaveRoom();
+        },
       },
-    });
+      document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+    );
   }
   leaveRoom() {
     this.state.isScreenSharingBySelf && this.closeScreenSharing();
@@ -695,7 +633,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       return true;
     } else {
       if (this.props.core._config.showOnlyAudioUser) {
-        return this.localStreamID && (this.state.micOpen || this.state.cameraOpen);
+        return (
+          this.localStreamID && (this.state.micOpen || this.state.cameraOpen)
+        );
       } else {
         return this.localStreamID && this.state.cameraOpen;
       }
@@ -1063,19 +1003,22 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
 
   async setLive() {
     if (this.state.liveCountdown === 0) {
-      ZegoModelShow({
-        header: "Stop broadcast",
-        contentText: "Are you sure to stop broadcasting?",
-        okText: "Stop",
-        cancelText: "Cancel",
-        onOk: async () => {
-          // stop live
-          const res = await this.props.core.setLive("stop");
-          this.setState({
-            liveCountdown: -1,
-          });
+      ZegoModelShow(
+        {
+          header: "Stop broadcast",
+          contentText: "Are you sure to stop broadcasting?",
+          okText: "Stop",
+          cancelText: "Cancel",
+          onOk: async () => {
+            // stop live
+            const res = await this.props.core.setLive("stop");
+            this.setState({
+              liveCountdown: -1,
+            });
+          },
         },
-      });
+        document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+      );
     } else if (this.state.liveCountdown === -1) {
       this.setState(
         {
@@ -1478,6 +1421,95 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 </div>
               </div>
             </div>
+          )}
+          {this.state.showZegoSettings && (
+            <ZegoSettings
+              core={this.props.core}
+              theme={"black"}
+              initDevices={{
+                mic: this.state.selectMic,
+                cam: this.state.selectCamera,
+                speaker: this.state.selectSpeaker,
+                videoResolve: this.state.selectVideoResolution,
+                showNonVideoUser: this.state.showNonVideoUser,
+              }}
+              closeCallBack={() => {
+                this.setState({
+                  showZegoSettings: false,
+                });
+              }}
+              onMicChange={(deviceID: string) => {
+                this.setState(
+                  {
+                    selectMic: deviceID,
+                  },
+                  () => {
+                    if (this.state.localStream) {
+                      this.props.core.useMicrophoneDevice(
+                        this.state.localStream,
+                        deviceID
+                      );
+                    }
+                  }
+                );
+              }}
+              onCameraChange={(deviceID: string) => {
+                this.setState(
+                  {
+                    selectCamera: deviceID,
+                  },
+                  async () => {
+                    if (this.state.localStream) {
+                      await this.props.core.useCameraDevice(
+                        this.state.localStream,
+                        deviceID
+                      );
+                      this.setState({
+                        cameraOpen: true,
+                      });
+                    }
+                  }
+                );
+              }}
+              onSpeakerChange={(deviceID: string) => {
+                this.setState(
+                  {
+                    selectSpeaker: deviceID,
+                  },
+                  () => {
+                    document
+                      .querySelectorAll("video")
+                      .forEach((el: any) => el.setSinkId(deviceID));
+                  }
+                );
+              }}
+              onVideoResolutionChange={(level: string) => {
+                this.setState(
+                  {
+                    selectVideoResolution: level,
+                  },
+                  () => {
+                    if (this.state.localStream) {
+                      const { width, height, bitrate, frameRate } =
+                        getVideoResolution(level);
+                      this.props.core.setVideoConfig(this.state.localStream, {
+                        width,
+                        height,
+                        maxBitrate: bitrate,
+                        frameRate,
+                      });
+                    }
+                  }
+                );
+              }}
+              onShowNonVideoChange={(selected: boolean) => {
+                this.props.core._config.showNonVideoUser = selected;
+                this.props.core.setShowNonVideo(selected);
+                this.setState({
+                  showNonVideoUser: selected,
+                });
+              }}
+            ></ZegoSettings>
           )}
         </div>
       </ShowPCManageContext.Provider>
