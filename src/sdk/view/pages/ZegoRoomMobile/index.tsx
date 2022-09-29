@@ -56,6 +56,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       | "MANAGE";
     userLayoutStatus: "Auto" | "Grid" | "Sidebar";
     zegoCloudUserList: ZegoCloudUserList;
+    memberList: ZegoCloudUserList;
     messageList: ZegoBroadcastMessageInfo2[];
     notificationList: ZegoNotification[];
     micOpen: boolean;
@@ -77,6 +78,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     layOutStatus: "ONE_VIDEO",
     userLayoutStatus: this.props.core._config.layout || "Auto",
     zegoCloudUserList: [],
+    memberList: [],
     messageList: [],
     notificationList: [],
     showMore: false,
@@ -248,14 +250,17 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         isIOS() &&
         IsSafari() &&
         userList.filter((u) => {
-          return u.streamList.length > 0;
+          return (
+            u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
+          );
         }).length > 1;
       if (notSupportPhone) {
-        console.warn("userList", userList[0]);
         let targetUsers = userList.reverse();
-        console.warn("reverse userList", targetUsers[0]);
-        let targetUser = targetUsers.find((u) => u.streamList.length > 0);
-        console.warn("find user", targetUser);
+
+        let targetUser = targetUsers.find(
+          (u) => u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
+        );
+
         if (this.safariLimitationNoticed === -1) {
           this.safariLimitationNoticed = 0;
           ZegoModelShow({
@@ -268,21 +273,39 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               this.safariLimitationNoticed = 1;
               this.setState({
                 zegoCloudUserList: [targetUser],
+                memberList: userList,
               });
             },
           });
         } else if (this.safariLimitationNoticed != 0) {
-          this.setState({ zegoCloudUserList: [targetUser] });
+          this.setState({
+            zegoCloudUserList: [targetUser],
+            memberList: userList,
+          });
         }
       } else {
-        this.setState({ zegoCloudUserList: userList });
+        this.setState({
+          zegoCloudUserList: userList,
+          memberList: userList,
+        });
       }
     });
 
     this.props.core.subscribeScreenStream((userList) => {
-      this.setState({ screenSharingUserList: userList }, () => {
-        this.handleLayoutChange(this.state.userLayoutStatus);
-      });
+      const notSupportPhone =
+        !isPc() &&
+        isIOS() &&
+        IsSafari() &&
+        this.state.zegoCloudUserList.filter((u) => {
+          return (
+            u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
+          );
+        }).length > 0;
+
+      !notSupportPhone &&
+        this.setState({ screenSharingUserList: userList }, () => {
+          this.handleLayoutChange(this.state.userLayoutStatus);
+        });
     });
     this.props.core.onSoundLevelUpdate(
       (soundLevelList: ZegoSoundLevelInfo[]) => {
@@ -629,7 +652,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     });
   }
 
-  getAllUser() {
+  getAllUser(): ZegoCloudUserList {
     return [
       {
         userID: this.props.core._expressConfig.userID,
@@ -653,9 +676,33 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     ];
   }
 
-  getShownUser(forceShowNonVideoUser = false) {
+  getAllMemberList(): ZegoCloudUserList {
+    return [
+      {
+        userID: this.props.core._expressConfig.userID,
+        userName: this.props.core._expressConfig.userName,
+        pin: this.localUserPin,
+        streamList: [
+          {
+            media: this.state.localStream!,
+            fromUser: {
+              userID: this.props.core._expressConfig.userID,
+              userName: this.props.core._expressConfig.userName,
+            },
+            micStatus: this.state.micOpen ? "OPEN" : "MUTE",
+            cameraStatus: this.state.cameraOpen ? "OPEN" : "MUTE",
+            state: "PLAYING",
+            streamID: this.localStreamID,
+          },
+        ],
+      },
+      ...this.state.memberList,
+    ];
+  }
+
+  getShownUser() {
     const shownUser = this.getAllUser().filter((item) => {
-      if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
+      if (!this.props.core._config.showNonVideoUser) {
         if (item.streamList && item.streamList[0] && item.streamList[0].media) {
           if (item.streamList[0].cameraStatus === "OPEN") {
             return true;
@@ -783,7 +830,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       return (
         <ZegoUserList
           core={this.props.core}
-          userList={this.getShownUser(true)}
+          userList={this.getAllMemberList()}
           closeCallBack={(_user?: ZegoCloudUser) => {
             _user && (this._selectedUser = _user);
             this.setState({
