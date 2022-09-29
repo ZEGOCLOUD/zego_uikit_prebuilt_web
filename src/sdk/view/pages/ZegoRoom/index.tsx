@@ -256,6 +256,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.subscribeUserList((userList) => {
+      // console.warn("【ZEGOCLOUD】subscribeUserList choui", userList);
       this.userUpdateCallBack();
       this.setState({
         zegoCloudUserList: userList,
@@ -695,7 +696,9 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       return true;
     } else {
       if (this.props.core._config.showOnlyAudioUser) {
-        return this.localStreamID && (this.state.micOpen || this.state.cameraOpen);
+        return (
+          this.localStreamID && (this.state.micOpen || this.state.cameraOpen)
+        );
       } else {
         return this.localStreamID && this.state.cameraOpen;
       }
@@ -1120,6 +1123,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>
+          {this.state.zegoCloudUserList.length}
           {(this.props.core._config.branding?.logoURL ||
             this.props.core._config.roomTimerDisplayed ||
             this.props.core._config.scenario?.mode ===

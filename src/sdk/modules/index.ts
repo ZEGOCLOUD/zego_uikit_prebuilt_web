@@ -456,49 +456,61 @@ export class ZegoCloudRTCCore {
         streamList: ZegoStreamList[],
         extendedData?: string
       ) => {
+        console.warn("【ZEGOCLOUD】roomStreamUpdate", updateType, streamList);
         if (updateType === "ADD") {
-          const _streamList = [];
-          for (let i = 0; i < streamList.length; i++) {
-            const streamInfo = streamList[i];
-            try {
-              const stream = await this.zum.startPullStream(
-                streamInfo.user.userID,
-                streamInfo.streamID
-              );
-              this.remoteStreamMap[streamInfo.streamID] = {
-                fromUser: streamInfo.user,
-                media: stream,
-                micStatus:
-                  stream && stream.getAudioTracks().length > 0
-                    ? "OPEN"
-                    : "MUTE",
-                cameraStatus:
-                  stream && stream.getVideoTracks().length > 0
-                    ? "OPEN"
-                    : "MUTE",
-                state: "PLAYING",
-                streamID: streamInfo.streamID,
-              };
-              _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
-            } catch (error) {
-              console.warn("【ZEGOCLOUD】:startPlayingStream error", error);
-            }
-          }
-          this.onRemoteMediaUpdateCallBack &&
-            this.onRemoteMediaUpdateCallBack("ADD", _streamList);
+          this.waitingHandlerStreams.add = [
+            ...this.waitingHandlerStreams.add,
+            ...streamList,
+          ];
+
+          this.waitingHandlerStreams.delete =
+            this.waitingHandlerStreams.delete.filter((stream) => {
+              if (
+                streamList.some(
+                  (add_stream) => add_stream.streamID === stream.streamID
+                )
+              ) {
+                return false;
+              } else {
+                return true;
+              }
+            });
         } else {
-          const _streamList = [];
-          for (let i = 0; i < streamList.length; i++) {
-            const streamInfo = streamList[i];
-            _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
-            await this.zum.stopPullStream(
-              streamInfo.user.userID,
-              streamInfo.streamID
-            );
-            delete this.remoteStreamMap[streamInfo.streamID];
-            this.onRemoteMediaUpdateCallBack &&
-              this.onRemoteMediaUpdateCallBack("DELETE", _streamList);
-          }
+          // 找出删除流中，和之前的新增流重叠的，存储这个下面对象中
+          let willDelete: string[] = [];
+
+          // 新增流中，删除下线的流
+          this.waitingHandlerStreams.add =
+            this.waitingHandlerStreams.add.filter((stream) => {
+              if (
+                streamList.some((delete_stream) => {
+                  if (delete_stream.streamID === stream.streamID) {
+                    willDelete.push(delete_stream.streamID);
+                    return true;
+                  } else {
+                    return false;
+                  }
+                })
+              ) {
+                return false;
+              } else {
+                return true;
+              }
+            });
+
+          // 删除流中，去除上次要新增的
+          streamList = streamList.filter((s) => {
+            if (willDelete.some((wd) => wd == s.streamID)) {
+              return false;
+            } else {
+              return true;
+            }
+          });
+
+          this.waitingHandlerStreams.delete = [
+            ...this.waitingHandlerStreams.delete,
+            ...streamList,
+          ];
         }
       }
     );
@@ -552,6 +564,7 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.on(
       "roomUserUpdate",
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
+        console.warn("【ZEGOCLOUD】roomUserUpdate", updateType, userList);
         this.onRemoteUserUpdateCallBack &&
           this.onRemoteUserUpdateCallBack(roomID, updateType, userList);
         setTimeout(() => {
@@ -652,8 +665,80 @@ export class ZegoCloudRTCCore {
       );
     });
     ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300);
-
+    this.streamUpdateTimer(this.waitingHandlerStreams);
     return resp;
+  }
+
+  waitingHandlerStreams: {
+    add: ZegoStreamList[];
+    delete: ZegoStreamList[];
+  } = { add: [], delete: [] };
+
+  async streamUpdateTimer(_waitingHandlerStreams: {
+    add: ZegoStreamList[];
+    delete: ZegoStreamList[];
+  }): Promise<void> {
+    let _streamList = [];
+    if (_waitingHandlerStreams.add.length > 0) {
+      for (let i = 0; i < _waitingHandlerStreams.add.length; i++) {
+        const streamInfo = _waitingHandlerStreams.add[i];
+        try {
+          const stream = await this.zum.startPullStream(
+            streamInfo.user.userID,
+            streamInfo.streamID
+          );
+          this.remoteStreamMap[streamInfo.streamID] = {
+            fromUser: streamInfo.user,
+            media: stream,
+            micStatus:
+              stream && stream.getAudioTracks().length > 0 ? "OPEN" : "MUTE",
+            cameraStatus:
+              stream && stream.getVideoTracks().length > 0 ? "OPEN" : "MUTE",
+            state: "PLAYING",
+            streamID: streamInfo.streamID,
+          };
+          _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
+        } catch (error) {
+          console.warn("【ZEGOCLOUD】:startPlayingStream error", error);
+        }
+      }
+
+      this.onRemoteMediaUpdateCallBack &&
+        _streamList.length > 0 &&
+        this.onRemoteMediaUpdateCallBack("ADD", _streamList);
+    }
+
+    if (_waitingHandlerStreams.delete.length > 0) {
+      _streamList = [];
+      for (let i = 0; i < _waitingHandlerStreams.delete.length; i++) {
+        const streamInfo = _waitingHandlerStreams.delete[i];
+        if (!this.remoteStreamMap[streamInfo.streamID]) {
+          debugger;
+        }
+        this.remoteStreamMap[streamInfo.streamID] &&
+          _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
+        await this.zum.stopPullStream(
+          streamInfo.user.userID,
+          streamInfo.streamID
+        );
+        delete this.remoteStreamMap[streamInfo.streamID];
+      }
+      this.onRemoteMediaUpdateCallBack &&
+        _streamList.length > 0 &&
+        this.onRemoteMediaUpdateCallBack("DELETE", _streamList);
+    }
+    setTimeout(() => {
+      const nextWaitingHandlerStreams = {
+        add: [...this.waitingHandlerStreams.add],
+        delete: [...this.waitingHandlerStreams.delete],
+      };
+      this.waitingHandlerStreams = {
+        add: [],
+        delete: [],
+      };
+
+      this.streamUpdateTimer(nextWaitingHandlerStreams);
+    }, 700);
   }
 
   publishLocalStream(
@@ -689,12 +774,12 @@ export class ZegoCloudRTCCore {
   private onRemoteMediaUpdateCallBack: (
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]
-  ) => void = (
+  ) => void = async (
     updateType: "DELETE" | "ADD" | "UPDATE",
     streamList: ZegoCloudRemoteMedia[]
   ) => {
-    this.zum.mainStreamUpdate(updateType, streamList);
-    this.zum.screenStreamUpdate(updateType, streamList);
+    await this.zum.mainStreamUpdate(updateType, streamList);
+    await this.zum.screenStreamUpdate(updateType, streamList);
     this.subscribeUserListCallBack &&
       this.subscribeUserListCallBack([...this.zum.remoteUserList]);
     this.subscribeScreenStreamCallBack &&
@@ -707,13 +792,13 @@ export class ZegoCloudRTCCore {
       streamList: ZegoCloudRemoteMedia[]
     ) => void
   ) {
-    this.onRemoteMediaUpdateCallBack = (
+    this.onRemoteMediaUpdateCallBack = async (
       updateType: "DELETE" | "ADD" | "UPDATE",
       streamList: ZegoCloudRemoteMedia[]
     ) => {
       func(updateType, streamList);
-      this.zum.mainStreamUpdate(updateType, streamList);
-      this.zum.screenStreamUpdate(updateType, streamList);
+      await this.zum.mainStreamUpdate(updateType, streamList);
+      await this.zum.screenStreamUpdate(updateType, streamList);
       this.subscribeUserListCallBack &&
         this.subscribeUserListCallBack([...this.zum.remoteUserList]);
       this.subscribeScreenStreamCallBack &&
@@ -750,8 +835,15 @@ export class ZegoCloudRTCCore {
     ) => {
       func(roomID, updateType, user);
       await this.zum.userUpdate(roomID, updateType, user);
-      this.subscribeUserListCallBack &&
-        this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+      setTimeout(() => {
+        console.warn(
+          "【ZEGOCLOUD】roomUserUpdate",
+          [...this.zum.remoteUserList],
+          [...this.zum.remoteUserList].length
+        );
+        this.subscribeUserListCallBack &&
+          this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+      }, 0);
     };
   }
   private onSoundLevelUpdateCallBack!: (
@@ -835,12 +927,12 @@ export class ZegoCloudRTCCore {
 
     ZegoCloudRTCCore._zg.setSoundLevelDelegate(false);
     this.onNetworkStatusCallBack = () => {};
-    this.onRemoteMediaUpdateCallBack = (
+    this.onRemoteMediaUpdateCallBack = async (
       updateType: "DELETE" | "ADD" | "UPDATE",
       streamList: ZegoCloudRemoteMedia[]
     ) => {
-      this.zum.mainStreamUpdate(updateType, streamList);
-      this.zum.screenStreamUpdate(updateType, streamList);
+      await this.zum.mainStreamUpdate(updateType, streamList);
+      await this.zum.screenStreamUpdate(updateType, streamList);
       this.subscribeUserListCallBack &&
         this.subscribeUserListCallBack([...this.zum.remoteUserList]);
       this.subscribeScreenStreamCallBack &&
