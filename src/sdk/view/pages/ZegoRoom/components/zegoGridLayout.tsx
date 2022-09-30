@@ -4,7 +4,10 @@ import ZegoGridCss from "./zegoGridLayout.module.scss";
 import clsx from "clsx";
 import { OthersVideo } from "./zegoOthersVideo";
 import { VideoPlayer } from "./zegoVideoPlayer";
+import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
+  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
+  context!: React.ContextType<typeof ShowPCManageContext>;
   render(): React.ReactNode {
     let wrapClassName;
     if (this.props.gridRowNumber === 3) {
@@ -60,6 +63,7 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
                       el &&
                         el.srcObject !== user.streamList?.[0]?.media &&
                         (el.srcObject = user.streamList?.[0]?.media!);
+                      el && (el as any)?.setSinkId(this.context.speakerId);
                     }}
                   ></audio>
                 );

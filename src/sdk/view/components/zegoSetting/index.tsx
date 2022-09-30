@@ -542,36 +542,12 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
           <audio
             style={{ width: "1px", height: "1px" }}
             id="speakerAudioTest"
-            ref={(el: HTMLAudioElement | null) => {
-              if (
-                el &&
-                // @ts-ignore
-                el.sinkId &&
-                // @ts-ignore
-                el.sinkId !== this.state.selectSpeaker
-              ) {
-                // @ts-ignore
-                // el.setSinkId(this.state.selectSpeaker);
-              }
-            }}
             src={audioBase64}
             // muted
           ></audio>
           <audio
             style={{ width: "1px", height: "1px" }}
             id="speakerAudio"
-            ref={(el: HTMLAudioElement | null) => {
-              if (
-                el &&
-                // @ts-ignore
-                el.sinkId &&
-                // @ts-ignore
-                el.sinkId !== this.state.selectSpeaker
-              ) {
-                // @ts-ignore
-                // el.setSinkId(this.state.selectSpeaker);
-              }
-            }}
             src={audioBase64}
             // loop
           ></audio>

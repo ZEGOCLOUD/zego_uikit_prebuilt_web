@@ -22,7 +22,7 @@ export class VideoPlayer extends React.Component<{
     const volume =
       this.props.volume?.[this.props.userInfo?.streamList?.[0]?.streamID];
     const height = volume === undefined ? 5 : Math.ceil((volume * 7) / 100);
-    let { showPinButton } = this.context;
+    let { showPinButton, speakerId } = this.context;
     return (
       <div
         className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
@@ -36,6 +36,7 @@ export class VideoPlayer extends React.Component<{
             el &&
               el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
               (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
+            el && (el as any)?.setSinkId(speakerId);
           }}
           onPause={() => {
             this.props.onPause && this.props.onPause();

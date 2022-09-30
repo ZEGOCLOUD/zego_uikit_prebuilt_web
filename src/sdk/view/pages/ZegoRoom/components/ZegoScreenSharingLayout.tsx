@@ -4,6 +4,7 @@ import { ZegoScreenSharingLayoutProps } from "../../../../model";
 import { OthersVideo } from "./zegoOthersVideo";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
+import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 
 export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLayoutProps> {
   state = {
@@ -11,6 +12,8 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
     loadingMask: true,
     showBottomTip: false,
   };
+  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
+  context!: React.ContextType<typeof ShowPCManageContext>;
   componentDidMount() {
     const showBottomTip = sessionStorage.getItem(
       `screen_bottom_tip_${this.props.roomID}_${this.props.selfInfo.userID}`
@@ -128,6 +131,7 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
                           el &&
                             el.srcObject !== user?.streamList?.[0]?.media &&
                             (el.srcObject = user?.streamList?.[0]?.media!);
+                          el && (el as any)?.setSinkId(this.context.speakerId);
                         }}
                       ></audio>
                     );

@@ -107,6 +107,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
   fullScreen = false;
   userUpdateCallBack = () => {};
   componentDidMount() {
+    this.setAllSinkId(this.state.selectSpeaker || "");
     this.computeByResize();
     setTimeout(() => {
       this.msgDelayed = false;
@@ -271,7 +272,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
           liveStatus: res,
           liveCountdown:
             preState.liveCountdown === -1 || preState.liveCountdown == 0
-              ? res == 1
+              ? res === 1
                 ? 0
                 : -1
               : preState.liveCountdown,
@@ -864,6 +865,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                 el &&
                   el.srcObject !== user.streamList[0].media &&
                   (el.srcObject = user.streamList[0].media!);
+                el && (el as any)?.setSinkId(this.state.selectSpeaker);
               }}
             ></audio>
           );
@@ -871,11 +873,22 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       </>
     );
   }
+  get showScreenShareBottomTip(): boolean {
+    if (
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
+      this.state.liveStatus !== 1
+    ) {
+      return false;
+    } else {
+      return this.getScreenSharingUser.length > 0;
+    }
+  }
   getLayoutScreen() {
     if (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
-      this.state.liveStatus != 1
+      this.state.liveStatus !== 1
     ) {
       return (
         <div className={ZegoRoomCss.liveNotStart}>
@@ -1051,6 +1064,15 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       }
     );
   }
+  private setAllSinkId(speakerId: string) {
+    const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
+    room?.querySelectorAll("video").forEach((video: any) => {
+      video?.setSinkId(speakerId);
+    });
+    room?.querySelectorAll("audio").forEach((audio: any) => {
+      audio?.setSinkId(speakerId);
+    });
+  }
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
@@ -1061,6 +1083,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
       <ShowPCManageContext.Provider
         value={{
           showPinButton: !!this.props.core._config.showPinButton,
+          speakerId: this.state.selectSpeaker,
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>
@@ -1190,13 +1213,13 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
               </div>
             </div>
           </div>
-          {this.getScreenSharingUser.length > 0 && (
+          {this.showScreenShareBottomTip && (
             <div className={ZegoRoomCss.screenBottomBar}>
               <div className={ZegoRoomCss.screenBottomBarLeft}>
                 <span></span>
                 <p>
                   {this.state.isScreenSharingBySelf
-                    ? "You’re presenting to everyone"
+                    ? "You're presenting to everyone"
                     : `${this.state.screenSharingUserList[0].userName} is presenting the screen`}
                 </p>
               </div>
@@ -1481,9 +1504,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
                     selectSpeaker: deviceID,
                   },
                   () => {
-                    document
-                      .querySelectorAll("video")
-                      .forEach((el: any) => el.setSinkId(deviceID));
+                    this.setAllSinkId(deviceID);
                   }
                 );
               }}

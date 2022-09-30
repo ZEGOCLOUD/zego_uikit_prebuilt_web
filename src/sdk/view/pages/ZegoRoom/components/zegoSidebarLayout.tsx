@@ -4,6 +4,7 @@ import { ZegoSidebarLayoutProps } from "../../../../model";
 import { OthersVideo } from "./zegoOthersVideo";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
+import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 
 export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
   get pinUser() {
@@ -12,6 +13,8 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
       index > -1 ? index : this.props.userList.length - 1
     ];
   }
+  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
+  context!: React.ContextType<typeof ShowPCManageContext>;
   render(): React.ReactNode {
     let wrapClassName = clsx({
       [ZegoSidebarCss.rightWrapper]: true,
@@ -57,6 +60,7 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
                           el &&
                             el.srcObject !== user?.streamList?.[0]?.media &&
                             (el.srcObject = user?.streamList?.[0]?.media!);
+                          el && (el as any)?.setSinkId(this.context.speakerId);
                         }}
                       ></audio>
                     );
