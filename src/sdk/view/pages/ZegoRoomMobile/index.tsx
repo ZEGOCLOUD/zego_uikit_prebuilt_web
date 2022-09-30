@@ -815,8 +815,9 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     });
   }
   getListScreen() {
+    let pages;
     if (this.state.layOutStatus === "INVITE") {
-      return (
+      pages = (
         <ZegoRoomInvite
           core={this.props.core}
           closeCallBack={() => {
@@ -827,7 +828,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         ></ZegoRoomInvite>
       );
     } else if (this.state.layOutStatus === "USER_LIST") {
-      return (
+      pages = (
         <ZegoUserList
           core={this.props.core}
           userList={this.getAllMemberList()}
@@ -840,7 +841,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         ></ZegoUserList>
       );
     } else if (this.state.layOutStatus === "MESSAGE") {
-      return (
+      pages = (
         <ZegoMessage
           userID={this.props.core._expressConfig.userID}
           messageList={this.state.messageList}
@@ -855,7 +856,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         ></ZegoMessage>
       );
     } else if (this.state.layOutStatus === "LAYOUT") {
-      return (
+      pages = (
         <ZegoLayout
           selectLayout={this.state.userLayoutStatus}
           closeCallBac={() => {
@@ -867,7 +868,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         ></ZegoLayout>
       );
     } else if (this.state.layOutStatus === "MANAGE") {
-      return (
+      pages = (
         <ZegoManage
           closeCallBac={() => {
             this.setState({
@@ -900,6 +901,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
           selectedUser={this._selectedUser}
         ></ZegoManage>
       );
+    }
+
+    if (pages) {
+      return <div className={ZegoRoomCss.mask}>{pages}</div>;
     }
   }
 
@@ -1297,6 +1302,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 )}
             </div>
           )}
+
           {this.getListScreen()}
           <>{this.getHiddenUser()}</>
           <div className={ZegoRoomCss.notify}>

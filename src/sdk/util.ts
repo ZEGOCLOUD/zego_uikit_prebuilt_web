@@ -74,11 +74,11 @@ export function userNameColor(userName: string): string {
   return userColorMap[userName];
 }
 
-export function getUrlParams(url: string) {
+export function getUrlParams(
+  url: string = window.location.href
+): URLSearchParams {
   let urlStr = url.split("?")[1];
-  const urlSearchParams = new URLSearchParams(urlStr);
-  const result = Object.fromEntries(urlSearchParams.entries());
-  return result;
+  return new URLSearchParams(urlStr);
 }
 
 export function getVideoResolution(level: string): {

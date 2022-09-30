@@ -1,153 +1,34 @@
 # ZEGOCLOUD Prebuilt Web SDK
 
-- 2 interfaces to quickly implement 1V1 calls
+- 2 interfaces to quickly implement 1v1 call , group call，live;
 - pure JS language, support all frameworks (Reat, Angular, Vue,Ionic, etc.)
 - 10,000 minutes free
 
 ## Quick integration
 
-### [Experience Demo online](https://zegocloud.github.io/zegocloud_prebuilt_webrtc/build/index.html)
+### 1v1 Call
+
+##### [Experience online](https://zegocloud.github.io/zego_uikit_prebuilt_web/1on1_call/index.html)
+
+#### [Integrated Documentation](https://docs.zegocloud.com/article/14728)
+
+### Group Call
+
+#### [Experience  online](https://zegocloud.github.io/zego_uikit_prebuilt_web/video_conference/index.html)
+
+##### [Integrated Documentation](https://docs.zegocloud.com/article/14728)
+
+### Live
+
+### [Experience  online](https://zegocloud.github.io/zego_uikit_prebuilt_web/live_stream/index.html)
+
+##### [Integrated Documentation](https://docs.zegocloud.com/article/14885)
 
 ### Preparation before integration
 
 1 Register a [ZEGOCLOUD ACCOUNT](https://console.zegocloud.com/account/signup) ----- >create a project ----- > get the project AppID, ServerSecret
 
 ![config](docs/images/appID.png)
-
-2 Register a [Heroku](https://signup.heroku.com/login) account to quickly build an authentication service
-
-### Deploy the authentication backend interface
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/choui666/dynamic_token_server_nodejs)
-
-1. Click the deploy link above to start
-2. Fill in your App name, APP_ID and SERVER_SECRET and press `Deploy App`
-3. Make a cup of coffee and wait for heroku to finish :)
-4. Once done you will get an url for your instance, for example: https://${}$xxxx.herokuapp.com
-
-### Deploy your Web Call app
-
-1 [Click me](https://signup.heroku.com/login) to create a javascript project ( if you do not have an account, please register one first )
-
-2 Load the SDK in index.js, the code is as follows:
-
-```javascript
-// dynamically load plugins
-function loadScript(url, callback) {
-  const script = document.createElement("script");
-  script.type = "text/javascript";
-  // Compatible with IE
-  if (script.readyState) {
-    script.onreadystatechange = function () {
-      if (script.readyState === "loaded" || script.readyState === "complete") {
-        script.onreadystatechange = null;
-        callback();
-      }
-    };
-  } else {
-    // handle the case of other browsers
-    script.onload = function () {
-      callback();
-    };
-  }
-  script.src = url;
-  document.body.append(script);
-}
-
-// load plugin
-loadScript(
-  "https://zegocloud.github.io/zegocloud_prebuilt_webrtc/ZegoPrebuilt/index.umd.js",
-  init
-);
-```
-
-3 Initialize the SDK, the code is as follows
-
-```javascript
-async function init() {
-  const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
-  const { token } = await generateToken(
-    "https://xxxx.herokuapp.com",
-    randomID(5),
-    roomID,
-    randomID(5)
-  );
-  const zp = ZegoUIKitPrebuilt.create(token);
-  zp.joinRoom({
-    container: appDiv,
-    preJoinViewConfig: {
-      invitationLink:
-        window.location.origin + window.location.pathname + "?roomID=" + roomID,
-    },
-  });
-}
-```
-
-4 Replace the address "https://xxxx.herokuapp.com" with your own heroku interface address
-
-5 Copy the following utility function to the front of the init function
-
-```javascript
-// get token
-function generateToken(tokenServerUrl, userID, roomID, userName) {
-  // Obtain the token interface provided by the App Server
-  return fetch(
-    `${tokenServerUrl}/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=7200`,
-    {
-      method: "GET",
-    }
-  ).then((res) => res.json());
-}
-
-function randomID(len) {
-  let result = "";
-  if (result) return result;
-  var chars = "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP",
-    maxPos = chars.length,
-    i;
-  len = len || 5;
-  for (i = 0; i < len; i++) {
-    result += chars.charAt(Math.floor(Math.random() * maxPos));
-  }
-  return result;
-}
-
-function getUrlParams(url) {
-  let urlStr = url.split("?")[1];
-  const urlSearchParams = new URLSearchParams(urlStr);
-  const result = Object.fromEntries(urlSearchParams.entries());
-  return result;
-}
-```
-
-6 The preview effect is as follows,[Click me](https://stackblitz.com/edit/zegocloud-prebuilt?file=index.js) to see the full code
-
-![config](docs/images/preview.png)
-
-## More configuration is as follows
-
-```typescript
-export interface ZegoCloudRoomConfig {
-  container?: HTMLElement; // mount the container
-  preJoinViewConfig?: {
-    title?: string; // title setting, default enter Room
-    invitationLink?: string; // invite link, if empty, it will not be displayed, default empty
-  };
-  showPreJoinView?: boolean; // Whether to display the entertainment detection page, the default display
-  turnOnMicrophoneWhenJoining?: boolean; // Whether to enable your own microphone, it is enabled by default
-  turnOnCameraWhenJoining?: boolean; // Whether to open your own camera, open by default
-  showMyCameraToggleButton?: boolean; // Whether you can control your own microphone, enabled by default
-  showMyMicrophoneToggleButton?: boolean; // Whether you can control the body's own camera, enabled by default
-
-  showTextChat?: boolean; // Whether to enable chat, the default is open preJoinViewConfig: boolean, // Check whether the page is required before the call, the default is required
-  showUserList?: boolean; //Whether to display the member list, not displayed by default
-  lowerLeftNotification?: {
-    showUserJoinAndLeave?: boolean; //Whether to display member in and out, not displayed by default
-    showTextChat?: boolean; // Whether to display unread messages, not displayed by default
-  };
-  leaveRoomCallback?: () => void; // leave the room callback
-}
-```
 
 ## Principle introduction
 
