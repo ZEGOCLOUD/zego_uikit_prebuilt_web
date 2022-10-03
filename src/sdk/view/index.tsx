@@ -7,7 +7,7 @@ import { ZegoRoomMobile } from "./pages/ZegoRoomMobile";
 import { IntlProvider } from "react-intl";
 import index from "./index.module.scss";
 import { ZegoRejoinRoom } from "./pages/ZegoRejoinRoom";
-import { isIOS, isPc, IsSafari } from "../util";
+import { isPc } from "../util";
 import { ZegoModel } from "./components/zegoModel";
 
 declare const SDK_ENV: boolean;
@@ -73,6 +73,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
             }}
           ></ZegoBrowserCheckMobile>
         );
+        this.props.core.setCurrentPage("BrowserCheckPage");
       } else if (this.state.step === 1 && this.props.core) {
         if (typeof SDK_ENV === "undefined") {
           const root = document.getElementById("root");
@@ -115,6 +116,8 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
             }}
           ></ZegoRoomMobile>
         );
+
+        this.props.core.setCurrentPage("Room");
       } else if (this.state.step === 2 && this.props.core) {
         page = (
           <ZegoRejoinRoom
@@ -131,6 +134,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
             }}
           ></ZegoRejoinRoom>
         );
+        this.props.core.setCurrentPage("RejoinRoom");
       }
     } else {
       page = (
@@ -143,6 +147,8 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           }
         ></ZegoModel>
       );
+
+      this.props.core.setCurrentPage("BrowserCheckPage");
     }
     return (
       <IntlProvider locale="en">

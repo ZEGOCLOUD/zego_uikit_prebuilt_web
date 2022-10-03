@@ -17,7 +17,7 @@ import { ZegoMessage } from "./components/zegoMessage";
 import {
   isIOS,
   isPc,
-  IsSafari,
+  IsLowVersionSafari,
   randomNumber,
   userNameColor,
 } from "../../../util";
@@ -248,12 +248,12 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       const notSupportPhone =
         !isPc() &&
         isIOS() &&
-        IsSafari() &&
+        IsLowVersionSafari() &&
         userList.filter((u) => {
           return (
             u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
           );
-        }).length > 1;
+        }).length > (this.state.screenSharingUserList.length > 0 ? 0 : 1);
       if (notSupportPhone) {
         let targetUsers = userList.reverse();
 
@@ -271,17 +271,29 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
             okText: "Okay",
             onOk: () => {
               this.safariLimitationNoticed = 1;
-              this.setState({
-                zegoCloudUserList: [targetUser],
-                memberList: userList,
-              });
+              this.setState(
+                {
+                  zegoCloudUserList: [targetUser],
+                  memberList: userList,
+                  screenSharingUserList: [],
+                },
+                () => {
+                  this.handleLayoutChange(this.state.userLayoutStatus);
+                }
+              );
             },
           });
         } else if (this.safariLimitationNoticed != 0) {
-          this.setState({
-            zegoCloudUserList: [targetUser],
-            memberList: userList,
-          });
+          this.setState(
+            {
+              zegoCloudUserList: [targetUser],
+              memberList: userList,
+              screenSharingUserList: [],
+            },
+            () => {
+              this.handleLayoutChange(this.state.userLayoutStatus);
+            }
+          );
         }
       } else {
         this.setState({
@@ -295,7 +307,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       const notSupportPhone =
         !isPc() &&
         isIOS() &&
-        IsSafari() &&
+        IsLowVersionSafari() &&
         this.state.zegoCloudUserList.filter((u) => {
           return (
             u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
@@ -326,18 +338,25 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.onRoomLiveStateUpdate((res: 1 | 0) => {
-      this.setState((preState: { liveCountdown: number }) => {
-        return {
-          liveStatus: res,
-          liveCountdown:
-            preState.liveCountdown === -1 || preState.liveCountdown == 0
-              ? res == 1
-                ? 0
-                : -1
-              : preState.liveCountdown,
-        };
-      });
+      console.error("【ZEGOCLOUD】choui", res);
+      this.setState(
+        (preState: { liveCountdown: number }) => {
+          return {
+            liveStatus: res,
+            liveCountdown:
+              preState.liveCountdown === -1 || preState.liveCountdown == 0
+                ? res == 1
+                  ? 0
+                  : -1
+                : preState.liveCountdown,
+          };
+        },
+        () => {
+          console.error("【ZEGOCLOUD】choui liveStatus", this.state.liveStatus);
+        }
+      );
     });
+
     const logInRsp = await this.props.core.enterRoom();
 
     if (logInRsp === 0) {
@@ -1302,7 +1321,6 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
                 )}
             </div>
           )}
-
           {this.getListScreen()}
           <>{this.getHiddenUser()}</>
           <div className={ZegoRoomCss.notify}>
@@ -1329,13 +1347,11 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               }
             })}
           </div>
-
           {this.state.liveCountdown > 0 && (
             <div className={ZegoRoomCss.countDown}>
               <div>{this.state.liveCountdown}</div>
             </div>
           )}
-
           {(this.state.connecting || false) && (
             <ZegoReconnect
               content={
@@ -1345,6 +1361,23 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
               }
             ></ZegoReconnect>
           )}
+          {/* <div
+            style={{
+              zIndex: 100000,
+              position: "fixed",
+              width: "100px",
+              height: "50px",
+              top: "20vh",
+              left: 0,
+            }}
+          >
+            {this.state.liveStatus +
+              "," +
+              this.state.liveCountdown +
+              "," +
+              (this.props.core._config.scenario?.mode ===
+                ScenarioModel.LiveStreaming)}
+          </div> */}
 
           {this.props.core._config.scenario?.mode ===
             ScenarioModel.LiveStreaming &&

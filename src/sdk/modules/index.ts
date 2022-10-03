@@ -294,6 +294,11 @@ export class ZegoCloudRTCCore {
       this.subscribeUserListCallBack([...this.zum.remoteUserList]);
   }
 
+  _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
+  setCurrentPage(page: "BrowserCheckPage" | "Room" | "RejoinRoom") {
+    this._currentPage = page;
+  }
+
   getCameras(): Promise<ZegoDeviceInfo[]> {
     return ZegoCloudRTCCore._zg.getCameras();
   }
@@ -399,10 +404,21 @@ export class ZegoCloudRTCCore {
   };
 
   set roomExtraInfo(value: { [index: string]: any }) {
-    this._roomExtraInfo = value;
-    this.zum.setLiveStates(this._roomExtraInfo.live_status.v);
-    this.onRoomLiveStateUpdateCallBack &&
-      this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status.v);
+    if (this._currentPage === "Room") {
+      this._roomExtraInfo = value;
+      this.zum.setLiveStates(this._roomExtraInfo.live_status.v);
+      console.error(
+        "【ZEGOCLOUD】roomExtraInfo choui",
+        value,
+        this.onRoomLiveStateUpdateCallBack
+      );
+      this.onRoomLiveStateUpdateCallBack &&
+        this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status.v);
+    } else if (this._currentPage === "BrowserCheckPage") {
+      setTimeout(() => {
+        this.roomExtraInfo = value;
+      }, 1000);
+    }
   }
   get roomExtraInfo() {
     return this._roomExtraInfo;
@@ -519,6 +535,7 @@ export class ZegoCloudRTCCore {
       (roomID: string, roomExtraInfoList: ZegoRoomExtraInfo[]) => {
         roomExtraInfoList.forEach((info) => {
           if (info.key === this.extraInfoKey) {
+            console.error("【ZEGOCLOUD】choui", info.value);
             this.roomExtraInfo = JSON.parse(info.value);
           }
         });
@@ -678,67 +695,73 @@ export class ZegoCloudRTCCore {
     add: ZegoStreamList[];
     delete: ZegoStreamList[];
   }): Promise<void> {
-    let _streamList = [];
-    if (_waitingHandlerStreams.add.length > 0) {
-      for (let i = 0; i < _waitingHandlerStreams.add.length; i++) {
-        const streamInfo = _waitingHandlerStreams.add[i];
-        try {
-          const stream = await this.zum.startPullStream(
+    if (this._currentPage === "Room") {
+      let _streamList = [];
+      if (_waitingHandlerStreams.add.length > 0) {
+        for (let i = 0; i < _waitingHandlerStreams.add.length; i++) {
+          const streamInfo = _waitingHandlerStreams.add[i];
+          try {
+            const stream = await this.zum.startPullStream(
+              streamInfo.user.userID,
+              streamInfo.streamID
+            );
+            this.remoteStreamMap[streamInfo.streamID] = {
+              fromUser: streamInfo.user,
+              media: stream,
+              micStatus:
+                stream && stream.getAudioTracks().length > 0 ? "OPEN" : "MUTE",
+              cameraStatus:
+                stream && stream.getVideoTracks().length > 0 ? "OPEN" : "MUTE",
+              state: "PLAYING",
+              streamID: streamInfo.streamID,
+            };
+            _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
+          } catch (error) {
+            console.warn("【ZEGOCLOUD】:startPlayingStream error", error);
+          }
+        }
+
+        this.onRemoteMediaUpdateCallBack &&
+          _streamList.length > 0 &&
+          this.onRemoteMediaUpdateCallBack("ADD", _streamList);
+      }
+
+      if (_waitingHandlerStreams.delete.length > 0) {
+        _streamList = [];
+        for (let i = 0; i < _waitingHandlerStreams.delete.length; i++) {
+          const streamInfo = _waitingHandlerStreams.delete[i];
+          if (!this.remoteStreamMap[streamInfo.streamID]) {
+            debugger;
+          }
+          this.remoteStreamMap[streamInfo.streamID] &&
+            _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
+          await this.zum.stopPullStream(
             streamInfo.user.userID,
             streamInfo.streamID
           );
-          this.remoteStreamMap[streamInfo.streamID] = {
-            fromUser: streamInfo.user,
-            media: stream,
-            micStatus:
-              stream && stream.getAudioTracks().length > 0 ? "OPEN" : "MUTE",
-            cameraStatus:
-              stream && stream.getVideoTracks().length > 0 ? "OPEN" : "MUTE",
-            state: "PLAYING",
-            streamID: streamInfo.streamID,
-          };
-          _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
-        } catch (error) {
-          console.warn("【ZEGOCLOUD】:startPlayingStream error", error);
+          delete this.remoteStreamMap[streamInfo.streamID];
         }
+        this.onRemoteMediaUpdateCallBack &&
+          _streamList.length > 0 &&
+          this.onRemoteMediaUpdateCallBack("DELETE", _streamList);
       }
+      setTimeout(() => {
+        const nextWaitingHandlerStreams = {
+          add: [...this.waitingHandlerStreams.add],
+          delete: [...this.waitingHandlerStreams.delete],
+        };
+        this.waitingHandlerStreams = {
+          add: [],
+          delete: [],
+        };
 
-      this.onRemoteMediaUpdateCallBack &&
-        _streamList.length > 0 &&
-        this.onRemoteMediaUpdateCallBack("ADD", _streamList);
+        this.streamUpdateTimer(nextWaitingHandlerStreams);
+      }, 700);
+    } else if (this._currentPage === "BrowserCheckPage") {
+      setTimeout(() => {
+        this.streamUpdateTimer(_waitingHandlerStreams);
+      }, 1000);
     }
-
-    if (_waitingHandlerStreams.delete.length > 0) {
-      _streamList = [];
-      for (let i = 0; i < _waitingHandlerStreams.delete.length; i++) {
-        const streamInfo = _waitingHandlerStreams.delete[i];
-        if (!this.remoteStreamMap[streamInfo.streamID]) {
-          debugger;
-        }
-        this.remoteStreamMap[streamInfo.streamID] &&
-          _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
-        await this.zum.stopPullStream(
-          streamInfo.user.userID,
-          streamInfo.streamID
-        );
-        delete this.remoteStreamMap[streamInfo.streamID];
-      }
-      this.onRemoteMediaUpdateCallBack &&
-        _streamList.length > 0 &&
-        this.onRemoteMediaUpdateCallBack("DELETE", _streamList);
-    }
-    setTimeout(() => {
-      const nextWaitingHandlerStreams = {
-        add: [...this.waitingHandlerStreams.add],
-        delete: [...this.waitingHandlerStreams.delete],
-      };
-      this.waitingHandlerStreams = {
-        add: [],
-        delete: [],
-      };
-
-      this.streamUpdateTimer(nextWaitingHandlerStreams);
-    }, 700);
   }
 
   publishLocalStream(
@@ -831,19 +854,25 @@ export class ZegoCloudRTCCore {
     this.onRemoteUserUpdateCallBack = async (
       roomID: string,
       updateType: "DELETE" | "ADD",
-      user: ZegoUser[]
+      users: ZegoUser[]
     ) => {
-      func(roomID, updateType, user);
-      await this.zum.userUpdate(roomID, updateType, user);
-      setTimeout(() => {
-        console.warn(
-          "【ZEGOCLOUD】roomUserUpdate",
-          [...this.zum.remoteUserList],
-          [...this.zum.remoteUserList].length
-        );
-        this.subscribeUserListCallBack &&
-          this.subscribeUserListCallBack([...this.zum.remoteUserList]);
-      }, 0);
+      if (this._currentPage === "BrowserCheckPage") {
+        setTimeout(() => {
+          this.onRemoteUserUpdateCallBack(roomID, updateType, users);
+        }, 1000);
+      } else if (this._currentPage === "Room") {
+        func(roomID, updateType, users);
+        await this.zum.userUpdate(roomID, updateType, users);
+        setTimeout(() => {
+          console.warn(
+            "【ZEGOCLOUD】roomUserUpdate",
+            [...this.zum.remoteUserList],
+            [...this.zum.remoteUserList].length
+          );
+          this.subscribeUserListCallBack &&
+            this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+        }, 0);
+      }
     };
   }
   private onSoundLevelUpdateCallBack!: (
