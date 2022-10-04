@@ -231,11 +231,11 @@ export class ZegoCloudRTCCore {
     config.joinRoomCallback && (config.onJoinRoom = config.joinRoomCallback);
     config.leaveRoomCallback && (config.onLeaveRoom = config.leaveRoomCallback);
     if (config.userUpdateCallback) {
-      config.onJoinRoom = (users: ZegoUser[]) => {
+      config.onUserJoin = (users: ZegoUser[]) => {
         config.userUpdateCallback && config.userUpdateCallback("ADD", users);
       };
 
-      config.onLeaveRoom = (users: ZegoUser[]) => {
+      config.onUserLeave = (users: ZegoUser[]) => {
         config.userUpdateCallback && config.userUpdateCallback("DELETE", users);
       };
     }
@@ -585,8 +585,11 @@ export class ZegoCloudRTCCore {
         this.onRemoteUserUpdateCallBack &&
           this.onRemoteUserUpdateCallBack(roomID, updateType, userList);
         setTimeout(() => {
-          this._config.userUpdateCallback &&
-            this._config.userUpdateCallback(updateType, userList);
+          if (updateType === "ADD") {
+            this._config.onUserJoin && this._config.onUserJoin(userList);
+          } else {
+            this._config.onUserLeave && this._config.onUserLeave(userList);
+          }
         }, 0);
       }
     );

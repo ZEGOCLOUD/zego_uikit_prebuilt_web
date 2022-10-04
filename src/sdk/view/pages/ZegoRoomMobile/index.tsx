@@ -361,8 +361,10 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
 
     if (logInRsp === 0) {
       this.createStream();
-      this.props.core._config.showMyCameraToggleButton &&
-        (this.cameraDevices = await this.props.core.getCameras());
+      setTimeout(async () => {
+        this.props.core._config.showMyCameraToggleButton &&
+          (this.cameraDevices = await this.props.core.getCameras());
+      }, 1000);
     }
   }
 
@@ -408,6 +410,7 @@ export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
         }
 
         if (!localStream) return false;
+
         this.props.core.mutePublishStreamVideo(
           localStream,
           !this.props.core._config.turnOnCameraWhenJoining

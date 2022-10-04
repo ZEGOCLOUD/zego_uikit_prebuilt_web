@@ -10,4 +10,4 @@ export interface ZegoModelProps {
 export declare class ZegoModel extends React.Component<ZegoModelProps> {
     render(): React.ReactNode;
 }
-export declare const ZegoModelShow: (props: ZegoModelProps) => void;
+export declare const ZegoModelShow: (props: ZegoModelProps, parentDom?: Element | null | undefined) => void;

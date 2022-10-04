@@ -77,8 +77,8 @@ export interface ZegoCloudRoomConfig {
   showOnlyAudioUser?: boolean; // 是否显示纯音频用户，默认显示
 
   useFrontFacingCamera?: boolean;
-  onJoinRoom?: (users: ZegoUser[]) => void; // 用户进入通话页面回调
-  onLeaveRoom?: (users: ZegoUser[]) => void; // 用户退出通话页面回调
+  onJoinRoom?: () => void; // 用户进入通话页面回调
+  onLeaveRoom?: () => void; // 用户退出通话页面回调
   onUserJoin?: (user: ZegoUser[]) => void; // 其他用户进入回调
   onUserLeave?: (user: ZegoUser[]) => void; // 其他用户退入回调
   sharedLinks?: { name: string; url: string }[]; // 产品链接描述

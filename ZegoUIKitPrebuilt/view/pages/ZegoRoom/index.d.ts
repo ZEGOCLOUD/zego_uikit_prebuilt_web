@@ -31,6 +31,7 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         isScreenSharingBySelf: boolean;
         screenSharingStream: undefined | MediaStream;
         screenSharingUserList: ZegoCloudUserList;
+        showZegoSettings: boolean;
     };
     settingsRef: RefObject<HTMLDivElement>;
     moreRef: RefObject<HTMLDivElement>;
@@ -75,7 +76,8 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     handleSetting(): void;
     handleLeave(): void;
     leaveRoom(): void;
-    computeByResize(): Promise<void>;
+    get showSelf(): boolean | "";
+    computeByResize(justSetNum?: boolean): Promise<void>;
     onWindowResize: () => void;
     showLayoutSettings(show: boolean): void;
     changeLayout(type: string): Promise<unknown>;
@@ -98,10 +100,12 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     getShownUser(forceShowNonVideoUser?: boolean): ZegoCloudUserList;
     get getScreenSharingUser(): ZegoCloudUserList;
     getHiddenUser(): JSX.Element;
+    get showScreenShareBottomTip(): boolean;
     getLayoutScreen(): JSX.Element | undefined;
     handleSetPin(userID: string): void;
     handleFullScreen(fullScreen: boolean): void;
     setLive(): Promise<void>;
     liveCountdownTimer(): void;
+    private setAllSinkId;
     render(): React.ReactNode;
 }

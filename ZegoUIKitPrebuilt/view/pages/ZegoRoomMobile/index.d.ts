@@ -3,7 +3,7 @@ import React from "react";
 import { SoundLevelMap, ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoNotification } from "../../../model";
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
-import { ZegoCloudUser, ZegoCloudUserList } from "../../../modules/tools/UserListManager";
+import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
 export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
     static contextType: React.Context<import("./context/showManage").ShowManageType>;
     state: {
@@ -11,6 +11,7 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE";
         userLayoutStatus: "Auto" | "Grid" | "Sidebar";
         zegoCloudUserList: ZegoCloudUserList;
+        memberList: ZegoCloudUserList;
         messageList: ZegoBroadcastMessageInfo2[];
         notificationList: ZegoNotification[];
         micOpen: boolean;
@@ -60,25 +61,12 @@ export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp
     }) => void;
     openMore(): void;
     leaveRoom(): void;
-    getAllUser(): (ZegoCloudUser | {
-        userID: string;
-        userName: string;
-        pin: boolean;
-        streamList: {
-            media: MediaStream;
-            fromUser: {
-                userID: string;
-                userName: string;
-            };
-            micStatus: string;
-            cameraStatus: string;
-            state: string;
-            streamID: string;
-        }[];
-    })[];
-    getShownUser(forceShowNonVideoUser?: boolean): ZegoCloudUserList;
+    getAllUser(): ZegoCloudUserList;
+    getAllMemberList(): ZegoCloudUserList;
+    getShownUser(): ZegoCloudUserList;
     getHiddenUser(): JSX.Element;
     private _selectedUser;
+    get showSelf(): boolean | "";
     handleLayoutChange(selectLayout: "Auto" | "Grid" | "Sidebar"): Promise<boolean>;
     getListScreen(): JSX.Element | undefined;
     getLayoutScreen(): JSX.Element | undefined;

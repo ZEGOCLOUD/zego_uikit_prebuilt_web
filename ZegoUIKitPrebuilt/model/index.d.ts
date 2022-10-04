@@ -61,8 +61,8 @@ export interface ZegoCloudRoomConfig {
     showNonVideoUser?: boolean;
     showOnlyAudioUser?: boolean;
     useFrontFacingCamera?: boolean;
-    onJoinRoom?: (users: ZegoUser[]) => void;
-    onLeaveRoom?: (users: ZegoUser[]) => void;
+    onJoinRoom?: () => void;
+    onLeaveRoom?: () => void;
     onUserJoin?: (user: ZegoUser[]) => void;
     onUserLeave?: (user: ZegoUser[]) => void;
     sharedLinks?: {

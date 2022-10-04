@@ -96,14 +96,21 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         setTimeout(() => {
           this.props.core._config.joinRoomCallback &&
             this.props.core._config?.joinRoomCallback();
+
+          this.props.core._config.onJoinRoom &&
+            this.props.core._config.onJoinRoom();
         }, 0);
         page = isPc() ? (
           <ZegoRoom
             core={this.props.core}
             leaveRoom={() => {
               this.props.core._config.showLeavingView && this.nextPage();
-              this.props.core._config.leaveRoomCallback &&
-                this.props.core._config.leaveRoomCallback();
+              setTimeout(() => {
+                this.props.core._config.leaveRoomCallback &&
+                  this.props.core._config.leaveRoomCallback();
+                this.props.core._config.onLeaveRoom &&
+                  this.props.core._config.onLeaveRoom();
+              }, 0);
             }}
           ></ZegoRoom>
         ) : (
@@ -111,8 +118,12 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
             core={this.props.core}
             leaveRoom={() => {
               this.props.core._config.showLeavingView && this.nextPage();
-              this.props.core._config.leaveRoomCallback &&
-                this.props.core._config.leaveRoomCallback();
+              setTimeout(() => {
+                this.props.core._config.leaveRoomCallback &&
+                  this.props.core._config.leaveRoomCallback();
+                this.props.core._config.onLeaveRoom &&
+                  this.props.core._config.onLeaveRoom();
+              }, 0);
             }}
           ></ZegoRoomMobile>
         );

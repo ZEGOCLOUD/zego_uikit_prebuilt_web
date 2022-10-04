@@ -46,6 +46,9 @@
 
             const zp = ZegoUIKitPrebuilt.create(TOKEN);
             zp.joinRoom({
+                        onLeaveRoom: () => {
+                                    window.location.reload();
+                        },
                         container: document.querySelector("#root"),
                         scenario: {
                                     mode: ZegoUIKitPrebuilt.LiveStreaming,
