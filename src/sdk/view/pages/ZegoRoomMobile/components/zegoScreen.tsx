@@ -3,7 +3,7 @@ import { ZegoScreenSharingLayoutProps } from "../../../../model";
 import ZegoSidebarCss from "./zegoSidebar.module.scss";
 import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
 
-export class ZegoScreen extends React.Component<ZegoScreenSharingLayoutProps> {
+export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps> {
   state = {
     loading: true,
   };

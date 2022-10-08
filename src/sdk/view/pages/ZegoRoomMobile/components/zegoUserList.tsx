@@ -7,7 +7,7 @@ import {
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
 import { ScenarioModel } from "../../../../model";
-export class ZegoUserList extends React.Component<{
+export class ZegoUserList extends React.PureComponent<{
   userList: ZegoCloudUserList;
   core: ZegoCloudRTCCore;
   closeCallBack: (user?: ZegoCloudUser) => void;

@@ -3,7 +3,7 @@ import ZegoMessageCss from "./zegoMessage.module.scss";
 import { DateFormat } from "../../../../util";
 import { ZegoBroadcastMessageInfo2 } from "../../../../model";
 import { ZegoToast } from "../../../components/zegoToast";
-export class ZegoMessage extends React.Component<{
+export class ZegoMessage extends React.PureComponent<{
   messageList: ZegoBroadcastMessageInfo2[];
   sendMessage: (msg: string) => void;
   selfUserID: string;
@@ -71,9 +71,9 @@ export class ZegoMessage extends React.Component<{
                   </span>
                 </div>
                 <p
-                  className={`${msg.status === "SENDING" &&
-                    ZegoMessageCss.loading} ${msg.status === "FAILED" &&
-                    ZegoMessageCss.error}`}
+                  className={`${
+                    msg.status === "SENDING" && ZegoMessageCss.loading
+                  } ${msg.status === "FAILED" && ZegoMessageCss.error}`}
                 >
                   {msg.message}
                 </p>

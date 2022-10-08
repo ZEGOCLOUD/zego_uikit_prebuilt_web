@@ -1,6 +1,6 @@
 import React from "react";
 import zegoLayoutCss from "./zegoLayout.module.scss";
-export class ZegoLayout extends React.Component<{
+export class ZegoLayout extends React.PureComponent<{
   selectLayout: "Sidebar" | "Grid" | "Auto";
   closeCallBac: () => void;
   selectCallBack?: (

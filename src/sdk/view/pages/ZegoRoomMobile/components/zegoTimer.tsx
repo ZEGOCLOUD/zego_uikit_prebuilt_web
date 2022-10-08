@@ -1,6 +1,6 @@
 import React from "react";
 import { formatTime } from "../../../../modules/tools/util";
-export class ZegoTimer extends React.Component {
+export class ZegoTimer extends React.PureComponent {
   state: {
     time: number;
   } = {

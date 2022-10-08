@@ -28,7 +28,7 @@ import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 import { ZegoScreenSharingLayout } from "./components/ZegoScreenSharingLayout";
 import ShowPCManageContext from "./context/showManage";
-export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
+export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
     layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
@@ -996,6 +996,7 @@ export class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
         ></ZegoSidebarLayout>
       );
     }
+    return <></>;
   }
   handleSetPin(userID: string) {
     if (userID === this.props.core._expressConfig.userID) {

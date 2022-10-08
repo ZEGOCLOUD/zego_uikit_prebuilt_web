@@ -43,7 +43,7 @@ import ShowManageContext from "./context/showManage";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoScreen } from "./components/zegoScreen";
 
-export class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
+export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
     localStream: undefined | MediaStream;

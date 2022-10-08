@@ -1,7 +1,7 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import zegoManageCss from "./zegoManage.module.scss";
-export class ZegoManage extends React.Component<{
+export class ZegoManage extends React.PureComponent<{
   selectedUser: ZegoCloudUser;
   closeCallBac: () => void;
   selectCallBac: (type?: "Pin", value?: boolean) => void;

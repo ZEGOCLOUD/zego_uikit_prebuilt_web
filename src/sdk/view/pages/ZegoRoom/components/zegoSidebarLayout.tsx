@@ -6,7 +6,7 @@ import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 
-export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
+export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProps> {
   get pinUser() {
     const index = this.props.userList.findIndex((item) => item.pin);
     return this.props.userList[
@@ -30,7 +30,9 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
           <VideoPlayer
             myClass={ZegoSidebarCss.bigVideo}
             userInfo={this.pinUser}
-            handlePin={() => this.props.handleSetPin!(this.pinUser.userID)}
+            handlePin={() => {
+              this.props.handleSetPin!(this.pinUser.userID);
+            }}
             muted={this.pinUser.userID === this.props.selfInfo.userID}
             volume={this.props.soundLevel![this.pinUser.userID] || {}}
           ></VideoPlayer>
@@ -71,7 +73,9 @@ export class ZegoSidebarLayout extends React.Component<ZegoSidebarLayoutProps> {
                     key={user.userID}
                     userInfo={user}
                     muted={user.userID === this.props.selfInfo.userID}
-                    handlePin={() => this.props.handleSetPin!(user.userID)}
+                    handlePin={() => {
+                      this.props.handleSetPin!(user.userID);
+                    }}
                     volume={this.props.soundLevel![user.userID] || {}}
                   ></VideoPlayer>
                 );

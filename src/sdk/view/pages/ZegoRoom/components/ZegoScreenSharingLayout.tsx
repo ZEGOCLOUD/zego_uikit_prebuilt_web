@@ -6,7 +6,7 @@ import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 
-export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLayoutProps> {
+export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenSharingLayoutProps> {
   state = {
     fullScreen: false,
     loadingMask: true,
@@ -56,9 +56,9 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
             <VideoPlayer
               myClass={ZegoSidebarCss.screenVideo}
               userInfo={this.props.screenSharingUser}
-              handlePin={() =>
-                this.props.handleSetPin!(this.props.screenSharingUser.userID)
-              }
+              handlePin={() => {
+                this.props.handleSetPin!(this.props.screenSharingUser.userID);
+              }}
               muted={
                 this.props.screenSharingUser.userID ===
                 this.props.selfInfo.userID
@@ -142,7 +142,9 @@ export class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLa
                     key={user.userID}
                     userInfo={user}
                     muted={user.userID === this.props.selfInfo.userID}
-                    handlePin={() => this.props.handleSetPin!(user.userID)}
+                    handlePin={() => {
+                      this.props.handleSetPin!(user.userID);
+                    }}
                     volume={this.props.soundLevel![user.userID] || {}}
                   ></VideoPlayer>
                 );

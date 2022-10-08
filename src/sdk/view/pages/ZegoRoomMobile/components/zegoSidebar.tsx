@@ -4,7 +4,7 @@ import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 import ZegoSidebarCss from "./zegoSidebar.module.scss";
 import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
 
-export class ZegoSidebar extends React.Component<ZegoGridLayoutProps> {
+export class ZegoSidebar extends React.PureComponent<ZegoGridLayoutProps> {
   get userList(): ZegoCloudUserList {
     return this.props.userList.filter((item) => {
       return item.userID !== this.pinUser.userID;

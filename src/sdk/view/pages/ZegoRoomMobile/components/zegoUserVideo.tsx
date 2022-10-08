@@ -4,7 +4,7 @@ import zegoUserVideoCss from "./zegoUserVideo.module.scss";
 import { ZegoMore } from "./zegoMore";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import ShowManageContext, { ShowManageType } from "../context/showManage";
-export class ZegoUserVideo extends React.Component<{
+export class ZegoUserVideo extends React.PureComponent<{
   user: ZegoCloudUser;
   onLocalStreamPaused?: () => void;
   onCanPlay?: () => void;
@@ -18,7 +18,10 @@ export class ZegoUserVideo extends React.Component<{
 }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
-
+  video: HTMLVideoElement | null = null;
+  componentWillUnmount() {
+    this.video?.srcObject && (this.video.srcObject = null);
+  }
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.user?.streamList?.[0]?.streamID];
@@ -42,6 +45,7 @@ export class ZegoUserVideo extends React.Component<{
                   : ""
               }`}
               ref={(el) => {
+                this.video = el;
                 el &&
                   el.srcObject !== this.props.user.streamList[0].media &&
                   (el.srcObject = this.props.user.streamList[0].media!);
@@ -110,7 +114,7 @@ export class ZegoUserVideo extends React.Component<{
     );
   }
 }
-export class ZegoUserOtherVideo extends React.Component<{
+export class ZegoUserOtherVideo extends React.PureComponent<{
   user: ZegoCloudUser;
   nextUser: ZegoCloudUser;
   othersNumber: number;

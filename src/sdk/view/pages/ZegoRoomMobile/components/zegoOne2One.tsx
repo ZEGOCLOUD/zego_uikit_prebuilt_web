@@ -5,7 +5,7 @@ import { ZegoMore } from "./zegoMore";
 import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 import { ZegoUserVideo } from "./zegoUserVideo";
 import { SoundLevelMap } from "../../../../model";
-export class ZegoOne2One extends React.Component<{
+export class ZegoOne2One extends React.PureComponent<{
   userList: ZegoCloudUserList;
   onLocalStreamPaused: () => void;
   soundLevel?: SoundLevelMap;

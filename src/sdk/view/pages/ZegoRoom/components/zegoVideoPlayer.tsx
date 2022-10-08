@@ -3,7 +3,7 @@ import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import { userNameColor } from "../../../../util";
 import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
-export class VideoPlayer extends React.Component<{
+export class VideoPlayer extends React.PureComponent<{
   userInfo: ZegoCloudUser;
   muted: boolean;
   volume?: {
@@ -18,6 +18,10 @@ export class VideoPlayer extends React.Component<{
 }> {
   static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
+  video: HTMLVideoElement | null = null;
+  componentWillUnmount() {
+    this.video?.srcObject && (this.video.srcObject = null);
+  }
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.userInfo?.streamList?.[0]?.streamID];
@@ -33,12 +37,14 @@ export class VideoPlayer extends React.Component<{
           className={ZegoVideoPlayerCss.videoCommon}
           playsInline={true}
           ref={(el) => {
+            this.video = el;
             el &&
               el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
               (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
             el && (el as any)?.setSinkId(speakerId);
           }}
           onPause={() => {
+            console.error("Paused");
             this.props.onPause && this.props.onPause();
           }}
           onCanPlay={() => {

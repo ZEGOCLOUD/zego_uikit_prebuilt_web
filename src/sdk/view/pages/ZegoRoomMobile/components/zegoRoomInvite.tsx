@@ -3,7 +3,7 @@ import zegoRoomInviteCss from "./zegoRoomInvite.module.scss";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { copy } from "../../../../modules/tools/util";
 import { ZegoToast } from "../../../components/mobile/zegoToast";
-export class ZegoRoomInvite extends React.Component<{
+export class ZegoRoomInvite extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   closeCallBack: () => void;
 }> {

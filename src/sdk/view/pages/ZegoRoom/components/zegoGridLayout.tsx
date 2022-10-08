@@ -5,13 +5,12 @@ import clsx from "clsx";
 import { OthersVideo } from "./zegoOthersVideo";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
-export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
+export class ZegoGridLayout extends React.PureComponent<ZegoGridLayoutProps> {
   static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
-  render(): React.ReactNode {
-    let wrapClassName;
+  get wrapClassName() {
     if (this.props.gridRowNumber === 3) {
-      wrapClassName = clsx({
+      return clsx({
         [ZegoGridCss.gridWrapper]: true,
         [ZegoGridCss.double]: this.props.userList.length <= 2,
         [ZegoGridCss.three]:
@@ -20,12 +19,13 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
           this.props.userList.length === 6 || this.props.userList.length === 5,
         [ZegoGridCss.night]: this.props.userList.length >= 7,
       });
-    } else if (this.props.gridRowNumber === 2) {
+    }
+    if (this.props.gridRowNumber === 2) {
       const col = this.props.videoShowNumber / 2;
       const half = Math.ceil(this.props.userList.length / 2);
       let n =
         this.props.userList.length >= this.props.videoShowNumber ? col : half;
-      wrapClassName = clsx({
+      return clsx({
         [ZegoGridCss.gridWrapper]: true,
         [ZegoGridCss.twoRow]: n === 5,
         [ZegoGridCss.twoRowFourCol]: n === 4,
@@ -33,16 +33,16 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
         [ZegoGridCss.twoRowTwoCol]: n === 2,
         [ZegoGridCss.twoRowOneCol]: this.props.userList.length <= 2,
       });
-    } else {
-      wrapClassName = clsx({
-        [ZegoGridCss.gridWrapper]: true,
-        [ZegoGridCss.singleRow]: true,
-      });
     }
-
+    return clsx({
+      [ZegoGridCss.gridWrapper]: true,
+      [ZegoGridCss.singleRow]: true,
+    });
+  }
+  render(): React.ReactNode {
     return (
       <>
-        <div className={wrapClassName}>
+        <div className={this.wrapClassName}>
           {this.props.userList.map((user, index, arr) => {
             if (arr.length > this.props.videoShowNumber) {
               if (index === this.props.videoShowNumber - 1) {
@@ -74,7 +74,9 @@ export class ZegoGridLayout extends React.Component<ZegoGridLayoutProps> {
                 key={user.userID}
                 userInfo={user}
                 muted={user.userID === this.props.selfInfo!.userID}
-                handlePin={() => this.props.handleSetPin!(user.userID)}
+                handlePin={() => {
+                  this.props.handleSetPin!(user.userID);
+                }}
                 volume={this.props.soundLevel![user.userID] || {}}
               ></VideoPlayer>
             );

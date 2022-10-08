@@ -35,12 +35,12 @@ export class ZegoCloudUserListManager {
 
   async setMaxScreenNum(num: number): Promise<boolean> {
     this.screenNumber = num;
-    return this.updateStream();
+    return await this.updateStream();
   }
 
   async setSidebarLayOut(enable: boolean) {
     this.sidebarEnabled = enable;
-    return this.updateStream();
+    return await this.updateStream();
   }
   async updateStream(): Promise<boolean> {
     if (!this.remoteUserList.length) return true;

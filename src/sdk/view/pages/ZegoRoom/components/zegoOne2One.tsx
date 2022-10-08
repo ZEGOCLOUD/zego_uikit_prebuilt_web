@@ -3,7 +3,7 @@ import zegoOne2OneCss from "./zegoOne2One.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import { SoundLevelMap } from "../../../../model";
-export class ZegoOne2One extends React.Component<{
+export class ZegoOne2One extends React.PureComponent<{
   selfInfo: { userID: string };
   onLocalStreamPaused: () => void;
   handleSetPin?: Function;
@@ -18,9 +18,9 @@ export class ZegoOne2One extends React.Component<{
             myClass={zegoOne2OneCss.bigVideo}
             userInfo={this.props.userList[1]}
             muted={false}
-            handlePin={() =>
-              this.props.handleSetPin!(this.props.userList[1].userID)
-            }
+            handlePin={() => {
+              this.props.handleSetPin!(this.props.userList[1].userID);
+            }}
             volume={this.props.soundLevel![this.props.userList[1].userID] || {}}
           ></VideoPlayer>
           <VideoPlayer
@@ -34,9 +34,9 @@ export class ZegoOne2One extends React.Component<{
             myClass={zegoOne2OneCss.smallVideo}
             userInfo={this.props.userList[0]}
             muted={this.props.selfInfo.userID === this.props.userList[0].userID}
-            handlePin={() =>
-              this.props.handleSetPin!(this.props.userList[0].userID)
-            }
+            handlePin={() => {
+              this.props.handleSetPin!(this.props.userList[0].userID);
+            }}
             volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
           ></VideoPlayer>
         </>

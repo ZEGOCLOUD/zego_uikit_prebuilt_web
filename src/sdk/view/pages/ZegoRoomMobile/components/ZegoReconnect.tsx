@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from "react";
 
 import ZegoReconnectCss from "./ZegoReconnect.module.scss";
-export class ZegoReconnect extends React.Component<{
+export class ZegoReconnect extends React.PureComponent<{
   content: string;
 }> {
   render(): React.ReactNode {

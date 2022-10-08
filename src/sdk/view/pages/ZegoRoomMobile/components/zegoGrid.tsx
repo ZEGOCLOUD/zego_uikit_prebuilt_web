@@ -3,7 +3,7 @@ import { ZegoGridLayoutProps } from "../../../../model/index";
 import ZegoGridCss from "./zegoGrid.module.scss";
 import clsx from "clsx";
 import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
-export class ZegoGrid extends React.Component<ZegoGridLayoutProps> {
+export class ZegoGrid extends React.PureComponent<ZegoGridLayoutProps> {
   render(): React.ReactNode {
     let wrapClassName = clsx({
       [ZegoGridCss.gridWrapper]: true,

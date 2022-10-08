@@ -7,7 +7,7 @@ import {
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
 import { LiveRole, ScenarioModel, SoundLevelMap } from "../../../../model";
-export class ZegoUserList extends React.Component<{
+export class ZegoUserList extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   userList: ZegoCloudUserList;
   selfUserID: string;

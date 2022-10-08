@@ -4,7 +4,7 @@ import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh
 import { DateFormat, userNameColor } from "../../../../util";
 import { ZegoBroadcastMessageInfo2 } from "../../../../model";
 import { ZegoToast } from "../../../components/mobile/zegoToast";
-export class ZegoMessage extends React.Component<{
+export class ZegoMessage extends React.PureComponent<{
   messageList: ZegoBroadcastMessageInfo2[];
   sendMessage: (msg: string) => void;
   userID: string;
