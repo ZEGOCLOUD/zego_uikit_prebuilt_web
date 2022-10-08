@@ -35,8 +35,8 @@
             const roomID = 'room01';
             const userID = Math.floor(Math.random() * 10000) + "";
             const userName = "userName" + userID;
-            const appID = 11111;
-            const serverSecret = "22076fd0a83......";
+            const appID = 1722780232;
+            const serverSecret = "f1c44293f8abf5fa502b249d354692df";
             const TOKEN = generatePrebuiltToken(appID, serverSecret, roomID, userID, userName);
 
             // 通过url参数，区分不同角色
@@ -46,6 +46,9 @@
 
             const zp = ZegoUIKitPrebuilt.create(TOKEN);
             zp.joinRoom({
+                        onLeaveRoom: () => {
+                                    window.location.reload();
+                        },
                         container: document.querySelector("#root"),
                         scenario: {
                                     mode: ZegoUIKitPrebuilt.LiveStreaming,

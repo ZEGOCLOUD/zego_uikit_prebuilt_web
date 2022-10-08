@@ -9,18 +9,17 @@ import { generateToken, getRandomName, randomID } from "./util";
 export default class App extends React.Component {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   state = {
-    showPreviewHeader:
-      getUrlParams(window.location.href)["preHeader"] || "show",
+    showPreviewHeader: getUrlParams().get("preHeader") || "show",
     docs: "https://docs.zegocloud.com/article/14728",
   };
   constructor(props: Readonly<{}>) {
     super(props);
 
-    const userName = getUrlParams(window.location.href)["UserName"];
+    const userName = getUrlParams().get("UserName");
 
-    const roomID = getUrlParams(window.location.href)["roomID"] || randomID(5);
+    const roomID = getUrlParams().get("roomID") || randomID(5);
 
-    if (!getUrlParams(window.location.href)["roomID"]) {
+    if (!getUrlParams().get("roomID")) {
       window.history.replaceState(
         "",
         "You have logged into room: " + roomID,
@@ -32,7 +31,7 @@ export default class App extends React.Component {
       );
     }
 
-    let role_p = getUrlParams(window.location.href)["role"] || "Host";
+    let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
       role_p === "Host"
         ? LiveRole.Host
@@ -42,8 +41,7 @@ export default class App extends React.Component {
 
     let sharedLinks: { name: string; url: string }[] = [];
     let maxUsers = 50;
-    let showNonVideoUser =
-      getUrlParams(window.location.href)["showNonVideoUser"] || undefined;
+    let showNonVideoUser = getUrlParams().get("showNonVideoUser") || undefined;
 
     let mode = ScenarioModel.OneONoneCall;
     if (process.env.REACT_APP_PATH === "1on1_call") {

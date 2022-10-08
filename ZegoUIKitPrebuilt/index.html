@@ -106,7 +106,10 @@
         );
         const zp = ZegoUIKitPrebuilt.create(token);
         zp.joinRoom({
-            container: document.querySelector("#root")
+            container: document.querySelector("#root"),
+            preJoinViewConfig: {
+                invitationLink: window.location.origin + window.location.pathname + '?roomID=' + roomID,
+            },
         });
     }
 

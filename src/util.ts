@@ -24,6 +24,12 @@ export function generateToken(
       );
       res({ token: TOKEN });
     });
+    // return fetch(
+    //   `https://choui-prebuilt.herokuapp.com/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=86400`,
+    //   {
+    //     method: "GET",
+    //   }
+    // ).then((res) => res.json());
   } else {
     return fetch("https://console-api.zegocloud.com/demo/prebuilt_token", {
       method: "POST",

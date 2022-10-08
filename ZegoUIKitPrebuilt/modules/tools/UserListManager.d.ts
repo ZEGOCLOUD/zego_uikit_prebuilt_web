@@ -25,7 +25,7 @@ export declare class ZegoCloudUserListManager {
     muteVideo(user: ZegoCloudUser): Promise<void>;
     userOrderList: string[];
     userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]): Promise<boolean>;
-    mainStreamUpdate(updateType: "DELETE" | "ADD" | "UPDATE", streamList: ZegoCloudRemoteMedia[]): void;
+    mainStreamUpdate(updateType: "DELETE" | "ADD" | "UPDATE", streamList: ZegoCloudRemoteMedia[]): Promise<boolean>;
     screenStreamUpdate(updateType: "DELETE" | "ADD" | "UPDATE", streamList: ZegoCloudRemoteMedia[]): void;
     waitingPullStreams: {
         streamID: string;

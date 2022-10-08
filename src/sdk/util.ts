@@ -22,11 +22,26 @@ export function isIOS() {
   return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 }
 
-export function IsSafari() {
+export function IsLowVersionSafari() {
   const is_safari = navigator.userAgent.toLowerCase().indexOf("safari/") > -1;
   const is_chrome = navigator.userAgent.match("CriOS");
   const is_firefox = navigator.userAgent.match("FxiOS");
-  return is_safari && !is_chrome && !is_firefox;
+
+  // 获取操作系统版本
+  const m1 = navigator.userAgent.match(/iPhone OS .*?(?= )/);
+  let version = 0;
+  if (m1 && m1.length > 0) {
+    try {
+      const versionWith_: string =
+        m1[0].split(" ")[m1[0].split(" ").length - 1];
+      const mainVersion = versionWith_.split("_")[0];
+      version = Number.parseInt(mainVersion);
+    } catch (error) {
+      console.error("【ZEGOCLOUD】get safari version failed", error);
+    }
+  }
+
+  return is_safari && !is_chrome && !is_firefox && version < 14;
 }
 
 export function DateFormat(date: number, fmt: string) {
@@ -74,11 +89,11 @@ export function userNameColor(userName: string): string {
   return userColorMap[userName];
 }
 
-export function getUrlParams(url: string) {
+export function getUrlParams(
+  url: string = window.location.href
+): URLSearchParams {
   let urlStr = url.split("?")[1];
-  const urlSearchParams = new URLSearchParams(urlStr);
-  const result = Object.fromEntries(urlSearchParams.entries());
-  return result;
+  return new URLSearchParams(urlStr);
 }
 
 export function getVideoResolution(level: string): {

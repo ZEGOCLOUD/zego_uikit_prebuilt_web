@@ -24,6 +24,7 @@ export declare class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckPr
             url: string;
             copied: boolean;
         }[] | undefined;
+        showZegoSettings: boolean;
     };
     videoRef: RefObject<HTMLVideoElement>;
     inviteRef: RefObject<HTMLInputElement>;

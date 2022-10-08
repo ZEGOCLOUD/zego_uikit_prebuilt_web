@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
-import { ZegoDeviceInfo, ZegoLocalStreamConfig, ZegoPublishStreamConfig, ZegoServerResponse, ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
+import { ZegoDeviceInfo, ZegoLocalStreamConfig, ZegoPublishStreamConfig, ZegoServerResponse, ZegoSoundLevelInfo, ZegoStreamList } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 import { ZegoUser, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRemoteMedia, ZegoCloudRoomConfig } from "../model";
 import { ZegoCloudUserList, ZegoCloudUserListManager } from "./tools/UserListManager";
@@ -35,6 +35,8 @@ export declare class ZegoCloudRTCCore {
     setMaxScreenNum(num: number): Promise<void>;
     setSidebarLayOut(enable: boolean): Promise<void>;
     setShowNonVideo(enable: boolean): Promise<void>;
+    _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom";
+    setCurrentPage(page: "BrowserCheckPage" | "Room" | "RejoinRoom"): void;
     getCameras(): Promise<ZegoDeviceInfo[]>;
     useVideoDevice(localStream: MediaStream, deviceID: string): Promise<ZegoServerResponse>;
     getMicrophones(): Promise<ZegoDeviceInfo[]>;
@@ -63,6 +65,14 @@ export declare class ZegoCloudRTCCore {
     };
     setLive(status: "live" | "stop"): Promise<boolean>;
     enterRoom(): Promise<number>;
+    waitingHandlerStreams: {
+        add: ZegoStreamList[];
+        delete: ZegoStreamList[];
+    };
+    streamUpdateTimer(_waitingHandlerStreams: {
+        add: ZegoStreamList[];
+        delete: ZegoStreamList[];
+    }): Promise<void>;
     publishLocalStream(media: MediaStream, streamType?: "main" | "media" | "screensharing"): boolean | string;
     replaceTrack(media: MediaStream, mediaStreamTrack: MediaStreamTrack): Promise<ZegoServerResponse>;
     private subscribeUserListCallBack;
