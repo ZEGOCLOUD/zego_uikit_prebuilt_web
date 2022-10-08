@@ -43,9 +43,7 @@ export class ZegoRoomInvite extends React.PureComponent<{
                       duration: 3000,
                     });
                   }}
-                >
-                  Copy
-                </div>
+                ></div>
               </div>
             </div>
           );

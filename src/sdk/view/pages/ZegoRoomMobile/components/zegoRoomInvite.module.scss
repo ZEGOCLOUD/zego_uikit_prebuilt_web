@@ -7,10 +7,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   box-sizing: border-box;
   width: 100%;
-  height: 27vh;
+  height: vw(484px);
   background: #242736;
   border-radius: vw(46px) vw(46px) 0px 0px;
   .inviteHeader {
@@ -18,7 +18,7 @@
     align-items: center;
     box-sizing: border-box;
     width: 100%;
-    padding: vw(15px) vw(23px) vw(29px) vw(23px);
+    padding: vw(15px) vw(16px) vw(13px) vw(23px);
     color: #ffffff;
     font-weight: 400;
     font-size: vw(36px);
@@ -36,6 +36,8 @@
   .inviteLinkWrapper {
     display: flex;
     flex-direction: column;
+    margin-top: vw(16px);
+    margin-bottom: vw(14px);
     padding: 0 16px;
     .title {
       margin-bottom: 8px;
@@ -49,9 +51,9 @@
       align-items: center;
       justify-content: space-between;
       box-sizing: border-box;
-      width: 308px;
-      height: 44px;
-      padding: 12px;
+      width: vw(690px);
+      height: vw(94px);
+      padding: vw(25px) 0 vw(27px) vw(33px);
       overflow: hidden;
       color: rgba(255, 255, 255, 0.9);
       font-weight: 400;
@@ -65,7 +67,7 @@
       outline: none;
       opacity: 0.7;
       input {
-        width: 77%;
+        width: 100%;
         color: #ffffff;
         background: #303341;
         border: 0;
@@ -75,6 +77,8 @@
     .copyLinkButton {
       display: flex;
       align-items: center;
+      margin-right: vw(25px);
+      margin-left: vw(16px);
       color: #ffb763;
       font-weight: 400;
       font-size: 14px;
@@ -83,7 +87,6 @@
       &::before {
         width: 20px;
         height: 20px;
-        margin-right: 5px;
         background: url("../../../../sdkAssets/icon_inner_copy.png") no-repeat
           center/cover;
         content: "";

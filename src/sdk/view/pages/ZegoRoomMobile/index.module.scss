@@ -16,11 +16,11 @@
     z-index: 100;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     box-sizing: border-box;
     width: 100%;
     height: vw(122px);
-    padding: 0 vw(57px);
+    padding: 0 vw(53px);
     background: #1c1f2e;
     border: 1px solid #3d4054;
     a {
@@ -106,7 +106,7 @@
         z-index: 202;
         box-sizing: border-box;
 
-        padding: vw(32px) vw(53px) vw(3px) vw(33px);
+        padding: vw(32px) vw(55px) vw(41px - 7px) vw(55px);
         background-color: #1c1f2e;
         border: 1px solid #3d4054;
         border-radius: vw(18px);
@@ -119,17 +119,20 @@
           width: max-content;
           max-width: vw(503px);
           div {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            margin-right: vw(33px);
-            margin-bottom: vw(27px);
+            justify-content: flex-start;
+            width: vw(76px);
+            height: vw(76px + 38px);
+            margin-right: vw(63px);
+            margin-bottom: vw(0px);
             white-space: nowrap;
             i {
               width: vw(76px);
               height: vw(76px);
-              margin-bottom: vw(10px);
+              // margin-bottom: vw(10px);
               background: #2c2f3e;
               border-radius: vw(18px);
             }
@@ -168,18 +171,26 @@
               background-size: vw(56px) vw(56px);
             }
             span {
+              position: absolute;
+              bottom: 0;
               color: #ffffff;
               font-weight: 400;
               font-size: 10px;
               //   font-family: PingFangSC-Regular, PingFang SC;
             }
           }
+          div:nth-child(4) {
+            margin-right: 0;
+          }
+          div:nth-child(5) {
+            margin-top: vw(27px);
+          }
           div:last-child {
             margin-right: 0;
           }
-          .roomDetail {
-            margin-right: vw(35px);
-          }
+          // .roomDetail {
+          //   // margin-right: vw(35px);
+          // }
         }
       }
 
@@ -278,7 +289,7 @@
   }
   .LiveStateButton {
     position: fixed;
-    right: vw(20px);
+    right: vw(27px);
     bottom: vw(152px);
     width: vw(113px);
     height: vw(60px);
