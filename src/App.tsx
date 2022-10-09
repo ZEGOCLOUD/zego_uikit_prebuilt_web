@@ -12,9 +12,7 @@ export default class App extends React.Component {
     showPreviewHeader: getUrlParams().get("preHeader") || "show",
     docs: "https://docs.zegocloud.com/article/14728",
   };
-  constructor(props: Readonly<{}>) {
-    super(props);
-
+  componentDidMount() {
     const userName = getUrlParams().get("UserName");
 
     const roomID = getUrlParams().get("roomID") || randomID(5);

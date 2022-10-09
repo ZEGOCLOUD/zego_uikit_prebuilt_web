@@ -355,7 +355,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       setTimeout(async () => {
         this.props.core._config.showMyCameraToggleButton &&
           (this.cameraDevices = await this.props.core.getCameras());
-      }, 1300);
+      }, 4000);
     }
   }
 

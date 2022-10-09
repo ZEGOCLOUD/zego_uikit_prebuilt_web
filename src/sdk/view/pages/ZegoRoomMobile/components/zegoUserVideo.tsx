@@ -94,7 +94,7 @@ export class ZegoUserVideo extends React.PureComponent<{
             >
               {this.props.user.userName}
             </p>
-            {userInfo.userID === this.props.user.userID && <p>（You）</p>}
+            {userInfo.userID === this.props.user.userID && <span>（You）</span>}
             <span
               className={`${zegoUserVideoCss.micIcon}  ${
                 !this.props.user.streamList[0] ||
