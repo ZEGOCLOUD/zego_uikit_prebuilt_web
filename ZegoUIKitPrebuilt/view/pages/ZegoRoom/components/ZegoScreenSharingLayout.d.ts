@@ -1,7 +1,7 @@
 import React from "react";
 import { ZegoScreenSharingLayoutProps } from "../../../../model";
 import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
-export declare class ZegoScreenSharingLayout extends React.Component<ZegoScreenSharingLayoutProps> {
+export declare class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenSharingLayoutProps> {
     state: {
         fullScreen: boolean;
         loadingMask: boolean;

@@ -1,6 +1,6 @@
 import React, { ChangeEvent, RefObject } from "react";
 import { ZegoBroadcastMessageInfo2 } from "../../../../model";
-export declare class ZegoMessage extends React.Component<{
+export declare class ZegoMessage extends React.PureComponent<{
     messageList: ZegoBroadcastMessageInfo2[];
     sendMessage: (msg: string) => void;
     selfUserID: string;

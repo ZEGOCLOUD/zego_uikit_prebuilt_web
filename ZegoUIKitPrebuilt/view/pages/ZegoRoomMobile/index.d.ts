@@ -4,7 +4,7 @@ import { SoundLevelMap, ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoNot
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
-export declare class ZegoRoomMobile extends React.Component<ZegoBrowserCheckProp> {
+export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     static contextType: React.Context<import("./context/showManage").ShowManageType>;
     state: {
         localStream: undefined | MediaStream;

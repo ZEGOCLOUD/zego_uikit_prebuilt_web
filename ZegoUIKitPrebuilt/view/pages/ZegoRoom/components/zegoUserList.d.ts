@@ -2,7 +2,7 @@ import React from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 import { SoundLevelMap } from "../../../../model";
-export declare class ZegoUserList extends React.Component<{
+export declare class ZegoUserList extends React.PureComponent<{
     core: ZegoCloudRTCCore;
     userList: ZegoCloudUserList;
     selfUserID: string;

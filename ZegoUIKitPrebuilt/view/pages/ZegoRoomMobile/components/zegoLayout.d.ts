@@ -1,5 +1,5 @@
 import React from "react";
-export declare class ZegoLayout extends React.Component<{
+export declare class ZegoLayout extends React.PureComponent<{
     selectLayout: "Sidebar" | "Grid" | "Auto";
     closeCallBac: () => void;
     selectCallBack?: (selectLayout: "Sidebar" | "Grid" | "Auto") => Promise<boolean>;

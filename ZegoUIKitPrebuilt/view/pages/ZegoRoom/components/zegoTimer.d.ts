@@ -1,5 +1,5 @@
 import React from "react";
-export declare class ZegoTimer extends React.Component {
+export declare class ZegoTimer extends React.PureComponent {
     state: {
         time: number;
     };

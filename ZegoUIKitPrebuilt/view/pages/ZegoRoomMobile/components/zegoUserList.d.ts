@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
-export declare class ZegoUserList extends React.Component<{
+export declare class ZegoUserList extends React.PureComponent<{
     userList: ZegoCloudUserList;
     core: ZegoCloudRTCCore;
     closeCallBack: (user?: ZegoCloudUser) => void;

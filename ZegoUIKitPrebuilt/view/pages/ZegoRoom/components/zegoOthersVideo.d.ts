@@ -1,5 +1,7 @@
-/// <reference types="react" />
-export declare function OthersVideo(props: {
+import React from "react";
+export declare class OthersVideo extends React.PureComponent<{
     users: string[];
     others: number;
-}): JSX.Element;
+}> {
+    render(): React.ReactNode;
+}

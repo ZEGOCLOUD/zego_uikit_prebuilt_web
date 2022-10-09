@@ -2,7 +2,7 @@
 import React, { RefObject } from "react";
 import { SoundLevelMap, ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoNotification } from "../../../model";
 import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
-export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
+export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     state: {
         localStream: undefined | MediaStream;
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
@@ -101,7 +101,7 @@ export declare class ZegoRoom extends React.Component<ZegoBrowserCheckProp> {
     get getScreenSharingUser(): ZegoCloudUserList;
     getHiddenUser(): JSX.Element;
     get showScreenShareBottomTip(): boolean;
-    getLayoutScreen(): JSX.Element | undefined;
+    getLayoutScreen(): JSX.Element;
     handleSetPin(userID: string): void;
     handleFullScreen(fullScreen: boolean): void;
     setLive(): Promise<void>;

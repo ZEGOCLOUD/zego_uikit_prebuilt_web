@@ -1,6 +1,6 @@
 import React from "react";
 import { ZegoScreenSharingLayoutProps } from "../../../../model";
-export declare class ZegoScreen extends React.Component<ZegoScreenSharingLayoutProps> {
+export declare class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps> {
     state: {
         loading: boolean;
     };
