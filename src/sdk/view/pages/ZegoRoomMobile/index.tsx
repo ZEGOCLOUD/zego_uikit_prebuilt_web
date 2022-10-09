@@ -284,16 +284,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             },
           });
         } else if (this.safariLimitationNoticed != 0) {
-          this.setState(
-            {
-              zegoCloudUserList: [targetUser],
-              memberList: userList,
-              screenSharingUserList: [],
-            },
-            () => {
-              this.handleLayoutChange(this.state.userLayoutStatus);
-            }
-          );
+          // do nothing
         }
       } else {
         this.setState({
@@ -364,7 +355,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       setTimeout(async () => {
         this.props.core._config.showMyCameraToggleButton &&
           (this.cameraDevices = await this.props.core.getCameras());
-      }, 1000);
+      }, 1300);
     }
   }
 
