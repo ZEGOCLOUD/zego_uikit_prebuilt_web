@@ -150,6 +150,7 @@ export class ZegoMessage extends React.PureComponent<{
             }}
           />
           <button
+            className={this.state.message ? zegoMessageCss.readySend : ""}
             onClick={() => {
               this.handleSend();
             }}

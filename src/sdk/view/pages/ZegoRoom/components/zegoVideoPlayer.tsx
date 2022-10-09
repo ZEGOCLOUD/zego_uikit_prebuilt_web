@@ -41,7 +41,7 @@ export class VideoPlayer extends React.PureComponent<{
             el &&
               el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
               (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
-            el && (el as any)?.setSinkId(speakerId);
+            el && (el as any)?.setSinkId?.(speakerId);
           }}
           onPause={() => {
             console.error("Paused");

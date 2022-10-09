@@ -184,8 +184,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         status: "DISCONNECTED" | "CONNECTING" | "CONNECTED"
       ) => {
         if (status === "DISCONNECTED" && type === "ROOM") {
-          this.props.core.leaveRoom();
-          this.props.leaveRoom && this.props.leaveRoom();
+          this.leaveRoom();
         } else if (status === "CONNECTING" && type !== "STREAM") {
           this.setState({
             connecting: true,
@@ -865,7 +864,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                 el &&
                   el.srcObject !== user.streamList[0].media &&
                   (el.srcObject = user.streamList[0].media!);
-                el && (el as any)?.setSinkId(this.state.selectSpeaker);
+                el && (el as any)?.setSinkId?.(this.state.selectSpeaker);
               }}
             ></audio>
           );
@@ -1068,10 +1067,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   private setAllSinkId(speakerId: string) {
     const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
     room?.querySelectorAll("video").forEach((video: any) => {
-      video?.setSinkId(speakerId);
+      video?.setSinkId?.(speakerId);
     });
     room?.querySelectorAll("audio").forEach((audio: any) => {
-      audio?.setSinkId(speakerId);
+      audio?.setSinkId?.(speakerId);
     });
   }
   render(): React.ReactNode {
@@ -1083,7 +1082,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     return (
       <ShowPCManageContext.Provider
         value={{
-          showPinButton: !!this.props.core._config.showPinButton,
+          showPinButton:
+            !!this.props.core._config.showPinButton &&
+            this.getShownUser().length > 1,
           speakerId: this.state.selectSpeaker,
         }}
       >
@@ -1361,7 +1362,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             className={ZegoRoomCss.countDown}
             style={{
               display: this.state.liveCountdown > 0 ? "flex" : "none",
-              backgroundColor: "#1C1F2E",
             }}
           >
             <div>{this.state.liveCountdown}</div>

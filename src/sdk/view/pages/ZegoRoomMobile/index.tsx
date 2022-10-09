@@ -735,6 +735,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     });
 
+    if (
+      this._selectedUser &&
+      !shownUser.some((su) => su.userID === this._selectedUser.userID) &&
+      this.state.layOutStatus === "MANAGE"
+    ) {
+      this.setState({
+        layOutStatus: "ONE_VIDEO",
+      });
+    }
+
     return shownUser as ZegoCloudUserList;
   }
 
@@ -1135,7 +1145,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               layOutStatus: _user ? "MANAGE" : "ONE_VIDEO",
             });
           },
-          showPinButton: !!this.props.core._config.showPinButton,
+          showPinButton:
+            !!this.props.core._config.showPinButton &&
+            this.getShownUser().length > 1,
           userInfo: { userID: this.props.core._expressConfig.userID },
         }}
       >
