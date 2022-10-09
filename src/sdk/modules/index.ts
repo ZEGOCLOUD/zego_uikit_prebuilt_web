@@ -414,7 +414,10 @@ export class ZegoCloudRTCCore {
       );
       this.onRoomLiveStateUpdateCallBack &&
         this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status.v);
-    } else if (this._currentPage === "BrowserCheckPage") {
+    } else if (
+      this._currentPage === "BrowserCheckPage" ||
+      this._currentPage === "RejoinRoom"
+    ) {
       setTimeout(() => {
         this.roomExtraInfo = value;
       }, 1000);
@@ -760,7 +763,10 @@ export class ZegoCloudRTCCore {
 
         this.streamUpdateTimer(nextWaitingHandlerStreams);
       }, 700);
-    } else if (this._currentPage === "BrowserCheckPage") {
+    } else if (
+      this._currentPage === "BrowserCheckPage" ||
+      this._currentPage === "RejoinRoom"
+    ) {
       setTimeout(() => {
         this.streamUpdateTimer(_waitingHandlerStreams);
       }, 1000);
@@ -859,7 +865,10 @@ export class ZegoCloudRTCCore {
       updateType: "DELETE" | "ADD",
       users: ZegoUser[]
     ) => {
-      if (this._currentPage === "BrowserCheckPage") {
+      if (
+        this._currentPage === "BrowserCheckPage" ||
+        this._currentPage === "RejoinRoom"
+      ) {
         setTimeout(() => {
           this.onRemoteUserUpdateCallBack(roomID, updateType, users);
         }, 1000);

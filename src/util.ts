@@ -14,22 +14,22 @@ export function generateToken(
   userName: string
 ): Promise<{ token: string }> {
   if (process.env.REACT_APP_ENV === "test") {
-    return new Promise((res, rej) => {
-      const TOKEN = generatePrebuiltToken(
-        1484647939,
-        "22076fd0a8388f31dc1f6e344171b2b1",
-        roomID,
-        userID,
-        userName
-      );
-      res({ token: TOKEN });
-    });
-    // return fetch(
-    //   `https://choui-prebuilt.herokuapp.com/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=86400`,
-    //   {
-    //     method: "GET",
-    //   }
-    // ).then((res) => res.json());
+    // return new Promise((res, rej) => {
+    //   const TOKEN = generatePrebuiltToken(
+    //     1484647939,
+    //     "22076fd0a8388f31d......",
+    //     roomID,
+    //     userID,
+    //     userName
+    //   );
+    //   res({ token: TOKEN });
+    // });
+    return fetch(
+      `https://choui-prebuilt.herokuapp.com/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=86400`,
+      {
+        method: "GET",
+      }
+    ).then((res) => res.json());
   } else {
     return fetch("https://console-api.zegocloud.com/demo/prebuilt_token", {
       method: "POST",

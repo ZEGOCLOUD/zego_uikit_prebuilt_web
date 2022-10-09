@@ -118,12 +118,22 @@ const config: webpack.Configuration = {
         onEnd: {
           copy: [
             {
-              //精简
-              source: "./public/test.html",
-              destination: "./ZegoUIKitPrebuilt/index.html",
+              source: "./public/1On1Call.html",
+              destination: "./ZegoUIKitPrebuilt/1On1Call.html",
             },
             {
-              //精简
+              source: "./public/groupCall.html",
+              destination: "./ZegoUIKitPrebuilt/groupCall.html",
+            },
+            {
+              source: "./public/liveStream.html",
+              destination: "./ZegoUIKitPrebuilt/liveStream.html",
+            },
+            {
+              source: "./public/videoConference.html",
+              destination: "./ZegoUIKitPrebuilt/videoConference.html",
+            },
+            {
               source: "./public/package.json",
               destination: "./ZegoUIKitPrebuilt/package.json",
             },
