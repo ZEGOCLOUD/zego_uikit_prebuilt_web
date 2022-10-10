@@ -7,7 +7,7 @@
   width: 100%;
   min-width: 826px;
   height: 100%;
-  min-height: 280px;
+  min-height: 328px;
   background: #1c1f2e;
 }
 @media screen and (min-width: 826px) {
@@ -342,6 +342,20 @@
 .msgButton {
   background-image: url("../../../sdkAssets/icon_inner_message.png");
 }
+.msgButtonRed {
+  position: relative;
+  &::after {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background: #e8543b;
+    border: 1px solid #2c2f3e;
+    border-radius: 10px;
+    content: "";
+  }
+}
 .settingsButtonModel {
   position: absolute;
   bottom: 58px;
@@ -437,7 +451,7 @@
 }
 
 .layoutSettingsMask {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   z-index: 1000;
@@ -470,6 +484,10 @@
     background: url("../../../sdkAssets/icon_settings_close.png") no-repeat
       center/cover;
     cursor: pointer;
+    &:hover {
+      background: url("../../../sdkAssets/icon_settings_black_close_hover.png")
+        no-repeat center/cover;
+    }
   }
   .layoutSettingsContent {
     padding: 10px 0;

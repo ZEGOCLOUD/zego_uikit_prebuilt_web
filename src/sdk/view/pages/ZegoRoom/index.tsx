@@ -58,6 +58,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     screenSharingStream: undefined | MediaStream; // 本地屏幕共享流
     screenSharingUserList: ZegoCloudUserList; // 屏幕共享列表
     showZegoSettings: boolean;
+    haveUnReadMsg: boolean;
   } = {
     localStream: undefined,
     layOutStatus: "ONE_VIDEO",
@@ -87,6 +88,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     screenSharingStream: undefined,
     screenSharingUserList: [],
     showZegoSettings: false,
+    haveUnReadMsg: false,
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -249,9 +251,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                 }),
               ];
             }
+
             return {
               messageList: [...state.messageList, ...messageList],
               notificationList: lowerLeftNotification,
+              haveUnReadMsg: this.state.layOutStatus != "MESSAGE",
             };
           }
         );
@@ -1089,7 +1093,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>
-          {this.state.zegoCloudUserList.length}
           {(this.props.core._config.branding?.logoURL ||
             this.props.core._config.roomTimerDisplayed ||
             this.props.core._config.scenario?.mode ===
@@ -1335,8 +1338,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
               )}
               {this.props.core._config.showTextChat && (
                 <div
-                  className={ZegoRoomCss.msgButton}
+                  className={`${ZegoRoomCss.msgButton} ${
+                    this.state.haveUnReadMsg ? ZegoRoomCss.msgButtonRed : ""
+                  }`}
                   onClick={() => {
+                    this.setState({
+                      haveUnReadMsg: false,
+                    });
                     this.toggleLayOut("MESSAGE");
                   }}
                 ></div>

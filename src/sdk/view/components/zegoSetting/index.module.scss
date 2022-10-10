@@ -98,7 +98,7 @@
   background: var(--bgColor);
   border: 1px solid var(--borderColor);
   border-radius: 8px;
-  box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.2);
+  box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.75);
 }
 .header {
   display: flex;
@@ -250,7 +250,7 @@
     width: 35px;
     height: 19px;
     margin-left: 13px;
-    color: #666666;
+    color: #a6a7ad;
     font-weight: 400;
     font-size: 12px;
     line-height: 17px;
