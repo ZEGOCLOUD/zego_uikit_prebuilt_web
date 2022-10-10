@@ -329,7 +329,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.onRoomLiveStateUpdate((res: 1 | 0) => {
-      console.error("【ZEGOCLOUD】choui", res);
       this.setState(
         (preState: { liveCountdown: number }) => {
           return {
@@ -343,7 +342,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           };
         },
         () => {
-          console.error("【ZEGOCLOUD】choui liveStatus", this.state.liveStatus);
+          console.error("【ZEGOCLOUD】 liveStatus", this.state.liveStatus);
         }
       );
     });
@@ -771,6 +770,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           return (
             <audio
               autoPlay
+              style={{ width: "1px", height: "1px" }}
               muted={user.userID === this.props.core._expressConfig.userID}
               key={user.userID + "_hiddenAudio"}
               onCanPlay={(ev) => {
