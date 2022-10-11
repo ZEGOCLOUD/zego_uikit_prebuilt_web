@@ -927,7 +927,22 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
 
     if (pages) {
-      return <div className={ZegoRoomCss.mask}>{pages}</div>;
+      return (
+        <div
+          className={`${ZegoRoomCss.mask}  zegocloud_layout_Mask`}
+          onClick={(ev) => {
+            // @ts-ignore
+            const className: string = ev.target.className;
+            if (className.includes("zegocloud_layout_Mask")) {
+              this.setState({
+                layOutStatus: "ONE_VIDEO",
+              });
+            }
+          }}
+        >
+          {pages}
+        </div>
+      );
     }
   }
 

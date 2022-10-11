@@ -49,13 +49,12 @@ export default class App extends React.Component {
     if (process.env.REACT_APP_PATH === "1on1_call") {
       maxUsers = 2;
       sharedLinks.push({
-        name: "Join as Host",
+        name: "Share the Link",
         url:
           window.location.origin +
           window.location.pathname +
           "?roomID=" +
-          roomID +
-          "&role=Host",
+          roomID,
       });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       mode = ScenarioModel.LiveStreaming;
@@ -82,13 +81,12 @@ export default class App extends React.Component {
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       mode = ScenarioModel.VideoConference;
       sharedLinks.push({
-        name: "Join as Host",
+        name: "Share the Link",
         url:
           window.location.origin +
           window.location.pathname +
           "?roomID=" +
-          roomID +
-          "&role=Host",
+          roomID,
       });
     }
 

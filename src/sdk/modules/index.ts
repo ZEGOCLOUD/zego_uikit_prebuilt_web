@@ -76,8 +76,10 @@ export class ZegoCloudRTCCore {
   remoteStreamMap: { [index: string]: ZegoCloudRemoteMedia } = {};
 
   async checkWebRTC(): Promise<boolean> {
-    const result = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC");
-    return !!result.result;
+    const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC");
+    const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264");
+
+    return !!webRTC.result && !!H264.result;
   }
 
   _config: ZegoCloudRoomConfig = {
