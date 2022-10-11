@@ -88,11 +88,13 @@ export class ZegoUserList extends React.PureComponent<{
                 {user.userID === this.props.selfUserID && "(You)"}
               </div>
               {user.userID === this.props.selfUserID ? (
-                <div className={ZegoUserListCss.selfStatusWrapper}>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
+                this.isShownPin(user) && (
+                  <div className={ZegoUserListCss.selfStatusWrapper}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                )
               ) : (
                 <div className={ZegoUserListCss.memberStatusWrapper}>
                   <span
