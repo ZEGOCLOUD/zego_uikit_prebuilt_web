@@ -1,5 +1,4 @@
 import React from "react";
-import { userNameColor } from "../../../../util";
 import zegoOne2OneCss from "./zegoOne2One.module.scss";
 import { ZegoMore } from "./zegoMore";
 import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";

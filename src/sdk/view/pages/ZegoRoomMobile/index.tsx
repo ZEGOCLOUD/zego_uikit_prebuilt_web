@@ -539,22 +539,25 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       targetModel = true;
     }
     this.faceModel = -1;
-
-    let targetCameraID;
-    if (this.cameraDevices.length < 4) {
-      targetCameraID = targetModel
-        ? this.cameraDevices[this.cameraDevices.length - 2].deviceID
-        : this.cameraDevices[this.cameraDevices.length - 1].deviceID;
-    } else {
-      targetCameraID = targetModel
-        ? this.cameraDevices[0].deviceID
-        : this.cameraDevices[this.cameraDevices.length - 1].deviceID;
+    this.state.localStream.getVideoTracks()[0].stop();
+    try {
+      const stream = await this.props.core.createStream({
+        camera: {
+          video: !this.props.core.status.videoRefuse,
+          audio: !this.props.core.status.audioRefuse,
+          videoQuality: 4,
+          facingMode: !this.state.cameraFront ? "user" : "environment",
+          width: 640,
+          height: 360,
+          bitrate: 400,
+          frameRate: 15,
+        },
+      });
+      let videoTrack = stream.getVideoTracks()[0];
+      await this.props.core.replaceTrack(this.state.localStream, videoTrack);
+    } catch (error) {
+      console.error("【ZEGOCLOUD】switch camera failed!", error);
     }
-
-    await this.props.core.useCameraDevice(
-      this.state.localStream,
-      targetCameraID
-    );
 
     this.faceModel = targetModel ? 1 : 0;
     this.setState({
