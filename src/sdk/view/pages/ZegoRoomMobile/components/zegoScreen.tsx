@@ -37,7 +37,6 @@ export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps
                     <audio
                       autoPlay={true}
                       key={index}
-                      muted
                       className={ZegoSidebarCss.videoCommon}
                       ref={(el) => {
                         el &&
