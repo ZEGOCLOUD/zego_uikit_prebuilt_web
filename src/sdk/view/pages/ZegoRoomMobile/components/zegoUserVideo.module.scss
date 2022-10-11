@@ -119,10 +119,12 @@
       background-size: cover;
       & > span {
         position: absolute;
-        bottom: vw(17px);
-        width: vw(9px);
+        bottom: vw(16px);
+        left: 50%;
+        width: 26%;
         background: #0055ff;
         border-radius: 5px;
+        transform: translateX(-50%);
       }
       &.close {
         background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_close@2x.png);
