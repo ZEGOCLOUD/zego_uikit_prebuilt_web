@@ -39,13 +39,15 @@
     justify-content: flex-end;
     button {
       margin-left: vw(46px);
+      padding: vw(10px) vw(20px);
+
       color: #0055ff;
       font-weight: 500;
       font-size: vw(26px);
       line-height: vw(37px);
-      background: #ffffff;
+      background: #fff;
       border: 0;
-      border-radius: vw(18px);
+      border-radius: vw(10px);
     }
     button:hover {
       color: #ffffff;
