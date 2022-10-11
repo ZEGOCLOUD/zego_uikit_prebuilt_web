@@ -68,3 +68,15 @@
     }
   }
 }
+.videoCommon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  // object-fit: cover;
+  background: #242736;
+  border-radius: 14px;
+}
+audio {
+  width: 1px !important;
+  height: 1px !important;
+}

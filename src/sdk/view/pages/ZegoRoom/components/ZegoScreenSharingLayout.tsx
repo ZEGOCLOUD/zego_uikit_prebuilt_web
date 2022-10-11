@@ -112,14 +112,27 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                 if (arr.length > this.props.videoShowNumber) {
                   if (index === this.props.videoShowNumber - 1) {
                     return (
-                      <OthersVideo
-                        key={user.userID}
-                        users={[
-                          arr[index].userName!,
-                          arr[index + 1]?.userName!,
-                        ]}
-                        others={arr.length - this.props.videoShowNumber + 1}
-                      ></OthersVideo>
+                      <>
+                        <OthersVideo
+                          key={user.userID}
+                          users={[
+                            arr[index].userName!,
+                            arr[index + 1]?.userName!,
+                          ]}
+                          others={arr.length - this.props.videoShowNumber + 1}
+                        ></OthersVideo>
+                        <audio
+                          key={user.userID}
+                          autoPlay
+                          ref={(el) => {
+                            el &&
+                              el.srcObject !== user?.streamList?.[0]?.media &&
+                              (el.srcObject = user?.streamList?.[0]?.media!);
+                            el &&
+                              (el as any)?.setSinkId?.(this.context.speakerId);
+                          }}
+                        ></audio>
+                      </>
                     );
                   }
                   if (index > this.props.videoShowNumber - 1) {
@@ -131,7 +144,8 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                           el &&
                             el.srcObject !== user?.streamList?.[0]?.media &&
                             (el.srcObject = user?.streamList?.[0]?.media!);
-                          el && (el as any)?.setSinkId(this.context.speakerId);
+                          el &&
+                            (el as any)?.setSinkId?.(this.context.speakerId);
                         }}
                       ></audio>
                     );

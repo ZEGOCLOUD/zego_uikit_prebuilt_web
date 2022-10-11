@@ -79,7 +79,7 @@
     align-items: center;
     justify-content: flex-end;
     box-sizing: border-box;
-    max-width: 80%;
+    max-width: 97%;
     height: vw(46px);
     padding: vw(7px) vw(12px) vw(6px) vw(10px);
     line-height: vw(33px);
@@ -100,9 +100,17 @@
       text-overflow: ellipsis;
       text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
     }
+    span {
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(24px);
+      line-height: vw(33px);
+    }
 
     .micIcon {
       position: relative;
+      display: flex;
+      justify-content: center;
       width: vw(36px);
       height: vw(36px);
       background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
@@ -111,9 +119,8 @@
       background-size: cover;
       & > span {
         position: absolute;
-        bottom: vw(16px);
-        left: vw(14px);
-        width: vw(8px);
+        bottom: vw(17px);
+        width: vw(9px);
         background: #0055ff;
         border-radius: 5px;
       }

@@ -19,6 +19,9 @@ export class VideoPlayer extends React.PureComponent<{
   static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
   video: HTMLVideoElement | null = null;
+  state = {
+    hovered: false,
+  };
   componentWillUnmount() {
     this.video?.srcObject && (this.video.srcObject = null);
   }
@@ -30,6 +33,16 @@ export class VideoPlayer extends React.PureComponent<{
     return (
       <div
         className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
+        onMouseEnter={() => {
+          this.setState({
+            hovered: true,
+          });
+        }}
+        onMouseLeave={() => {
+          this.setState({
+            hovered: false,
+          });
+        }}
       >
         <video
           muted={this.props.muted}
@@ -41,7 +54,7 @@ export class VideoPlayer extends React.PureComponent<{
             el &&
               el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
               (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
-            el && (el as any)?.setSinkId(speakerId);
+            el && (el as any)?.setSinkId?.(speakerId);
           }}
           onPause={() => {
             console.error("Paused");
@@ -95,7 +108,7 @@ export class VideoPlayer extends React.PureComponent<{
             )}
           </div>
         )}
-        {!this.props.hiddenMore && showPinButton && (
+        {!this.props.hiddenMore && showPinButton && this.state.hovered && (
           <div className={ZegoVideoPlayerCss.moreWrapperMask}>
             <div className={ZegoVideoPlayerCss.moreWrapper}>
               <span className={ZegoVideoPlayerCss.moreIcon}></span>

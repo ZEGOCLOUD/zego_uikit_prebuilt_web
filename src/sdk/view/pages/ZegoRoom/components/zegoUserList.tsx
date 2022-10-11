@@ -7,6 +7,7 @@ import {
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
 import { LiveRole, ScenarioModel, SoundLevelMap } from "../../../../model";
+import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 export class ZegoUserList extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   userList: ZegoCloudUserList;
@@ -14,6 +15,8 @@ export class ZegoUserList extends React.PureComponent<{
   handleSetPin: Function;
   soundLevel?: SoundLevelMap;
 }> {
+  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
+  context!: React.ContextType<typeof ShowPCManageContext>;
   componentDidMount() {
     document.addEventListener("click", this.onBodyClick.bind(this));
   }
@@ -47,15 +50,19 @@ export class ZegoUserList extends React.PureComponent<{
     if (this.props.core._config.scenario?.mode === ScenarioModel.OneONoneCall) {
       return false;
     }
-    return !!(
-      this.props.core._config.showNonVideoUser ||
-      (user.streamList &&
-        user.streamList[0] &&
-        user.streamList[0].cameraStatus === "OPEN") ||
-      (user.streamList &&
-        user.streamList[0] &&
-        user.streamList[0].micStatus === "OPEN" &&
-        !!this.props.core._config.showOnlyAudioUser)
+    let { showPinButton } = this.context;
+    return (
+      showPinButton &&
+      !!(
+        this.props.core._config.showNonVideoUser ||
+        (user.streamList &&
+          user.streamList[0] &&
+          user.streamList[0].cameraStatus === "OPEN") ||
+        (user.streamList &&
+          user.streamList[0] &&
+          user.streamList[0].micStatus === "OPEN" &&
+          !!this.props.core._config.showOnlyAudioUser)
+      )
     );
   }
   render(): React.ReactNode {

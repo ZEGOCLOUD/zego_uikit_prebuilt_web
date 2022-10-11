@@ -26,8 +26,8 @@
     const roomID = 'room01';
     const userID = Math.floor(Math.random() * 10000) + "";
     const userName = "userName" + userID;
-    const appID = 11111;
-    const serverSecret = "22076fd0a8388.......";
+    const appID = ;
+    const serverSecret = "";
     const TOKEN = generatePrebuiltToken(appID, serverSecret, roomID, userID, userName);
 
 
@@ -36,7 +36,6 @@
     zp.joinRoom({
         container: document.querySelector("#root"),
         sharedLinks: [{
-            name: 'Join as Host',
             url: window.location.origin + window.location.pathname + '?roomID=' + roomID,
         }],
         scenario: {

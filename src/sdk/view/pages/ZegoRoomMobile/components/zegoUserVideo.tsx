@@ -94,7 +94,7 @@ export class ZegoUserVideo extends React.PureComponent<{
             >
               {this.props.user.userName}
             </p>
-            {userInfo.userID === this.props.user.userID && <p>（You）</p>}
+            {userInfo.userID === this.props.user.userID && <span>（You）</span>}
             <span
               className={`${zegoUserVideoCss.micIcon}  ${
                 !this.props.user.streamList[0] ||
@@ -128,9 +128,11 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
           this.props.user.streamList[0] &&
           this.props.user.streamList[0].media && (
             <audio
+              key={this.props.user.streamList[0].streamID}
               className={zegoUserVideoCss.videoCommon}
               onCanPlay={(ev) => {
                 (ev.target as HTMLAudioElement).play();
+                console.warn("choui played");
               }}
               ref={(el) => {
                 el &&

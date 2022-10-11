@@ -284,16 +284,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             },
           });
         } else if (this.safariLimitationNoticed != 0) {
-          this.setState(
-            {
-              zegoCloudUserList: [targetUser],
-              memberList: userList,
-              screenSharingUserList: [],
-            },
-            () => {
-              this.handleLayoutChange(this.state.userLayoutStatus);
-            }
-          );
+          // do nothing
         }
       } else {
         this.setState({
@@ -338,7 +329,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.onRoomLiveStateUpdate((res: 1 | 0) => {
-      console.error("【ZEGOCLOUD】choui", res);
       this.setState(
         (preState: { liveCountdown: number }) => {
           return {
@@ -352,7 +342,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           };
         },
         () => {
-          console.error("【ZEGOCLOUD】choui liveStatus", this.state.liveStatus);
+          console.error("【ZEGOCLOUD】 liveStatus", this.state.liveStatus);
         }
       );
     });
@@ -364,7 +354,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       setTimeout(async () => {
         this.props.core._config.showMyCameraToggleButton &&
           (this.cameraDevices = await this.props.core.getCameras());
-      }, 1000);
+      }, 4000);
     }
   }
 
@@ -747,6 +737,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     });
 
+    if (
+      this._selectedUser &&
+      !shownUser.some((su) => su.userID === this._selectedUser.userID) &&
+      this.state.layOutStatus === "MANAGE"
+    ) {
+      this.setState({
+        layOutStatus: "ONE_VIDEO",
+      });
+    }
+
     return shownUser as ZegoCloudUserList;
   }
 
@@ -773,6 +773,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           return (
             <audio
               autoPlay
+              style={{ width: "1px", height: "1px" }}
               muted={user.userID === this.props.core._expressConfig.userID}
               key={user.userID + "_hiddenAudio"}
               onCanPlay={(ev) => {
@@ -929,7 +930,22 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
 
     if (pages) {
-      return <div className={ZegoRoomCss.mask}>{pages}</div>;
+      return (
+        <div
+          className={`${ZegoRoomCss.mask}  zegocloud_layout_Mask`}
+          onClick={(ev) => {
+            // @ts-ignore
+            const className: string = ev.target.className;
+            if (className.includes("zegocloud_layout_Mask")) {
+              this.setState({
+                layOutStatus: "ONE_VIDEO",
+              });
+            }
+          }}
+        >
+          {pages}
+        </div>
+      );
     }
   }
 
@@ -1147,7 +1163,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               layOutStatus: _user ? "MANAGE" : "ONE_VIDEO",
             });
           },
-          showPinButton: !!this.props.core._config.showPinButton,
+          showPinButton:
+            !!this.props.core._config.showPinButton &&
+            this.getShownUser().length > 1,
           userInfo: { userID: this.props.core._expressConfig.userID },
         }}
       >

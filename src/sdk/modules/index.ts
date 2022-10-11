@@ -76,8 +76,10 @@ export class ZegoCloudRTCCore {
   remoteStreamMap: { [index: string]: ZegoCloudRemoteMedia } = {};
 
   async checkWebRTC(): Promise<boolean> {
-    const result = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC");
-    return !!result.result;
+    const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC");
+    const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264");
+
+    return !!webRTC.result && !!H264.result;
   }
 
   _config: ZegoCloudRoomConfig = {
@@ -407,11 +409,11 @@ export class ZegoCloudRTCCore {
     if (this._currentPage === "Room") {
       this._roomExtraInfo = value;
       this.zum.setLiveStates(this._roomExtraInfo.live_status.v);
-      console.error(
-        "【ZEGOCLOUD】roomExtraInfo choui",
-        value,
-        this.onRoomLiveStateUpdateCallBack
-      );
+      // console.error(
+      //   "【ZEGOCLOUD】roomExtraInfo choui",
+      //   value,
+      //   this.onRoomLiveStateUpdateCallBack
+      // );
       this.onRoomLiveStateUpdateCallBack &&
         this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status.v);
     } else if (
@@ -538,7 +540,6 @@ export class ZegoCloudRTCCore {
       (roomID: string, roomExtraInfoList: ZegoRoomExtraInfo[]) => {
         roomExtraInfoList.forEach((info) => {
           if (info.key === this.extraInfoKey) {
-            console.error("【ZEGOCLOUD】choui", info.value);
             this.roomExtraInfo = JSON.parse(info.value);
           }
         });
