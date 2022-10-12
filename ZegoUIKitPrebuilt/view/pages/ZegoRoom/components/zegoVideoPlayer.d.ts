@@ -17,6 +17,9 @@ export declare class VideoPlayer extends React.PureComponent<{
     static contextType?: React.Context<ShowPCManageType>;
     context: React.ContextType<typeof ShowPCManageContext>;
     video: HTMLVideoElement | null;
+    state: {
+        hovered: boolean;
+    };
     componentWillUnmount(): void;
     render(): React.ReactNode;
 }
