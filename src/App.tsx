@@ -49,7 +49,7 @@ export default class App extends React.Component {
     if (process.env.REACT_APP_PATH === "1on1_call") {
       maxUsers = 2;
       sharedLinks.push({
-        name: "Share the Link",
+        name: "Personal link",
         url:
           window.location.origin +
           window.location.pathname +
@@ -81,7 +81,7 @@ export default class App extends React.Component {
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       mode = ScenarioModel.VideoConference;
       sharedLinks.push({
-        name: "Share the Link",
+        name: "Personal link",
         url:
           window.location.origin +
           window.location.pathname +
