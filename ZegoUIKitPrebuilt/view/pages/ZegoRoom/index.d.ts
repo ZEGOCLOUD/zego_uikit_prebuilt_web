@@ -32,6 +32,7 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
         screenSharingStream: undefined | MediaStream;
         screenSharingUserList: ZegoCloudUserList;
         showZegoSettings: boolean;
+        haveUnReadMsg: boolean;
     };
     settingsRef: RefObject<HTMLDivElement>;
     moreRef: RefObject<HTMLDivElement>;
