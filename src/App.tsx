@@ -123,6 +123,7 @@ export default class App extends React.Component {
             role,
           },
         },
+        showPreJoinView: false,
       };
       if (showNonVideoUser !== undefined) {
         param.showNonVideoUser = showNonVideoUser == "true";

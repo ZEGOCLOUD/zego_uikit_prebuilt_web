@@ -868,7 +868,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                 el &&
                   el.srcObject !== user.streamList[0].media &&
                   (el.srcObject = user.streamList[0].media!);
-                el && (el as any)?.setSinkId?.(this.state.selectSpeaker);
+                el && (el as any)?.setSinkId?.(this.state.selectSpeaker || "");
               }}
             ></audio>
           );
@@ -1071,10 +1071,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   private setAllSinkId(speakerId: string) {
     const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
     room?.querySelectorAll("video").forEach((video: any) => {
-      video?.setSinkId?.(speakerId);
+      video?.setSinkId?.(speakerId || "");
     });
     room?.querySelectorAll("audio").forEach((audio: any) => {
-      audio?.setSinkId?.(speakerId);
+      audio?.setSinkId?.(speakerId || "");
     });
   }
   render(): React.ReactNode {

@@ -124,7 +124,9 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                             el.srcObject !== user?.streamList?.[0]?.media &&
                             (el.srcObject = user?.streamList?.[0]?.media!);
                           el &&
-                            (el as any)?.setSinkId?.(this.context.speakerId);
+                            (el as any)?.setSinkId?.(
+                              this.context.speakerId || ""
+                            );
                         }}
                       ></audio>
                     </div>
@@ -139,7 +141,10 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                         el &&
                           el.srcObject !== user?.streamList?.[0]?.media &&
                           (el.srcObject = user?.streamList?.[0]?.media!);
-                        el && (el as any)?.setSinkId?.(this.context.speakerId);
+                        el &&
+                          (el as any)?.setSinkId?.(
+                            this.context.speakerId || ""
+                          );
                       }}
                     ></audio>
                   );

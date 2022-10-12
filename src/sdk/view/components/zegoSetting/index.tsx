@@ -262,7 +262,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
         const playDom = document.querySelector("#speakerAudio") as any;
         if (dom.paused) {
           playDom?.setSinkId &&
-            (await playDom?.setSinkId(this.state.selectSpeaker));
+            (await playDom?.setSinkId(this.state.selectSpeaker || ""));
           playDom.play();
           dom.play();
           this.speakerSounder.connectToElementSource(dom, (error: any) => {
