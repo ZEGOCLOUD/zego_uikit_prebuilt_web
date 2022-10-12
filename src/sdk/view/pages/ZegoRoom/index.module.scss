@@ -294,7 +294,6 @@
 }
 .inviteButton {
   @include toolButton;
-  margin-right: 62px;
   background-image: url("../../../sdkAssets/icon_inner_share.png");
 }
 .micButton {

@@ -37,9 +37,9 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-width: 1000px;
+  min-width: 960px;
   height: 100%;
-  min-height: 666px;
+  min-height: 530px;
 }
 .supportWrapper {
   display: flex;
@@ -331,3 +331,9 @@
     transform: translateX(0);
   }
 }
+
+// @media screen and (max-width: 960px), (max-height: 530px) {
+//   .support {
+//     display: none;
+//   }
+// }

@@ -428,57 +428,63 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               </div>
             </div>
 
-            <div className={ZegoBrowserCheckCss.shareLinkWrapper}>
-              <div className={ZegoBrowserCheckCss.title}>Share the link</div>
-              {this.state.sharedLinks?.map((link) => {
-                return (
-                  <div
-                    className={ZegoBrowserCheckCss.inviteLinkWrapper}
-                    key={link.name}
-                  >
-                    <div className={ZegoBrowserCheckCss.inviteLinkWrapperLeft}>
-                      <h3>{link.name}</h3>
-                      <input
-                        className={ZegoBrowserCheckCss.inviteLink}
-                        placeholder="inviteLink"
-                        readOnly
-                        value={link.url}
-                      ></input>
-                    </div>
-                    <button
-                      className={ZegoBrowserCheckCss.copyLinkButton}
-                      disabled={link.copied}
-                      onClick={() => {
-                        copy(link.url);
-                        this.setState((preState: { sharedLinks: any[] }) => {
-                          return {
-                            sharedLinks: preState.sharedLinks.map((l) => {
-                              if (l.name === link.name) {
-                                l.copied = true;
-                              }
-                              return l;
-                            }),
-                          };
-                        });
-
-                        setTimeout(() => {
+            {this.state?.sharedLinks && this.state?.sharedLinks?.length > 0 && (
+              <div className={ZegoBrowserCheckCss.shareLinkWrapper}>
+                <div className={ZegoBrowserCheckCss.title}>Share the link</div>
+                {this.state.sharedLinks?.map((link) => {
+                  return (
+                    <div
+                      className={ZegoBrowserCheckCss.inviteLinkWrapper}
+                      key={link.name}
+                    >
+                      <div
+                        className={ZegoBrowserCheckCss.inviteLinkWrapperLeft}
+                      >
+                        <h3>{link.name}</h3>
+                        <input
+                          className={ZegoBrowserCheckCss.inviteLink}
+                          placeholder="inviteLink"
+                          readOnly
+                          value={link.url}
+                        ></input>
+                      </div>
+                      <button
+                        className={ZegoBrowserCheckCss.copyLinkButton}
+                        disabled={link.copied}
+                        onClick={() => {
+                          copy(link.url);
                           this.setState((preState: { sharedLinks: any[] }) => {
                             return {
                               sharedLinks: preState.sharedLinks.map((l) => {
                                 if (l.name === link.name) {
-                                  l.copied = false;
+                                  l.copied = true;
                                 }
                                 return l;
                               }),
                             };
                           });
-                        }, 5000);
-                      }}
-                    ></button>
-                  </div>
-                );
-              })}
-            </div>
+
+                          setTimeout(() => {
+                            this.setState(
+                              (preState: { sharedLinks: any[] }) => {
+                                return {
+                                  sharedLinks: preState.sharedLinks.map((l) => {
+                                    if (l.name === link.name) {
+                                      l.copied = false;
+                                    }
+                                    return l;
+                                  }),
+                                };
+                              }
+                            );
+                          }, 5000);
+                        }}
+                      ></button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
         {this.state.showDeviceAuthorAlert && (

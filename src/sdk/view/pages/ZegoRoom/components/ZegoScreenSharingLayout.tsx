@@ -94,11 +94,13 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
           </div>
           {this.state.showBottomTip && (
             <div className={ZegoSidebarCss.screenTipWrapper}>
-              <p>
-                To avoid an infinity mirror, we suggest you not to share your
-                entire screen or browser window.
-              </p>
-              <div onClick={this.handleIgnore.bind(this)}>Ignore</div>
+              <div className={ZegoSidebarCss.bottomWrapper}>
+                <p>
+                  To avoid an infinity mirror, we suggest you not to share your
+                  entire screen or browser window.
+                </p>
+                <div onClick={this.handleIgnore.bind(this)}>Ignore</div>
+              </div>
             </div>
           )}
         </div>
