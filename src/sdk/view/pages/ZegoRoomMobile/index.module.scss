@@ -20,7 +20,7 @@
     box-sizing: border-box;
     width: 100%;
     height: vw(122px);
-    padding: 0 vw(53px);
+    padding: 0 vw(77px);
     background: #1c1f2e;
     border: 1px solid #3d4054;
     a {
@@ -369,4 +369,9 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
+}
+.live {
+  .footer {
+    padding: 0 vw(53px);
+  }
 }

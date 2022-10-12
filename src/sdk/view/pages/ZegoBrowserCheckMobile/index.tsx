@@ -383,7 +383,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
                 <button
                   className={link.copied ? ZegoBrowserCheckCss.copied : ""}
                   onClick={() => {
-                    copy(link.url);
+                    link && link.url && copy(link.url);
                     this.setState((preState: { sharedLinks: any[] }) => {
                       return {
                         sharedLinks: preState.sharedLinks.map((l) => {

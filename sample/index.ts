@@ -1,4 +1,4 @@
-import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
+import { ZegoUIKitPrebuilt } from "../ZegoUIKitPrebuilt";
 
 // get token
 function generateToken(
@@ -47,9 +47,28 @@ async function init() {
   const zp = ZegoUIKitPrebuilt.create(token);
   zp.joinRoom({
     container: document.querySelector("#root") as HTMLDivElement,
-    preJoinViewConfig: {
-      invitationLink:
-        window.location.origin + window.location.pathname + "?roomID=" + roomID,
+    scenario: { mode: ZegoUIKitPrebuilt.GroupCall },
+    sharedLinks: [
+      {
+        name: "join Room:" + roomID,
+        url:
+          window.location.origin +
+          window.location.pathname +
+          "?roomID=" +
+          roomID,
+      },
+    ],
+    onJoinRoom: () => {
+      console.warn("choui:onJoinRoom");
+    },
+    onLeaveRoom: () => {
+      console.warn("choui:onLeaveRoom");
+    },
+    onUserLeave: (user) => {
+      console.warn("choui:onUserLeave", user);
+    },
+    onUserJoin: (user) => {
+      console.warn("choui:onUserJoin", user);
     },
   });
 }

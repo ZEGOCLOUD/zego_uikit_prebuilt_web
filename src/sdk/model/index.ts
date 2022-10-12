@@ -81,7 +81,7 @@ export interface ZegoCloudRoomConfig {
   onLeaveRoom?: () => void; // 用户退出通话页面回调
   onUserJoin?: (user: ZegoUser[]) => void; // 其他用户进入回调
   onUserLeave?: (user: ZegoUser[]) => void; // 其他用户退入回调
-  sharedLinks?: { name: string; url: string }[]; // 产品链接描述
+  sharedLinks?: { name?: string; url?: string }[]; // 产品链接描述
   showScreenSharingButton?: boolean; // 是否显示屏幕共享按钮
   scenario?: {
     mode?: ScenarioModel; // 场景选择

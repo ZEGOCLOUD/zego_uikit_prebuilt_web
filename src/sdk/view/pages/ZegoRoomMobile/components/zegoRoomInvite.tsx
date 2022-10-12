@@ -37,7 +37,7 @@ export class ZegoRoomInvite extends React.PureComponent<{
                   className={zegoRoomInviteCss.copyLinkButton}
                   onClick={(ev) => {
                     ev.stopPropagation();
-                    copy(link.url);
+                    link && link.url && copy(link.url);
                     ZegoToast({
                       content: "Copy successfully",
                       duration: 3000,
