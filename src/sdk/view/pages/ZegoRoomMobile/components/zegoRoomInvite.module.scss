@@ -69,11 +69,12 @@
       outline: none;
       input {
         width: 100%;
-        color: rgba(255, 255, 255, 0.7);
+        // color: rgba(255, 255, 255, 0.7);
         color: #a4a4a4;
         font-size: vw(30px);
         line-height: vw(42px);
-        background: #303341;
+        // background: #303341;
+        background: rgba(48, 51, 65, 0);
         border: 0;
         outline: none;
       }
