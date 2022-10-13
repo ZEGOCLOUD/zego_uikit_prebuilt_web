@@ -477,7 +477,6 @@ export class ZegoCloudRTCCore {
         streamList: ZegoStreamList[],
         extendedData?: string
       ) => {
-        console.warn("【ZEGOCLOUD】roomStreamUpdate", updateType, streamList);
         if (updateType === "ADD") {
           this.waitingHandlerStreams.add = [
             ...this.waitingHandlerStreams.add,
@@ -533,6 +532,7 @@ export class ZegoCloudRTCCore {
             ...streamList,
           ];
         }
+        console.error("roomStreamUpdate choui:", this.waitingHandlerStreams);
       }
     );
     ZegoCloudRTCCore._zg.on(
@@ -702,6 +702,10 @@ export class ZegoCloudRTCCore {
     add: ZegoStreamList[];
     delete: ZegoStreamList[];
   }): Promise<void> {
+    if (!this.status.loginRsp) {
+      console.warn("【ZEGOCLOUD】logoutRoom,stop streamUpdateTimer");
+      return;
+    }
     if (this._currentPage === "Room") {
       let _streamList = [];
       if (_waitingHandlerStreams.add.length > 0) {
@@ -737,9 +741,6 @@ export class ZegoCloudRTCCore {
         _streamList = [];
         for (let i = 0; i < _waitingHandlerStreams.delete.length; i++) {
           const streamInfo = _waitingHandlerStreams.delete[i];
-          if (!this.remoteStreamMap[streamInfo.streamID]) {
-            debugger;
-          }
           this.remoteStreamMap[streamInfo.streamID] &&
             _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
           await this.zum.stopPullStream(
@@ -752,17 +753,38 @@ export class ZegoCloudRTCCore {
           _streamList.length > 0 &&
           this.onRemoteMediaUpdateCallBack("DELETE", _streamList);
       }
-      setTimeout(() => {
-        const nextWaitingHandlerStreams = {
-          add: [...this.waitingHandlerStreams.add],
-          delete: [...this.waitingHandlerStreams.delete],
-        };
-        this.waitingHandlerStreams = {
-          add: [],
-          delete: [],
-        };
+      // const nextWaitingHandlerStreams = {
+      //   add: [...this.waitingHandlerStreams.add],
+      //   delete: [...this.waitingHandlerStreams.delete],
+      // };
+      const nextWaitingHandlerStreams = {
+        add: this.waitingHandlerStreams.add.filter((realTime_item) => {
+          if (
+            _waitingHandlerStreams.add.some(
+              (handing_item) => handing_item.streamID === realTime_item.streamID
+            )
+          ) {
+            return false;
+          } else {
+            return true;
+          }
+        }),
+        delete: this.waitingHandlerStreams.delete.filter((realTime_item) => {
+          if (
+            _waitingHandlerStreams.delete.some(
+              (handing_item) => handing_item.streamID === realTime_item.streamID
+            )
+          ) {
+            return false;
+          } else {
+            return true;
+          }
+        }),
+      };
 
-        this.streamUpdateTimer(nextWaitingHandlerStreams);
+      this.waitingHandlerStreams = nextWaitingHandlerStreams;
+      setTimeout(() => {
+        this.streamUpdateTimer(this.waitingHandlerStreams);
       }, 700);
     } else if (
       this._currentPage === "BrowserCheckPage" ||
@@ -992,6 +1014,7 @@ export class ZegoCloudRTCCore {
       ZegoCloudRTCCore._zg.stopPlayingStream(key);
     }
     this.remoteStreamMap = {};
+    this.waitingHandlerStreams = { add: [], delete: [] };
 
     ZegoCloudRTCCore._zg.logoutRoom();
     this.status.loginRsp = false;
