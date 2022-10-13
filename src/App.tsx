@@ -13,7 +13,9 @@ export default class App extends React.Component {
     docs:
       process.env.REACT_APP_PATH === "live_stream"
         ? "https://docs.zegocloud.com/article/14885"
-        : "https://docs.zegocloud.com/article/14728",
+        : process.env.REACT_APP_PATH === "1on1_call"
+        ? "https://docs.zegocloud.com/article/14728"
+        : "https://docs.zegocloud.com/article/14922",
   };
   constructor(props: any) {
     super(props);

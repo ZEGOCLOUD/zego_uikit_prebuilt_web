@@ -22,7 +22,7 @@ export class ZegoRoomInvite extends React.PureComponent<{
             <div
               className={ZegoRoomInviteCss.copyLinkButton}
               onClick={() => {
-                this.handleCopy(link.url);
+                link && link.url && this.handleCopy(link.url);
               }}
             >
               Copy

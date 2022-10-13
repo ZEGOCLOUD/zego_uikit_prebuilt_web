@@ -477,7 +477,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                         className={ZegoBrowserCheckCss.copyLinkButton}
                         disabled={link.copied}
                         onClick={() => {
-                          copy(link.url);
+                          link && link.url && copy(link.url);
                           this.setState((preState: { sharedLinks: any[] }) => {
                             return {
                               sharedLinks: preState.sharedLinks.map((l) => {
