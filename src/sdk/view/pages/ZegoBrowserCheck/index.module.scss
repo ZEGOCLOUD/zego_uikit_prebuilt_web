@@ -1,5 +1,5 @@
 .notSupport {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   z-index: 10000;
@@ -182,9 +182,9 @@
   flex: 1 0 auto;
   flex-direction: column;
   justify-content: center;
-  padding: 83px 60px;
+  padding: 49px 60px;
   .title {
-    margin-bottom: 26px;
+    margin-bottom: 24px;
     color: #333333;
     font-weight: 600;
     font-size: 22px;
@@ -272,7 +272,7 @@
   border-radius: 6px;
 }
 .shareLinkWrapper {
-  margin-top: 72px;
+  margin-top: 40px;
 }
 .inviteLinkWrapper {
   display: flex;
@@ -280,6 +280,9 @@
   margin-bottom: 20px;
   background: #f5f7fa;
   border-radius: 10px;
+  &:last-of-type {
+    margin-bottom: 0;
+  }
   .inviteLinkWrapperLeft {
     padding: 12px 6px 12px 18px;
     h3 {
@@ -292,7 +295,7 @@
 }
 .inviteLink {
   box-sizing: border-box;
-  width: 284px;
+  width: 274px;
   height: 20px;
   padding: 10px 18px;
   padding: 0;
@@ -308,7 +311,6 @@
 .copyLinkButton {
   width: 46px;
   height: 46px;
-  margin-left: 5px;
   background-color: #f5f7fa;
   background-image: url("../../../sdkAssets/icon_out_copy.png");
   background-repeat: no-repeat;
@@ -332,8 +334,155 @@
   }
 }
 
-// @media screen and (max-width: 960px), (max-height: 530px) {
-//   .support {
-//     display: none;
-//   }
-// }
+.smallSize {
+  &.support {
+    min-width: 640px;
+    min-height: 328px;
+  }
+  .supportWrapper {
+    width: 640px;
+    height: 328px;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0px 12px 20px 0px #eaecf1;
+  }
+  .videoWrapper {
+    width: 292px;
+    border-radius: 12px;
+  }
+  .videoTip {
+    font-size: 22px;
+    line-height: 30px;
+  }
+  .noCamera {
+    width: 96px;
+    height: 96px;
+    font-size: 36px;
+    line-height: 45px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .toolsWrapper {
+    height: 60px;
+    padding-top: 10px;
+    border-radius: 0px 0px 12px 12px;
+    & > div {
+      width: 40px;
+      height: 40px;
+      margin: 0 10px;
+      background-size: 23px 23px;
+    }
+  }
+  .audioButton {
+    background-image: url("../../../sdkAssets/icon_out_audio.png");
+    &:not(.close):hover {
+      background-image: url("../../../sdkAssets/icon_out_audio_hover.png");
+    }
+    &.close {
+      background-image: url("../../../sdkAssets/icon_out_audio_close.png");
+    }
+  }
+  .videoButton {
+    background-image: url("../../../sdkAssets/icon_out_video.png");
+    &:not(.close)hover {
+      background-image: url("../../../sdkAssets/icon_out_video_hover.png");
+    }
+    &.close {
+      background-image: url("../../../sdkAssets/icon_out_video_close.png");
+    }
+  }
+  .settingsButton {
+    background-image: url("../../../sdkAssets/icon_out_more.png");
+    &:hover {
+      background-image: url("../../../sdkAssets/icon_out_more_hover.png");
+    }
+  }
+  .joinScreenWrapper {
+    padding: 0px 24px;
+    .title {
+      margin-bottom: 10px;
+      font-size: 18px;
+      line-height: 25px;
+    }
+  }
+  .userName {
+    width: 292px;
+    padding: 10px 15px;
+    font-size: 13px;
+    line-height: 18px;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    &::placeholder {
+      font-size: 13px;
+      line-height: 18px;
+    }
+    &:hover,
+    &:focus,
+    &:active,
+    &:focus-visible {
+      border: 1px solid #0055ff;
+    }
+  }
+  .joinRoomButtonWrapper {
+    position: relative;
+    margin-top: 10px;
+  }
+  .joinRoomButton {
+    width: 292px;
+    height: 38px;
+    font-size: 13px;
+    line-height: 38px;
+    border-radius: 8px;
+    &[disabled] {
+      background: rgba($color: #0055ff, $alpha: 0.3);
+      cursor: no-drop;
+    }
+  }
+  .joinRoomButtonLoading {
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+  }
+
+  .joinRoomButtonTip {
+    top: 44px;
+    width: 270px;
+    padding: 6px 8px;
+    font-size: 12px;
+    line-height: 16px;
+    border-radius: 6px;
+  }
+  .shareLinkWrapper {
+    margin-top: 20px;
+    overflow: auto;
+  }
+  .inviteLinkWrapper {
+    margin-bottom: 10px;
+    border-radius: 8px;
+    .inviteLinkWrapperLeft {
+      padding: 8px 4px 8px 14px;
+      h3 {
+        font-size: 13px;
+        line-height: 19px;
+      }
+    }
+  }
+  .inviteLink {
+    box-sizing: border-box;
+    width: 215px;
+    height: 18px;
+    padding: 0;
+    font-size: 13px;
+    line-height: 20px;
+    border-radius: 0;
+  }
+  .copyLinkButton {
+    width: 40px;
+    height: 40px;
+    background-image: url("../../../sdkAssets/icon_out_copy.png");
+    background-size: 24px 24px;
+    &[disabled] {
+      background-image: url("../../../sdkAssets/icon_out_copied.png");
+    }
+  }
+}

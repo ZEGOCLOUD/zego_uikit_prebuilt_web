@@ -4,7 +4,7 @@ import { copy } from "../../../modules/tools/util";
 import { ScenarioModel, ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettings, ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
-import { getVideoResolution } from "../../../util";
+import { getVideoResolution, throttle } from "../../../util";
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
     localStream: undefined,
@@ -32,6 +32,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       };
     }),
     showZegoSettings: false,
+    isSmallSize: false,
   };
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
@@ -46,6 +47,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async componentDidMount() {
+    this.onResize();
+    window.addEventListener("resize", this.throttleResize.bind(this), false);
     this.setState({
       userName: this.props.core._expressConfig.userName,
     });
@@ -76,6 +79,24 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       });
     }
   }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.throttleResize.bind(this), false);
+  }
+  onResize() {
+    if (
+      this.props.core._config.container!.clientWidth < 960 ||
+      this.props.core._config.container!.clientHeight < 530
+    ) {
+      this.setState({
+        isSmallSize: true,
+      });
+    } else {
+      this.setState({
+        isSmallSize: false,
+      });
+    }
+  }
+  throttleResize = throttle(this.onResize.bind(this), 300);
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
     let speakerDevices = await this.props.core.getSpeakers();
@@ -318,7 +339,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
   render(): React.ReactNode {
     return (
-      <div className={ZegoBrowserCheckCss.support}>
+      <div
+        className={`${ZegoBrowserCheckCss.support} ${
+          this.state.isSmallSize ? ZegoBrowserCheckCss.smallSize : ""
+        }`}
+      >
         <div className={ZegoBrowserCheckCss.supportWrapper}>
           <div className={ZegoBrowserCheckCss.videoWrapper}>
             <video

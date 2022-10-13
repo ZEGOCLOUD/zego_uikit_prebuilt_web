@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-width: 826px;
+  min-width: 640px;
   height: 100%;
   min-height: 328px;
   background: #1c1f2e;
@@ -52,7 +52,7 @@
 
   .goLive {
     height: 36px;
-    margin-right: 30px;
+    margin-right: 10px;
     padding: 8px 16.5px;
     color: rgba(255, 255, 255, 0.9);
     font-weight: 600;
@@ -590,6 +590,7 @@
   i {
     width: 76px;
     height: 76px;
+    margin-bottom: 4px;
     background-size: contain;
   }
 }
