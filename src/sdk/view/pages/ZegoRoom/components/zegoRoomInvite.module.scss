@@ -4,7 +4,7 @@
   padding: 24px 16px 0;
   .title {
     margin-bottom: 8px;
-    color: #ffffff;
+    color: rgba($color: #ffffff, $alpha: 0.9);
     font-weight: 400;
     font-size: 14px;
     line-height: 20px;
@@ -24,18 +24,17 @@
     line-height: 20px;
     white-space: nowrap;
     text-overflow: ellipsis;
-    background: rgba(48, 51, 65, 1);
+    background: rgba(48, 51, 65, 0.7);
     border: 0;
     border-radius: 10px;
     outline: none;
-    opacity: 0.7;
     input {
       width: 252px;
       overflow: hidden;
-      color: #ffffff;
+      color: rgba($color: #ffffff, $alpha: 0.9);
       white-space: nowrap;
       text-overflow: ellipsis;
-      background: #303341;
+      background: transparent;
       border: 0;
       outline: none;
     }
@@ -52,7 +51,8 @@
       width: 20px;
       height: 20px;
       background: url("../../../../sdkAssets/icon_inner_copy.png") no-repeat
-        center/cover;
+        center;
+      background-size: 44px 44px;
       content: "";
     }
   }
