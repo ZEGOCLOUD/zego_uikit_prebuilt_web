@@ -22,7 +22,7 @@
     height: vw(122px);
     padding: 0 vw(77px);
     background: #1c1f2e;
-    border: 1px solid #3d4054;
+    border: 1px solid #1c1f2e;
     a {
       box-sizing: border-box;
       width: vw(76px);
@@ -35,10 +35,14 @@
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
+      &:focus {
+        background-color: #3d4154;
+      }
+      &:active {
+        background-color: #3d4154;
+      }
     }
-    .switchCameraBack {
-      background-color: #3d4154;
-    }
+
     .toggleCamera {
       background-image: url(../../../sdkMobileAssets/Room_camera_open@2x.png);
       background-repeat: no-repeat;
@@ -102,7 +106,7 @@
       .popMore {
         position: fixed;
         right: vw(67px);
-        bottom: vw(122px + 14px);
+        bottom: vw(122px + 14px + 7px);
         z-index: 202;
         box-sizing: border-box;
 
@@ -197,7 +201,7 @@
       .popMoreArray {
         position: absolute;
         right: vw(24px);
-        bottom: vw(102px);
+        bottom: vw(102px + 7px);
         z-index: 202;
         width: vw(20px);
         height: vw(20px);
@@ -225,7 +229,7 @@
       padding: vw(20px) vw(24px) vw(16px) vw(24px);
       font-weight: 400;
       //   font-family: PingFangSC-Regular, PingFang SC;
-      background-color: rgba(42, 42, 42, 0.5);
+      background-color: #46464666;
       border-radius: vw(18px);
       h5 {
         color: #ffb763;
@@ -301,6 +305,9 @@
     border: 0;
     border-radius: vw(36px);
   }
+  .LiveStateButtonNoFooter {
+    bottom: vw(90px);
+  }
   .liveNotStart,
   .noOneStreaming {
     display: flex;
@@ -370,8 +377,13 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
 }
-.live {
+.host {
   .footer {
     padding: 0 vw(53px);
+  }
+}
+.audience {
+  .footer {
+    padding: 0 vw(199px);
   }
 }

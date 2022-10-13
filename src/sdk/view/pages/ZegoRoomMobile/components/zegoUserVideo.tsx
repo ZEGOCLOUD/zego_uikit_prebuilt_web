@@ -85,28 +85,32 @@ export class ZegoUserVideo extends React.PureComponent<{
 
         {!this.props.hiddenName && (
           <div className={zegoUserVideoCss.name}>
-            <p
-              className={
-                this.props.user.overScreenMuteVideo
-                  ? "muteVideo"
-                  : "unmuteVideo"
-              }
-            >
-              {this.props.user.userName}
-            </p>
-            {userInfo.userID === this.props.user.userID && <span>（You）</span>}
-            <span
-              className={`${zegoUserVideoCss.micIcon}  ${
-                !this.props.user.streamList[0] ||
-                this.props.user.streamList[0].micStatus !== "OPEN"
-                  ? zegoUserVideoCss.close
-                  : ""
-              }`}
-            >
-              {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
-                <span style={{ height: height + "px" }}></span>
+            <div>
+              <p
+                className={
+                  this.props.user.overScreenMuteVideo
+                    ? "muteVideo"
+                    : "unmuteVideo"
+                }
+              >
+                {this.props.user.userName}
+              </p>
+              {userInfo.userID === this.props.user.userID && (
+                <span>（You）</span>
               )}
-            </span>
+              <span
+                className={`${zegoUserVideoCss.micIcon}  ${
+                  !this.props.user.streamList[0] ||
+                  this.props.user.streamList[0].micStatus !== "OPEN"
+                    ? zegoUserVideoCss.close
+                    : ""
+                }`}
+              >
+                {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
+                  <span style={{ height: height + "px" }}></span>
+                )}
+              </span>
+            </div>
           </div>
         )}
         {!this.props.hiddenMore && <ZegoMore user={this.props.user} />}

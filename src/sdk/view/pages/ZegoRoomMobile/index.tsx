@@ -1126,7 +1126,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     } else {
       clearTimeout(this.footerTimer);
       this.footerTimer = setTimeout(() => {
-        this.setState({ showFooter: false, showMore: false });
+        !this.state.showMore &&
+          this.setState({ showFooter: false, showMore: false });
       }, 5000);
     }
   }
@@ -1203,8 +1204,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         <div
           className={`${ZegoRoomCss.ZegoRoom}  ZegoRoomMobile_ZegoRoom ${
             this.props.core._config.scenario?.mode ===
-            ScenarioModel.LiveStreaming
-              ? ZegoRoomCss.live
+              ScenarioModel.LiveStreaming &&
+            this.props.core._config.scenario?.config?.role === LiveRole.Host
+              ? ZegoRoomCss.host
+              : this.props.core._config.scenario?.config?.role ===
+                LiveRole.Audience
+              ? ZegoRoomCss.audience
               : ""
           }`}
           onClick={(e) => {
@@ -1219,12 +1224,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           {(this.state.showFooter || false) && (
             <div className={ZegoRoomCss.footer}>
               {this.props.core._config.showMyCameraToggleButton &&
-                this.props.core._config.scenario?.mode !==
-                  ScenarioModel.LiveStreaming && (
+                (this.props.core._config.scenario?.mode !==
+                  ScenarioModel.LiveStreaming ||
+                  this.props.core._config.scenario?.config?.role ===
+                    LiveRole.Cohost) && (
                   <a
-                    className={`${ZegoRoomCss.switchCamera} ${
-                      this.state.cameraFront ? "" : ZegoRoomCss.switchCameraBack
-                    }`}
+                    className={`${ZegoRoomCss.switchCamera}`}
                     onClick={() => {
                       this.switchCamera();
                     }}
@@ -1287,7 +1292,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                       <div className={ZegoRoomCss.popMoreContent}>
                         {this.props.core._config.showMyCameraToggleButton &&
                           this.props.core._config.scenario?.mode ===
-                            ScenarioModel.LiveStreaming && (
+                            ScenarioModel.LiveStreaming &&
+                          this.props.core._config.scenario.config?.role ===
+                            LiveRole.Host && (
                             <div
                               className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}
                               onClick={() => {
@@ -1442,7 +1449,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           {this.props.core._config.scenario?.mode ===
             ScenarioModel.LiveStreaming &&
             (this.state.liveCountdown === 0 || this.state.liveStatus == 1) && (
-              <button className={ZegoRoomCss.LiveStateButton}>Live</button>
+              <button
+                className={`${ZegoRoomCss.LiveStateButton}  ${
+                  this.state.showFooter
+                    ? ""
+                    : ZegoRoomCss.LiveStateButtonNoFooter
+                }`}
+              >
+                Live
+              </button>
             )}
         </div>
       </ShowManageContext.Provider>

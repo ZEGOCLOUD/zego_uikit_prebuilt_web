@@ -12,7 +12,7 @@
     width: vw(496px);
     height: vw(496px);
     margin: 0 vw(127px);
-    background-color: #2a2a2a;
+    background-color: #1c1f2e;
     border-radius: vw(24px);
     .video {
       display: block;
@@ -60,11 +60,17 @@
     }
     .handler {
       position: absolute;
-      bottom: vw(21px);
-      left: 50%;
+      bottom: 0;
       display: flex;
-      transform: 50%;
-      transform: translate(-50%);
+      justify-content: center;
+      width: 100%;
+      padding-bottom: vw(21px);
+      background: linear-gradient(
+        180deg,
+        rgba(51, 51, 51, 0) 0%,
+        rgba(51, 51, 51, 0.6) 100%
+      );
+      border-radius: 0px 0px vw(24px) vw(24px);
       a {
         display: block;
         width: vw(87.85px);
@@ -129,6 +135,11 @@
           border: vw(2px) solid #0055ff;
         }
       }
+      .focus {
+        color: #2a2a2a;
+        border: vw(2px) solid #0055ff;
+      }
+
       button {
         height: vw(94px);
         margin-left: vw(26px);
@@ -177,11 +188,12 @@
           flex: 1;
           width: vw(434px);
           height: vw(37px);
+          padding: 0;
           color: #a4a4a4;
           font-weight: 400;
           font-size: vw(26px);
           line-height: vw(37px);
-          background-color: #ffffff00;
+          background: #f5f7fa;
           border: 0;
           outline: none;
           :focus {

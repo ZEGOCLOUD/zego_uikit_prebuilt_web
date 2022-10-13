@@ -355,6 +355,11 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
             <input
               placeholder="Your Name"
               value={this.state.userName}
+              className={
+                this.state.userName != this.props.core._expressConfig.userName
+                  ? ZegoBrowserCheckCss.focus
+                  : ""
+              }
               onChange={(ev: ChangeEvent<HTMLInputElement>) => {
                 ev.target.scrollIntoView();
                 this.handleChange(ev);
