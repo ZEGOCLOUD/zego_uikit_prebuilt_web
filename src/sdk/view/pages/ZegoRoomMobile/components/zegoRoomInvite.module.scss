@@ -54,22 +54,23 @@
       box-sizing: border-box;
       width: vw(690px);
       height: vw(94px);
-      padding: vw(25px) 0 vw(27px) vw(33px);
+      padding: vw(25px) 0 vw(27px) vw(29px);
       overflow: hidden;
       color: rgba(255, 255, 255, 0.9);
+
       font-weight: 400;
       font-size: vw(30px);
       line-height: vw(42px);
       white-space: nowrap;
       text-overflow: ellipsis;
-      background: rgba(48, 51, 65, 1);
+      background: rgba(48, 51, 65, 0.7);
       border: 0;
       border-radius: 10px;
       outline: none;
-      opacity: 0.7;
       input {
         width: 100%;
-        color: #ffffff;
+        color: rgba(255, 255, 255, 0.7);
+        color: #a4a4a4;
         font-size: vw(30px);
         line-height: vw(42px);
         background: #303341;

@@ -85,7 +85,8 @@
   z-index: 13;
   width: vw(190px);
   height: vw(338px);
-  border: 1px solid #a4a4a4;
+  overflow: hidden;
+  border: 1px solid #3d4054;
   border-radius: vw(14px);
   video {
     width: 100%;
