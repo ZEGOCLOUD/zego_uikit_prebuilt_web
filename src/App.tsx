@@ -93,6 +93,7 @@ export default class App extends React.Component {
     }
 
     this.myMeeting = async (element: HTMLDivElement) => {
+      console.log(" userName || getRandomName()", userName || getRandomName());
       let { token } = await generateToken(
         randomID(5),
         roomID,

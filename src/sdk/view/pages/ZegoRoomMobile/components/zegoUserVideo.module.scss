@@ -8,7 +8,7 @@
     height: 100%;
     // object-fit: cover;
     background: #242736;
-    border-radius: 14px;
+    border-radius: vw(12px);
   }
   .hideVideo {
     width: 1px;
@@ -25,8 +25,8 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    background: #242736;
-    border-radius: 14px;
+    background: #171821;
+    // border-radius: 14px;
     .nameWrapper {
       display: flex;
       align-items: center;
@@ -43,7 +43,7 @@
         font-size: vw(35px);
         line-height: vw(49px);
         text-align: center;
-        background: #2e2f37;
+        background: #ffffff1a;
         border: 2px solid #242736;
         border-radius: 50%;
       }
@@ -72,65 +72,74 @@
   }
   .name {
     position: absolute;
-    right: vw(0px);
-    bottom: vw(5px);
+    right: 0;
+    bottom: 0;
     z-index: 11;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     box-sizing: border-box;
-    max-width: 97%;
-    height: vw(46px);
-    padding: vw(7px) vw(12px) vw(6px) vw(10px);
-    line-height: vw(33px);
-    text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
-    background: rgba(42, 42, 42, 0.5);
-    border-radius: vw(12px);
-    p {
-      max-width: 70%;
-      /*第一步： 溢出隐藏 */
-      overflow: hidden;
-      color: #ffffff;
-      font-weight: 400;
-      font-size: vw(24px);
-      line-height: vw(33px);
-      /* 第二步：让文本不会换行， 在同一行继续 */
-      white-space: nowrap;
-      /* 第三步：用省略号来代表未显示完的文本 */
-      text-overflow: ellipsis;
-      text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
-    }
-    span {
-      color: #ffffff;
-      font-weight: 400;
-      font-size: vw(24px);
-      line-height: vw(33px);
-    }
-
-    .micIcon {
-      position: relative;
+    width: 100%;
+    padding: 5px;
+    div {
       display: flex;
-      justify-content: center;
-      width: vw(36px);
-      height: vw(36px);
-      background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: cover;
-      & > span {
-        position: absolute;
-        bottom: vw(16px);
-        left: 50%;
-        width: 26%;
-        background: #0055ff;
-        border-radius: 5px;
-        transform: translateX(-50%);
+      align-items: center;
+      justify-content: flex-end;
+      // box-sizing: border-box;
+      width: max-content;
+      max-width: calc(100% - 10px);
+      height: vw(46px);
+      padding: vw(7px) vw(12px) vw(6px) vw(10px);
+      line-height: vw(33px);
+      text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+      background: #46464666;
+      border-radius: vw(12px);
+      p {
+        // max-width: 70%;
+        /*第一步： 溢出隐藏 */
+        overflow: hidden;
+        color: #ffffff;
+        font-weight: 400;
+        font-size: vw(24px);
+        line-height: vw(33px);
+        /* 第二步：让文本不会换行， 在同一行继续 */
+        white-space: nowrap;
+        /* 第三步：用省略号来代表未显示完的文本 */
+        text-overflow: ellipsis;
+        text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
       }
-      &.close {
-        background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_close@2x.png);
+      span {
+        color: #ffffff;
+        font-weight: 400;
+        font-size: vw(24px);
+        line-height: vw(33px);
+      }
+
+      .micIcon {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        width: vw(36px);
+        height: vw(36px);
+        background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
+        background-repeat: no-repeat;
+        background-position: center;
         background-size: cover;
-        &::before {
-          display: none;
+        & > span {
+          position: absolute;
+          bottom: vw(16px);
+          left: 50%;
+          width: 26%;
+          background: #0055ff;
+          border-radius: 5px;
+          transform: translateX(-50%);
+        }
+        &.close {
+          background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_close@2x.png);
+          background-size: cover;
+          &::before {
+            display: none;
+          }
         }
       }
     }

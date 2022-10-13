@@ -118,7 +118,6 @@ export class ZegoUserList extends React.PureComponent<{
                       }
                     ></i>
                   )}
-                  {!this.isShownPin(user) && <i></i>}
                 </div>
               </div>
             );
