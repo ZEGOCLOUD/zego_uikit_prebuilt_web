@@ -30,8 +30,11 @@
     outline: none;
     opacity: 0.7;
     input {
-      width: 77%;
+      width: 252px;
+      overflow: hidden;
       color: #ffffff;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       background: #303341;
       border: 0;
       outline: none;
@@ -48,7 +51,6 @@
     &::before {
       width: 20px;
       height: 20px;
-      margin-right: 5px;
       background: url("../../../../sdkAssets/icon_inner_copy.png") no-repeat
         center/cover;
       content: "";

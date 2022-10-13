@@ -24,9 +24,7 @@ export class ZegoRoomInvite extends React.PureComponent<{
               onClick={() => {
                 link && link.url && this.handleCopy(link.url);
               }}
-            >
-              Copy
-            </div>
+            ></div>
           </div>
         </div>
       );

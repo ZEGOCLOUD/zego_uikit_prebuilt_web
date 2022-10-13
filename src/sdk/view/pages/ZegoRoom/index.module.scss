@@ -61,9 +61,16 @@
     background: #0055ff;
     border: 0;
     border-radius: 10px;
+    cursor: pointer;
+    &:hover {
+      background-color: #2c72ff;
+    }
   }
   .goLiveEnabled {
     background: #ff4a50;
+    &:hover {
+      background: #ff5e64;
+    }
   }
   .timer {
     margin-right: 20px;
@@ -278,9 +285,6 @@
   }
 }
 .handlerRight {
-  position: absolute;
-  top: 0;
-  right: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -419,7 +423,7 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 20px;
-    background: rgba(42, 42, 42, 0.5);
+    background: rgba($color: #464646, $alpha: 0.4);
     border-radius: 8px;
 
     &:not(:last-of-type) {
@@ -570,6 +574,9 @@
     font-size: 12px;
     line-height: 17px;
     cursor: pointer;
+    &:hover {
+      color: #ff5e64;
+    }
   }
 }
 
@@ -586,7 +593,7 @@
   font-weight: 500;
   font-size: 24px;
   line-height: 33px;
-  background: #1e2130;
+  background: #171821;
   i {
     width: 76px;
     height: 76px;

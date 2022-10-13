@@ -20,6 +20,7 @@ import {
   IsLowVersionSafari,
   randomNumber,
   userNameColor,
+  getNameFirstLetter,
 } from "../../../util";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
@@ -1020,9 +1021,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 ),
               }}
             >
-              {this.state.screenSharingUserList[0].userName
-                ?.slice(0, 1)
-                ?.toUpperCase()}
+              {getNameFirstLetter(
+                this.state.screenSharingUserList[0].userName || ""
+              )}
             </span>
             <p>
               {this.state.screenSharingUserList[0].userName + " is presenting"}

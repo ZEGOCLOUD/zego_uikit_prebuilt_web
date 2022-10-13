@@ -85,7 +85,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   onResize() {
     if (
       this.props.core._config.container!.clientWidth < 960 ||
-      this.props.core._config.container!.clientHeight < 530
+      this.props.core._config.container!.parentElement!.clientHeight < 530
     ) {
       this.setState({
         isSmallSize: true,
@@ -413,7 +413,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                   onClick={() => {
                     this.openSettings();
                   }}
-                ></div>
+                >
+                  <span className={ZegoBrowserCheckCss.buttonTip}>
+                    Settings
+                  </span>
+                </div>
               )}
             </div>
           </div>
@@ -443,7 +447,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                       className={ZegoBrowserCheckCss.joinRoomButtonLoading}
                     ></span>
                   )}
-                  join
+                  Join
                 </button>
                 {this.state.isJoinRoomFailed && (
                   <div className={ZegoBrowserCheckCss.joinRoomButtonTip}>

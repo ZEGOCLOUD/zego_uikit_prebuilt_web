@@ -176,3 +176,143 @@ export function getBrowser(): { browser: string; version: string } {
 
   return { browser: "", version: "0" };
 }
+
+export function runes(string: string): string[] {
+  const HIGH_SURROGATE_START = 0xd800;
+  const HIGH_SURROGATE_END = 0xdbff;
+
+  const LOW_SURROGATE_START = 0xdc00;
+
+  const REGIONAL_INDICATOR_START = 0x1f1e6;
+  const REGIONAL_INDICATOR_END = 0x1f1ff;
+
+  const FITZPATRICK_MODIFIER_START = 0x1f3fb;
+  const FITZPATRICK_MODIFIER_END = 0x1f3ff;
+
+  const VARIATION_MODIFIER_START = 0xfe00;
+  const VARIATION_MODIFIER_END = 0xfe0f;
+
+  const DIACRITICAL_MARKS_START = 0x20d0;
+  const DIACRITICAL_MARKS_END = 0x20ff;
+
+  const ZWJ = 0x200d;
+
+  const GRAPHEMS = [
+    0x0308, 0x0937, 0x0937, 0x093f, 0x093f, 0x0ba8, 0x0bbf, 0x0bcd, 0x0e31,
+    0x0e33, 0x0e40, 0x0e49, 0x1100, 0x1161, 0x11a8,
+  ];
+  function nextUnits(i: number, string: string) {
+    const current = string[i];
+    if (!isFirstOfSurrogatePair(current) || i === string.length - 1) {
+      return 1;
+    }
+    const currentPair = current + string[i + 1];
+    let nextPair = string.substring(i + 2, i + 5);
+    if (isRegionalIndicator(currentPair) && isRegionalIndicator(nextPair)) {
+      return 4;
+    }
+    if (isFitzpatrickModifier(nextPair)) {
+      return 4;
+    }
+    return 2;
+  }
+
+  function isFirstOfSurrogatePair(string: string) {
+    return (
+      string &&
+      betweenInclusive(
+        string[0].charCodeAt(0),
+        HIGH_SURROGATE_START,
+        HIGH_SURROGATE_END
+      )
+    );
+  }
+
+  function isRegionalIndicator(string: string) {
+    return betweenInclusive(
+      codePointFromSurrogatePair(string),
+      REGIONAL_INDICATOR_START,
+      REGIONAL_INDICATOR_END
+    );
+  }
+
+  function isFitzpatrickModifier(string: string) {
+    return betweenInclusive(
+      codePointFromSurrogatePair(string),
+      FITZPATRICK_MODIFIER_START,
+      FITZPATRICK_MODIFIER_END
+    );
+  }
+
+  function isVariationSelector(string: string) {
+    return (
+      typeof string === "string" &&
+      betweenInclusive(
+        string.charCodeAt(0),
+        VARIATION_MODIFIER_START,
+        VARIATION_MODIFIER_END
+      )
+    );
+  }
+
+  function isDiacriticalMark(string: string) {
+    return (
+      typeof string === "string" &&
+      betweenInclusive(
+        string.charCodeAt(0),
+        DIACRITICAL_MARKS_START,
+        DIACRITICAL_MARKS_END
+      )
+    );
+  }
+
+  function isGraphem(string: string) {
+    return (
+      typeof string === "string" &&
+      GRAPHEMS.indexOf(string.charCodeAt(0)) !== -1
+    );
+  }
+
+  function isZeroWidthJoiner(string: string) {
+    return typeof string === "string" && string.charCodeAt(0) === ZWJ;
+  }
+
+  function codePointFromSurrogatePair(pair: string) {
+    const highOffset = pair.charCodeAt(0) - HIGH_SURROGATE_START;
+    const lowOffset = pair.charCodeAt(1) - LOW_SURROGATE_START;
+    return (highOffset << 10) + lowOffset + 0x10000;
+  }
+
+  function betweenInclusive(value: number, lower: number, upper: number) {
+    return value >= lower && value <= upper;
+  }
+  if (typeof string !== "string") {
+    throw new Error("string cannot be undefined or null");
+  }
+  const result = [];
+  let i = 0;
+  let increment = 0;
+  while (i < string.length) {
+    increment += nextUnits(i + increment, string);
+    if (isGraphem(string[i + increment])) {
+      increment++;
+    }
+    if (isVariationSelector(string[i + increment])) {
+      increment++;
+    }
+    if (isDiacriticalMark(string[i + increment])) {
+      increment++;
+    }
+    if (isZeroWidthJoiner(string[i + increment])) {
+      increment++;
+      continue;
+    }
+    result.push(string.substring(i, i + increment));
+    i += increment;
+    increment = 0;
+  }
+  return result;
+}
+export function getNameFirstLetter(name: string): string {
+  return runes(name).shift() || "";
+}

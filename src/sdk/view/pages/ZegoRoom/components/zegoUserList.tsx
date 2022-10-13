@@ -1,6 +1,6 @@
 import React from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
-import { userNameColor } from "../../../../util";
+import { getNameFirstLetter, userNameColor } from "../../../../util";
 import ZegoUserListCss from "./zegoUserList.module.scss";
 import {
   ZegoCloudUser,
@@ -82,7 +82,7 @@ export class ZegoUserList extends React.PureComponent<{
                 className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper}`}
               >
                 <span style={{ color: userNameColor(user.userName || "") }}>
-                  {user.userName?.slice(0, 1)?.toUpperCase()}
+                  {getNameFirstLetter(user.userName || "")}
                 </span>
                 <p>{user.userName}</p>
                 {user.userID === this.props.selfUserID && "(You)"}

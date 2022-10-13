@@ -1,6 +1,6 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
-import { userNameColor } from "../../../../util";
+import { getNameFirstLetter, userNameColor } from "../../../../util";
 import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
 export class VideoPlayer extends React.PureComponent<{
@@ -78,7 +78,7 @@ export class VideoPlayer extends React.PureComponent<{
               color: userNameColor(this.props.userInfo?.userName as string),
             }}
           >
-            {this.props.userInfo?.userName?.slice(0, 1)?.toUpperCase()}
+            {getNameFirstLetter(this.props.userInfo?.userName || "")}
           </div>
         </div>
 

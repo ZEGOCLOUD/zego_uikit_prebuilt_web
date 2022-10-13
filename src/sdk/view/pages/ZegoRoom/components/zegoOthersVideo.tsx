@@ -1,5 +1,5 @@
 import React from "react";
-import { userNameColor } from "../../../../util";
+import { getNameFirstLetter, userNameColor } from "../../../../util";
 import ZegoOthersVideo from "./zegoOthersVideo.module.scss";
 
 export class OthersVideo extends React.PureComponent<{
@@ -20,7 +20,7 @@ export class OthersVideo extends React.PureComponent<{
                   color: userNameColor(value),
                 }}
               >
-                {value.slice(0, 1)?.toUpperCase()}
+                {getNameFirstLetter(value)}
               </div>
             ))}
           </div>

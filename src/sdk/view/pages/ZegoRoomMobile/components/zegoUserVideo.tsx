@@ -1,5 +1,5 @@
 import React from "react";
-import { userNameColor } from "../../../../util";
+import { getNameFirstLetter, userNameColor } from "../../../../util";
 import zegoUserVideoCss from "./zegoUserVideo.module.scss";
 import { ZegoMore } from "./zegoMore";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
@@ -77,7 +77,7 @@ export class ZegoUserVideo extends React.PureComponent<{
                   color: userNameColor(this.props.user.userName!),
                 }}
               >
-                {this.props.user.userName!.slice(0, 1)?.toUpperCase()}
+                {getNameFirstLetter(this.props.user.userName || "")}
               </div>
             </div>
           </div>
@@ -159,7 +159,7 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
                 color: userNameColor(this.props.user.userName!),
               }}
             >
-              {this.props.user.userName!.slice(0, 1)?.toUpperCase()}
+              {getNameFirstLetter(this.props.user.userName || "")}
             </div>
             <div
               className={`${zegoUserVideoCss.nameCircle}  zegoUserVideo_click ${
@@ -172,7 +172,7 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
                 color: userNameColor(this.props.nextUser.userName!),
               }}
             >
-              {this.props.nextUser.userName!.slice(0, 1)?.toUpperCase()}
+              {getNameFirstLetter(this.props.nextUser.userName || "")}
             </div>
           </div>
 
