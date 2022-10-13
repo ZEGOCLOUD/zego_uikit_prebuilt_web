@@ -29,6 +29,7 @@ export class ZegoOne2One extends React.PureComponent<{
               volume={
                 this.props.soundLevel![this.props.userList[1].userID] || {}
               }
+              bigVideo={true}
             ></ZegoUserVideo>
           </div>
           <div className={zegoOne2OneCss.smallVideo}>
@@ -61,6 +62,7 @@ export class ZegoOne2One extends React.PureComponent<{
               this.props.onLocalStreamPaused &&
                 this.props.onLocalStreamPaused();
             }}
+            bigVideo={true}
           ></ZegoUserVideo>
         </div>
       );

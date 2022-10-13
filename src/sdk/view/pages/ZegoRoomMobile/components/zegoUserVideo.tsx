@@ -15,6 +15,7 @@ export class ZegoUserVideo extends React.PureComponent<{
   muted: boolean;
   hiddenName?: boolean;
   hiddenMore?: boolean;
+  bigVideo?: boolean;
 }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
@@ -59,7 +60,11 @@ export class ZegoUserVideo extends React.PureComponent<{
           !this.props.user.streamList[0] ||
           this.props.user.streamList[0].cameraStatus === "MUTE") && (
           <div
-            className={`${zegoUserVideoCss.noVideoWrapper} zegoUserVideo_click`}
+            className={`${
+              zegoUserVideoCss.noVideoWrapper
+            }  zegoUserVideo_click ${
+              this.props.bigVideo ? zegoUserVideoCss.bigVideo : ""
+            }`}
           >
             <div
               className={`${zegoUserVideoCss.nameWrapper} zegoUserVideo_click`}
