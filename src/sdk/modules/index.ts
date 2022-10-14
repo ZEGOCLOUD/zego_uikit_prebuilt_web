@@ -272,22 +272,28 @@ export class ZegoCloudRTCCore {
     return true;
   }
 
-  setPin(userID?: string, pined?: boolean): void {
+  setPin(userID?: string, pined?: boolean, stopUpdateUser?: boolean): void {
     this.zum.setPin(userID, pined);
-    this.subscribeUserListCallBack &&
-      this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+    if (!stopUpdateUser) {
+      this.subscribeUserListCallBack &&
+        this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+    }
   }
 
-  async setMaxScreenNum(num: number) {
+  async setMaxScreenNum(num: number, stopUpdateUser?: boolean) {
     await this.zum.setMaxScreenNum(num);
-    this.subscribeUserListCallBack &&
-      this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+    if (!stopUpdateUser) {
+      this.subscribeUserListCallBack &&
+        this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+    }
   }
 
-  async setSidebarLayOut(enable: boolean) {
+  async setSidebarLayOut(enable: boolean, stopUpdateUser?: boolean) {
     await this.zum.setSidebarLayOut(enable);
-    this.subscribeUserListCallBack &&
-      this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+    if (!stopUpdateUser) {
+      this.subscribeUserListCallBack &&
+        this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+    }
   }
 
   async setShowNonVideo(enable: boolean) {
