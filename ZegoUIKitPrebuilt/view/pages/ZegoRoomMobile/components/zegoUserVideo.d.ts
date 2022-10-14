@@ -12,6 +12,7 @@ export declare class ZegoUserVideo extends React.PureComponent<{
     muted: boolean;
     hiddenName?: boolean;
     hiddenMore?: boolean;
+    bigVideo?: boolean;
 }> {
     static contextType?: React.Context<ShowManageType>;
     context: React.ContextType<typeof ShowManageContext>;

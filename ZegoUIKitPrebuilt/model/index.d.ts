@@ -66,8 +66,8 @@ export interface ZegoCloudRoomConfig {
     onUserJoin?: (user: ZegoUser[]) => void;
     onUserLeave?: (user: ZegoUser[]) => void;
     sharedLinks?: {
-        name: string;
-        url: string;
+        name?: string;
+        url?: string;
     }[];
     showScreenSharingButton?: boolean;
     scenario?: {

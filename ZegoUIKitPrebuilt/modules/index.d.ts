@@ -31,9 +31,9 @@ export declare class ZegoCloudRTCCore {
     checkWebRTC(): Promise<boolean>;
     _config: ZegoCloudRoomConfig;
     setConfig(config: ZegoCloudRoomConfig): boolean;
-    setPin(userID?: string, pined?: boolean): void;
-    setMaxScreenNum(num: number): Promise<void>;
-    setSidebarLayOut(enable: boolean): Promise<void>;
+    setPin(userID?: string, pined?: boolean, stopUpdateUser?: boolean): void;
+    setMaxScreenNum(num: number, stopUpdateUser?: boolean): Promise<void>;
+    setSidebarLayOut(enable: boolean, stopUpdateUser?: boolean): Promise<void>;
     setShowNonVideo(enable: boolean): Promise<void>;
     _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom";
     setCurrentPage(page: "BrowserCheckPage" | "Room" | "RejoinRoom"): void;

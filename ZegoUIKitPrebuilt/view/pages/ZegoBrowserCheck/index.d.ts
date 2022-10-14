@@ -20,11 +20,12 @@ export declare class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckPr
         isJoining: boolean;
         showNonVideo: boolean | undefined;
         sharedLinks: {
-            name: string;
-            url: string;
+            name: string | undefined;
+            url: string | undefined;
             copied: boolean;
         }[] | undefined;
         showZegoSettings: boolean;
+        isSmallSize: boolean;
     };
     videoRef: RefObject<HTMLVideoElement>;
     inviteRef: RefObject<HTMLInputElement>;
@@ -32,6 +33,9 @@ export declare class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckPr
     videoRefuse: boolean;
     constructor(props: ZegoBrowserCheckProp);
     componentDidMount(): Promise<void>;
+    componentWillUnmount(): void;
+    onResize(): void;
+    throttleResize: () => void;
     getDevices(): Promise<{
         selectMic: string | undefined;
         selectSpeaker: string | undefined;

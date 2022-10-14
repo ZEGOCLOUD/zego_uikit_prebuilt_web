@@ -12,8 +12,8 @@ export declare class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserC
         isVideoOpening: boolean;
         isJoining: boolean;
         sharedLinks: {
-            name: string;
-            url: string;
+            name: string | undefined;
+            url: string | undefined;
             copied: boolean;
         }[] | undefined;
     };
