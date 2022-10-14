@@ -2,13 +2,14 @@
 .container {
   width: 100%;
   height: 100%;
+  overflow: hidden;
   .videoCommon {
     display: block;
     width: 100%;
     height: 100%;
     // object-fit: cover;
     background: #242736;
-    border-radius: vw(12px);
+    // border-radius: vw(12px);
   }
   .hideVideo {
     width: 1px;
@@ -25,8 +26,9 @@
     justify-content: center;
     width: 100%;
     height: 100%;
-    background: #171821;
-    // border-radius: 14px;
+    // background: #171821;
+    background: #242736;
+    // border-radius: vw(14px);
     .nameWrapper {
       display: flex;
       align-items: center;
@@ -44,7 +46,7 @@
         line-height: vw(49px);
         text-align: center;
         background: #ffffff1a;
-        border: 2px solid #242736;
+        border: 0px solid #242736;
         border-radius: 50%;
       }
       .gridCircle {
@@ -69,6 +71,9 @@
       text-align: center;
       text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
     }
+  }
+  .bigVideo {
+    background: #171821 !important;
   }
   .name {
     position: absolute;

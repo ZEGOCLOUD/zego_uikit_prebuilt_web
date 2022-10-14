@@ -152,9 +152,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         });
       }, 3000);
     }
-    if (preState.userLayoutStatus !== this.state.userLayoutStatus) {
-      this.handleLayoutChange(this.state.userLayoutStatus);
-    }
+    // if (preState.userLayoutStatus !== this.state.userLayoutStatus) {
+    //   this.handleLayoutChange(this.state.userLayoutStatus);
+    // }
   }
 
   async initSDK() {
@@ -846,12 +846,20 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (selectLayout !== "Sidebar") {
       this._selectedUser && (this._selectedUser.pin = false);
       this.localUserPin = false;
-      this.props.core.setPin();
+      this.props.core.setPin(undefined, undefined, true);
     }
     this.setState({
       userLayoutStatus: selectLayout,
     });
     return new Promise(async (resolve, reject) => {
+      if (this.state.screenSharingUserList.length) {
+        await this.props.core.setMaxScreenNum(this.showSelf ? 3 : 4, true);
+      } else if (selectLayout !== "Sidebar") {
+        await this.props.core.setMaxScreenNum(this.showSelf ? 5 : 6, true);
+      } else {
+        await this.props.core.setMaxScreenNum(this.showSelf ? 4 : 5, true);
+      }
+
       this.userUpdateCallBack = () => {
         resolve(true);
       };
@@ -859,13 +867,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         resolve(false);
       }, 5000);
 
-      if (this.state.screenSharingUserList.length) {
-        await this.props.core.setMaxScreenNum(this.showSelf ? 3 : 4);
-      } else if (selectLayout !== "Sidebar") {
-        await this.props.core.setMaxScreenNum(this.showSelf ? 5 : 6);
-      } else {
-        await this.props.core.setMaxScreenNum(this.showSelf ? 4 : 5);
-      }
       await this.props.core.setSidebarLayOut(
         this.state.screenSharingUserList.length > 0
           ? false
@@ -949,9 +950,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 this._selectedUser.pin = value;
                 this.props.core.setPin();
               }
-              this.setState({
-                userLayoutStatus: "Sidebar",
-              });
+              this.setState(
+                {
+                  userLayoutStatus: "Sidebar",
+                },
+                () => {
+                  this.handleLayoutChange("Sidebar");
+                }
+              );
               this.props.core.setSidebarLayOut(
                 this.state.screenSharingUserList.length > 0
                   ? false

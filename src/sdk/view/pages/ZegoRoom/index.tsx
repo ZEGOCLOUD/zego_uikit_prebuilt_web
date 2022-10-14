@@ -1170,7 +1170,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                       ? "Go Live"
                       : this.state.liveCountdown === 0
                       ? "Stop broadcast"
-                      : "start stream"}
+                      : "Start stream..."}
                   </button>
                 )}
 
