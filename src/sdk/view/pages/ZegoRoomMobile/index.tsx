@@ -561,6 +561,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
     this.faceModel = -1;
     this.state.localStream.getVideoTracks()[0].stop();
+    this.state.localStream.getAudioTracks()[0].stop();
     try {
       const stream = await this.props.core.createStream({
         camera: {
@@ -575,7 +576,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         },
       });
       let videoTrack = stream.getVideoTracks()[0];
+      !this.state.cameraOpen && (videoTrack.enabled = false);
+      let audioTrack = stream.getAudioTracks()[0];
       await this.props.core.replaceTrack(this.state.localStream, videoTrack);
+      await this.props.core.replaceTrack(this.state.localStream, audioTrack);
     } catch (error) {
       console.error("【ZEGOCLOUD】switch camera failed!", error);
     }
