@@ -70,6 +70,8 @@ export class ZegoUIKitPrebuilt {
   destroy() {
     ZegoUIKitPrebuilt.core?.leaveRoom?.();
     ZegoUIKitPrebuilt.core = undefined;
+    // @ts-ignore
+    ZegoCloudRTCCore._instance = undefined;
     this.root?.unmount?.();
     this.root = undefined;
     this.hasJoinedRoom = false;
