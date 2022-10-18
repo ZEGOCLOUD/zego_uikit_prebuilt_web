@@ -84,8 +84,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
   onResize() {
     if (
-      this.props.core._config.container!.clientWidth < 960 ||
-      this.props.core._config.container!.parentElement!.clientHeight < 530
+      this.props.core._config.container!.offsetWidth < 960 ||
+      this.props.core._config.container!.offsetHeight <= 530
     ) {
       this.setState({
         isSmallSize: true,

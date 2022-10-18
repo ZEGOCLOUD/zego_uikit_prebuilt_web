@@ -4,7 +4,7 @@ import { ZegoCloudRTCCore } from "./modules/index";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 
 export class ZegoUIKitPrebuilt {
-  static core: ZegoCloudRTCCore;
+  static core: ZegoCloudRTCCore | undefined;
   static _instance: ZegoUIKitPrebuilt;
   static Host = LiveRole.Host;
   static Cohost = LiveRole.Cohost;
@@ -14,7 +14,7 @@ export class ZegoUIKitPrebuilt {
   static GroupCall = ScenarioModel.GroupCall;
   static LiveStreaming = ScenarioModel.LiveStreaming;
   static VideoConference = ScenarioModel.VideoConference;
-
+  private hasJoinedRoom = false;
   root: Root | undefined;
 
   static create(token: string): ZegoUIKitPrebuilt {
@@ -22,7 +22,6 @@ export class ZegoUIKitPrebuilt {
       ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(token);
       ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
     }
-    console.warn("zego-uikit-prebuilt version is", "1.3.28");
     return ZegoUIKitPrebuilt._instance;
   }
 
@@ -31,7 +30,10 @@ export class ZegoUIKitPrebuilt {
       console.error("【ZEGOCLOUD】 please call init first !!");
       return;
     }
-
+    if (this.hasJoinedRoom) {
+      console.error("【ZEGOCLOUD】joinRoom repeat !!");
+      return;
+    }
     if (!roomConfig || !roomConfig.container) {
       console.warn("【ZEGOCLOUD】joinRoom/roomConfig/container required !!");
       const div = document.createElement("div");
@@ -61,12 +63,15 @@ export class ZegoUIKitPrebuilt {
           core={ZegoUIKitPrebuilt.core}
         ></ZegoCloudRTCKitComponent>
       );
+      this.hasJoinedRoom = true;
     }
   }
 
   destroy() {
-    ZegoUIKitPrebuilt.core.leaveRoom();
-    this.root?.unmount();
+    ZegoUIKitPrebuilt.core?.leaveRoom?.();
+    ZegoUIKitPrebuilt.core = undefined;
+    this.root?.unmount?.();
     this.root = undefined;
+    this.hasJoinedRoom = false;
   }
 }

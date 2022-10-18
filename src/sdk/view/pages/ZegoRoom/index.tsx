@@ -172,6 +172,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   componentWillUnmount() {
     document.removeEventListener("click", this.onOpenSettings);
     window.removeEventListener("resize", this.onWindowResize.bind(this));
+    this.state.isScreenSharingBySelf && this.closeScreenSharing();
+    this.state.localStream &&
+      this.props.core.destroyStream(this.state.localStream);
   }
   async initSDK() {
     this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
@@ -943,7 +946,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           });
         }
         return false;
-      })
+      }) &&
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
     ) {
       return (
         <div className={ZegoRoomCss.noOneStreaming}>

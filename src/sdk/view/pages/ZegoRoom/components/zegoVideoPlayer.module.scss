@@ -35,6 +35,8 @@
     color: #ffffff;
     font-size: 14px;
     line-height: 19px;
+    word-wrap: nowrap;
+    word-break: keep-all;
   }
   .micIcon {
     position: relative;
