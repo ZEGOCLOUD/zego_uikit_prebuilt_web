@@ -1,4 +1,4 @@
-import { ZegoCloudRTCCore } from "@zegocloud/zego-uikit-prebuilt/sdk/modules";
+import { ZegoCloudRTCCore } from "../../../../modules";
 import React from "react";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import { ZegoUserList } from "../../ZegoRoom/components/zegoUserList";
