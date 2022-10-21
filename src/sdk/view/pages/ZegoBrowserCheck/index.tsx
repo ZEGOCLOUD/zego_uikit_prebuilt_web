@@ -81,6 +81,10 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.throttleResize.bind(this), false);
+    this.state.localVideoStream &&
+      this.props.core.destroyStream(this.state.localVideoStream);
+    this.state.localAudioStream &&
+      this.props.core.destroyStream(this.state.localAudioStream);
   }
   onResize() {
     if (

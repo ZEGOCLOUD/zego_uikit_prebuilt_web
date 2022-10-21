@@ -53,7 +53,12 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       });
     }
   }
-
+  componentWillUnmount() {
+    this.state.localVideoStream &&
+      this.props.core.destroyStream(this.state.localVideoStream);
+    this.state.localAudioStream &&
+      this.props.core.destroyStream(this.state.localAudioStream);
+  }
   async createStream(
     videoOpen: boolean,
     audioOpen: boolean

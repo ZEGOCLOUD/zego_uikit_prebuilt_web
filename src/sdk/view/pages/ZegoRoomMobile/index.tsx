@@ -117,7 +117,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       });
     }, 5000);
   }
-
+  componentWillUnmount() {
+    this.state.localStream &&
+      this.props.core.destroyStream(this.state.localStream);
+  }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
     preState: {
@@ -1010,7 +1013,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           });
         }
         return false;
-      })
+      }) &&
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
     ) {
       return (
         <div className={`${ZegoRoomCss.noOneStreaming} zegoUserVideo_click`}>
