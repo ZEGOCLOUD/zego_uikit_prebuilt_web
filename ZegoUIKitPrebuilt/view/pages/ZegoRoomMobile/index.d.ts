@@ -38,6 +38,7 @@ export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheck
     localStreamID: string;
     safariLimitationNoticed: -1 | 0 | 1;
     componentDidMount(): void;
+    componentWillUnmount(): void;
     componentDidUpdate(preProps: ZegoBrowserCheckProp, preState: {
         localStream: undefined | MediaStream;
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";

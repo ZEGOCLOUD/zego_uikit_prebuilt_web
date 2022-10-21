@@ -35,7 +35,7 @@
         "eject": "react-scripts eject",
         "build:lib": "webpack",
         "publish:beta": "cd ZegoUIKitPrebuilt && npm publish --tag beta",
-        "publish": "cd ZegoUIKitPrebuilt && npm publish"
+        "publish": "cd ZegoUIKitPrebuilt && npm publish --access public"
     },
     "eslintConfig": {
         "extends": [

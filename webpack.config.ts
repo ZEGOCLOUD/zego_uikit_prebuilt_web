@@ -10,14 +10,6 @@ import FileManagerPlugin from "filemanager-webpack-plugin";
 const config: webpack.Configuration = {
   mode: "development",
   entry: "./src/sdk/index.tsx",
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "ZegoUIKitPrebuilt"),
-    },
-    compress: true,
-    port: 9000,
-    https: true,
-  },
   output: {
     filename: "zego-uikit-prebuilt.js",
     path: path.resolve(__dirname, "./ZegoUIKitPrebuilt"),

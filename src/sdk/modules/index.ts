@@ -200,7 +200,8 @@ export class ZegoCloudRTCCore {
         config.showScreenSharingButton = false;
         config.useFrontFacingCamera = false;
         config.useFrontFacingCamera = false;
-        config.showUserList = false;
+        config.showUserList =
+          config.showUserList === undefined ? false : config.showUserList;
         config.showPinButton = false;
         config.showLayoutButton = false;
         config.layout = "Grid";

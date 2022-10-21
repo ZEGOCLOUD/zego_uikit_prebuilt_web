@@ -23,6 +23,7 @@ export declare class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserC
     videoRefuse: boolean;
     constructor(props: ZegoBrowserCheckProp);
     componentDidMount(): Promise<void>;
+    componentWillUnmount(): void;
     createStream(videoOpen: boolean, audioOpen: boolean): Promise<MediaStream>;
     toggleStream2(type: "video" | "audio"): Promise<void>;
     toggleStream1(type: "video" | "audio"): Promise<void>;

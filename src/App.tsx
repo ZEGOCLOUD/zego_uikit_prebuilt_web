@@ -126,6 +126,7 @@ export default class App extends React.Component {
             role,
           },
         },
+        showUserList: true,
       };
       if (showNonVideoUser !== undefined) {
         param.showNonVideoUser = showNonVideoUser == "true";
