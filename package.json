@@ -20,12 +20,11 @@
         "sass-resources-loader": "^2.2.5",
         "style-loader": "^3.3.1",
         "ts-loader": "^9.3.1",
-        "zego-express-engine-webrtc": "^2.18.0",
-        "zego-uikit-prebuilt": "^1.0.1"
+        "zego-express-engine-webrtc": "^2.18.0"
     },
     "homepage": "./",
     "scripts": {
-        "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='video_conference' react-scripts start",
+        "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='live_stream' react-scripts start",
         "start:m": "REACT_APP_MOBILE='yes'   npm run start",
         "dev": "webpack serve --config webpack.config.sample.ts",
         "build:1on1_call": "REACT_APP_ENV='prd' REACT_APP_PATH='1on1_call' BUILD_PATH='1on1_call'  react-scripts build",
