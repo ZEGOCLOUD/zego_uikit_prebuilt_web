@@ -53,6 +53,7 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
                       ></OthersVideo>
                       <audio
                         autoPlay
+                        muted={user.userID === this.props.selfInfo.userID}
                         ref={(el) => {
                           el &&
                             el.srcObject !== user?.streamList?.[0]?.media &&
@@ -71,6 +72,7 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
                     <audio
                       key={user.userID}
                       autoPlay
+                      muted={user.userID === this.props.selfInfo.userID}
                       ref={(el) => {
                         el &&
                           el.srcObject !== user?.streamList?.[0]?.media &&

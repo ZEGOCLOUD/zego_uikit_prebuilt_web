@@ -112,7 +112,7 @@ export class ZegoMessage extends React.PureComponent<{
                     )}
                     <span>
                       {`${
-                        new Date(msg.sendTime).getHours() > 12 ? "PM" : "AM"
+                        new Date(msg.sendTime).getHours() >= 12 ? "PM" : "AM"
                       }  ${DateFormat(msg.sendTime, "hh:mm")}`}
                     </span>
                   </div>

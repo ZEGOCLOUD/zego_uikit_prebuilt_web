@@ -17,7 +17,7 @@ export function generateToken(
     // return new Promise((res, rej) => {
     //   const TOKEN = generatePrebuiltToken(
     //     1484647939,
-    //     "22076fd0a8388f31dc1f6e344171",
+    //     "22076fd0a8388f31dc1f6e344171....",
     //     roomID,
     //     userID,
     //     userName
@@ -106,6 +106,7 @@ export function getRandomName() {
     "Daniel",
     "Thomas",
   ];
-
-  return names[Math.round(Math.random() * names.length) - 1];
+  let index = Math.round(Math.random() * names.length);
+  index = index == names.length ? index - 1 : index;
+  return names[index];
 }

@@ -121,6 +121,7 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                       ></OthersVideo>
                       <audio
                         autoPlay
+                        muted={user.userID === this.props.selfInfo.userID}
                         ref={(el) => {
                           el &&
                             el.srcObject !== user?.streamList?.[0]?.media &&
@@ -139,6 +140,7 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                     <audio
                       key={user.userID}
                       autoPlay
+                      muted={user.userID === this.props.selfInfo.userID}
                       ref={(el: HTMLAudioElement) => {
                         el &&
                           el.srcObject !== user?.streamList?.[0]?.media &&

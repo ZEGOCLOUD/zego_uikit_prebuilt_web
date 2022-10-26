@@ -49,7 +49,10 @@ export function DateFormat(date: number, fmt: string) {
   const o = {
     "M+": myDate.getMonth() + 1 + "", // 月份
     "d+": myDate.getDate() + "", // 日
-    "h+": myDate.getHours() + "", // 小时
+    "h+":
+      myDate.getHours() >= 12
+        ? myDate.getHours() - 12 + ""
+        : myDate.getHours() + "", // 小时
     "m+": myDate.getMinutes() + "", // 分
     "s+": myDate.getSeconds() + "", // 秒
     "q+": Math.floor((myDate.getMonth() + 3) / 3) + "", // 季度
