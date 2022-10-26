@@ -811,6 +811,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         userID: this.props.core._expressConfig.userID,
         userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
+        avatar: this.props.core._expressConfig.avatar,
         streamList: [
           {
             media: this.state.localStream!,
@@ -858,6 +859,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         {
           userID: this.props.core._expressConfig.userID,
           userName: this.props.core._expressConfig.userName,
+          avatar: this.props.core._expressConfig.avatar,
           pin: false,
           streamList: [
             {

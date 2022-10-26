@@ -1,6 +1,6 @@
 import React, { ChangeEvent, RefObject } from "react";
 import zegoUserListCss from "./zegoUserList.module.scss";
-import { userNameColor } from "../../../../util";
+import { getNameFirstLetter, userNameColor } from "../../../../util";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import {
   ZegoCloudUser,
@@ -73,7 +73,16 @@ export class ZegoUserList extends React.PureComponent<{
               >
                 <div className={zegoUserListCss.memberName}>
                   <i style={{ color: userNameColor(user.userName!) }}>
-                    {user.userName?.substring(0, 1)}
+                  {getNameFirstLetter(user.userName || "")}
+                {user.avatar && (
+                  <img
+                    src={user.avatar}
+                    onError={(e: any) => {
+                      e.target.style.display = "none";
+                    }}
+                    alt={user.userName}
+                  />
+                )}
                   </i>
                   <a
                     key={user.userID}

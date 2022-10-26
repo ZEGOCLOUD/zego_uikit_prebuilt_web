@@ -83,6 +83,15 @@ export class ZegoUserVideo extends React.PureComponent<{
                 }}
               >
                 {getNameFirstLetter(this.props.user.userName || "")}
+                {this.props.user.avatar && (
+                  <img
+                    src={this.props.user.avatar}
+                    onError={(e: any) => {
+                      e.target.style.display = "none";
+                    }}
+                    alt={this.props.user.userName}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -169,6 +178,15 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
               }}
             >
               {getNameFirstLetter(this.props.user.userName || "")}
+              {this.props.user.avatar && (
+                <img
+                  src={this.props.user.avatar}
+                  onError={(e: any) => {
+                    e.target.style.display = "none";
+                  }}
+                  alt={this.props.user.userName}
+                />
+              )}
             </div>
             <div
               className={`${zegoUserVideoCss.nameCircle}  zegoUserVideo_click ${
@@ -182,6 +200,15 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
               }}
             >
               {getNameFirstLetter(this.props.nextUser.userName || "")}
+              {this.props.nextUser.avatar && (
+                <img
+                  src={this.props.nextUser.avatar}
+                  onError={(e: any) => {
+                    e.target.style.display = "none";
+                  }}
+                  alt={this.props.nextUser.userName}
+                />
+              )}
             </div>
           </div>
 

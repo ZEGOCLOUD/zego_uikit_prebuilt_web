@@ -8,6 +8,7 @@ export type ZegoCloudUser = ZegoUser & {
   pin: boolean;
   overScreenMuteVideo?: boolean;
   streamList: ZegoCloudRemoteMedia[];
+  avatar?: string;
 };
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}
@@ -426,5 +427,14 @@ export class ZegoCloudUserListManager {
     this.sidebarEnabled = false;
     this.remoteUserList = [];
     this.remoteScreenStreamList = [];
+  }
+  updateUserInfo(userID: string, key: keyof ZegoCloudUser, value: any) {
+    this.remoteUserList.some((user: ZegoCloudUser) => {
+      if (user.userID === userID) {
+        user[key] = value as never;
+        return true;
+      }
+      return false;
+    });
   }
 }

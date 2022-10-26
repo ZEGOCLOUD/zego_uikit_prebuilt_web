@@ -13,7 +13,6 @@ import {
 } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 
 import {
-  ZegoUser,
   ZegoBroadcastMessageInfo,
   ZegoRoomExtraInfo,
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
@@ -22,6 +21,7 @@ import {
   ScenarioModel,
   ZegoCloudRemoteMedia,
   ZegoCloudRoomConfig,
+  ZegoUser,
 } from "../model";
 import {
   ZegoCloudUserList,
@@ -38,6 +38,7 @@ export class ZegoCloudRTCCore {
     userName: string;
     roomID: string;
     token: string;
+    avatar?: string;
   };
   //   static _soundMeter: SoundMeter;
   static getInstance(token: string): ZegoCloudRTCCore {
@@ -121,6 +122,7 @@ export class ZegoCloudRTCCore {
     onLeaveRoom: () => {},
     onUserJoin: (user: ZegoUser[]) => {}, // 用户进入回调
     onUserLeave: (user: ZegoUser[]) => {}, // 用户退入回调
+    onCanSetUserAvatar: (user: ZegoUser[]) => {}, // 用户可以设置头像时机回调
     sharedLinks: [], // 产品链接描述
     showScreenSharingButton: true, // 是否显示屏幕共享按钮
     scenario: {
@@ -596,7 +598,17 @@ export class ZegoCloudRTCCore {
         this.onRemoteUserUpdateCallBack &&
           this.onRemoteUserUpdateCallBack(roomID, updateType, userList);
         setTimeout(() => {
+          const newUserList = userList.map((user) => {
+            user.setUserAvatar = (avatar: string) => {
+              if (avatar && typeof avatar === "string") {
+                this.zum.updateUserInfo(user.userID, "avatar", avatar);
+              }
+            };
+            return user;
+          });
           if (updateType === "ADD") {
+            this._config.onCanSetUserAvatar &&
+              this._config.onCanSetUserAvatar(newUserList);
             this._config.onUserJoin && this._config.onUserJoin(userList);
           } else {
             this._config.onUserLeave && this._config.onUserLeave(userList);
@@ -694,6 +706,17 @@ export class ZegoCloudRTCCore {
           maxMemberCount: ZegoCloudRTCCore._instance._config.maxUsers,
         }
       );
+      const user = {
+        userID: ZegoCloudRTCCore._instance._expressConfig.userID,
+        userName: ZegoCloudRTCCore._instance._expressConfig.userName,
+        setUserAvatar: (avatar: string) => {
+          if (avatar && typeof avatar === "string") {
+            this._expressConfig.avatar = avatar;
+          }
+        },
+      };
+      this._config.onCanSetUserAvatar &&
+        this._config.onCanSetUserAvatar([user]);
     });
     ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300);
     this.streamUpdateTimer(this.waitingHandlerStreams);

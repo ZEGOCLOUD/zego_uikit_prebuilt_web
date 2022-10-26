@@ -16,6 +16,9 @@ export default class App extends React.Component {
         : process.env.REACT_APP_PATH === "1on1_call"
         ? "https://docs.zegocloud.com/article/14728"
         : "https://docs.zegocloud.com/article/14922",
+    showSettings: false,
+    liveStreamingMode:
+      getUrlParams().get("liveStreamingMode") || "RealTimeLive",
   };
   constructor(props: any) {
     super(props);
@@ -127,6 +130,15 @@ export default class App extends React.Component {
           },
         },
         showUserList: true,
+        onCanSetUserAvatar: (user) => {
+          user.forEach((u) => {
+            u.setUserAvatar &&
+              u.setUserAvatar(
+                "https://gd-hbimg.huaban.com/a10dfc94500be4eda3469e5d2ef942ddc56b1fd27de7-uOLg3r_fw658"
+                // `https://api.multiavatar.com/${u.userID}.png?apikey=XqHm465NYsdLfb` // random avatar
+              );
+          });
+        },
       };
       if (showNonVideoUser !== undefined) {
         param.showNonVideoUser = showNonVideoUser == "true";
@@ -134,7 +146,26 @@ export default class App extends React.Component {
       zp.joinRoom(param);
     };
   }
-
+  handleSelectMode(mode: string) {
+    this.setState({
+      liveStreamingMode: mode,
+    });
+  }
+  handleSettingsConfirm() {
+    let param = getUrlParams();
+    if (param.get("liveStreamingMode") === this.state.liveStreamingMode) {
+      this.setState({
+        showSettings: false,
+      });
+      return;
+    }
+    param.set("liveStreamingMode", this.state.liveStreamingMode);
+    window.location.href =
+      window.location.origin +
+      window.location.pathname +
+      "?" +
+      param.toString();
+  }
   render(): React.ReactNode {
     return (
       <div className={`${APP.app} ${isPc() ? "" : APP.mobileApp}`}>
@@ -149,6 +180,16 @@ export default class App extends React.Component {
               }}
             ></div>
             <div className={`${APP.link} ${isPc() ? "" : APP.mobileLink}`}>
+              <a
+                className={APP.link_item}
+                onClick={() => {
+                  this.setState({
+                    showSettings: true,
+                  });
+                }}
+              >
+                <span className={APP.icon_settings}></span> Settings
+              </a>
               <a
                 href={this.state.docs}
                 target="_blank"
@@ -197,6 +238,75 @@ export default class App extends React.Component {
           </a>
           .
         </div>
+        {this.state.showSettings && (
+          <div className={APP.settingsModel}>
+            <div className={APP.settingsWrapper}>
+              <div className={APP.settingsHeader}>
+                <p>Settings</p>
+                <span
+                  className={APP.settingsClose}
+                  onClick={() => {
+                    this.setState({
+                      showSettings: false,
+                    });
+                  }}
+                ></span>
+              </div>
+              <div className={APP.settingsBody}>
+                <div className={APP.settingsMode}>Live streaming mode</div>
+                <div className={APP.settingsModeList}>
+                  <div
+                    className={`${APP.settingsModeItem} ${
+                      this.state.liveStreamingMode === "CDNLive"
+                        ? APP.settingsModeItemSelected
+                        : ""
+                    }`}
+                    onClick={() => {
+                      this.handleSelectMode("CDNLive");
+                    }}
+                  >
+                    <p>CDN Live</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${
+                      this.state.liveStreamingMode === "StandardLive"
+                        ? APP.settingsModeItemSelected
+                        : ""
+                    }`}
+                    onClick={() => {
+                      this.handleSelectMode("StandardLive");
+                    }}
+                  >
+                    <p>Standard Live</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${
+                      this.state.liveStreamingMode === "RealTimeLive"
+                        ? APP.settingsModeItemSelected
+                        : ""
+                    }`}
+                    onClick={() => {
+                      this.handleSelectMode("RealTimeLive");
+                    }}
+                  >
+                    <p>Real-time Live</p>
+                    <span></span>
+                  </div>
+                </div>
+                <div
+                  className={APP.settingsBtn}
+                  onClick={() => {
+                    this.handleSettingsConfirm();
+                  }}
+                >
+                  Confirm
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

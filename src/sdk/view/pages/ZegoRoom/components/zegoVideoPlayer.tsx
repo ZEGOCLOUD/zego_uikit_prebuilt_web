@@ -73,6 +73,15 @@ export class VideoPlayer extends React.PureComponent<{
                 : "flex",
           }}
         >
+          {this.props.userInfo.avatar && (
+            <img
+              src={this.props.userInfo.avatar}
+              onError={(e: any) => {
+                e.target.style.display = "none";
+              }}
+              alt={this.props.userInfo.userName}
+            />
+          )}
           <div
             style={{
               color: userNameColor(this.props.userInfo?.userName as string),

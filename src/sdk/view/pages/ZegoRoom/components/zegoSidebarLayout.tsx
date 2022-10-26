@@ -45,10 +45,7 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
                   return (
                     <div key={"container_" + user.userID}>
                       <OthersVideo
-                        users={[
-                          arr[index].userName!,
-                          arr[index + 1]?.userName!,
-                        ]}
+                        users={[arr[index]!, arr[index + 1]!]}
                         others={arr.length - this.props.videoShowNumber + 1}
                       ></OthersVideo>
                       <audio

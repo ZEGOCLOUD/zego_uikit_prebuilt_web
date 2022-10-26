@@ -711,6 +711,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         userID: this.props.core._expressConfig.userID,
         userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
+        avatar: this.props.core._expressConfig.avatar,
         streamList: [
           {
             media: this.state.localStream!,
@@ -735,6 +736,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         userID: this.props.core._expressConfig.userID,
         userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
+        avatar: this.props.core._expressConfig.avatar,
         streamList: [
           {
             media: this.state.localStream!,
@@ -1025,6 +1027,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
 
     if (this.state.screenSharingUserList.length > 0) {
+      const user = this.getAllMemberList().filter(
+        (u) => u.userID === this.state.screenSharingUserList[0].userID
+      );
       return (
         <>
           <div className={ZegoRoomCss.screenTopBar}>
@@ -1037,6 +1042,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             >
               {getNameFirstLetter(
                 this.state.screenSharingUserList[0].userName || ""
+              )}
+              {user[0].avatar && (
+                <img
+                  src={user[0].avatar}
+                  onError={(e: any) => {
+                    e.target.style.display = "none";
+                  }}
+                  alt={user[0].userName}
+                />
               )}
             </span>
             <p>

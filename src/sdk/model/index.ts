@@ -1,8 +1,4 @@
-import { deprecate } from "util";
-import {
-  ZegoUser,
-  ZegoBroadcastMessageInfo,
-} from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 
 import { ZegoCloudRTCCore } from "../modules";
 import {
@@ -90,6 +86,7 @@ export interface ZegoCloudRoomConfig {
 
   showLayoutButton?: boolean; // 是否显示布局切换按钮
   showPinButton?: boolean; // 是否显pin按钮
+  onCanSetUserAvatar?: (user: ZegoUser[]) => void;
 
   // @deprecate
   facingMode?: "user" | "environment"; // 前置摄像头模式
@@ -183,4 +180,9 @@ export enum ZegoStreamType {
   main,
   media,
   screensharing,
+}
+export interface ZegoUser {
+  userID: string;
+  userName?: string;
+  setUserAvatar?: (avatar: string) => void;
 }

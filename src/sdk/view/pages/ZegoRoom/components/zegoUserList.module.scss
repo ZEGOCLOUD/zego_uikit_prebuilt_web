@@ -26,9 +26,9 @@
     }
   }
   .memberNameWrapper {
+    position: relative;
     display: flex;
     align-items: center;
-
     width: 206px;
     overflow: hidden;
     color: #ffffff;
@@ -45,6 +45,13 @@
       line-height: 36px;
       text-align: center;
       background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+    & > img {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
       border-radius: 50%;
     }
     & > p {

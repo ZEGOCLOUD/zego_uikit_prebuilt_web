@@ -81,9 +81,19 @@ export class ZegoUserList extends React.PureComponent<{
               <div
                 className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper}`}
               >
+                {user.avatar && (
+                  <img
+                    src={user.avatar}
+                    onError={(e: any) => {
+                      e.target.style.display = "none";
+                    }}
+                    alt={user.userName}
+                  />
+                )}
                 <span style={{ color: userNameColor(user.userName || "") }}>
                   {getNameFirstLetter(user.userName || "")}
                 </span>
+
                 <p>{user.userName}</p>
                 {user.userID === this.props.selfUserID && "(You)"}
               </div>
