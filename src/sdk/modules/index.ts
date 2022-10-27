@@ -40,8 +40,8 @@ export class ZegoCloudRTCCore {
     token: string;
   };
   //   static _soundMeter: SoundMeter;
-  static getInstance(token: string): ZegoCloudRTCCore {
-    const config = getConfig(token);
+  static getInstance(kitToken: string): ZegoCloudRTCCore {
+    const config = getConfig(kitToken);
     if (!ZegoCloudRTCCore._instance && config) {
       ZegoCloudRTCCore._instance = new ZegoCloudRTCCore();
       ZegoCloudRTCCore._instance._expressConfig = config;

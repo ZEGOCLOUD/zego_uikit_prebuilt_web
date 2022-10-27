@@ -1,6 +1,7 @@
 import ReactDOM, { Root } from "react-dom/client";
 import { LiveRole, ScenarioModel, ZegoCloudRoomConfig } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
+import { generatePrebuiltToken } from "./util";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 
 export class ZegoUIKitPrebuilt {
@@ -17,9 +18,41 @@ export class ZegoUIKitPrebuilt {
   private hasJoinedRoom = false;
   root: Root | undefined;
 
-  static create(token: string): ZegoUIKitPrebuilt {
-    if (!ZegoUIKitPrebuilt.core && token) {
-      ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(token);
+  static generateKitTokenForTest(
+    appID: number,
+    serverSecret: string,
+    roomID: string,
+    userID: string,
+    userName?: string,
+    ExpirationSeconds?: number
+  ) {
+    return generatePrebuiltToken(
+      appID,
+      serverSecret,
+      roomID,
+      userID,
+      userName,
+      ExpirationSeconds
+    );
+  }
+
+  static generateKitTokenForProduction(
+    appID: number,
+    token: string,
+    roomID: string,
+    userID: string,
+    userName?: string
+  ) {
+    return (
+      token +
+      "#" +
+      window.btoa(JSON.stringify({ userID, roomID, userName, appID }))
+    );
+  }
+
+  static create(kitToken: string): ZegoUIKitPrebuilt {
+    if (!ZegoUIKitPrebuilt.core && kitToken) {
+      ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken);
       ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
     }
     return ZegoUIKitPrebuilt._instance;

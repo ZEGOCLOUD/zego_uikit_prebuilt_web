@@ -15,7 +15,7 @@ export declare class ZegoCloudRTCCore {
         roomID: string;
         token: string;
     };
-    static getInstance(token: string): ZegoCloudRTCCore;
+    static getInstance(kitToken: string): ZegoCloudRTCCore;
     status: {
         loginRsp: boolean;
         videoRefuse: boolean;
