@@ -1,7 +1,11 @@
 import React, { ChangeEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/tools/util";
-import { ScenarioModel, ZegoBrowserCheckProp } from "../../../model";
+import {
+  ScenarioModel,
+  VideoResolution,
+  ZegoBrowserCheckProp,
+} from "../../../model";
 import { ZegoSettings, ZegoSettingsAlert } from "../../components/zegoSetting";
 import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
 import { getVideoResolution, throttle } from "../../../util";
@@ -21,7 +25,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     selectMic: undefined,
     selectSpeaker: undefined,
     selectCamera: undefined,
-    selectVideoResolution: "360",
+    selectVideoResolution: this.props.core._config.videoResolutionList![0],
     isJoining: false, // 是否正在加入房间，防止重复点击join
     showNonVideo: this.props.core._config.showNonVideoUser,
     sharedLinks: this.props.core._config.sharedLinks?.map((link) => {
@@ -133,7 +137,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         speaker[0]?.deviceID || speakerDevices[0]?.deviceID || undefined,
       selectCamera: cam[0]?.deviceID || cameraDevices[0]?.deviceID || undefined,
       selectVideoResolution:
-        sessionStorage.getItem("selectVideoResolution") || "360",
+        sessionStorage.getItem("selectVideoResolution") ||
+        this.props.core._config.videoResolutionList![0],
     };
   }
   async createStream(

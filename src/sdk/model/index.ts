@@ -26,7 +26,12 @@ export enum ScenarioModel {
   VideoConference = "VideoConference",
   LiveStreaming = "LiveStreaming",
 }
-
+export enum VideoResolution {
+  "180P" = "180p",
+  "360P" = "360p",
+  "480P" = "480p",
+  "720P" = "720p",
+}
 export interface ScenarioConfig {
   [ScenarioModel.LiveStreaming]: {
     role: LiveRole;
@@ -86,7 +91,8 @@ export interface ZegoCloudRoomConfig {
 
   showLayoutButton?: boolean; // 是否显示布局切换按钮
   showPinButton?: boolean; // 是否显pin按钮
-  onCanSetUserAvatar?: (user: ZegoUser[]) => void;
+  onCanSetUserAvatar?: (user: ZegoUser[]) => void; //是否可以设置用户头像回调
+  videoResolutionList?: VideoResolution[]; // 视频分辨率列表（默认使用第一个）
 
   // @deprecate
   facingMode?: "user" | "environment"; // 前置摄像头模式

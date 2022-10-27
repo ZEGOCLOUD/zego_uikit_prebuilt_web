@@ -19,6 +19,7 @@ import {
 import {
   LiveRole,
   ScenarioModel,
+  VideoResolution,
   ZegoCloudRemoteMedia,
   ZegoCloudRoomConfig,
   ZegoUser,
@@ -136,6 +137,7 @@ export class ZegoCloudRTCCore {
     userUpdateCallback: () => {},
     showLayoutButton: true, // 是否显示布局切换按钮
     showPinButton: true, // 是否显pin按钮
+    videoResolutionList: [], //视频分辨率可选列表
   };
   setConfig(config: ZegoCloudRoomConfig): boolean {
     if (
@@ -253,7 +255,16 @@ export class ZegoCloudRTCCore {
         },
       ];
     }
-
+    if (config.videoResolutionList && config.videoResolutionList.length > 0) {
+      config.videoResolutionList = config.videoResolutionList.filter(
+        (s: string) => {
+          //@ts-ignore
+          return VideoResolution[s.toUpperCase()] !== undefined;
+        }
+      );
+    } else {
+      config.videoResolutionList = [VideoResolution["360P"]];
+    }
     config.preJoinViewConfig &&
       (config.preJoinViewConfig = {
         ...this._config.preJoinViewConfig,

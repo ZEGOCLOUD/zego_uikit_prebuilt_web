@@ -74,7 +74,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     selectMic: this.props.core.status.micDeviceID,
     selectSpeaker: this.props.core.status.speakerDeviceID,
     selectCamera: this.props.core.status.cameraDeviceID,
-    selectVideoResolution: this.props.core.status.videoResolution || "360",
+    selectVideoResolution:
+      this.props.core.status.videoResolution ||
+      this.props.core._config.videoResolutionList![0],
     videoShowNumber: 9,
     gridRowNumber: 3,
     layout: this.props.core._config.layout || "Auto",

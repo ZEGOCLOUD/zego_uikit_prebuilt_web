@@ -108,19 +108,19 @@ export function getVideoResolution(level: string): {
     bitrate: 400,
     frameRate: 15,
   };
-  if (level === "180") {
+  if (level === "180p") {
     width = 320;
     height = 180;
     bitrate = 140;
-  } else if (level === "360") {
+  } else if (level === "360p") {
     width = 640;
     height = 360;
     bitrate = 400;
-  } else if (level === "480") {
+  } else if (level === "480p") {
     width = 640;
     height = 480;
     bitrate = 500;
-  } else if (level === "720") {
+  } else if (level === "720p") {
     width = 1280;
     height = 720;
     bitrate = 1130;

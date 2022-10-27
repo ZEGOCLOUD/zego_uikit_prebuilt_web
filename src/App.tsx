@@ -1,11 +1,12 @@
 import "polyfill-object.fromentries";
-import React from "react";
+import React, { Ref } from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
 import { ZegoUIKitPrebuilt } from "./sdk/index";
 import { LiveRole, ScenarioModel, ZegoCloudRoomConfig } from "./sdk/model";
 import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, getRandomName, randomID } from "./util";
+import styles from "./App.module.scss";
 export default class App extends React.Component {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   state = {
@@ -17,9 +18,11 @@ export default class App extends React.Component {
         ? "https://docs.zegocloud.com/article/14728"
         : "https://docs.zegocloud.com/article/14922",
     showSettings: false,
+    showSettingsBtn: false,
     liveStreamingMode:
       getUrlParams().get("liveStreamingMode") || "RealTimeLive",
   };
+  settingsEl = null;
   constructor(props: any) {
     super(props);
     const userName = getUrlParams().get("UserName");
@@ -83,6 +86,7 @@ export default class App extends React.Component {
           roomID +
           "&role=Audience",
       });
+      this.state.showSettingsBtn = true;
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       mode = ScenarioModel.VideoConference;
       sharedLinks.push({
@@ -134,22 +138,32 @@ export default class App extends React.Component {
           user.forEach((u) => {
             u.setUserAvatar &&
               u.setUserAvatar(
-                "https://gd-hbimg.huaban.com/a10dfc94500be4eda3469e5d2ef942ddc56b1fd27de7-uOLg3r_fw658"
-                // `https://api.multiavatar.com/${u.userID}.png?apikey=XqHm465NYsdLfb` // random avatar
+                // "https://gd-hbimg.huaban.com/a10dfc94500be4eda3469e5d2ef942ddc56b1fd27de7-uOLg3r_fw658"
+                `https://api.multiavatar.com/${u.userID}.png?apikey=XqHm465NYsdLfb` // random avatar
               );
           });
         },
+        videoResolutionList: [
+          ZegoUIKitPrebuilt.VideoResolution["180P"],
+          ZegoUIKitPrebuilt.VideoResolution["480P"],
+          ZegoUIKitPrebuilt.VideoResolution["720P"],
+        ],
       };
       if (showNonVideoUser !== undefined) {
-        param.showNonVideoUser = showNonVideoUser == "true";
+        param.showNonVideoUser = showNonVideoUser === "true";
       }
       zp.joinRoom(param);
     };
   }
   handleSelectMode(mode: string) {
-    this.setState({
-      liveStreamingMode: mode,
-    });
+    this.setState(
+      {
+        liveStreamingMode: mode,
+      },
+      () => {
+        !isPc() && this.handleSettingsConfirm();
+      }
+    );
   }
   handleSettingsConfirm() {
     let param = getUrlParams();
@@ -180,16 +194,19 @@ export default class App extends React.Component {
               }}
             ></div>
             <div className={`${APP.link} ${isPc() ? "" : APP.mobileLink}`}>
-              <a
-                className={APP.link_item}
-                onClick={() => {
-                  this.setState({
-                    showSettings: true,
-                  });
-                }}
-              >
-                <span className={APP.icon_settings}></span> Settings
-              </a>
+              {this.state.showSettingsBtn && (
+                <a
+                  className={APP.link_item}
+                  onClick={() => {
+                    this.setState({
+                      showSettings: true,
+                    });
+                  }}
+                >
+                  <span className={APP.icon_settings}></span>{" "}
+                  {isPc() && "Settings"}
+                </a>
+              )}
               <a
                 href={this.state.docs}
                 target="_blank"
@@ -239,10 +256,14 @@ export default class App extends React.Component {
           .
         </div>
         {this.state.showSettings && (
-          <div className={APP.settingsModel}>
+          <div
+            className={`${
+              isPc() ? APP.pcSettingsModel : APP.mobileSettingsModel
+            }`}
+          >
             <div className={APP.settingsWrapper}>
               <div className={APP.settingsHeader}>
-                <p>Settings</p>
+                <p>{isPc() ? "Settings" : "Watching Mode"}</p>
                 <span
                   className={APP.settingsClose}
                   onClick={() => {
@@ -253,7 +274,9 @@ export default class App extends React.Component {
                 ></span>
               </div>
               <div className={APP.settingsBody}>
-                <div className={APP.settingsMode}>Live streaming mode</div>
+                {isPc() && (
+                  <div className={APP.settingsMode}>Live streaming mode</div>
+                )}
                 <div className={APP.settingsModeList}>
                   <div
                     className={`${APP.settingsModeItem} ${
@@ -295,14 +318,16 @@ export default class App extends React.Component {
                     <span></span>
                   </div>
                 </div>
-                <div
-                  className={APP.settingsBtn}
-                  onClick={() => {
-                    this.handleSettingsConfirm();
-                  }}
-                >
-                  Confirm
-                </div>
+                {isPc() && (
+                  <div
+                    className={APP.settingsBtn}
+                    onClick={() => {
+                      this.handleSettingsConfirm();
+                    }}
+                  >
+                    Confirm
+                  </div>
+                )}
               </div>
             </div>
           </div>

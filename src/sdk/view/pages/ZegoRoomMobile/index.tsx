@@ -21,6 +21,7 @@ import {
   randomNumber,
   userNameColor,
   getNameFirstLetter,
+  getVideoResolution,
 } from "../../../util";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
@@ -409,16 +410,20 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       try {
         let localStream: MediaStream | null = null;
         try {
+          const solution = getVideoResolution(
+            this.props.core._config.videoResolutionList![0]
+          );
           localStream = await this.props.core.createStream({
             camera: {
               video: !this.props.core.status.videoRefuse,
               audio: !this.props.core.status.audioRefuse,
               videoQuality: 4,
               facingMode: this.faceModel ? "user" : "environment",
-              width: 640,
-              height: 360,
-              bitrate: 400,
-              frameRate: 15,
+              ...solution,
+              //   width: 640,
+              //   height: 360,
+              //   bitrate: 400,
+              //   frameRate: 15,
             },
           });
         } catch (error) {
@@ -566,16 +571,20 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.state.localStream.getVideoTracks()[0].stop();
     this.state.localStream.getAudioTracks()[0].stop();
     try {
+      const solution = getVideoResolution(
+        this.props.core._config.videoResolutionList![0]
+      );
       const stream = await this.props.core.createStream({
         camera: {
           video: !this.props.core.status.videoRefuse,
           audio: !this.props.core.status.audioRefuse,
           videoQuality: 4,
           facingMode: !this.state.cameraFront ? "user" : "environment",
-          width: 640,
-          height: 360,
-          bitrate: 400,
-          frameRate: 15,
+          ...solution,
+          //   width: 640,
+          //   height: 360,
+          //   bitrate: 400,
+          //   frameRate: 15,
         },
       });
       let videoTrack = stream.getVideoTracks()[0];
