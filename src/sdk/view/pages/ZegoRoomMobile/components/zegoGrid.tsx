@@ -3,6 +3,7 @@ import { ZegoGridLayoutProps } from "../../../../model/index";
 import ZegoGridCss from "./zegoGrid.module.scss";
 import clsx from "clsx";
 import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
+import ZegoAudio from "../../../components/zegoMedia/audio";
 export class ZegoGrid extends React.PureComponent<ZegoGridLayoutProps> {
   render(): React.ReactNode {
     let wrapClassName = clsx({
@@ -31,20 +32,13 @@ export class ZegoGrid extends React.PureComponent<ZegoGridLayoutProps> {
             if (index > this.props.videoShowNumber - 1) {
               return (
                 value.streamList &&
-                value.streamList[0] &&
-                value.streamList[0].media && (
-                  <audio
-                    key={index}
-                    className={ZegoGridCss.videoCommon}
-                    onCanPlay={(ev) => {
-                      (ev.target as HTMLAudioElement).play();
-                    }}
-                    ref={(el) => {
-                      el &&
-                        el.srcObject !== value.streamList[0].media &&
-                        (el.srcObject = value.streamList[0].media!);
-                    }}
-                  ></audio>
+                value.streamList[0] && (
+                  <ZegoAudio
+                    muted={false}
+                    classList={ZegoGridCss.videoCommon}
+                    userInfo={value}
+                    key={index + "_audio_" + value.userID}
+                  ></ZegoAudio>
                 )
               );
             }

@@ -28,6 +28,7 @@ import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 import { ZegoScreenSharingLayout } from "./components/ZegoScreenSharingLayout";
 import ShowPCManageContext from "./context/showManage";
+import ZegoAudio from "../../components/zegoMedia/audio";
 export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -807,7 +808,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     });
   }
 
-  getAllUser() {
+  getAllUser(): ZegoCloudUserList {
     return [
       {
         userID: this.props.core._expressConfig.userID,
@@ -834,7 +835,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   getShownUser(forceShowNonVideoUser = false) {
     const shownUser = this.getAllUser().filter((item) => {
       if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
-        if (item.streamList && item.streamList[0] && item.streamList[0].media) {
+        if (
+          item.streamList &&
+          item.streamList[0] &&
+          (item.streamList[0].media ||
+            item.streamList[0].urlsHttpsFLV ||
+            item.streamList[0].urlsHttpsHLS)
+        ) {
           if (item.streamList[0].cameraStatus === "OPEN") {
             return true;
           } else if (
@@ -888,7 +895,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         !this.props.core._config.showNonVideoUser &&
         item.streamList &&
         item.streamList[0] &&
-        item.streamList[0].media &&
+        (item.streamList[0].media ||
+          item.streamList[0].urlsHttpsFLV ||
+          item.streamList[0].urlsHttpsHLS) &&
         item.streamList[0].cameraStatus !== "OPEN" &&
         !this.props.core._config.showOnlyAudioUser &&
         item.streamList[0].micStatus === "OPEN"
@@ -903,17 +912,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       <>
         {hiddenUser.map((user) => {
           return (
-            <audio
-              autoPlay
+            <ZegoAudio
               muted={user.userID === this.props.core._expressConfig.userID}
+              userInfo={user}
               key={user.userID + "_hiddenAudio"}
-              ref={(el) => {
-                el &&
-                  el.srcObject !== user.streamList[0].media &&
-                  (el.srcObject = user.streamList[0].media!);
-                el && (el as any)?.setSinkId?.(this.state.selectSpeaker || "");
-              }}
-            ></audio>
+            ></ZegoAudio>
           );
         })}
       </>

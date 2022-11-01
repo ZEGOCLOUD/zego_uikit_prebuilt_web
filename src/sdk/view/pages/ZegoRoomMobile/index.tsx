@@ -44,6 +44,7 @@ import { ZegoSidebar } from "./components/zegoSidebar";
 import ShowManageContext from "./context/showManage";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoScreen } from "./components/zegoScreen";
+import ZegoAudio from "../../components/zegoMedia/audio";
 
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
@@ -820,20 +821,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       <>
         {hiddenUser.map((user) => {
           return (
-            <audio
-              autoPlay
-              style={{ width: "1px", height: "1px" }}
+            <ZegoAudio
               muted={user.userID === this.props.core._expressConfig.userID}
               key={user.userID + "_hiddenAudio"}
-              onCanPlay={(ev) => {
-                (ev.target as HTMLAudioElement).play();
-              }}
-              ref={(el) => {
-                el &&
-                  el.srcObject !== user.streamList[0].media &&
-                  (el.srcObject = user.streamList[0].media!);
-              }}
-            ></audio>
+              userInfo={user}
+            ></ZegoAudio>
           );
         })}
       </>

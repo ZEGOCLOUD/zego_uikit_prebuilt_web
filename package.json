@@ -8,6 +8,7 @@
         "clsx": "^1.2.1",
         "css-loader": "^6.7.1",
         "file-loader": "^6.2.0",
+        "flv.js": "^1.6.2",
         "gh-pages": "^4.0.0",
         "http-proxy-middleware": "^2.0.6",
         "polyfill-object.fromentries": "^1.0.1",

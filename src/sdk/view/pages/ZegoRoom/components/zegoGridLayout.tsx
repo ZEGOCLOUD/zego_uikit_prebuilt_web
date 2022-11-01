@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { OthersVideo } from "./zegoOthersVideo";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+import ZegoAudio from "../../../components/zegoMedia/audio";
 export class ZegoGridLayout extends React.PureComponent<ZegoGridLayoutProps> {
   static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
@@ -56,17 +57,11 @@ export class ZegoGridLayout extends React.PureComponent<ZegoGridLayoutProps> {
               }
               if (index > this.props.videoShowNumber - 1) {
                 return (
-                  <audio
+                  <ZegoAudio
+                    muted={false}
                     key={user.userID}
-                    autoPlay
-                    ref={(el) => {
-                      el &&
-                        el.srcObject !== user.streamList?.[0]?.media &&
-                        (el.srcObject = user.streamList?.[0]?.media!);
-                      el &&
-                        (el as any)?.setSinkId?.(this.context.speakerId || "");
-                    }}
-                  ></audio>
+                    userInfo={user}
+                  ></ZegoAudio>
                 );
               }
             }

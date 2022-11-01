@@ -5,6 +5,7 @@ import { OthersVideo } from "./zegoOthersVideo";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+import ZegoAudio from "../../../components/zegoMedia/audio";
 
 export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenSharingLayoutProps> {
   state = {
@@ -116,36 +117,17 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                         users={[arr[index]!, arr[index + 1]!]}
                         others={arr.length - this.props.videoShowNumber + 1}
                       ></OthersVideo>
-                      <audio
-                        autoPlay
-                        ref={(el) => {
-                          el &&
-                            el.srcObject !== user?.streamList?.[0]?.media &&
-                            (el.srcObject = user?.streamList?.[0]?.media!);
-                          el &&
-                            (el as any)?.setSinkId?.(
-                              this.context.speakerId || ""
-                            );
-                        }}
-                      ></audio>
+                      <ZegoAudio muted={false} userInfo={user}></ZegoAudio>
                     </div>
                   );
                 }
                 if (index > this.props.videoShowNumber - 1) {
                   return (
-                    <audio
+                    <ZegoAudio
+                      muted={false}
                       key={user.userID}
-                      autoPlay
-                      ref={(el: HTMLAudioElement) => {
-                        el &&
-                          el.srcObject !== user?.streamList?.[0]?.media &&
-                          (el.srcObject = user?.streamList?.[0]?.media!);
-                        el &&
-                          (el as any)?.setSinkId?.(
-                            this.context.speakerId || ""
-                          );
-                      }}
-                    ></audio>
+                      userInfo={user}
+                    ></ZegoAudio>
                   );
                 }
               }

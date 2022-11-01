@@ -12,6 +12,9 @@ export interface ZegoCloudRemoteMedia {
   cameraStatus: "OPEN" | "MUTE";
   state: "NO_PLAY" | "PLAY_REQUESTING" | "PLAYING";
   streamID: string;
+  // 新增 CDN 拉流地址
+  urlsHttpsFLV?: string;
+  urlsHttpsHLS?: string;
 }
 
 export enum LiveRole {
@@ -35,6 +38,7 @@ export enum VideoResolution {
 export interface ScenarioConfig {
   [ScenarioModel.LiveStreaming]: {
     role: LiveRole;
+    liveStreamingMode: LiveStreamingMode;
   };
   [ScenarioModel.OneONoneCall]: {
     role: LiveRole;
@@ -46,7 +50,11 @@ export interface ScenarioConfig {
     role: LiveRole;
   };
 }
-
+export enum LiveStreamingMode {
+  CDNLive = "CDNLive",
+  StandardLive = "StandardLive",
+  RealTimeLive = "RealTimeLive",
+}
 export interface ZegoCloudRoomConfig {
   container?: HTMLElement | undefined | null; // 挂载容器
   preJoinViewConfig?: {

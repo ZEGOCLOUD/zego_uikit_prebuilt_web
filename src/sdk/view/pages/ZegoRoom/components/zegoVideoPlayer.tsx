@@ -3,6 +3,7 @@ import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import { getNameFirstLetter, userNameColor } from "../../../../util";
 import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
+import ZegoVideo from "../../../components/zegoMedia/video";
 export class VideoPlayer extends React.PureComponent<{
   userInfo: ZegoCloudUser;
   muted: boolean;
@@ -29,7 +30,7 @@ export class VideoPlayer extends React.PureComponent<{
     const volume =
       this.props.volume?.[this.props.userInfo?.streamList?.[0]?.streamID];
     const height = volume === undefined ? 5 : Math.ceil((volume * 7) / 100);
-    let { showPinButton, speakerId } = this.context;
+    let { showPinButton } = this.context;
     return (
       <div
         className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
@@ -44,18 +45,10 @@ export class VideoPlayer extends React.PureComponent<{
           });
         }}
       >
-        <video
+        <ZegoVideo
           muted={this.props.muted}
-          autoPlay
-          className={ZegoVideoPlayerCss.videoCommon}
-          playsInline={true}
-          ref={(el) => {
-            this.video = el;
-            el &&
-              el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
-              (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
-            el && (el as any)?.setSinkId?.(speakerId || "");
-          }}
+          classList={ZegoVideoPlayerCss.videoCommon}
+          userInfo={this.props.userInfo}
           onPause={() => {
             console.error("Paused");
             this.props.onPause && this.props.onPause();
@@ -63,7 +56,7 @@ export class VideoPlayer extends React.PureComponent<{
           onCanPlay={() => {
             this.props.onCanPlay && this.props.onCanPlay();
           }}
-        ></video>
+        ></ZegoVideo>
         <div
           className={ZegoVideoPlayerCss.cameraMask}
           style={{

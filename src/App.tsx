@@ -52,7 +52,7 @@ export default class App extends React.Component {
     let sharedLinks: { name: string; url: string }[] = [];
     let maxUsers = 50;
     let showNonVideoUser = getUrlParams().get("showNonVideoUser") || undefined;
-
+    let liveStreamingMode;
     let mode = ScenarioModel.OneONoneCall;
     if (process.env.REACT_APP_PATH === "1on1_call") {
       maxUsers = 2;
@@ -66,6 +66,7 @@ export default class App extends React.Component {
       });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       mode = ScenarioModel.LiveStreaming;
+      liveStreamingMode = getUrlParams().get("liveStreamingMode") || undefined;
       if (role === LiveRole.Host || role === LiveRole.Cohost) {
         sharedLinks.push({
           name: "Join as co-host",
@@ -74,8 +75,10 @@ export default class App extends React.Component {
             window.location.pathname +
             "?roomID=" +
             roomID +
-            "&role=Cohost",
+            "&role=Cohost&liveStreamingMode=" +
+            liveStreamingMode,
         });
+        this.state.showSettingsBtn = true;
       }
       sharedLinks.push({
         name: "Join as audience",
@@ -84,9 +87,9 @@ export default class App extends React.Component {
           window.location.pathname +
           "?roomID=" +
           roomID +
-          "&role=Audience",
+          "&role=Audience&liveStreamingMode=" +
+          liveStreamingMode,
       });
-      this.state.showSettingsBtn = true;
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       mode = ScenarioModel.VideoConference;
       sharedLinks.push({
@@ -131,6 +134,7 @@ export default class App extends React.Component {
           mode,
           config: {
             role,
+            liveStreamingMode,
           },
         },
         showUserList: true,
