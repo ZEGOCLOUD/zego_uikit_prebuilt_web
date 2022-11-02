@@ -10,7 +10,7 @@ import ZegoAudio from "../../../components/zegoMedia/audio";
 export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenSharingLayoutProps> {
   state = {
     fullScreen: false,
-    loadingMask: true,
+    loadingMask: false,
     showBottomTip: false,
   };
   static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;

@@ -768,7 +768,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   getShownUser() {
     const shownUser = this.getAllUser().filter((item) => {
       if (!this.props.core._config.showNonVideoUser) {
-        if (item.streamList && item.streamList[0] && item.streamList[0].media) {
+        if (
+          item.streamList &&
+          item.streamList[0] &&
+          (item.streamList[0].media ||
+            item.streamList[0].urlsHttpsFLV ||
+            item.streamList[0].urlsHttpsHLS)
+        ) {
           if (item.streamList[0].cameraStatus === "OPEN") {
             return true;
           } else if (
@@ -806,7 +812,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         !this.props.core._config.showNonVideoUser &&
         item.streamList &&
         item.streamList[0] &&
-        item.streamList[0].media &&
+        (item.streamList[0].media ||
+          item.streamList[0].urlsHttpsFLV ||
+          item.streamList[0].urlsHttpsHLS) &&
         item.streamList[0].cameraStatus !== "OPEN" &&
         !this.props.core._config.showOnlyAudioUser &&
         item.streamList[0].micStatus === "OPEN"

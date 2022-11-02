@@ -1,4 +1,4 @@
-import { generateStreamID, getConfig } from "./tools/util";
+import { generateStreamID, getConfig, changeCDNUrlOrigin } from "./tools/util";
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import {
   ZegoDeviceInfo,
@@ -762,6 +762,11 @@ export class ZegoCloudRTCCore {
               this._config.scenario?.config?.role === LiveRole.Audience
             ) {
               // CDN拉流
+              console.error(
+                changeCDNUrlOrigin(
+                  streamInfo.urlsHttpsFLV || streamInfo.urlsFLV
+                )
+              );
               this.remoteStreamMap[streamInfo.streamID] = {
                 fromUser: streamInfo.user,
                 media: undefined,
@@ -769,8 +774,12 @@ export class ZegoCloudRTCCore {
                 cameraStatus: "OPEN",
                 state: "PLAYING",
                 streamID: streamInfo.streamID,
-                urlsHttpsFLV: streamInfo.urlsHttpsFLV || streamInfo.urlsFLV,
-                urlsHttpsHLS: streamInfo.urlsHttpsHLS || streamInfo.urlsHLS,
+                urlsHttpsFLV: changeCDNUrlOrigin(
+                  streamInfo.urlsHttpsFLV || streamInfo.urlsFLV
+                ),
+                urlsHttpsHLS: changeCDNUrlOrigin(
+                  streamInfo.urlsHttpsHLS || streamInfo.urlsHLS
+                ),
               };
             } else {
               const stream = await this.zum.startPullStream(

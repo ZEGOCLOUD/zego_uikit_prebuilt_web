@@ -9,6 +9,7 @@ export default class ZegoVideo extends React.PureComponent<{
   userInfo: ZegoCloudUser;
   onPause?: Function;
   onCanPlay?: Function;
+  key?: string;
 }> {
   context!: React.ContextType<typeof ShowPCManageContext>;
   videoRef: HTMLVideoElement | null = null;
@@ -17,21 +18,13 @@ export default class ZegoVideo extends React.PureComponent<{
     if (el) {
       this.videoRef = el;
       (el as any)?.setSinkId?.(this.context.speakerId || "");
-      if (
-        this.props.userInfo?.streamList?.[0]?.media &&
-        el.srcObject !== this.props.userInfo?.streamList?.[0]?.media
-      ) {
-        el.srcObject = this.props.userInfo?.streamList?.[0]?.media!;
-      }
-      if (
-        !this.props.userInfo?.streamList?.[0]?.media &&
-        this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV
-      ) {
-        if (
-          this.isSafari() &&
-          el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS
-        ) {
-          el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!;
+      if (this.props.userInfo?.streamList?.[0]?.media) {
+        el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
+          (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
+      } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
+        if (this.isSafari()) {
+          el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS &&
+            (el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!);
         } else {
           this.initFLVPlayer(
             el,
@@ -47,6 +40,7 @@ export default class ZegoVideo extends React.PureComponent<{
       type: "flv",
       isLive: true,
       url: url,
+      cors: true,
       hasAudio: true, //是否需要音频
       hasVideo: true, //是否需要视频
     });
@@ -79,6 +73,10 @@ export default class ZegoVideo extends React.PureComponent<{
         controls
         className={this.props.classList}
         playsInline={true}
+        key={
+          this.props.key ||
+          this.props.userInfo.userID + "_" + new Date().toString()
+        }
         ref={this.initVideo.bind(this)}
         onPause={() => {
           this.props.onPause && this.props.onPause();

@@ -16,18 +16,13 @@ export default class ZegoAudio extends React.PureComponent<{
     if (el) {
       this.audioRef = el;
       (el as any)?.setSinkId?.(this.context.speakerId || "");
-      if (
-        this.props.userInfo?.streamList?.[0]?.media &&
-        el.srcObject !== this.props.userInfo?.streamList?.[0]?.media
-      ) {
-        el.srcObject = this.props.userInfo?.streamList?.[0]?.media!;
-      }
-      if (
-        !this.props.userInfo?.streamList?.[0]?.media &&
-        this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV
-      ) {
+      if (this.props.userInfo?.streamList?.[0]?.media) {
+        el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
+          (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
+      } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
         if (this.isSafari()) {
-          el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!;
+          el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS! &&
+            (el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!);
         } else {
           this.initFLVPlayer(
             el,
@@ -42,6 +37,7 @@ export default class ZegoAudio extends React.PureComponent<{
       type: "flv",
       isLive: true,
       url: url,
+      cors: true,
       hasAudio: true, //是否需要音频
       hasVideo: false, //是否需要视频
     });
@@ -74,7 +70,7 @@ export default class ZegoAudio extends React.PureComponent<{
         muted={this.props.muted || false}
         className={this.props.classList}
         ref={this.initAudio.bind(this)}
-        key={this.props.key}
+        key={this.props.key + "_" + new Date().toString()}
         onCanPlay={(el) => {
           (el.target as HTMLAudioElement).play();
         }}
