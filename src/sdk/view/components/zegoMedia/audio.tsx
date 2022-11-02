@@ -70,7 +70,7 @@ export default class ZegoAudio extends React.PureComponent<{
         muted={this.props.muted || false}
         className={this.props.classList}
         ref={this.initAudio.bind(this)}
-        key={this.props.key + "_" + new Date().toString()}
+        key={this.props.key}
         onCanPlay={(el) => {
           (el.target as HTMLAudioElement).play();
         }}

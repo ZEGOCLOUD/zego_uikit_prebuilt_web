@@ -125,6 +125,7 @@ export class ZegoCloudRTCCore {
       r: 0,
     },
   };
+  NetworkStatusTimer: NodeJS.Timer | null = null;
   //   static _soundMeter: SoundMeter;
   static getInstance(token: string): ZegoCloudRTCCore {
     const config = getConfig(token);
@@ -688,6 +689,25 @@ export class ZegoCloudRTCCore {
       this.onScreenSharingEndedCallBack &&
         this.onScreenSharingEndedCallBack(stream);
     });
+    if (
+      this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this._config.scenario.config?.role === LiveRole.Audience &&
+      (this._config.scenario.config as any)?.liveStreamingMode ===
+        LiveStreamingMode.CDNLive
+    ) {
+      ZegoCloudRTCCore._zg.on(
+        "streamExtraInfoUpdate",
+        (
+          roomID: string,
+          streamList: { streamID: string; user: ZegoUser; extraInfo: string }[]
+        ) => {
+          if (roomID === this._expressConfig.roomID) {
+            console.warn("streamExtraInfoUpdate", streamList);
+            this.streamExtraInfoUpdateCallBack(streamList);
+          }
+        }
+      );
+    }
     const resp = await new Promise<number>(async (res, rej) => {
       ZegoCloudRTCCore._zg.on(
         "roomStateUpdate",
@@ -749,12 +769,6 @@ export class ZegoCloudRTCCore {
         for (let i = 0; i < _waitingHandlerStreams.add.length; i++) {
           const streamInfo = _waitingHandlerStreams.add[i];
           try {
-            console.warn(
-              this._config.scenario?.mode === ScenarioModel.LiveStreaming,
-              (this._config.scenario?.config as any)?.liveStreamingMode ===
-                LiveStreamingMode.CDNLive,
-              this._config.scenario?.config?.role === LiveRole.Audience
-            );
             if (
               this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
               (this._config.scenario?.config as any)?.liveStreamingMode ===
@@ -762,16 +776,12 @@ export class ZegoCloudRTCCore {
               this._config.scenario?.config?.role === LiveRole.Audience
             ) {
               // CDN拉流
-              console.error(
-                changeCDNUrlOrigin(
-                  streamInfo.urlsHttpsFLV || streamInfo.urlsFLV
-                )
-              );
+              const extraInfo = JSON.parse(streamInfo.extraInfo);
               this.remoteStreamMap[streamInfo.streamID] = {
                 fromUser: streamInfo.user,
                 media: undefined,
-                micStatus: "OPEN",
-                cameraStatus: "OPEN",
+                micStatus: extraInfo.isMicrophoneOn ? "OPEN" : "MUTE",
+                cameraStatus: extraInfo.isCameraOn ? "OPEN" : "MUTE",
                 state: "PLAYING",
                 streamID: streamInfo.streamID,
                 urlsHttpsFLV: changeCDNUrlOrigin(
@@ -780,6 +790,8 @@ export class ZegoCloudRTCCore {
                 urlsHttpsHLS: changeCDNUrlOrigin(
                   streamInfo.urlsHttpsHLS || streamInfo.urlsHLS
                 ),
+                hasAudio: extraInfo.hasAudio,
+                hasVideo: extraInfo.hasVideo,
               };
             } else {
               const stream = await this.zum.startPullStream(
@@ -994,7 +1006,7 @@ export class ZegoCloudRTCCore {
   onScreenSharingEnded(func: (stream: MediaStream) => void) {
     this.onScreenSharingEndedCallBack = func;
   }
-  NetworkStatusTimer: NodeJS.Timer | null = null;
+
   private onNetworkStatusCallBack!: (
     roomID: string,
     type: "ROOM" | "STREAM",
@@ -1026,9 +1038,51 @@ export class ZegoCloudRTCCore {
       func(roomID, type, status);
     };
   }
+  // TODO
+  private streamExtraInfoUpdateCallBack(
+    streamList: { streamID: string; user: ZegoUser; extraInfo: string }[]
+  ): void {
+    streamList.forEach((stream) => {
+      const extraInfo = JSON.parse(stream.extraInfo);
+      console.warn("extraInfo", extraInfo);
+      if (extraInfo.isCameraOn !== undefined) {
+        this.zum.updateStreamInfo(
+          stream.user.userID,
+          stream.streamID,
+          "cameraStatus",
+          extraInfo.isCameraOn ? "OPEN" : "MUTE"
+        );
+      }
+      if (extraInfo.isMicrophoneOn !== undefined) {
+        this.zum.updateStreamInfo(
+          stream.user.userID,
+          stream.streamID,
+          "micStatus",
+          extraInfo.isMicrophoneOn ? "OPEN" : "MUTE"
+        );
+      }
+      extraInfo.hasVideo !== undefined &&
+        this.zum.updateStreamInfo(
+          stream.user.userID,
+          stream.streamID,
+          "hasVideo",
+          !!extraInfo.hasVideo
+        );
+      extraInfo.hasAudio !== undefined &&
+        this.zum.updateStreamInfo(
+          stream.user.userID,
+          stream.streamID,
+          "hasAudio",
+          !!extraInfo.hasAudio
+        );
+    });
+    this.subscribeUserListCallBack &&
+      this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+  }
 
   leaveRoom(): void {
     if (!this.status.loginRsp) return;
+    ZegoCloudRTCCore._zg.off("streamExtraInfoUpdate");
     ZegoCloudRTCCore._zg.off("roomExtraInfoUpdate");
     ZegoCloudRTCCore._zg.off("roomStreamUpdate");
     ZegoCloudRTCCore._zg.off("remoteCameraStatusUpdate");
@@ -1071,5 +1125,11 @@ export class ZegoCloudRTCCore {
 
     ZegoCloudRTCCore._zg.logoutRoom();
     this.status.loginRsp = false;
+  }
+  setStreamExtraInfo(
+    streamID: string,
+    extraInfo: string
+  ): Promise<ZegoServerResponse> {
+    return ZegoCloudRTCCore._zg.setStreamExtraInfo(streamID, extraInfo);
   }
 }

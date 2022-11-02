@@ -15,6 +15,8 @@ export interface ZegoCloudRemoteMedia {
   // 新增 CDN 拉流地址
   urlsHttpsFLV?: string;
   urlsHttpsHLS?: string;
+  hasAudio?: boolean;
+  hasVideo?: boolean;
 }
 
 export enum LiveRole {

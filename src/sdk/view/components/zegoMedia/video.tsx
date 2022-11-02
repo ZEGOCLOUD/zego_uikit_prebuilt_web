@@ -41,8 +41,8 @@ export default class ZegoVideo extends React.PureComponent<{
       isLive: true,
       url: url,
       cors: true,
-      hasAudio: true, //是否需要音频
-      hasVideo: true, //是否需要视频
+      hasAudio: this.props.userInfo.streamList?.[0]?.hasAudio, //是否需要音频
+      hasVideo: this.props.userInfo.streamList?.[0]?.hasVideo, //是否需要视频
     });
     this.flvPlayer.on(flvjs.Events.LOADING_COMPLETE, () => {
       console.error("LOADING_COMPLETE");
@@ -70,13 +70,9 @@ export default class ZegoVideo extends React.PureComponent<{
       <video
         muted={this.props.muted}
         autoPlay
-        controls
         className={this.props.classList}
         playsInline={true}
-        key={
-          this.props.key ||
-          this.props.userInfo.userID + "_" + new Date().toString()
-        }
+        key={this.props.key || this.props.userInfo.userID}
         ref={this.initVideo.bind(this)}
         onPause={() => {
           this.props.onPause && this.props.onPause();

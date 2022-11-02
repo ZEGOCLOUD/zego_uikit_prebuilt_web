@@ -434,5 +434,43 @@ export class ZegoCloudUserListManager {
       }
       return false;
     });
+    this.remoteScreenStreamList.some((user: ZegoCloudUser) => {
+      if (user.userID === userID) {
+        user[key] = value as never;
+        return true;
+      }
+      return false;
+    });
+  }
+  updateStreamInfo(
+    userID: string,
+    streamID: string,
+    key: keyof ZegoCloudRemoteMedia,
+    value: any
+  ) {
+    this.remoteUserList.some((user: ZegoCloudUser) => {
+      if (user.userID === userID) {
+        user.streamList.some((stream) => {
+          if (stream.streamID === streamID) {
+            stream[key] = value as never;
+            return true;
+          }
+          return false;
+        });
+      }
+      return false;
+    });
+    this.remoteScreenStreamList.some((user: ZegoCloudUser) => {
+      if (user.userID === userID) {
+        user.streamList.some((stream) => {
+          if (stream.streamID === streamID) {
+            stream[key] = value as never;
+            return true;
+          }
+          return false;
+        });
+      }
+      return false;
+    });
   }
 }
