@@ -17,6 +17,7 @@ import {
   ZegoRoomExtraInfo,
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import {
+  CoreError,
   LiveRole,
   LiveStreamingMode,
   ScenarioModel,
@@ -105,7 +106,7 @@ export class ZegoCloudRTCCore {
     showScreenSharingButton: true, // 是否显示屏幕共享按钮
     scenario: {
       mode: ScenarioModel.OneONoneCall, // 场景选择
-      config: { role: LiveRole.Host }, // 对应场景专有配置
+      config: { role: LiveRole.Host, liveStreamingMode: undefined }, // 对应场景专有配置
     },
 
     facingMode: "user",
@@ -126,6 +127,14 @@ export class ZegoCloudRTCCore {
     },
   };
   NetworkStatusTimer: NodeJS.Timer | null = null;
+  get isCDNLive(): boolean {
+    return (
+      this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this._config.scenario.config?.role === LiveRole.Audience &&
+      (this._config.scenario.config as any).liveStreamingMode ===
+        LiveStreamingMode.CDNLive
+    );
+  }
   //   static _soundMeter: SoundMeter;
   static getInstance(token: string): ZegoCloudRTCCore {
     const config = getConfig(token);
@@ -288,15 +297,22 @@ export class ZegoCloudRTCCore {
     this.zum.scenario =
       this._config.scenario?.mode || ScenarioModel.OneONoneCall;
     this.zum.role = this._config.scenario?.config?.role || LiveRole.Host;
+    this.zum.liveStreamingMode =
+      (this._config.scenario?.config as any)?.liveStreamingMode ||
+      LiveStreamingMode.RealTimeLive;
     this.zum.showOnlyAudioUser = !!this._config.showOnlyAudioUser;
     this.zum.setShowNonVideo(!!this._config.showNonVideoUser);
     return true;
   }
   async checkWebRTC(): Promise<boolean> {
-    const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC");
-    const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264");
-
-    return !!webRTC.result && !!H264.result;
+    if (!this.isCDNLive) {
+      const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements(
+        "webRTC"
+      );
+      const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264");
+      return !!webRTC.result && !!H264.result;
+    }
+    return true;
   }
   setPin(userID?: string, pined?: boolean, stopUpdateUser?: boolean): void {
     this.zum.setPin(userID, pined);
@@ -602,6 +618,12 @@ export class ZegoCloudRTCCore {
               this.remoteStreamMap[streamInfo.streamID],
             ]);
         }
+        if (streamInfo.errorCode === 1104038) {
+          this.coreErrorCallback(
+            CoreError.notSupportStandardLive,
+            streamInfo.extendedData
+          );
+        }
       }
     );
     ZegoCloudRTCCore._zg.on(
@@ -689,12 +711,7 @@ export class ZegoCloudRTCCore {
       this.onScreenSharingEndedCallBack &&
         this.onScreenSharingEndedCallBack(stream);
     });
-    if (
-      this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-      this._config.scenario.config?.role === LiveRole.Audience &&
-      (this._config.scenario.config as any)?.liveStreamingMode ===
-        LiveStreamingMode.CDNLive
-    ) {
+    if (this.isCDNLive) {
       ZegoCloudRTCCore._zg.on(
         "streamExtraInfoUpdate",
         (
@@ -769,12 +786,13 @@ export class ZegoCloudRTCCore {
         for (let i = 0; i < _waitingHandlerStreams.add.length; i++) {
           const streamInfo = _waitingHandlerStreams.add[i];
           try {
-            if (
-              this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-              (this._config.scenario?.config as any)?.liveStreamingMode ===
-                LiveStreamingMode.CDNLive &&
-              this._config.scenario?.config?.role === LiveRole.Audience
-            ) {
+            if (this.isCDNLive) {
+              if (!streamInfo.urlsFLV) {
+                this.coreErrorCallback(
+                  CoreError.notSupportCDNLive,
+                  "urlsFLV is empty"
+                );
+              }
               // CDN拉流
               const extraInfo = JSON.parse(streamInfo.extraInfo);
               this.remoteStreamMap[streamInfo.streamID] = {
@@ -815,8 +833,15 @@ export class ZegoCloudRTCCore {
             }
 
             _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
-          } catch (error) {
-            console.warn("【ZEGOCLOUD】:startPlayingStream error", error);
+          } catch (error: any) {
+            console.warn("【ZEGOCLOUD】startPlayingStream error:", error);
+            // 未开通L3服务
+            if (error?.errorCode === 110438) {
+              this.coreErrorCallback(
+                CoreError.notSupportStandardLive,
+                error?.extendedData
+              );
+            }
           }
         }
 
@@ -1038,10 +1063,10 @@ export class ZegoCloudRTCCore {
       func(roomID, type, status);
     };
   }
-  // TODO
   private streamExtraInfoUpdateCallBack(
     streamList: { streamID: string; user: ZegoUser; extraInfo: string }[]
   ): void {
+    // 流附加消息解析
     streamList.forEach((stream) => {
       const extraInfo = JSON.parse(stream.extraInfo);
       console.warn("extraInfo", extraInfo);
@@ -1079,7 +1104,11 @@ export class ZegoCloudRTCCore {
     this.subscribeUserListCallBack &&
       this.subscribeUserListCallBack([...this.zum.remoteUserList]);
   }
-
+  // 往UI层抛出需要展示提示的错误
+  private coreErrorCallback!: (errCode: number, errMsg: string) => void;
+  onCoreError(func: (errCode: number, errMsg: string) => void) {
+    this.coreErrorCallback = func;
+  }
   leaveRoom(): void {
     if (!this.status.loginRsp) return;
     ZegoCloudRTCCore._zg.off("streamExtraInfoUpdate");

@@ -1,5 +1,6 @@
 import React, { RefObject } from "react";
 import {
+  CoreError,
   LiveRole,
   ScenarioModel,
   SoundLevelMap,
@@ -17,7 +18,7 @@ import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import { getVideoResolution, randomNumber, throttle } from "../../../util";
-import { ZegoSettings, ZegoSettingsAlert } from "../../components/zegoSetting";
+import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
 import { ZegoGridLayout } from "./components/zegoGridLayout";
@@ -110,6 +111,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   screenSharingStreamID = "";
   isCreatingScreenSharing = false;
   fullScreen = false;
+  showNotSupported = 0;
   userUpdateCallBack = () => {};
   componentDidMount() {
     this.setAllSinkId(this.state.selectSpeaker || "");
@@ -318,6 +320,32 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core.onScreenSharingEnded((stream: MediaStream) => {
       if (stream === this.state.screenSharingStream) {
         this.closeScreenSharing();
+      }
+    });
+    this.props.core.onCoreError((code: CoreError, msg: string) => {
+      // TODO
+      if (code === CoreError.notSupportStandardLive) {
+        if (this.showNotSupported) return;
+        this.showNotSupported = 1;
+        ZegoModelShow(
+          {
+            header: "Error",
+            contentText: "L3 service is not supported",
+            okText: "OK",
+          },
+          document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+        );
+      }
+      if (code === CoreError.notSupportCDNLive) {
+        this.showNotSupported = 1;
+        ZegoModelShow(
+          {
+            header: "Error",
+            contentText: "CDN service not support",
+            okText: "OK",
+          },
+          document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+        );
       }
     });
     const logInRsp = await this.props.core.enterRoom();

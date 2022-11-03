@@ -1,6 +1,11 @@
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { LiveRole, ScenarioModel, ZegoCloudRemoteMedia } from "../../model";
+import {
+  LiveRole,
+  LiveStreamingMode,
+  ScenarioModel,
+  ZegoCloudRemoteMedia,
+} from "../../model";
 import { isPc } from "../../util";
 export type ZegoCloudUserList = ZegoCloudUser[];
 
@@ -20,9 +25,17 @@ export class ZegoCloudUserListManager {
   remoteScreenStreamList: ZegoCloudUserList = [];
   scenario: ScenarioModel = ScenarioModel.OneONoneCall;
   role: LiveRole = LiveRole.Host;
+  liveStreamingMode: LiveStreamingMode = LiveStreamingMode.RealTimeLive;
   userOrderList: string[] = [];
   waitingPullStreams: { streamID: string; userID: string }[] = [];
   isLive: 1 | 0 = 0;
+  get isStandardLive(): boolean {
+    return (
+      this.scenario === ScenarioModel.LiveStreaming &&
+      this.role === LiveRole.Audience &&
+      this.liveStreamingMode === LiveStreamingMode.StandardLive
+    );
+  }
   setPin(userID?: string, pined?: boolean): void {
     this.remoteUserList = this.remoteUserList.map((u) => {
       if (u.userID === userID) {
@@ -301,7 +314,10 @@ export class ZegoCloudUserListManager {
         for (let index = 0; index < this.waitingPullStreams.length; index++) {
           try {
             const stream = await this.zg.startPlayingStream(
-              this.waitingPullStreams[index].streamID
+              this.waitingPullStreams[index].streamID,
+              {
+                resourceMode: this.isStandardLive ? 2 : 0,
+              }
             );
 
             if (
@@ -384,14 +400,18 @@ export class ZegoCloudUserListManager {
       this.role === LiveRole.Audience
     ) {
       if (this.isLive === 1) {
-        const stream = await this.zg.startPlayingStream(streamID);
+        const stream = await this.zg.startPlayingStream(streamID, {
+          resourceMode: this.isStandardLive ? 2 : 0,
+        });
         return stream;
       } else if (this.isLive === 0) {
         this.waitingPullStreams.push({ streamID, userID });
         return undefined;
       }
     } else {
-      const stream = await this.zg.startPlayingStream(streamID);
+      const stream = await this.zg.startPlayingStream(streamID, {
+        resourceMode: this.isStandardLive ? 2 : 0,
+      });
       return stream;
     }
 

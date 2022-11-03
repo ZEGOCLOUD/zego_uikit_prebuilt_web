@@ -202,3 +202,7 @@ export interface ZegoUser {
   userName?: string;
   setUserAvatar?: (avatar: string) => void;
 }
+export enum CoreError {
+  notSupportCDNLive = 10001,
+  notSupportStandardLive = 10002,
+}
