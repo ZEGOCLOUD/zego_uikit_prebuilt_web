@@ -2,6 +2,7 @@ import React, { RefObject } from "react";
 import {
   CoreError,
   LiveRole,
+  LiveStreamingMode,
   ScenarioModel,
   SoundLevelMap,
   ZegoBroadcastMessageInfo2,
@@ -23,7 +24,10 @@ import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
 import { ZegoGridLayout } from "./components/zegoGridLayout";
 import { ZegoSidebarLayout } from "./components/zegoSidebarLayout";
-import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
+import {
+  ZegoCloudUser,
+  ZegoCloudUserList,
+} from "../../../modules/tools/UserListManager";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
@@ -112,6 +116,15 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   isCreatingScreenSharing = false;
   fullScreen = false;
   showNotSupported = 0;
+  CDNLiveStreamNumLimitNotice = 0;
+  get isCDNLive(): boolean {
+    return (
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this.props.core._config.scenario.config?.role === LiveRole.Audience &&
+      (this.props.core._config.scenario.config as any).liveStreamingMode ===
+        LiveStreamingMode.CDNLive
+    );
+  }
   userUpdateCallBack = () => {};
   componentDidMount() {
     this.setAllSinkId(this.state.selectSpeaker || "");
@@ -274,8 +287,44 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.subscribeUserList((userList) => {
-      // console.warn("【ZEGOCLOUD】subscribeUserList choui", userList);
       this.userUpdateCallBack();
+      if (this.isCDNLive) {
+        // CDN拉流最大限制6条，超过限制就不拉了
+        let userListCopy: ZegoCloudUserList = JSON.parse(
+          JSON.stringify(userList)
+        );
+        const userNum = userListCopy.filter(
+          (user) => user.streamList.length > 0
+        ).length;
+        const limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
+        if (userNum > limitNum) {
+          let i = 0;
+          let targetUsers = userListCopy
+            .reverse()
+            .map((user: ZegoCloudUser) => {
+              if (user.streamList.length > 0 && i >= limitNum) {
+                user.streamList = [];
+              } else {
+                i++;
+              }
+              return user;
+            });
+          this.setState({
+            zegoCloudUserList: targetUsers.reverse(),
+          });
+          if (!this.CDNLiveStreamNumLimitNotice) {
+            this.CDNLiveStreamNumLimitNotice = 1;
+            ZegoModelShow({
+              header: "Notice",
+              contentText:
+                "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
+              okText: "Okay",
+            });
+          }
+
+          return;
+        }
+      }
       this.setState({
         zegoCloudUserList: userList,
       });

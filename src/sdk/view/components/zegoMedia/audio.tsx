@@ -7,7 +7,6 @@ export default class ZegoAudio extends React.PureComponent<{
   userInfo: ZegoCloudUser;
   muted?: boolean;
   classList?: string;
-  key?: string;
 }> {
   context!: React.ContextType<typeof ShowPCManageContext>;
   audioRef: HTMLAudioElement | null = null;
@@ -70,7 +69,6 @@ export default class ZegoAudio extends React.PureComponent<{
         muted={this.props.muted || false}
         className={this.props.classList}
         ref={this.initAudio.bind(this)}
-        key={this.props.key}
         onCanPlay={(el) => {
           (el.target as HTMLAudioElement).play();
         }}

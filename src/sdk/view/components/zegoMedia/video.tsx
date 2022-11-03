@@ -13,7 +13,7 @@ export default class ZegoVideo extends React.PureComponent<{
 }> {
   context!: React.ContextType<typeof ShowPCManageContext>;
   videoRef: HTMLVideoElement | null = null;
-  flvPlayer: any;
+  flvPlayer: flvjs.Player | null = null;
   initVideo(el: HTMLVideoElement) {
     if (el) {
       this.videoRef = el;
@@ -35,6 +35,7 @@ export default class ZegoVideo extends React.PureComponent<{
     }
   }
   initFLVPlayer(videoElement: HTMLVideoElement, url: string) {
+    if (!flvjs.isSupported()) return;
     if (this.flvPlayer) return;
     this.flvPlayer = flvjs.createPlayer({
       type: "flv",
@@ -45,8 +46,7 @@ export default class ZegoVideo extends React.PureComponent<{
       hasVideo: this.props.userInfo.streamList?.[0]?.hasVideo, //是否需要视频
     });
     this.flvPlayer.on(flvjs.Events.LOADING_COMPLETE, () => {
-      console.error("LOADING_COMPLETE");
-      this.flvPlayer.play();
+      this.flvPlayer?.play();
     });
     this.flvPlayer.attachMediaElement(videoElement);
     this.flvPlayer.load();
@@ -58,8 +58,11 @@ export default class ZegoVideo extends React.PureComponent<{
   }
   componentWillUnmount() {
     if (this.flvPlayer) {
+      this.flvPlayer.pause();
       this.flvPlayer.unload();
       this.flvPlayer.detachMediaElement();
+      this.flvPlayer.destroy();
+      this.flvPlayer = null;
     } else {
       this.videoRef?.srcObject && (this.videoRef.srcObject = null);
       this.videoRef?.src && (this.videoRef.src = "");
@@ -70,6 +73,7 @@ export default class ZegoVideo extends React.PureComponent<{
       <video
         muted={this.props.muted}
         autoPlay
+        controls
         className={this.props.classList}
         playsInline={true}
         key={this.props.key || this.props.userInfo.userID}

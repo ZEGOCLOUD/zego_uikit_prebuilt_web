@@ -1,6 +1,7 @@
 import React from "react";
 import {
   LiveRole,
+  LiveStreamingMode,
   ScenarioModel,
   SoundLevelMap,
   ZegoBroadcastMessageInfo2,
@@ -110,6 +111,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   userUpdateCallBack = () => {};
   localStreamID = "";
   safariLimitationNoticed: -1 | 0 | 1 = -1;
+  get isCDNLive(): boolean {
+    return (
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this.props.core._config.scenario.config?.role === LiveRole.Audience &&
+      (this.props.core._config.scenario.config as any).liveStreamingMode ===
+        LiveStreamingMode.CDNLive
+    );
+  }
 
   componentDidMount() {
     this.initSDK();
@@ -293,7 +302,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               );
             },
           });
-        } else if (this.safariLimitationNoticed != 0) {
+        } else if (this.safariLimitationNoticed !== 0) {
           // do nothing
         }
       } else {
