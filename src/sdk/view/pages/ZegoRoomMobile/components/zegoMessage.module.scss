@@ -12,7 +12,9 @@
   height: 70vh;
   background: #242736;
   border-radius: vw(46px) vw(46px) 0px 0px;
-
+  &.msgListExpend {
+    height: 40vh;
+  }
   .msgListHeader {
     display: flex;
     align-items: center;
@@ -166,7 +168,6 @@
     padding: vw(16px) vw(30px);
     background: #242736;
     box-shadow: 0px vw(-1px) 0px 0px #3d4054;
-
     input {
       flex: 1;
       box-sizing: border-box;

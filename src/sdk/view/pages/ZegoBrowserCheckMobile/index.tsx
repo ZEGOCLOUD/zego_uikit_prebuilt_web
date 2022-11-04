@@ -6,6 +6,7 @@ import { ZegoModel } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoLoading } from "./components/ZegoLoading";
+import { isAndroid, isIOS } from "../../../util";
 export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
   state = {
     localStream: undefined,
@@ -25,17 +26,14 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       };
     }),
   };
-  videoRef: RefObject<HTMLVideoElement>;
-  inviteRef: RefObject<HTMLInputElement>;
-
+  videoRef: RefObject<HTMLVideoElement> = React.createRef();
+  inviteRef: RefObject<HTMLInputElement> = React.createRef();
+  nameInputRef: RefObject<HTMLInputElement> = React.createRef();
   audioRefuse = this.props.core.status.audioRefuse;
   videoRefuse = this.props.core.status.videoRefuse;
-
-  constructor(props: ZegoBrowserCheckProp) {
-    super(props);
-    this.videoRef = React.createRef();
-    this.inviteRef = React.createRef();
-  }
+  isAndroid = isAndroid();
+  isIOS = isIOS();
+  clientHeight = 0;
 
   async componentDidMount() {
     this.setState({
@@ -52,12 +50,17 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
         isVideoOpening: false,
       });
     }
+    this.clientHeight =
+      document.documentElement.clientHeight || document.body.clientHeight;
+    this.isAndroid &&
+      window.addEventListener("resize", this.onResize, { passive: false });
   }
   componentWillUnmount() {
     this.state.localVideoStream &&
       this.props.core.destroyStream(this.state.localVideoStream);
     this.state.localAudioStream &&
       this.props.core.destroyStream(this.state.localAudioStream);
+    window.removeEventListener("resize", this.onResize);
   }
   async createStream(
     videoOpen: boolean,
@@ -291,7 +294,17 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
   handleChange(event: ChangeEvent<HTMLInputElement>) {
     this.setState({ userName: event.target.value.trim().substring(0, 255) });
   }
-
+  onResize = () => {
+    const clientHeight =
+      document.documentElement.clientHeight || document.body.clientHeight;
+    if (this.clientHeight <= clientHeight) {
+      setTimeout(() => {
+        this.nameInputRef.current!.scrollIntoView({
+          block: "start",
+        });
+      }, 20);
+    }
+  };
   render(): React.ReactNode {
     return (
       <div className={ZegoBrowserCheckCss.ZegoBrowserCheckSupport}>
@@ -359,6 +372,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
             {this.state.userName && <label>Your Name</label>}
             <input
               placeholder="Your Name"
+              ref={this.nameInputRef}
               value={this.state.userName}
               className={
                 this.state.userName != this.props.core._expressConfig.userName
@@ -366,8 +380,23 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
                   : ""
               }
               onChange={(ev: ChangeEvent<HTMLInputElement>) => {
-                ev.target.scrollIntoView();
                 this.handleChange(ev);
+              }}
+              onFocus={(ev: ChangeEvent<HTMLInputElement>) => {
+                this.isIOS &&
+                  setTimeout(() => {
+                    ev.target.scrollIntoView({
+                      block: "start",
+                    });
+                  }, 50);
+              }}
+              onBlur={(ev: ChangeEvent<HTMLInputElement>) => {
+                this.isAndroid &&
+                  setTimeout(() => {
+                    ev.target.scrollIntoView({
+                      block: "start",
+                    });
+                  }, 100);
               }}
             ></input>
             <button

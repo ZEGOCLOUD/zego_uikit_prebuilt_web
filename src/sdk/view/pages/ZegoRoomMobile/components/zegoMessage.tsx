@@ -1,7 +1,7 @@
 import React, { ChangeEvent, RefObject } from "react";
 import zegoMessageCss from "./zegoMessage.module.scss";
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { DateFormat, userNameColor } from "../../../../util";
+import { DateFormat, isFireFox, isIOS, userNameColor } from "../../../../util";
 import { ZegoBroadcastMessageInfo2 } from "../../../../model";
 import { ZegoToast } from "../../../components/mobile/zegoToast";
 export class ZegoMessage extends React.PureComponent<{
@@ -12,12 +12,15 @@ export class ZegoMessage extends React.PureComponent<{
 }> {
   state: {
     message: string;
+    isFocus: boolean;
   } = {
     message: "",
+    isFocus: false,
   };
   sendTime = 0;
   msgContentListRef: RefObject<HTMLDivElement>;
-
+  isIOS = isIOS();
+  isFireFox = isFireFox();
   constructor(props: {
     messageList: ZegoBroadcastMessageInfo2[];
     sendMessage: (msg: string) => void;
@@ -72,10 +75,41 @@ export class ZegoMessage extends React.PureComponent<{
     });
     this.sendTime = timestamp;
   }
-
+  onFocus = (ev: ChangeEvent<HTMLInputElement>) => {
+    if (!this.isIOS) return;
+    if (this.isFireFox) {
+      setTimeout(() => {
+        ev.target.scrollIntoView({
+          block: "start",
+        });
+        window.scrollTo(0, 0);
+      }, 50);
+    } else {
+      this.setState({
+        isFocus: true,
+      });
+    }
+  };
+  onBlur = (ev: ChangeEvent<HTMLInputElement>) => {
+    if (!this.isIOS) return;
+    if (this.isFireFox) {
+      setTimeout(() => {
+        ev.target.scrollIntoView(false);
+        window.scrollTo(0, 0);
+      }, 50);
+    } else {
+      this.setState({
+        isFocus: false,
+      });
+    }
+  };
   render(): React.ReactNode {
     return (
-      <div className={zegoMessageCss.msgList}>
+      <div
+        className={`${zegoMessageCss.msgList} ${
+          this.state.isFocus ? zegoMessageCss.msgListExpend : ""
+        }`}
+      >
         <div className={zegoMessageCss.msgListHeader}>
           <div
             className={zegoMessageCss.msgHide}
@@ -142,6 +176,8 @@ export class ZegoMessage extends React.PureComponent<{
             onChange={(event) => {
               this.messageInput(event);
             }}
+            onFocus={this.onFocus}
+            onBlur={this.onBlur}
             placeholder={"Send a message to everyone"}
             onKeyPress={(event) => {
               if (event.key === "Enter") {

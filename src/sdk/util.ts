@@ -21,7 +21,14 @@ export function isIOS() {
   let u = navigator.userAgent;
   return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 }
-
+export function isAndroid(): boolean {
+  let u = navigator.userAgent;
+  return u.indexOf("Android") > -1 || u.indexOf("Adr") > -1;
+}
+export function isFireFox() {
+  let u = navigator.userAgent;
+  return !!u.match(/firefox|fxios/i);
+}
 export function IsLowVersionSafari() {
   const is_safari = navigator.userAgent.toLowerCase().indexOf("safari/") > -1;
   const is_chrome = navigator.userAgent.match("CriOS");
