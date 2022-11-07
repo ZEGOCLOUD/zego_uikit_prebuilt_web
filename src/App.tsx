@@ -66,7 +66,8 @@ export default class App extends React.Component {
       });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       mode = ScenarioModel.LiveStreaming;
-      liveStreamingMode = getUrlParams().get("liveStreamingMode") || undefined;
+      liveStreamingMode =
+        getUrlParams().get("liveStreamingMode") || "RealTimeLive";
       if (role === LiveRole.Host || role === LiveRole.Cohost) {
         sharedLinks.push({
           name: "Join as co-host",
