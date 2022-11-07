@@ -117,14 +117,17 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                         users={[arr[index]!, arr[index + 1]!]}
                         others={arr.length - this.props.videoShowNumber + 1}
                       ></OthersVideo>
-                      <ZegoAudio muted={false} userInfo={user}></ZegoAudio>
+                      <ZegoAudio
+                        muted={user.userID === this.props.selfInfo.userID}
+                        userInfo={user}
+                      ></ZegoAudio>
                     </div>
                   );
                 }
                 if (index > this.props.videoShowNumber - 1) {
                   return (
                     <ZegoAudio
-                      muted={false}
+                      muted={user.userID === this.props.selfInfo.userID}
                       key={user.userID}
                       userInfo={user}
                     ></ZegoAudio>

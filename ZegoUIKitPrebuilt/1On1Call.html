@@ -13,8 +13,6 @@
 <body>
     <div id="root"></div>
 </body>
-<script src="https://resource.zegocloud.com/prebuilt/crypto-js.js"></script>
-<script src="https://resource.zegocloud.com/prebuilt/prebuiltToken.js"></script>
 <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt@beta/zego-uikit-prebuilt.js"></script>
 <script>
     // Generate a Token by calling a method.
@@ -28,7 +26,7 @@
     const userName = "userName" + userID;
     const appID = 11111;
     const serverSecret = "22076fd0a8388.......";
-    const TOKEN = generatePrebuiltToken(appID, serverSecret, roomID, userID, userName);
+    const TOKEN = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
 
 
 

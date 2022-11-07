@@ -22,7 +22,7 @@ export function getConfig(token: string) {
       token: token.split("#")[0] as string,
     };
   } else {
-    console.error("【ZEGOCLOUD】Token error");
+    console.error("【ZEGOCLOUD】kitToken error");
   }
 }
 

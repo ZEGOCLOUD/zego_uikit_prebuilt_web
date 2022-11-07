@@ -13,7 +13,9 @@ export declare class ZegoUIKitPrebuilt {
     static VideoConference: ScenarioModel;
     private hasJoinedRoom;
     root: Root | undefined;
-    static create(token: string): ZegoUIKitPrebuilt;
+    static generateKitTokenForTest(appID: number, serverSecret: string, roomID: string, userID: string, userName?: string, ExpirationSeconds?: number): string;
+    static generateKitTokenForProduction(appID: number, token: string, roomID: string, userID: string, userName?: string): string;
+    static create(kitToken: string): ZegoUIKitPrebuilt;
     joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
     destroy(): void;
 }

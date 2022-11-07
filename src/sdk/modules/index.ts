@@ -43,6 +43,27 @@ export class ZegoCloudRTCCore {
     token: string;
     avatar?: string;
   };
+  //   static _soundMeter: SoundMeter;
+  static getInstance(kitToken: string): ZegoCloudRTCCore {
+    const config = getConfig(kitToken);
+    if (!ZegoCloudRTCCore._instance && config) {
+      ZegoCloudRTCCore._instance = new ZegoCloudRTCCore();
+      ZegoCloudRTCCore._instance._expressConfig = config;
+      //   ZegoCloudRTCCore._soundMeter = new SoundMeter();
+      ZegoCloudRTCCore._zg = new ZegoExpressEngine(
+        ZegoCloudRTCCore._instance._expressConfig.appID,
+        "wss://webliveroom" +
+          ZegoCloudRTCCore._instance._expressConfig.appID +
+          "-api.zegocloud.com/ws"
+      );
+      ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(
+        ZegoCloudRTCCore._zg
+      );
+    }
+
+    return ZegoCloudRTCCore._instance;
+  }
+
   status: {
     loginRsp: boolean;
     videoRefuse: boolean;
@@ -134,26 +155,6 @@ export class ZegoCloudRTCCore {
       (this._config.scenario.config as any).liveStreamingMode ===
         LiveStreamingMode.CDNLive
     );
-  }
-  //   static _soundMeter: SoundMeter;
-  static getInstance(token: string): ZegoCloudRTCCore {
-    const config = getConfig(token);
-    if (!ZegoCloudRTCCore._instance && config) {
-      ZegoCloudRTCCore._instance = new ZegoCloudRTCCore();
-      ZegoCloudRTCCore._instance._expressConfig = config;
-      //   ZegoCloudRTCCore._soundMeter = new SoundMeter();
-      ZegoCloudRTCCore._zg = new ZegoExpressEngine(
-        ZegoCloudRTCCore._instance._expressConfig.appID,
-        "wss://webliveroom" +
-          ZegoCloudRTCCore._instance._expressConfig.appID +
-          "-api.zegocloud.com/ws"
-      );
-      ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(
-        ZegoCloudRTCCore._zg
-      );
-    }
-
-    return ZegoCloudRTCCore._instance;
   }
   setConfig(config: ZegoCloudRoomConfig): boolean {
     if (
