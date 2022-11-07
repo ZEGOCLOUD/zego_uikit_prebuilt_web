@@ -18,7 +18,12 @@ import {
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { getVideoResolution, randomNumber, throttle } from "../../../util";
+import {
+  getVideoResolution,
+  isSafari,
+  randomNumber,
+  throttle,
+} from "../../../util";
 import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
@@ -65,6 +70,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     screenSharingUserList: ZegoCloudUserList; // 屏幕共享列表
     showZegoSettings: boolean;
     haveUnReadMsg: boolean;
+    canAutoPlay: boolean;
   } = {
     localStream: undefined,
     layOutStatus: "ONE_VIDEO",
@@ -97,6 +103,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     screenSharingUserList: [],
     showZegoSettings: false,
     haveUnReadMsg: false,
+    canAutoPlay: false,
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -116,7 +123,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   isCreatingScreenSharing = false;
   fullScreen = false;
   showNotSupported = 0;
-  CDNLiveStreamNumLimitNotice = 0;
   get isCDNLive(): boolean {
     return (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
@@ -296,31 +302,27 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         const userNum = userListCopy.filter(
           (user) => user.streamList.length > 0
         ).length;
-        const limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
+        let limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
+        if (isSafari()) {
+          limitNum = limitNum - 5;
+        }
         if (userNum > limitNum) {
           let i = 0;
           let targetUsers = userListCopy
             .reverse()
             .map((user: ZegoCloudUser) => {
-              if (user.streamList.length > 0 && i >= limitNum) {
-                user.streamList = [];
-              } else {
-                i++;
+              if (user.streamList.length > 0) {
+                if (i >= limitNum) {
+                  user.streamList = [];
+                } else {
+                  i++;
+                }
               }
               return user;
             });
           this.setState({
             zegoCloudUserList: targetUsers.reverse(),
           });
-          if (!this.CDNLiveStreamNumLimitNotice) {
-            this.CDNLiveStreamNumLimitNotice = 1;
-            ZegoModelShow({
-              header: "Notice",
-              contentText:
-                "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
-              okText: "Okay",
-            });
-          }
 
           return;
         }
@@ -372,26 +374,18 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     });
     this.props.core.onCoreError((code: CoreError, msg: string) => {
-      // TODO
-      if (code === CoreError.notSupportStandardLive) {
+      if (
+        code === CoreError.notSupportStandardLive ||
+        code === CoreError.notSupportCDNLive
+      ) {
         if (this.showNotSupported) return;
         this.showNotSupported = 1;
         ZegoModelShow(
           {
-            header: "Error",
-            contentText: "L3 service is not supported",
-            okText: "OK",
-          },
-          document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
-        );
-      }
-      if (code === CoreError.notSupportCDNLive) {
-        this.showNotSupported = 1;
-        ZegoModelShow(
-          {
-            header: "Error",
-            contentText: "CDN service not support",
-            okText: "OK",
+            header: "Notice",
+            contentText:
+              "The service is not available, please contact the live streaming service provider to resolve.",
+            okText: "Okay",
           },
           document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
         );
@@ -1252,6 +1246,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             !!this.props.core._config.showPinButton &&
             this.getShownUser().length > 1,
           speakerId: this.state.selectSpeaker,
+          canAutoPlay: this.state.canAutoPlay,
+          setAutoPlay: () => {
+            this.setState({
+              canAutoPlay: true,
+            });
+          },
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>

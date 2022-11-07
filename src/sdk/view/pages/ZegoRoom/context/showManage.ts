@@ -5,15 +5,13 @@ export type ShowPCManageType = {
   showPinButton: boolean;
   speakerId?: string;
   canAutoPlay?: boolean;
-  setAutoPlay?: (bool: boolean) => void;
+  setAutoPlay?: () => void;
 };
 
 const ShowPCManageContext = React.createContext<ShowPCManageType>({
   showPinButton: true,
   speakerId: "default",
   canAutoPlay: false,
-  setAutoPlay(bool: boolean) {
-    this.canAutoPlay = bool;
-  },
+  setAutoPlay: () => {},
 });
 export default ShowPCManageContext;

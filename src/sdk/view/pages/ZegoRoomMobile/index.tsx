@@ -23,6 +23,7 @@ import {
   userNameColor,
   getNameFirstLetter,
   getVideoResolution,
+  isSafari,
 } from "../../../util";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
@@ -264,60 +265,65 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     );
     this.props.core.subscribeUserList((userList) => {
       this.userUpdateCallBack();
-      const notSupportPhone =
-        !isPc() &&
-        isIOS() &&
-        IsLowVersionSafari() &&
-        userList.filter((u) => {
-          return (
-            u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
-          );
-        }).length > (this.state.screenSharingUserList.length > 0 ? 0 : 1);
-      if (notSupportPhone) {
-        let targetUsers = userList.reverse();
 
-        let targetUser = targetUsers.find(
-          (u) => u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
+      if (!isPc() && isIOS() && (IsLowVersionSafari() || this.isCDNLive)) {
+        let userListCopy: ZegoCloudUserList = JSON.parse(
+          JSON.stringify(userList)
         );
-
-        if (this.safariLimitationNoticed === -1) {
-          this.safariLimitationNoticed = 0;
-          ZegoModelShow({
-            header: "Notice",
-            contentText:
-              "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
-
-            okText: "Okay",
-            onOk: () => {
-              this.safariLimitationNoticed = 1;
-              this.setState(
-                {
-                  zegoCloudUserList: [targetUser],
-                  memberList: userList,
-                  screenSharingUserList: [],
-                },
-                () => {
-                  this.handleLayoutChange(this.state.userLayoutStatus);
+        const userNum = userListCopy.filter(
+          (user) => user.streamList.length > 0
+        ).length;
+        let limitNum = this.state.screenSharingUserList.length > 0 ? 0 : 1;
+        if (userNum > limitNum) {
+          let i = 0;
+          let targetUsers = userListCopy
+            .reverse()
+            .map((user: ZegoCloudUser) => {
+              if (user.streamList.length > 0) {
+                if (i >= limitNum) {
+                  user.streamList = [];
+                } else {
+                  i++;
                 }
-              );
+              }
+              return user;
+            });
+          const users = targetUsers.reverse();
+          this.setState(
+            {
+              zegoCloudUserList: users,
+              memberList: users,
             },
-          });
-        } else if (this.safariLimitationNoticed !== 0) {
-          // do nothing
+            () => {
+              this.handleLayoutChange(this.state.userLayoutStatus);
+            }
+          );
+          if (this.safariLimitationNoticed === -1) {
+            this.safariLimitationNoticed = 0;
+            ZegoModelShow({
+              header: "Notice",
+              contentText:
+                "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
+              okText: "Okay",
+              onOk: () => {
+                this.safariLimitationNoticed = 1;
+              },
+            });
+          }
+          return;
         }
-      } else {
-        this.setState({
-          zegoCloudUserList: userList,
-          memberList: userList,
-        });
       }
+      this.setState({
+        zegoCloudUserList: userList,
+        memberList: userList,
+      });
     });
 
     this.props.core.subscribeScreenStream((userList) => {
       const notSupportPhone =
         !isPc() &&
         isIOS() &&
-        IsLowVersionSafari() &&
+        (IsLowVersionSafari() || this.isCDNLive) &&
         this.state.zegoCloudUserList.filter((u) => {
           return (
             u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"

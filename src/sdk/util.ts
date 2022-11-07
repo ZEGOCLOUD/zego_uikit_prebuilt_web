@@ -25,6 +25,11 @@ export function isAndroid(): boolean {
   let u = navigator.userAgent;
   return u.indexOf("Android") > -1 || u.indexOf("Adr") > -1;
 }
+export function isSafari(): boolean {
+  return (
+    /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
+  );
+}
 export function isFireFox() {
   let u = navigator.userAgent;
   return !!u.match(/firefox|fxios/i);

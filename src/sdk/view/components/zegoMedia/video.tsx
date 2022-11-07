@@ -1,7 +1,11 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../modules/tools/UserListManager";
-import ShowPCManageContext from "../../pages/ZegoRoom/context/showManage";
+import ShowPCManageContext, {
+  ShowPCManageType,
+} from "../../pages/ZegoRoom/context/showManage";
 import flvjs from "flv.js";
+import { isSafari } from "../../../util";
+import ZegoVideoCss from "./index.module.scss";
 
 export default class ZegoVideo extends React.PureComponent<{
   muted: boolean;
@@ -10,32 +14,42 @@ export default class ZegoVideo extends React.PureComponent<{
   onPause?: Function;
   onCanPlay?: Function;
 }> {
+  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
   videoRef: HTMLVideoElement | null = null;
   flvPlayer: flvjs.Player | null = null;
+  timer: NodeJS.Timer | null = null;
+  state: {
+    isPaused: boolean;
+  } = {
+    isPaused: false,
+  };
+  componentDidMount() {
+    this.initVideo(this.videoRef!);
+  }
   initVideo(el: HTMLVideoElement) {
     if (el) {
-      this.videoRef = el;
-      //   el.muted = this.props.muted;
-      (el as any)?.setSinkId?.(this.context.speakerId || "");
+      el.muted = this.props.muted;
+      (el as any)?.setSinkId?.(this.context?.speakerId || "");
       if (this.props.userInfo?.streamList?.[0]?.media) {
         el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
           (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
-        if (this.isSafari()) {
+        if (isSafari()) {
           if (el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {
-            // el.muted = true;
             el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!;
-            // console.error("setMute", el.muted);
-            // !this.context.canAutoPlay &&
-            //   (el.onclick = () => {
-            //     console.error("setMute");
-            //     document.querySelectorAll("video").forEach((v) => {
-            //       v.muted = false;
-            //       v.play();
-            //     });
-            //     // this.context.setAutoPlay(true);
-            //   });
+            const promise = el.play();
+            if (promise !== undefined) {
+              promise
+                .catch((error) => {
+                  // Auto-play was prevented
+                  // Show a UI element to let the user manually start playback
+                  console.error("play", error);
+                })
+                .then(() => {
+                  // Auto-play started
+                });
+            }
           }
         } else {
           this.initFLVPlayer(
@@ -63,10 +77,27 @@ export default class ZegoVideo extends React.PureComponent<{
     this.flvPlayer.attachMediaElement(videoElement);
     this.flvPlayer.load();
   }
-  isSafari(): boolean {
-    return (
-      /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
-    );
+
+  pcSafariMultipleVideoSpecialAction(el: HTMLVideoElement) {
+    el.muted = this.context.canAutoPlay ? this.props.muted : true;
+    !this.context.canAutoPlay &&
+      (el.onclick = () => {
+        document.querySelectorAll("video").forEach((v) => {
+          v.muted = false;
+          v.play();
+          v.onclick = null;
+        });
+        this.context.setAutoPlay && this.context.setAutoPlay();
+      });
+    this.timer = setInterval(() => {
+      if (el.paused) {
+        el.load();
+        console.error("load");
+      } else {
+        clearInterval(this.timer!);
+        this.timer = null;
+      }
+    }, 2000);
   }
   componentWillUnmount() {
     if (this.flvPlayer) {
@@ -79,24 +110,42 @@ export default class ZegoVideo extends React.PureComponent<{
       this.videoRef?.srcObject && (this.videoRef.srcObject = null);
       this.videoRef?.src && (this.videoRef.src = "");
     }
+    this.timer && clearInterval(this.timer);
   }
   render(): React.ReactNode {
     return (
-      <video
-        muted={this.props.muted}
-        autoPlay
-        // controls
-        className={this.props.classList}
-        playsInline={true}
-        ref={this.initVideo.bind(this)}
-        onPause={() => {
-          this.props.onPause && this.props.onPause();
-        }}
-        onCanPlay={() => {
-          this.videoRef?.play();
-          this.props.onCanPlay && this.props.onCanPlay();
-        }}
-      ></video>
+      <>
+        <video
+          // muted={this.props.muted}
+          autoPlay
+          className={`${ZegoVideoCss.video} ${this.props.classList}`}
+          playsInline={true}
+          ref={(el: HTMLVideoElement) => {
+            !this.videoRef && (this.videoRef = el);
+          }}
+          onPause={() => {
+            this.setState({
+              isPaused: true,
+            });
+            this.props.onPause && this.props.onPause();
+          }}
+          onCanPlay={() => {
+            this.videoRef?.play();
+            this.props.onCanPlay && this.props.onCanPlay();
+          }}
+        ></video>
+        {this.state.isPaused && (
+          <div
+            className={ZegoVideoCss.videoPlayBtn}
+            onClick={() => {
+              this.videoRef?.play();
+              this.setState({
+                isPaused: false,
+              });
+            }}
+          ></div>
+        )}
+      </>
     );
   }
 }
