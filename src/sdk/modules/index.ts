@@ -273,12 +273,12 @@ export class ZegoCloudRTCCore {
       ];
     }
     if (config.videoResolutionList && config.videoResolutionList.length > 0) {
-      config.videoResolutionList = config.videoResolutionList.filter(
-        (s: string) => {
-          //@ts-ignore
-          return VideoResolution[s.toUpperCase()] !== undefined;
-        }
-      );
+      const list = config.videoResolutionList.filter((s: string) => {
+        //@ts-ignore
+        return VideoResolution[s.toUpperCase()] !== undefined;
+      });
+      config.videoResolutionList =
+        list.length > 0 ? list : [VideoResolution["360P"]];
     } else {
       config.videoResolutionList = [VideoResolution["360P"]];
     }

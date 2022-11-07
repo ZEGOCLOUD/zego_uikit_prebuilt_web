@@ -73,16 +73,16 @@ export class ZegoUserList extends React.PureComponent<{
               >
                 <div className={zegoUserListCss.memberName}>
                   <i style={{ color: userNameColor(user.userName!) }}>
-                  {getNameFirstLetter(user.userName || "")}
-                {user.avatar && (
-                  <img
-                    src={user.avatar}
-                    onError={(e: any) => {
-                      e.target.style.display = "none";
-                    }}
-                    alt={user.userName}
-                  />
-                )}
+                    {getNameFirstLetter(user.userName || "")}
+                    {user.avatar && (
+                      <img
+                        src={user.avatar}
+                        onError={(e: any) => {
+                          e.target.style.display = "none";
+                        }}
+                        alt={user.userName}
+                      />
+                    )}
                   </i>
                   <a
                     key={user.userID}

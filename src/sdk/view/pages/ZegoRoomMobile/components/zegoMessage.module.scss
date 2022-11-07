@@ -51,6 +51,7 @@
       margin-top: vw(46px);
 
       i {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -65,6 +66,15 @@
         line-height: vw(33px);
         background: rgba(255, 255, 255, 0.1);
         border-radius: vw(28px);
+        img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: vw(56px);
+          height: vw(56px);
+          object-fit: cover;
+          border-radius: 50%;
+        }
       }
 
       .msgContentRight {

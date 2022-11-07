@@ -9,6 +9,7 @@ export class ZegoMessage extends React.PureComponent<{
   sendMessage: (msg: string) => void;
   userID: string;
   closeCallBac: () => void;
+  getAvatar: (userID: string) => string;
 }> {
   state: {
     message: string;
@@ -26,6 +27,7 @@ export class ZegoMessage extends React.PureComponent<{
     sendMessage: (msg: string) => void;
     userID: string;
     closeCallBac: () => void;
+    getAvatar: (userID: string) => string;
   }) {
     super(props);
     this.msgContentListRef = React.createRef<HTMLDivElement>();
@@ -137,6 +139,15 @@ export class ZegoMessage extends React.PureComponent<{
               >
                 <i style={{ color: userNameColor(msg.fromUser.userName!) }}>
                   {msg.fromUser.userName?.substring(0, 1)}
+                  {this.props.getAvatar(msg.fromUser.userID) && (
+                    <img
+                      src={this.props.getAvatar(msg.fromUser.userID)}
+                      onError={(e: any) => {
+                        e.target.style.display = "none";
+                      }}
+                      alt={msg.fromUser.userName!}
+                    />
+                  )}
                 </i>
                 <div className={zegoMessageCss.msgContentRight}>
                   <div className={zegoMessageCss.msgContentRightHeader}>

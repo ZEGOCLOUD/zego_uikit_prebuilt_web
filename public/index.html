@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <base href="./">
+    <base href="./" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Web site created using create-react-app" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -25,42 +30,40 @@
     -->
     <title>ZEGOCLOUD video call Demo(prebuilt)</title>
     <style>
-        @font-face {
-            font-family: Emoji;
-            src: local("Apple Color Emoji"), local("Segoe UI Emoji"),
-                local("Segoe UI Symbol"), local("Noto Color Emoji");
-        }
+      @font-face {
+        font-family: Emoji;
+        src: local("Apple Color Emoji"), local("Segoe UI Emoji"),
+          local("Segoe UI Symbol"), local("Noto Color Emoji");
+      }
 
-        html,
-        body {
-            margin: 0;
-            font-family: "PingFang SC", "Microsoft YaHei", system-ui, -apple-system,
-                "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-                "Droid Sans", "Helvetica Neue", sans-serif, Arial, Emoji;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            height: 100%;
-            margin: 0;
-        }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        margin: 0;
+        font-family: "PingFang SC", "Microsoft YaHei", system-ui, -apple-system,
+          "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+          "Droid Sans", "Helvetica Neue", sans-serif, Arial, Emoji;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-        code {
-            font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-                monospace;
-        }
+      code {
+        font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+          monospace;
+      }
 
-        #root {
-            height: 100%;
-        }
+      #root {
+        height: 100%;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <!-- <div style="width: 1000px;height: 800px;margin: 10px auto;"> -->
     <div id="root"></div>
     <!-- </div> -->
-
-
 
     <!--
       This HTML file is a template.
@@ -72,26 +75,29 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-</body>
-<script>
-    ! function (t) {
-        function e() {
-            var e = this || self;
-            e.globalThis = e, delete t.prototype._T_
-        }
-        "object" != typeof globalThis && (this ? e() : (t.defineProperty(t.prototype, "_T_", {
-            configurable: !0,
-            get: e
-        }), _T_))
-    }(Object);
-</script>
-<script src="https://resource.zegocloud.com/prebuilt/crypto-js.js"></script>
-<script src="https://resource.zegocloud.com/prebuilt/prebuiltToken.js"></script>
-<!-- <script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.0/vconsole.min.js"></script>
-<script>
+  </body>
+  <script>
+    !(function (t) {
+      function e() {
+        var e = this || self;
+        (e.globalThis = e), delete t.prototype._T_;
+      }
+      "object" != typeof globalThis &&
+        (this
+          ? e()
+          : (t.defineProperty(t.prototype, "_T_", {
+              configurable: !0,
+              get: e,
+            }),
+            _T_));
+    })(Object);
+  </script>
+  <script src="https://resource.zegocloud.com/prebuilt/crypto-js.js"></script>
+  <script src="https://resource.zegocloud.com/prebuilt/prebuiltToken.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.0/vconsole.min.js"></script>
+  <script>
     // init vConsole
     var vConsole = new VConsole();
-    console.log('Hello world');
-</script> -->
-
+    console.log("Hello world");
+  </script>
 </html>

@@ -143,14 +143,15 @@ export default class App extends React.Component {
           user.forEach((u) => {
             u.setUserAvatar &&
               u.setUserAvatar(
-                // "https://gd-hbimg.huaban.com/a10dfc94500be4eda3469e5d2ef942ddc56b1fd27de7-uOLg3r_fw658"
-                `https://api.multiavatar.com/${u.userID}.png?apikey=XqHm465NYsdLfb` // random avatar
+                // "https://images.pexels.com/photos/4172877/pexels-photo-4172877.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
+                `https://api.multiavatar.com/${u.userID}.svg?apikey=XqHm465NYsdLfb` // random avatar
               );
           });
         },
         videoResolutionList: [
           ZegoUIKitPrebuilt.VideoResolution["180P"],
           ZegoUIKitPrebuilt.VideoResolution["480P"],
+          ZegoUIKitPrebuilt.VideoResolution["360P"],
           ZegoUIKitPrebuilt.VideoResolution["720P"],
         ],
       };

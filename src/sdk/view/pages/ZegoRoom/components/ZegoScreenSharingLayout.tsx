@@ -49,6 +49,8 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
       [ZegoSidebarCss.threeRow]: this.props.videoShowNumber === 3,
       [ZegoSidebarCss.twoRow]: this.props.videoShowNumber === 2,
       [ZegoSidebarCss.oneRow]: this.props.videoShowNumber === 1,
+      [ZegoSidebarCss.fullScreen]:
+        this.state.fullScreen && this.props.userList.length > 0,
     });
     return (
       <div className={ZegoSidebarCss.sidebarWrapper}>
@@ -106,48 +108,46 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
           )}
         </div>
 
-        {!this.state.fullScreen && this.props.userList.length > 0 && (
-          <div className={wrapClassName}>
-            {this.props.userList.map((user, index, arr) => {
-              if (arr.length > this.props.videoShowNumber) {
-                if (index === this.props.videoShowNumber - 1) {
-                  return (
-                    <div key={"screen_container_" + user.userID}>
-                      <OthersVideo
-                        users={[arr[index]!, arr[index + 1]!]}
-                        others={arr.length - this.props.videoShowNumber + 1}
-                      ></OthersVideo>
-                      <ZegoAudio
-                        muted={user.userID === this.props.selfInfo.userID}
-                        userInfo={user}
-                      ></ZegoAudio>
-                    </div>
-                  );
-                }
-                if (index > this.props.videoShowNumber - 1) {
-                  return (
+        <div className={wrapClassName}>
+          {this.props.userList.map((user, index, arr) => {
+            if (arr.length > this.props.videoShowNumber) {
+              if (index === this.props.videoShowNumber - 1) {
+                return (
+                  <div key={"screen_container_" + user.userID}>
+                    <OthersVideo
+                      users={[arr[index]!, arr[index + 1]!]}
+                      others={arr.length - this.props.videoShowNumber + 1}
+                    ></OthersVideo>
                     <ZegoAudio
                       muted={user.userID === this.props.selfInfo.userID}
-                      key={user.userID}
                       userInfo={user}
                     ></ZegoAudio>
-                  );
-                }
+                  </div>
+                );
               }
-              return (
-                <VideoPlayer
-                  key={user.userID}
-                  userInfo={user}
-                  muted={user.userID === this.props.selfInfo.userID}
-                  handlePin={() => {
-                    this.props.handleSetPin!(user.userID);
-                  }}
-                  volume={this.props.soundLevel![user.userID] || {}}
-                ></VideoPlayer>
-              );
-            })}
-          </div>
-        )}
+              if (index > this.props.videoShowNumber - 1) {
+                return (
+                  <ZegoAudio
+                    muted={user.userID === this.props.selfInfo.userID}
+                    key={user.userID}
+                    userInfo={user}
+                  ></ZegoAudio>
+                );
+              }
+            }
+            return (
+              <VideoPlayer
+                key={user.userID}
+                userInfo={user}
+                muted={user.userID === this.props.selfInfo.userID}
+                handlePin={() => {
+                  this.props.handleSetPin!(user.userID);
+                }}
+                volume={this.props.soundLevel![user.userID] || {}}
+              ></VideoPlayer>
+            );
+          })}
+        </div>
       </div>
     );
   }

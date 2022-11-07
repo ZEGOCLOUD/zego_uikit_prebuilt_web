@@ -967,6 +967,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           sendMessage={(msg: string) => {
             this.sendMessage(msg);
           }}
+          getAvatar={(userID: string) => {
+            const user = this.getAllMemberList().find(
+              (u) => u.userID === userID
+            );
+            return user?.avatar || "";
+          }}
           closeCallBac={() => {
             this.setState({
               layOutStatus: "ONE_VIDEO",

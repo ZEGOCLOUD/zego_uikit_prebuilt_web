@@ -812,13 +812,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
         5
       );
-      this.setState({
-        videoShowNumber: videoShowNumber,
-      });
+
       !justSetNum && (await this.props.core.setSidebarLayOut(false));
       if (this.fullScreen) {
+        this.setState({
+          videoShowNumber: 0,
+        });
         await this.props.core.setMaxScreenNum(0);
       } else {
+        this.setState({
+          videoShowNumber: videoShowNumber,
+        });
         await this.props.core.setMaxScreenNum(
           this.showSelf ? videoShowNumber - 1 : videoShowNumber
         );
