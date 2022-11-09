@@ -20,6 +20,9 @@ export default class ZegoVideo extends React.PureComponent<{
   flvPlayer: flvjs.Player | null = null;
   timer: NodeJS.Timer | null = null;
   loadTimer: NodeJS.Timer | null = null;
+  lastDecodedFrame = 0;
+  retryTime = 0;
+  retryTimer: NodeJS.Timer | null = null;
   state: {
     isPaused: boolean;
   } = {
@@ -80,6 +83,7 @@ export default class ZegoVideo extends React.PureComponent<{
   initFLVPlayer(videoElement: HTMLVideoElement, url: string) {
     if (!flvjs.isSupported()) return;
     if (this.flvPlayer) return;
+
     this.flvPlayer = flvjs.createPlayer({
       type: "flv",
       isLive: true,
@@ -90,6 +94,41 @@ export default class ZegoVideo extends React.PureComponent<{
     });
     this.flvPlayer.on(flvjs.Events.LOADING_COMPLETE, () => {
       this.flvPlayer?.play();
+    });
+    this.flvPlayer.on(flvjs.Events.ERROR, (error) => {
+      console.error(flvjs.Events.ERROR, error);
+    });
+    this.flvPlayer.on("statistics_info", (res: any) => {
+      if (this.lastDecodedFrame === 0) {
+        this.lastDecodedFrame = res.decodedFrames;
+        this.retryTime = 0;
+        return;
+      }
+      if (this.lastDecodedFrame !== res.decodedFrames) {
+        this.lastDecodedFrame = res.decodedFrames;
+        this.retryTime = 0;
+      } else {
+        this.retryTime += 1;
+        // 保证在没有回调的情况下也会执行一次重试
+        if (!this.retryTimer) {
+          this.retryTimer = setTimeout(() => {
+            this.lastDecodedFrame = 0;
+            if (this.flvPlayer) {
+              this.flvPlayer.unload();
+              this.flvPlayer.load();
+            }
+          }, 5000);
+        }
+        if (this.retryTime % 5 === 0) {
+          this.lastDecodedFrame = 0;
+          if (this.flvPlayer) {
+            this.flvPlayer.unload();
+            this.flvPlayer.load();
+            clearTimeout(this.retryTimer);
+            this.retryTimer = null;
+          }
+        }
+      }
     });
     this.flvPlayer.attachMediaElement(videoElement);
     this.flvPlayer.load();

@@ -206,7 +206,8 @@ export default class App extends React.Component {
                     this.setState({
                       showSettings: true,
                       liveStreamingMode:
-                        getUrlParams().get("liveStreamingMode"),
+                        getUrlParams().get("liveStreamingMode") ||
+                        "RealTimeLive",
                     });
                   }}
                 >
