@@ -32,6 +32,8 @@ export default class ZegoAudio extends React.PureComponent<{
     }
   }
   initFLVPlayer(audioElement: HTMLAudioElement, url: string) {
+    if (!flvjs.isSupported()) return;
+    if (this.flvPlayer) return;
     this.flvPlayer = flvjs.createPlayer({
       type: "flv",
       isLive: true,
@@ -54,8 +56,11 @@ export default class ZegoAudio extends React.PureComponent<{
   }
   componentWillUnmount() {
     if (this.flvPlayer) {
+      this.flvPlayer.pause();
       this.flvPlayer.unload();
       this.flvPlayer.detachMediaElement();
+      this.flvPlayer.destroy();
+      this.flvPlayer = null;
     } else {
       this.audioRef?.srcObject && (this.audioRef.srcObject = null);
       this.audioRef?.src && (this.audioRef.src = "");

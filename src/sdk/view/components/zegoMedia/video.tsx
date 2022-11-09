@@ -19,6 +19,7 @@ export default class ZegoVideo extends React.PureComponent<{
   videoRef: HTMLVideoElement | null = null;
   flvPlayer: flvjs.Player | null = null;
   timer: NodeJS.Timer | null = null;
+  loadTimer: NodeJS.Timer | null = null;
   state: {
     isPaused: boolean;
   } = {
@@ -32,6 +33,11 @@ export default class ZegoVideo extends React.PureComponent<{
       this.initVideo(this.videoRef!);
     }
   }
+  onloadedmetadata = () => {
+    this.loadTimer = setTimeout(() => {
+      this.videoRef?.load();
+    }, 3000);
+  };
   initVideo(el: HTMLVideoElement) {
     if (el) {
       el.muted = this.props.muted;
@@ -43,7 +49,9 @@ export default class ZegoVideo extends React.PureComponent<{
         if (isSafari()) {
           if (el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {
             el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!;
+            el.onloadedmetadata = this.onloadedmetadata;
             el.load();
+
             const promise = el.play();
             if (promise !== undefined) {
               promise
@@ -120,12 +128,16 @@ export default class ZegoVideo extends React.PureComponent<{
       this.videoRef?.src && (this.videoRef.src = "");
     }
     this.timer && clearInterval(this.timer);
+    if (this.loadTimer) {
+      this.videoRef!.onloadedmetadata = null;
+      clearTimeout(this.loadTimer);
+      this.loadTimer = null;
+    }
   }
   render(): React.ReactNode {
     return (
       <>
         <video
-          // muted={this.props.muted}
           autoPlay
           className={`${ZegoVideoCss.video} ${this.props.classList}`}
           playsInline={true}
@@ -139,7 +151,14 @@ export default class ZegoVideo extends React.PureComponent<{
             this.props.onPause && this.props.onPause();
           }}
           onCanPlay={() => {
-            this.videoRef?.play();
+            if (this.loadTimer) {
+              this.videoRef!.onloadedmetadata = null;
+              clearTimeout(this.loadTimer);
+              this.loadTimer = null;
+            }
+            this.videoRef
+              ?.play()
+              .catch((error) => console.error("autoplay failed", error));
             this.props.onCanPlay && this.props.onCanPlay();
           }}
           onPlay={() => {
@@ -164,7 +183,4 @@ export default class ZegoVideo extends React.PureComponent<{
       </>
     );
   }
-}
-function isPC() {
-  throw new Error("Function not implemented.");
 }

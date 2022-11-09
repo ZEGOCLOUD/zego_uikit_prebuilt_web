@@ -322,7 +322,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               },
             });
           }
-          if (this.isCDNLive && this.iosLimitationNoticed === 0) {
+          if (isIOS() && this.isCDNLive && this.iosLimitationNoticed === 0) {
             this.iosLimitationNoticed = 1;
             ZegoModelShow({
               header: "Notice",
