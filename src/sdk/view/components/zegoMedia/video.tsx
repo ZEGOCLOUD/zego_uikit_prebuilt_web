@@ -4,7 +4,7 @@ import ShowPCManageContext, {
   ShowPCManageType,
 } from "../../pages/ZegoRoom/context/showManage";
 import flvjs from "flv.js";
-import { isSafari } from "../../../util";
+import { isSafari, isPc } from "../../../util";
 import ZegoVideoCss from "./index.module.scss";
 
 export default class ZegoVideo extends React.PureComponent<{
@@ -27,6 +27,11 @@ export default class ZegoVideo extends React.PureComponent<{
   componentDidMount() {
     this.initVideo(this.videoRef!);
   }
+  componentDidUpdate(preProps: { userInfo: ZegoCloudUser }) {
+    if (preProps.userInfo !== this.props.userInfo) {
+      this.initVideo(this.videoRef!);
+    }
+  }
   initVideo(el: HTMLVideoElement) {
     if (el) {
       el.muted = this.props.muted;
@@ -38,6 +43,7 @@ export default class ZegoVideo extends React.PureComponent<{
         if (isSafari()) {
           if (el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {
             el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!;
+            el.load();
             const promise = el.play();
             if (promise !== undefined) {
               promise
@@ -45,6 +51,9 @@ export default class ZegoVideo extends React.PureComponent<{
                   // Auto-play was prevented
                   // Show a UI element to let the user manually start playback
                   console.error("play", error);
+                  this.setState({
+                    isPaused: true,
+                  });
                 })
                 .then(() => {
                   // Auto-play started
@@ -133,10 +142,17 @@ export default class ZegoVideo extends React.PureComponent<{
             this.videoRef?.play();
             this.props.onCanPlay && this.props.onCanPlay();
           }}
+          onPlay={() => {
+            this.setState({
+              isPaused: false,
+            });
+          }}
         ></video>
         {this.state.isPaused && (
           <div
-            className={ZegoVideoCss.videoPlayBtn}
+            className={`${ZegoVideoCss.videoPlayBtn} ${
+              isPc() ? "" : ZegoVideoCss.mobile
+            }`}
             onClick={() => {
               this.videoRef?.play();
               this.setState({
@@ -148,4 +164,7 @@ export default class ZegoVideo extends React.PureComponent<{
       </>
     );
   }
+}
+function isPC() {
+  throw new Error("Function not implemented.");
 }

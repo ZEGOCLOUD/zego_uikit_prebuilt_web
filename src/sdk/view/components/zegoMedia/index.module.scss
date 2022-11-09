@@ -1,3 +1,4 @@
+@import "../../../var.scss";
 .video {
   position: relative;
 }
@@ -10,16 +11,24 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: 20px;
-  line-height: 100%;
-  text-align: center;
-  background-color: rgba($color: #000000, $alpha: 0.5);
+  background-color: rgba($color: #2a2a2a, $alpha: 0.6);
   cursor: pointer;
   &::after {
-    width: 40px;
-    height: 40px;
-    background-color: #fff;
+    width: 80px;
+    height: 80px;
+    background: url("../../../sdkAssets/icon_play@2x.png") no-repeat
+      center/cover;
     border-radius: 50%;
     content: "";
+  }
+  &.mobile {
+    &::after {
+      width: vw(128px);
+      height: vw(128px);
+      background: url("../../../sdkAssets/icon_play@2x.png") no-repeat
+        center/cover;
+      border-radius: 50%;
+      content: "";
+    }
   }
 }

@@ -28,7 +28,7 @@ export class OthersVideo extends React.PureComponent<{
                     onError={(e: any) => {
                       e.target.style.display = "none";
                     }}
-                    alt={user.userName}
+                    alt=""
                   />
                 )}
               </div>

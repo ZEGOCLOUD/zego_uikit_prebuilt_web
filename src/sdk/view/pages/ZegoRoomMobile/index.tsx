@@ -112,6 +112,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   userUpdateCallBack = () => {};
   localStreamID = "";
   safariLimitationNoticed: -1 | 0 | 1 = -1;
+  iosLimitationNoticed = 0;
   get isCDNLive(): boolean {
     return (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
@@ -266,20 +267,30 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core.subscribeUserList((userList) => {
       this.userUpdateCallBack();
 
-      if (!isPc() && isIOS() && (IsLowVersionSafari() || this.isCDNLive)) {
+      if ((IsLowVersionSafari() && isIOS()) || this.isCDNLive) {
         let userListCopy: ZegoCloudUserList = JSON.parse(
           JSON.stringify(userList)
         );
         const userNum = userListCopy.filter(
-          (user) => user.streamList.length > 0
+          (user) =>
+            user.streamList.length > 0 &&
+            (user.streamList[0].cameraStatus === "OPEN" ||
+              user.streamList[0].micStatus === "OPEN")
         ).length;
         let limitNum = this.state.screenSharingUserList.length > 0 ? 0 : 1;
+        if (this.isCDNLive && !isIOS()) {
+          limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
+        }
         if (userNum > limitNum) {
           let i = 0;
           let targetUsers = userListCopy
             .reverse()
             .map((user: ZegoCloudUser) => {
-              if (user.streamList.length > 0) {
+              if (
+                user.streamList.length > 0 &&
+                (user.streamList[0].cameraStatus === "OPEN" ||
+                  user.streamList[0].micStatus === "OPEN")
+              ) {
                 if (i >= limitNum) {
                   user.streamList = [];
                 } else {
@@ -289,16 +300,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               return user;
             });
           const users = targetUsers.reverse();
+
           this.setState(
             {
-              zegoCloudUserList: users,
+              zegoCloudUserList: targetUsers,
               memberList: users,
             },
             () => {
               this.handleLayoutChange(this.state.userLayoutStatus);
             }
           );
-          if (this.safariLimitationNoticed === -1) {
+          if (!this.isCDNLive && this.safariLimitationNoticed === -1) {
             this.safariLimitationNoticed = 0;
             ZegoModelShow({
               header: "Notice",
@@ -310,9 +322,19 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               },
             });
           }
+          if (this.isCDNLive && this.iosLimitationNoticed === 0) {
+            this.iosLimitationNoticed = 1;
+            ZegoModelShow({
+              header: "Notice",
+              contentText:
+                "Your current mobile system does not support the display of multiple video screens during the live streaming.",
+              okText: "Okay",
+            });
+          }
           return;
         }
       }
+
       this.setState({
         zegoCloudUserList: userList,
         memberList: userList,
@@ -326,7 +348,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         (IsLowVersionSafari() || this.isCDNLive) &&
         this.state.zegoCloudUserList.filter((u) => {
           return (
-            u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
+            u.streamList.length > 0 &&
+            (u.streamList[0].micStatus === "OPEN" ||
+              u.streamList[0].cameraStatus === "OPEN")
           );
         }).length > 0;
 
@@ -1107,7 +1131,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                   onError={(e: any) => {
                     e.target.style.display = "none";
                   }}
-                  alt={user[0].userName}
+                  alt=""
                 />
               )}
             </span>

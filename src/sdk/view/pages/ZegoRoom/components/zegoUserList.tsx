@@ -87,7 +87,7 @@ export class ZegoUserList extends React.PureComponent<{
                     onError={(e: any) => {
                       e.target.style.display = "none";
                     }}
-                    alt={user.userName}
+                    alt=""
                   />
                 )}
                 <span style={{ color: userNameColor(user.userName || "") }}>

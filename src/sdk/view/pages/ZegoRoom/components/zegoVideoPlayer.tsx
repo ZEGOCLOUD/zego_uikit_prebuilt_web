@@ -72,7 +72,7 @@ export class VideoPlayer extends React.PureComponent<{
               onError={(e: any) => {
                 e.target.style.display = "none";
               }}
-              alt={this.props.userInfo.userName}
+              alt=""
             />
           )}
           <div
@@ -86,16 +86,18 @@ export class VideoPlayer extends React.PureComponent<{
 
         {!this.props.hiddenName && (
           <div className={ZegoVideoPlayerCss.name}>
-            <span
-              className={`${ZegoVideoPlayerCss.micIcon} ${
-                this.props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
-                ZegoVideoPlayerCss.close
-              }`}
-            >
-              {this.props.userInfo?.streamList?.[0]?.micStatus === "OPEN" && (
-                <span style={{ height: height + "px" }}></span>
-              )}
-            </span>
+            {!this.props.userInfo.streamList[0].urlsHttpsFLV && (
+              <span
+                className={`${ZegoVideoPlayerCss.micIcon} ${
+                  this.props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
+                  ZegoVideoPlayerCss.close
+                }`}
+              >
+                {this.props.userInfo?.streamList?.[0]?.micStatus === "OPEN" && (
+                  <span style={{ height: height + "px" }}></span>
+                )}
+              </span>
+            )}
             <p
               className={
                 this.props.userInfo.overScreenMuteVideo

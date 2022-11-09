@@ -6,7 +6,6 @@ import { ZegoUIKitPrebuilt } from "./sdk/index";
 import { LiveRole, ScenarioModel, ZegoCloudRoomConfig } from "./sdk/model";
 import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, getRandomName, randomID } from "./util";
-import styles from "./App.module.scss";
 export default class App extends React.Component {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   state = {
@@ -206,6 +205,8 @@ export default class App extends React.Component {
                   onClick={() => {
                     this.setState({
                       showSettings: true,
+                      liveStreamingMode:
+                        getUrlParams().get("liveStreamingMode"),
                     });
                   }}
                 >
@@ -269,7 +270,7 @@ export default class App extends React.Component {
           >
             <div className={APP.settingsWrapper}>
               <div className={APP.settingsHeader}>
-                <p>{isPc() ? "Settings" : "Watching Mode"}</p>
+                <p>{isPc() ? "Settings" : "Live streaming mode"}</p>
                 <span
                   className={APP.settingsClose}
                   onClick={() => {

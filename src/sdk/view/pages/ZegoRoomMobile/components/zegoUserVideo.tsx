@@ -30,7 +30,8 @@ export class ZegoUserVideo extends React.PureComponent<{
       <div className={`${zegoUserVideoCss.container} zegoUserVideo_click`}>
         {this.props.user.streamList &&
           this.props.user.streamList[0] &&
-          this.props.user.streamList[0] && (
+          (this.props.user.streamList[0].media ||
+            this.props.user.streamList[0].urlsHttpsFLV) && (
             <ZegoVideo
               muted={this.props.muted}
               userInfo={this.props.user}
@@ -79,7 +80,7 @@ export class ZegoUserVideo extends React.PureComponent<{
                     onError={(e: any) => {
                       e.target.style.display = "none";
                     }}
-                    alt={this.props.user.userName}
+                    alt=""
                   />
                 )}
               </div>
@@ -102,18 +103,20 @@ export class ZegoUserVideo extends React.PureComponent<{
               {userInfo.userID === this.props.user.userID && (
                 <span>（You）</span>
               )}
-              <span
-                className={`${zegoUserVideoCss.micIcon}  ${
-                  !this.props.user.streamList[0] ||
-                  this.props.user.streamList[0].micStatus !== "OPEN"
-                    ? zegoUserVideoCss.close
-                    : ""
-                }`}
-              >
-                {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
-                  <span style={{ height: height + "px" }}></span>
-                )}
-              </span>
+              {!this.props.user.streamList[0].urlsHttpsFLV && (
+                <span
+                  className={`${zegoUserVideoCss.micIcon}  ${
+                    !this.props.user.streamList[0] ||
+                    this.props.user.streamList[0].micStatus !== "OPEN"
+                      ? zegoUserVideoCss.close
+                      : ""
+                  }`}
+                >
+                  {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
+                    <span style={{ height: height + "px" }}></span>
+                  )}
+                </span>
+              )}
             </div>
           </div>
         )}
@@ -165,7 +168,7 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
                   onError={(e: any) => {
                     e.target.style.display = "none";
                   }}
-                  alt={this.props.user.userName}
+                  alt=""
                 />
               )}
             </div>
@@ -187,7 +190,7 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
                   onError={(e: any) => {
                     e.target.style.display = "none";
                   }}
-                  alt={this.props.nextUser.userName}
+                  alt=""
                 />
               )}
             </div>

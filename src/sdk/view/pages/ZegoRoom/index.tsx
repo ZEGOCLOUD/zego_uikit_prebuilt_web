@@ -123,6 +123,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   isCreatingScreenSharing = false;
   fullScreen = false;
   showNotSupported = 0;
+  notSupportMultipleVideoNotice = 0;
   get isCDNLive(): boolean {
     return (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
@@ -300,7 +301,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           JSON.stringify(userList)
         );
         const userNum = userListCopy.filter(
-          (user) => user.streamList.length > 0
+          (user) =>
+            user.streamList.length > 0 &&
+            (user.streamList[0].cameraStatus === "OPEN" ||
+              user.streamList[0].micStatus === "OPEN")
         ).length;
         let limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
         if (isSafari()) {
@@ -311,7 +315,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           let targetUsers = userListCopy
             .reverse()
             .map((user: ZegoCloudUser) => {
-              if (user.streamList.length > 0) {
+              if (
+                user.streamList.length > 0 &&
+                (user.streamList[0].cameraStatus === "OPEN" ||
+                  user.streamList[0].micStatus === "OPEN")
+              ) {
                 if (i >= limitNum) {
                   user.streamList = [];
                 } else {
@@ -323,7 +331,18 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           this.setState({
             zegoCloudUserList: targetUsers.reverse(),
           });
-
+          if (isSafari() && this.notSupportMultipleVideoNotice === 0) {
+            this.notSupportMultipleVideoNotice = 1;
+            ZegoModelShow(
+              {
+                header: "Notice",
+                contentText:
+                  "Your current browser does not support the display of multiple video screens during the live streaming.",
+                okText: "Okay",
+              },
+              document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+            );
+          }
           return;
         }
       }

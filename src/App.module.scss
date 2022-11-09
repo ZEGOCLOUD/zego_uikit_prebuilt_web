@@ -129,8 +129,13 @@
         .settingsClose {
           width: 18px;
           height: 18px;
-          background: url("./assets/icon_close.png") no-repeat center/cover;
+          background: url("./assets/icon_settings_close.png") no-repeat
+            center/cover;
           cursor: pointer;
+          &:hover {
+            background: url("./assets/icon_settings_close_hover.png") no-repeat
+              center/cover;
+          }
         }
       }
       .settingsBody {

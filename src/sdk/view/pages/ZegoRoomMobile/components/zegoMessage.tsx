@@ -87,9 +87,18 @@ export class ZegoMessage extends React.PureComponent<{
         window.scrollTo(0, 0);
       }, 50);
     } else {
-      this.setState({
-        isFocus: true,
-      });
+      this.setState(
+        {
+          isFocus: true,
+        },
+        () => {
+          this.msgContentListRef.current?.scroll(
+            0,
+            this.msgContentListRef.current.scrollHeight -
+              this.msgContentListRef.current.clientHeight
+          );
+        }
+      );
     }
   };
   onBlur = (ev: ChangeEvent<HTMLInputElement>) => {
@@ -145,7 +154,7 @@ export class ZegoMessage extends React.PureComponent<{
                       onError={(e: any) => {
                         e.target.style.display = "none";
                       }}
-                      alt={msg.fromUser.userName!}
+                      alt=""
                     />
                   )}
                 </i>
