@@ -28060,6 +28060,11 @@
   "resolved" "https://mirrors.cloud.tencent.com/npm/zego-express-logger/-/zego-express-logger-1.2.0.tgz"
   "version" "1.2.0"
 
+"zego-superboard-web@^2.8.1":
+  "integrity" "sha512-cOR+SziGDophtfJ+IPSlgrUptBw/A5BzRb62mRgIy0avVhyOuKz1w7vv4fEiY5BKPZnEek5xu0lGTqvlmLMTAA=="
+  "resolved" "https://registry.npmjs.org/zego-superboard-web/-/zego-superboard-web-2.8.1.tgz"
+  "version" "2.8.1"
+
 "zip-stream@^4.1.0":
   "integrity" "sha512-zshzwQW7gG7hjpBlgeQP9RuyPGNxvJdzR8SUM3QhxCnLjWN2E7j3dOvpeDcQoETfHx0urRS7EtmVToql7YpU4A=="
   "resolved" "https://mirrors.cloud.tencent.com/npm/zip-stream/-/zip-stream-4.1.0.tgz"

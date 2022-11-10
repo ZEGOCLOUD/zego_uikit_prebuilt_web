@@ -1,9 +1,8 @@
-import { deprecate } from "util";
 import {
   ZegoUser,
   ZegoBroadcastMessageInfo,
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-
+import { ZegoSuperBoardManager, ZegoSuperBoardView } from "zego-superboard-web";
 import { ZegoCloudRTCCore } from "../modules";
 import {
   ZegoCloudUser,
@@ -104,6 +103,9 @@ export interface ZegoCloudRoomConfig {
   ) => void; // 用户新增/退出 回调
   // @deprecate
   roomTimerDisplayed?: boolean; // 是否显示倒计时
+
+  showWhiteboardButton?: boolean; // 是否显示白板按钮
+  plugins?: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager };
 }
 
 export interface ZegoBrowserCheckProp {
@@ -173,6 +175,21 @@ export interface ZegoScreenSharingLayoutProps {
   screenSharingUser: ZegoCloudUser;
   soundLevel?: SoundLevelMap;
   handleFullScreen?: (fullScreen: boolean) => void;
+}
+export interface ZegoWhiteboardSharingLayoutProps {
+  handleSetPin?: Function;
+  userList: ZegoCloudUserList;
+  videoShowNumber: number;
+  selfInfo: {
+    userID: string;
+  };
+  roomID?: String;
+  isSelfScreen: boolean;
+  onShow: (el: HTMLDivElement) => void;
+  onResize: (el: HTMLDivElement) => void;
+  soundLevel?: SoundLevelMap;
+  handleFullScreen?: (fullScreen: boolean) => void;
+  zegoSuperBoardView?: ZegoSuperBoardView | null;
 }
 export interface SoundLevelMap {
   [userID: string]: {

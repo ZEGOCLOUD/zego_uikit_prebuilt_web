@@ -6,6 +6,7 @@ import { ZegoUIKitPrebuilt } from "./sdk/index";
 import { LiveRole, ScenarioModel, ZegoCloudRoomConfig } from "./sdk/model";
 import { getUrlParams, isPc } from "./sdk/util";
 import { generateToken, getRandomName, randomID } from "./util";
+import { ZegoSuperBoardManager } from "zego-superboard-web";
 export default class App extends React.Component {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   state = {
@@ -94,10 +95,19 @@ export default class App extends React.Component {
 
     this.myMeeting = async (element: HTMLDivElement) => {
       console.log(" userName || getRandomName()", userName || getRandomName());
-      let { token } = await generateToken(
-        randomID(5),
+      // let { token } = await generateToken(
+      //   randomID(5),
+      //   roomID,
+      //   userName || getRandomName()
+      // );
+
+      let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+        1484647939,
+        "22076fd0a8388f31dc1f6e344171b2b1",
         roomID,
-        userName || getRandomName()
+        randomID(5),
+        userName || getRandomName(),
+        7200
       );
 
       const zp = ZegoUIKitPrebuilt.create(token);
@@ -126,6 +136,8 @@ export default class App extends React.Component {
             role,
           },
         },
+        // showWhiteboardButton: true,
+        plugins: { ZegoSuperBoardManager },
       };
       if (showNonVideoUser !== undefined) {
         param.showNonVideoUser = showNonVideoUser == "true";

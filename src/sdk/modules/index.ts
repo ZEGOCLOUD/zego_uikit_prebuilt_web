@@ -27,6 +27,11 @@ import {
   ZegoCloudUserList,
   ZegoCloudUserListManager,
 } from "./tools/UserListManager";
+import {
+  ZegoSuperBoardManager,
+  ZegoSuperBoardSubViewModel,
+  ZegoSuperBoardView,
+} from "zego-superboard-web";
 
 export class ZegoCloudRTCCore {
   static _instance: ZegoCloudRTCCore;
@@ -39,6 +44,8 @@ export class ZegoCloudRTCCore {
     roomID: string;
     token: string;
   };
+  zegoSuperBoard!: ZegoSuperBoardManager;
+  zegoSuperBoardView: ZegoSuperBoardView | null | undefined = undefined;
   //   static _soundMeter: SoundMeter;
   static getInstance(kitToken: string): ZegoCloudRTCCore {
     const config = getConfig(kitToken);
@@ -134,6 +141,8 @@ export class ZegoCloudRTCCore {
     userUpdateCallback: () => {},
     showLayoutButton: true, // 是否显示布局切换按钮
     showPinButton: true, // 是否显pin按钮
+    showWhiteboardButton: false, // 是否显示白板按钮
+    plugins: {},
   };
   setConfig(config: ZegoCloudRoomConfig): boolean {
     if (
@@ -186,6 +195,9 @@ export class ZegoCloudRTCCore {
 
       if (!config.maxUsers) {
         config.maxUsers = 5000;
+      }
+      if (!config.showWhiteboardButton || true) {
+        config.showWhiteboardButton = false;
       }
 
       if (
@@ -270,6 +282,21 @@ export class ZegoCloudRTCCore {
     this.zum.role = this._config.scenario?.config?.role || LiveRole.Host;
     this.zum.showOnlyAudioUser = !!this._config.showOnlyAudioUser;
     this.zum.setShowNonVideo(!!this._config.showNonVideoUser);
+
+    if (
+      this._config.showWhiteboardButton &&
+      this._config.plugins?.ZegoSuperBoardManager
+    ) {
+      this.zegoSuperBoard =
+        this._config.plugins.ZegoSuperBoardManager.getInstance();
+      this.zegoSuperBoard.init(ZegoCloudRTCCore._zg, {
+        isTestEnv: false,
+        parentDomID: "ZegoCloudWhiteboardContainer", // 需要挂载的父容器 ID
+        appID: this._expressConfig.appID, // 申请到的 AppID
+        userID: this._expressConfig.userID, // 用户自定义生成的用户 ID
+        token: this._expressConfig.token, // 登录房间需要用于验证身份的 Token
+      });
+    }
     return true;
   }
 
@@ -334,6 +361,20 @@ export class ZegoCloudRTCCore {
     return ZegoCloudRTCCore._zg.createStream(source);
   }
 
+  async createAndPublishWhiteboard(
+    parentDom: HTMLDivElement,
+    name: string
+  ): Promise<ZegoSuperBoardView> {
+    await this.zegoSuperBoard.createWhiteboardView({
+      name,
+      perPageWidth: 6, // 白板每页宽度
+      perPageHeight: 3, // 白板每页高度
+      pageCount: 5, // 白板页数
+    });
+
+    return this.zegoSuperBoard.getSuperBoardView();
+  }
+
   async setVideoConfig(
     media: MediaStream,
     constraints: ZegoPublishStreamConfig
@@ -345,6 +386,15 @@ export class ZegoCloudRTCCore {
   }
   destroyStream(stream: MediaStream): void {
     ZegoCloudRTCCore._zg.destroyStream(stream);
+  }
+
+  destroyAndStopPublishWhiteboard(): void {
+    const uniqueID = this.zegoSuperBoard
+      .getSuperBoardView()
+      ?.getCurrentSuperBoardSubView()
+      ?.getModel().uniqueID;
+
+    uniqueID && this.zegoSuperBoard.destroySuperBoardSubView(uniqueID);
   }
 
   useCameraDevice(
@@ -664,6 +714,26 @@ export class ZegoCloudRTCCore {
       this.onScreenSharingEndedCallBack &&
         this.onScreenSharingEndedCallBack(stream);
     });
+
+    if (this.zegoSuperBoard) {
+      // 监听远端新增白板
+      this.zegoSuperBoard.on(
+        "remoteSuperBoardSubViewAdded",
+        async (uniqueID: string) => {
+          await this.zegoSuperBoard.querySuperBoardSubViewList();
+          this.zegoSuperBoardView = this.zegoSuperBoard.getSuperBoardView();
+        }
+      );
+
+      // 监听远端销毁白板
+      this.zegoSuperBoard.on(
+        "remoteSuperBoardSubViewRemoved",
+        (uniqueID: string) => {
+          this.zegoSuperBoardView = null;
+        }
+      );
+    }
+
     const resp = await new Promise<number>(async (res, rej) => {
       ZegoCloudRTCCore._zg.on(
         "roomStateUpdate",
@@ -694,6 +764,12 @@ export class ZegoCloudRTCCore {
           maxMemberCount: ZegoCloudRTCCore._instance._config.maxUsers,
         }
       );
+      if (this.zegoSuperBoard) {
+        const result: ZegoSuperBoardSubViewModel[] =
+          await this.zegoSuperBoard.querySuperBoardSubViewList();
+        result.length > 0 &&
+          (this.zegoSuperBoardView = this.zegoSuperBoard.getSuperBoardView());
+      }
     });
     ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300);
     this.streamUpdateTimer(this.waitingHandlerStreams);
@@ -759,6 +835,11 @@ export class ZegoCloudRTCCore {
         this.onRemoteMediaUpdateCallBack &&
           _streamList.length > 0 &&
           this.onRemoteMediaUpdateCallBack("DELETE", _streamList);
+      }
+
+      if (this.zegoSuperBoardView !== undefined) {
+        this.subscribeWhiteBoardCallBack(this.zegoSuperBoardView);
+        this.zegoSuperBoardView = undefined;
       }
       // const nextWaitingHandlerStreams = {
       //   add: [...this.waitingHandlerStreams.add],
@@ -832,6 +913,15 @@ export class ZegoCloudRTCCore {
   private subscribeScreenStreamCallBack!: (userList: ZegoCloudUserList) => void;
   subscribeScreenStream(callback: (userList: ZegoCloudUserList) => void): void {
     this.subscribeScreenStreamCallBack = callback;
+  }
+
+  subscribeWhiteBoardCallBack!: (
+    zegoSuperBoardView: ZegoSuperBoardView | null
+  ) => void;
+  subscribeWhiteBoard(
+    callback: (zegoSuperBoardView: ZegoSuperBoardView | null) => void
+  ) {
+    this.subscribeWhiteBoardCallBack = callback;
   }
   private onRemoteMediaUpdateCallBack: (
     updateType: "DELETE" | "ADD" | "UPDATE",

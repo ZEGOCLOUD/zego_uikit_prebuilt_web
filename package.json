@@ -22,7 +22,8 @@
         "sass-resources-loader": "^2.2.5",
         "style-loader": "^3.3.1",
         "ts-loader": "^9.3.1",
-        "zego-express-engine-webrtc": "^2.18.0"
+        "zego-express-engine-webrtc": "^2.18.0",
+        "zego-superboard-web": "^2.8.1"
     },
     "homepage": "./",
     "scripts": {

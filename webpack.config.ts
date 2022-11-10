@@ -135,5 +135,8 @@ const config: webpack.Configuration = {
       },
     }),
   ],
+  externals: {
+    zegoSuperboardWeb: "zego-superboard-web",
+  },
 };
 export default config;
