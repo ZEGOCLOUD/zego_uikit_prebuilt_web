@@ -1,6 +1,7 @@
 import ReactDOM, { Root } from "react-dom/client";
 import {
   LiveRole,
+  LiveStreamingMode,
   ScenarioModel,
   VideoResolution,
   ZegoCloudRoomConfig,
@@ -21,6 +22,7 @@ export class ZegoUIKitPrebuilt {
   static LiveStreaming = ScenarioModel.LiveStreaming;
   static VideoConference = ScenarioModel.VideoConference;
   static VideoResolution = VideoResolution;
+  static LiveStreamingMode = LiveStreamingMode;
   private hasJoinedRoom = false;
   root: Root | undefined;
 

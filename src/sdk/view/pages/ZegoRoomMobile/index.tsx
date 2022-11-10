@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  CoreError,
   LiveRole,
   LiveStreamingMode,
   ScenarioModel,
@@ -113,6 +114,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   localStreamID = "";
   safariLimitationNoticed: -1 | 0 | 1 = -1;
   iosLimitationNoticed = 0;
+  showNotSupported = 0;
   get isCDNLive(): boolean {
     return (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
@@ -396,7 +398,24 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         }
       );
     });
-
+    this.props.core.onCoreError((code: CoreError, msg: string) => {
+      if (
+        code === CoreError.notSupportStandardLive ||
+        code === CoreError.notSupportCDNLive
+      ) {
+        if (this.showNotSupported) return;
+        this.showNotSupported = 1;
+        ZegoModelShow(
+          {
+            header: "Notice",
+            contentText:
+              "The service is not available, please contact the live streaming service provider to resolve.",
+            okText: "Okay",
+          },
+          document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+        );
+      }
+    });
     const logInRsp = await this.props.core.enterRoom();
     let massage = "";
     if (logInRsp === 0) {

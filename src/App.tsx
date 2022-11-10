@@ -148,9 +148,9 @@ export default class App extends React.Component {
           });
         },
         videoResolutionList: [
+          ZegoUIKitPrebuilt.VideoResolution["360P"],
           ZegoUIKitPrebuilt.VideoResolution["180P"],
           ZegoUIKitPrebuilt.VideoResolution["480P"],
-          ZegoUIKitPrebuilt.VideoResolution["360P"],
           ZegoUIKitPrebuilt.VideoResolution["720P"],
         ],
       };

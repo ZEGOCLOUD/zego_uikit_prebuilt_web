@@ -32,10 +32,9 @@ export default class ZegoVideo extends React.PureComponent<{
     this.initVideo(this.videoRef!);
   }
   componentDidUpdate(preProps: { userInfo: ZegoCloudUser }) {
-    if (preProps.userInfo !== this.props.userInfo) {
-      this.initVideo(this.videoRef!);
-    }
+    this.initVideo(this.videoRef!);
   }
+  comparedObject() {}
   onloadedmetadata = () => {
     this.loadTimer = setTimeout(() => {
       this.videoRef?.load();
@@ -43,11 +42,15 @@ export default class ZegoVideo extends React.PureComponent<{
   };
   initVideo(el: HTMLVideoElement) {
     if (el) {
-      el.muted = this.props.muted;
-      (el as any)?.setSinkId?.(this.context?.speakerId || "");
+      !this.videoRef && (this.videoRef = el);
+      el.muted !== this.props.muted && (el.muted = this.props.muted);
+      if ((el as any)?.sinkId !== this.context?.speakerId) {
+        (el as any)?.setSinkId?.(this.context?.speakerId || "");
+      }
       if (this.props.userInfo?.streamList?.[0]?.media) {
-        el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
-          (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
+        if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
+          el.srcObject = this.props.userInfo?.streamList?.[0]?.media!;
+        }
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
         if (isSafari()) {
           if (el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {
@@ -81,9 +84,8 @@ export default class ZegoVideo extends React.PureComponent<{
     }
   }
   initFLVPlayer(videoElement: HTMLVideoElement, url: string) {
-    if (!flvjs.isSupported()) return;
     if (this.flvPlayer) return;
-
+    if (!flvjs.isSupported()) return;
     this.flvPlayer = flvjs.createPlayer({
       type: "flv",
       isLive: true,
@@ -126,6 +128,7 @@ export default class ZegoVideo extends React.PureComponent<{
             this.flvPlayer.load();
             clearTimeout(this.retryTimer);
             this.retryTimer = null;
+            console.error("retryTimer");
           }
         }
       }
