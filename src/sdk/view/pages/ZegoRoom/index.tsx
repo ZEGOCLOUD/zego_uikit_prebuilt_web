@@ -308,7 +308,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         ).length;
         let limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
         if (isSafari()) {
-          limitNum = limitNum - 5;
+          limitNum = 1;
         }
         if (userNum > limitNum) {
           let i = 0;
@@ -365,9 +365,24 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       });
     });
     this.props.core.subscribeScreenStream((userList) => {
-      this.setState({ screenSharingUserList: userList }, () => {
-        this.computeByResize();
-      });
+      if (
+        this.isCDNLive &&
+        isSafari() &&
+        this.state.zegoCloudUserList.filter(
+          (user) =>
+            user.streamList.length > 0 &&
+            (user.streamList[0].cameraStatus === "OPEN" ||
+              user.streamList[0].micStatus === "OPEN")
+        ).length > 0
+      ) {
+        this.setState({ screenSharingUserList: [] }, () => {
+          this.computeByResize();
+        });
+      } else {
+        this.setState({ screenSharingUserList: userList }, () => {
+          this.computeByResize();
+        });
+      }
     });
     this.props.core.onSoundLevelUpdate(
       (soundLevelList: ZegoSoundLevelInfo[]) => {

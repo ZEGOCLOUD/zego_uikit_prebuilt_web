@@ -1104,6 +1104,8 @@ export class ZegoCloudRTCCore {
     });
     this.subscribeUserListCallBack &&
       this.subscribeUserListCallBack([...this.zum.remoteUserList]);
+    this.subscribeScreenStreamCallBack &&
+      this.subscribeScreenStreamCallBack([...this.zum.remoteScreenStreamList]);
   }
   // 往UI层抛出需要展示提示的错误
   private coreErrorCallback!: (errCode: number, errMsg: string) => void;

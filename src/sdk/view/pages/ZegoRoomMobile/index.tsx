@@ -277,7 +277,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             (user.streamList[0].cameraStatus === "OPEN" ||
               user.streamList[0].micStatus === "OPEN")
         ).length;
-        let limitNum = this.state.screenSharingUserList.length > 0 ? 0 : 1;
+        let limitNum = 1;
         if (this.isCDNLive && !isIOS()) {
           limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
         }
@@ -353,11 +353,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               u.streamList[0].cameraStatus === "OPEN")
           );
         }).length > 0;
-
-      !notSupportPhone &&
-        this.setState({ screenSharingUserList: userList }, () => {
+      this.setState(
+        { screenSharingUserList: notSupportPhone ? [] : userList },
+        () => {
           this.handleLayoutChange(this.state.userLayoutStatus);
-        });
+        }
+      );
     });
     this.props.core.onSoundLevelUpdate(
       (soundLevelList: ZegoSoundLevelInfo[]) => {
