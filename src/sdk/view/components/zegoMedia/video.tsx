@@ -4,7 +4,7 @@ import ShowPCManageContext, {
   ShowPCManageType,
 } from "../../pages/ZegoRoom/context/showManage";
 import flvjs from "flv.js";
-import { isSafari, isPc } from "../../../util";
+import { isSafari, isPc, isIOS } from "../../../util";
 import ZegoVideoCss from "./index.module.scss";
 
 export default class ZegoVideo extends React.PureComponent<{
@@ -91,8 +91,14 @@ export default class ZegoVideo extends React.PureComponent<{
       isLive: true,
       url: url,
       cors: true,
-      hasAudio: this.props.userInfo.streamList?.[0]?.hasAudio, //是否需要音频
-      hasVideo: this.props.userInfo.streamList?.[0]?.hasVideo, //是否需要视频
+      hasAudio:
+        this.props.userInfo.streamList?.[0]?.hasAudio === undefined
+          ? this.props.userInfo.streamList?.[0]?.micStatus === "OPEN"
+          : this.props.userInfo.streamList?.[0]?.hasAudio, //是否需要音频
+      hasVideo:
+        this.props.userInfo.streamList?.[0]?.hasVideo === undefined
+          ? this.props.userInfo.streamList?.[0]?.cameraStatus === "OPEN"
+          : this.props.userInfo.streamList?.[0]?.hasVideo, //是否需要视频
     });
     this.flvPlayer.on(flvjs.Events.LOADING_COMPLETE, () => {
       this.flvPlayer?.play();
@@ -121,7 +127,7 @@ export default class ZegoVideo extends React.PureComponent<{
             }
           }, 5000);
         }
-        if (this.retryTime % 5 === 0) {
+        if (this.retryTime % 10 === 0) {
           this.lastDecodedFrame = 0;
           if (this.flvPlayer) {
             this.flvPlayer.unload();
@@ -137,27 +143,6 @@ export default class ZegoVideo extends React.PureComponent<{
     this.flvPlayer.load();
   }
 
-  pcSafariMultipleVideoSpecialAction(el: HTMLVideoElement) {
-    el.muted = this.context.canAutoPlay ? this.props.muted : true;
-    !this.context.canAutoPlay &&
-      (el.onclick = () => {
-        document.querySelectorAll("video").forEach((v) => {
-          v.muted = false;
-          v.play();
-          v.onclick = null;
-        });
-        this.context.setAutoPlay && this.context.setAutoPlay();
-      });
-    this.timer = setInterval(() => {
-      if (el.paused) {
-        el.load();
-        console.error("load");
-      } else {
-        clearInterval(this.timer!);
-        this.timer = null;
-      }
-    }, 2000);
-  }
   componentWillUnmount() {
     if (this.flvPlayer) {
       this.flvPlayer.pause();
@@ -181,7 +166,11 @@ export default class ZegoVideo extends React.PureComponent<{
       <>
         <video
           autoPlay
-          className={`${ZegoVideoCss.video} ${this.props.classList}`}
+          className={`${ZegoVideoCss.video}  ${
+            this.context.selfUserID === this.props.userInfo.userID
+              ? ZegoVideoCss.mirror
+              : ""
+          } ${this.props.classList}`}
           playsInline={true}
           ref={(el: HTMLVideoElement) => {
             !this.videoRef && (this.videoRef = el);
@@ -209,7 +198,7 @@ export default class ZegoVideo extends React.PureComponent<{
             });
           }}
         ></video>
-        {this.state.isPaused && (
+        {this.state.isPaused && (isSafari() || isIOS()) && (
           <div
             className={`${ZegoVideoCss.videoPlayBtn} ${
               isPc() ? "" : ZegoVideoCss.mobile

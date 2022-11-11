@@ -19,13 +19,9 @@ export class VideoPlayer extends React.PureComponent<{
 }> {
   static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
-  video: HTMLVideoElement | null = null;
   state = {
     hovered: false,
   };
-  componentWillUnmount() {
-    this.video?.srcObject && (this.video.srcObject = null);
-  }
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.userInfo?.streamList?.[0]?.streamID];
@@ -50,7 +46,6 @@ export class VideoPlayer extends React.PureComponent<{
           classList={ZegoVideoPlayerCss.videoCommon}
           userInfo={this.props.userInfo}
           onPause={() => {
-            console.error("Paused");
             this.props.onPause && this.props.onPause();
           }}
           onCanPlay={() => {

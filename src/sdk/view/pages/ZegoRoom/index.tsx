@@ -70,7 +70,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     screenSharingUserList: ZegoCloudUserList; // 屏幕共享列表
     showZegoSettings: boolean;
     haveUnReadMsg: boolean;
-    canAutoPlay: boolean;
   } = {
     localStream: undefined,
     layOutStatus: "ONE_VIDEO",
@@ -103,7 +102,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     screenSharingUserList: [],
     showZegoSettings: false,
     haveUnReadMsg: false,
-    canAutoPlay: false,
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -569,7 +567,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             micOpen: !!this.micStatus,
           },
           () => {
-            this.computeByResize(true);
+            this.computeByResize(this.state.cameraOpen || this.state.micOpen);
           }
         );
     }
@@ -621,7 +619,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             cameraOpen: !!this.cameraStatus,
           },
           () => {
-            this.computeByResize(true);
+            this.computeByResize(this.state.cameraOpen || this.state.micOpen);
           }
         );
     }
@@ -873,8 +871,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
         5
       );
-      !justSetNum &&
-        (await this.props.core.setSidebarLayOut(!this.localUserPin));
+      const sidebarEnabled =
+        this.state.cameraOpen || this.state.micOpen ? !this.localUserPin : true;
+      !justSetNum && (await this.props.core.setSidebarLayOut(sidebarEnabled));
       this.setState({
         videoShowNumber: videoShowNumber,
       });
@@ -1284,12 +1283,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             !!this.props.core._config.showPinButton &&
             this.getShownUser().length > 1,
           speakerId: this.state.selectSpeaker,
-          canAutoPlay: this.state.canAutoPlay,
-          setAutoPlay: () => {
-            this.setState({
-              canAutoPlay: true,
-            });
-          },
+          selfUserID: this.props.core._expressConfig.userID,
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>

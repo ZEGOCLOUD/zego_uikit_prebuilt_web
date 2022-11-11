@@ -67,6 +67,14 @@
       }
     }
   }
+  &.fullScreen {
+    .upWrapper {
+      height: 0;
+    }
+    .bottomWrapper {
+      height: 100%;
+    }
+  }
 }
 .videoCommon {
   display: block;

@@ -50,7 +50,8 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
       [ZegoSidebarCss.twoRow]: this.props.videoShowNumber === 2,
       [ZegoSidebarCss.oneRow]: this.props.videoShowNumber === 1,
       [ZegoSidebarCss.fullScreen]:
-        this.state.fullScreen && this.props.userList.length > 0,
+        (this.state.fullScreen && this.props.userList.length > 0) ||
+        this.props.userList.length === 0,
     });
     return (
       <div className={ZegoSidebarCss.sidebarWrapper}>

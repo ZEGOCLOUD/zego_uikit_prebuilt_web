@@ -967,13 +967,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       setTimeout(() => {
         resolve(false);
       }, 5000);
+      let sidebarEnabled = false;
 
+      if (selectLayout === "Sidebar") {
+        if (this.state.cameraOpen || this.state.micOpen) {
+          sidebarEnabled = !this.localUserPin;
+        } else {
+          sidebarEnabled = true;
+        }
+      }
       await this.props.core.setSidebarLayOut(
-        this.state.screenSharingUserList.length > 0
-          ? false
-          : selectLayout === "Sidebar"
-          ? !this.localUserPin
-          : false
+        this.state.screenSharingUserList.length > 0 ? false : sidebarEnabled
       );
     });
   }
