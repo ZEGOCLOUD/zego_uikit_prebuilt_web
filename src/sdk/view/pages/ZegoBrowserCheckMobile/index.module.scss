@@ -22,6 +22,7 @@
       object-fit: cover;
       background-color: #2a2a2a;
       border-radius: vw(24px);
+      transform: rotateY(180deg);
     }
     .hideVideo {
       width: 1px;

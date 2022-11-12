@@ -1,7 +1,7 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import { getNameFirstLetter, userNameColor } from "../../../../util";
-import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
 import ZegoVideo from "../../../components/zegoMedia/video";
 export class VideoPlayer extends React.PureComponent<{
@@ -17,8 +17,8 @@ export class VideoPlayer extends React.PureComponent<{
   hiddenName?: boolean;
   hiddenMore?: boolean;
 }> {
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
-  context!: React.ContextType<typeof ShowPCManageContext>;
+  static contextType?: React.Context<ShowManageType> = ShowManageContext;
+  context!: React.ContextType<typeof ShowManageContext>;
   state = {
     hovered: false,
   };

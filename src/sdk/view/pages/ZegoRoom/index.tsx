@@ -37,7 +37,7 @@ import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 import { ZegoScreenSharingLayout } from "./components/ZegoScreenSharingLayout";
-import ShowPCManageContext from "./context/showManage";
+import ShowManageContext from "../context/showManage";
 import ZegoAudio from "../../components/zegoMedia/audio";
 export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   state: {
@@ -1277,13 +1277,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         : this.state.notificationList.length - 2;
 
     return (
-      <ShowPCManageContext.Provider
+      <ShowManageContext.Provider
         value={{
           showPinButton:
             !!this.props.core._config.showPinButton &&
             this.getShownUser().length > 1,
           speakerId: this.state.selectSpeaker,
-          selfUserID: this.props.core._expressConfig.userID,
+          userInfo: { userID: this.props.core._expressConfig.userID },
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>
@@ -1740,7 +1740,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             ></ZegoSettings>
           )}
         </div>
-      </ShowPCManageContext.Provider>
+      </ShowManageContext.Provider>
     );
   }
 }

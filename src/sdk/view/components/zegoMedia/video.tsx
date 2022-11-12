@@ -1,8 +1,8 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../modules/tools/UserListManager";
-import ShowPCManageContext, {
-  ShowPCManageType,
-} from "../../pages/ZegoRoom/context/showManage";
+import ShowManageContext, {
+  ShowManageType,
+} from "../../pages/context/showManage";
 import flvjs from "flv.js";
 import { isSafari, isPc, isIOS } from "../../../util";
 import ZegoVideoCss from "./index.module.scss";
@@ -14,8 +14,8 @@ export default class ZegoVideo extends React.PureComponent<{
   onPause?: Function;
   onCanPlay?: Function;
 }> {
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
-  context!: React.ContextType<typeof ShowPCManageContext>;
+  static contextType?: React.Context<ShowManageType> = ShowManageContext;
+  context!: React.ContextType<typeof ShowManageContext>;
   videoRef: HTMLVideoElement | null = null;
   flvPlayer: flvjs.Player | null = null;
   timer: NodeJS.Timer | null = null;
@@ -29,16 +29,16 @@ export default class ZegoVideo extends React.PureComponent<{
     isPaused: false,
   };
   componentDidMount() {
+    console.error(this.context);
     this.initVideo(this.videoRef!);
   }
   componentDidUpdate(preProps: { userInfo: ZegoCloudUser }) {
     this.initVideo(this.videoRef!);
   }
-  comparedObject() {}
   onloadedmetadata = () => {
     this.loadTimer = setTimeout(() => {
       this.videoRef?.load();
-    }, 3000);
+    }, 5000);
   };
   initVideo(el: HTMLVideoElement) {
     if (el) {
@@ -49,6 +49,7 @@ export default class ZegoVideo extends React.PureComponent<{
       }
       if (this.props.userInfo?.streamList?.[0]?.media) {
         if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
+          console.error(" el.srcObject", el.srcObject);
           el.srcObject = this.props.userInfo?.streamList?.[0]?.media!;
         }
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
@@ -167,7 +168,8 @@ export default class ZegoVideo extends React.PureComponent<{
         <video
           autoPlay
           className={`${ZegoVideoCss.video}  ${
-            this.context.selfUserID === this.props.userInfo.userID
+            this.context.userInfo.userID === this.props.userInfo.userID &&
+            this.props.userInfo.streamList?.[0]?.streamID?.includes("_main")
               ? ZegoVideoCss.mirror
               : ""
           } ${this.props.classList}`}

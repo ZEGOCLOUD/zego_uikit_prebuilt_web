@@ -7,8 +7,7 @@ import {
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
 import { ScenarioModel } from "../../../../model";
-import { ShowPCManageType } from "../../ZegoRoom/context/showManage";
-import ShowManageContext, { ShowManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export class ZegoUserList extends React.PureComponent<{
   userList: ZegoCloudUserList;
   core: ZegoCloudRTCCore;

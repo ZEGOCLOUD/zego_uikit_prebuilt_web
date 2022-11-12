@@ -4,7 +4,6 @@ import { ZegoSidebarLayoutProps } from "../../../../model";
 import { OthersVideo } from "./zegoOthersVideo";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
-import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
 import ZegoAudio from "../../../components/zegoMedia/audio";
 
 export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProps> {
@@ -14,8 +13,6 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
       index > -1 ? index : this.props.userList.length - 1
     ];
   }
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
-  context!: React.ContextType<typeof ShowPCManageContext>;
   render(): React.ReactNode {
     let wrapClassName = clsx({
       [ZegoSidebarCss.rightWrapper]: true,

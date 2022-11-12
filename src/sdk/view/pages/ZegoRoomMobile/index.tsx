@@ -44,7 +44,7 @@ import { ZegoLayout } from "./components/zegoLayout";
 import { ZegoManage } from "./components/zegoManage";
 import { ZegoGrid } from "./components/zegoGrid";
 import { ZegoSidebar } from "./components/zegoSidebar";
-import ShowManageContext from "./context/showManage";
+import ShowManageContext from "../context/showManage";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoScreen } from "./components/zegoScreen";
 import ZegoAudio from "../../components/zegoMedia/audio";

@@ -3,7 +3,7 @@ import { getNameFirstLetter, userNameColor } from "../../../../util";
 import zegoUserVideoCss from "./zegoUserVideo.module.scss";
 import { ZegoMore } from "./zegoMore";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
-import ShowManageContext, { ShowManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 import ZegoVideo from "../../../components/zegoMedia/video";
 import ZegoAudio from "../../../components/zegoMedia/audio";
 export class ZegoUserVideo extends React.PureComponent<{

@@ -1,6 +1,8 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../modules/tools/UserListManager";
-import ShowPCManageContext from "../../pages/ZegoRoom/context/showManage";
+import ShowManageContext, {
+  ShowManageType,
+} from "../../pages/context/showManage";
 import flvjs from "flv.js";
 
 export default class ZegoAudio extends React.PureComponent<{
@@ -8,13 +10,16 @@ export default class ZegoAudio extends React.PureComponent<{
   muted?: boolean;
   classList?: string;
 }> {
-  context!: React.ContextType<typeof ShowPCManageContext>;
+  static contextType?: React.Context<ShowManageType> = ShowManageContext;
+  context!: React.ContextType<typeof ShowManageContext>;
   audioRef: HTMLAudioElement | null = null;
   flvPlayer: any;
   initAudio(el: HTMLAudioElement) {
     if (el) {
-      this.audioRef = el;
-      (el as any)?.setSinkId?.(this.context.speakerId || "");
+      !this.audioRef && (this.audioRef = el);
+      if ((el as any)?.sinkId !== this.context?.speakerId) {
+        (el as any)?.setSinkId?.(this.context?.speakerId || "");
+      }
       if (this.props.userInfo?.streamList?.[0]?.media) {
         el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
           (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);

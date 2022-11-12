@@ -4,11 +4,9 @@ import ZegoGridCss from "./zegoGridLayout.module.scss";
 import clsx from "clsx";
 import { OthersVideo } from "./zegoOthersVideo";
 import { VideoPlayer } from "./zegoVideoPlayer";
-import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+
 import ZegoAudio from "../../../components/zegoMedia/audio";
 export class ZegoGridLayout extends React.PureComponent<ZegoGridLayoutProps> {
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
-  context!: React.ContextType<typeof ShowPCManageContext>;
   get wrapClassName() {
     if (this.props.gridRowNumber === 3) {
       return clsx({
