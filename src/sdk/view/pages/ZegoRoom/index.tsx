@@ -830,8 +830,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     }
   }
   async computeByResize(justSetNum = false) {
-    const width = Math.max(document.body.clientWidth, 826);
-    const height = Math.max(document.body.clientHeight, 280);
+    const width = Math.max(this.props.core._config.container!.clientWidth, 640);
+    const height = Math.max(
+      this.props.core._config.container!.clientHeight,
+      328
+    );
     let videoShowNumber = 0,
       gridRowNumber = 0;
 
