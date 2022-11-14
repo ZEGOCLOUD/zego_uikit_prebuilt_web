@@ -20,6 +20,7 @@ import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import {
   getVideoResolution,
+  isFireFox,
   isSafari,
   randomNumber,
   throttle,
@@ -644,13 +645,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     this.isCreatingScreenSharing = true;
     try {
       const screenSharingStream = await this.props.core.createStream({
-        screen: { videoQuality: 2, bitRate: 1500, frameRate: 15, audio: true },
+        screen: {
+          videoQuality: 2,
+          bitRate: 1500,
+          frameRate: 15,
+          audio: !isFireFox(),
+        },
       });
       const streamID = this.props.core.publishLocalStream(
         screenSharingStream,
         "screensharing"
       );
-      console.warn("111111", screenSharingStream);
       streamID && (this.screenSharingStreamID = streamID as string);
       this.props.core.setStreamExtraInfo(
         streamID as string,
