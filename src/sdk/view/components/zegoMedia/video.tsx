@@ -29,7 +29,6 @@ export default class ZegoVideo extends React.PureComponent<{
     isPaused: false,
   };
   componentDidMount() {
-    console.error(this.context);
     this.initVideo(this.videoRef!);
   }
   componentDidUpdate(preProps: { userInfo: ZegoCloudUser }) {
@@ -49,7 +48,6 @@ export default class ZegoVideo extends React.PureComponent<{
       }
       if (this.props.userInfo?.streamList?.[0]?.media) {
         if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
-          console.error(" el.srcObject", el.srcObject);
           el.srcObject = this.props.userInfo?.streamList?.[0]?.media!;
         }
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
@@ -206,6 +204,7 @@ export default class ZegoVideo extends React.PureComponent<{
               isPc() ? "" : ZegoVideoCss.mobile
             }`}
             onClick={() => {
+              this.videoRef?.load();
               this.videoRef?.play();
               this.setState({
                 isPaused: false,

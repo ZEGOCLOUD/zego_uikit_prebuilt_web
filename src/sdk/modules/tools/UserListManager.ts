@@ -108,7 +108,9 @@ export class ZegoCloudUserListManager {
           count > this.screenNumber ||
           (count === this.screenNumber &&
             noPinUserList[index + 1] &&
-            noPinUserList[index + 1].streamList.length > 0)
+            noPinUserList[index + 1].streamList.length > 0 &&
+            (noPinUserList[index + 1].streamList[0].cameraStatus === "OPEN" ||
+              noPinUserList[index + 1].streamList[0].micStatus === "OPEN"))
         ) {
           await this.muteVideo(noPinUserList[index]);
         } else {
