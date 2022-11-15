@@ -29,7 +29,7 @@ import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoE
 import { ZegoScreenSharingLayout } from "./components/ZegoScreenSharingLayout";
 import ShowPCManageContext from "./context/showManage";
 import { ZegoSuperBoardView } from "zego-superboard-web";
-import { ZegoWhiteboardSharingLayout } from "./components/ZegoWhiteboardSharingLayout";
+import { ZegoWhiteboardSharingLayout } from "./components/zegoWhiteboardSharingLayout";
 export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -1102,6 +1102,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                 ?.reloadView();
             }
           }}
+          onclose={() => {
+            this.toggleWhiteboardSharing();
+          }}
+          onToolChange={(type: number, fontSize?: number, color?: string) => {
+            this.props.core.setWhiteboardToolType(type, fontSize, color);
+          }}
+          zegoSuperBoardView={this.state.zegoSuperBoardView}
         ></ZegoWhiteboardSharingLayout>
       );
     }
@@ -1442,7 +1449,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
               )}
               {this.props.core._config.showWhiteboardButton && (
                 <div
-                  className={`${ZegoRoomCss.screenButton} ${
+                  className={`${ZegoRoomCss.whiteboardButton} ${
                     this.state.isScreenSharingBySelf && ZegoRoomCss.sharing
                   }`}
                   onClick={() => {

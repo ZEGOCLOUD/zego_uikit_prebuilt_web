@@ -136,7 +136,7 @@ export default class App extends React.Component {
             role,
           },
         },
-        // showWhiteboardButton: true,
+        showWhiteboardButton: true,
         plugins: { ZegoSuperBoardManager },
       };
       if (showNonVideoUser !== undefined) {

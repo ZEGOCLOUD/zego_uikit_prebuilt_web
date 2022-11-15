@@ -318,6 +318,12 @@
     background-image: url("../../../sdkAssets/icon_inner_screen_close.png");
   }
 }
+.whiteboardButton {
+  background-image: url("../../../sdkAssets/icon_inner_whiteboard.png");
+  &.sharing {
+    background-image: url("../../../sdkAssets/icon_inner_whiteboard_close.png");
+  }
+}
 .moreButton {
   position: relative;
   background-image: url("../../../sdkAssets/icon_inner_more.png");

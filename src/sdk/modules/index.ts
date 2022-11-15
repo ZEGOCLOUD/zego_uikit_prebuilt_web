@@ -296,6 +296,7 @@ export class ZegoCloudRTCCore {
         userID: this._expressConfig.userID, // 用户自定义生成的用户 ID
         token: this._expressConfig.token, // 登录房间需要用于验证身份的 Token
       });
+      this.zegoSuperBoard.setWhiteboardBackgroundColor("#ffffff");
     }
     return true;
   }
@@ -367,14 +368,20 @@ export class ZegoCloudRTCCore {
   ): Promise<ZegoSuperBoardView> {
     await this.zegoSuperBoard.createWhiteboardView({
       name,
-      perPageWidth: 6, // 白板每页宽度
-      perPageHeight: 3, // 白板每页高度
+      perPageWidth: 1480.3, // 白板每页宽度
+      perPageHeight: 758.5, // 白板每页高度
       pageCount: 5, // 白板页数
     });
-
     return this.zegoSuperBoard.getSuperBoardView();
   }
 
+  setWhiteboardToolType(type: number, fontSize?: number, color?: string) {
+    this.zegoSuperBoard.setToolType(type);
+    if (type === 1) {
+      fontSize && this.zegoSuperBoard.setBrushSize(fontSize);
+      color && this.zegoSuperBoard.setBrushColor(color);
+    }
+  }
   async setVideoConfig(
     media: MediaStream,
     constraints: ZegoPublishStreamConfig

@@ -187,6 +187,8 @@ export interface ZegoWhiteboardSharingLayoutProps {
   isSelfScreen: boolean;
   onShow: (el: HTMLDivElement) => void;
   onResize: (el: HTMLDivElement) => void;
+  onclose: () => void;
+  onToolChange: (type: number, fontSize?: number, color?: string) => void;
   soundLevel?: SoundLevelMap;
   handleFullScreen?: (fullScreen: boolean) => void;
   zegoSuperBoardView?: ZegoSuperBoardView | null;
