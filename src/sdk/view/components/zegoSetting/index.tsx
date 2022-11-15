@@ -40,7 +40,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     cameraDevices: [],
     localVideoStream: undefined,
     localAudioStream: undefined,
-    selectVideoResolution: "360",
+    selectVideoResolution: "360p",
     audioVolume: 0,
     speakerVolume: 0,
     isSpeakerPlaying: false,

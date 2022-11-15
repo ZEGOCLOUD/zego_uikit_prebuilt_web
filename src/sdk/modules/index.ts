@@ -153,7 +153,7 @@ export class ZegoCloudRTCCore {
       this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this._config.scenario.config?.role === LiveRole.Audience &&
       (this._config.scenario.config as any).liveStreamingMode ===
-        LiveStreamingMode.CDNLive
+        LiveStreamingMode.StandardLive
     );
   }
   setConfig(config: ZegoCloudRoomConfig): boolean {
@@ -272,15 +272,27 @@ export class ZegoCloudRTCCore {
         },
       ];
     }
+    if (config.videoResolutionDefault) {
+      if (!config.videoResolutionList) {
+        config.videoResolutionList = [];
+      }
+      config.videoResolutionList?.unshift(config.videoResolutionDefault);
+    }
     if (config.videoResolutionList && config.videoResolutionList.length > 0) {
-      const list = config.videoResolutionList.filter((s: string) => {
-        //@ts-ignore
-        return VideoResolution[s.toUpperCase()] !== undefined;
-      });
+      const list = Array.from(new Set(config.videoResolutionList)).filter(
+        (s: string) => {
+          return (
+            s === VideoResolution._180P ||
+            s === VideoResolution._360P ||
+            s === VideoResolution._480P ||
+            s === VideoResolution._720P
+          );
+        }
+      );
       config.videoResolutionList =
-        list.length > 0 ? list : [VideoResolution["360P"]];
+        list.length > 0 ? list : [VideoResolution._360P];
     } else {
-      config.videoResolutionList = [VideoResolution["360P"]];
+      config.videoResolutionList = [VideoResolution._360P];
     }
     config.preJoinViewConfig &&
       (config.preJoinViewConfig = {

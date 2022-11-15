@@ -32,10 +32,10 @@ export enum ScenarioModel {
   LiveStreaming = "LiveStreaming",
 }
 export enum VideoResolution {
-  "180P" = "180p",
-  "360P" = "360p",
-  "480P" = "480p",
-  "720P" = "720p",
+  _180P = "180p",
+  _360P = "360p",
+  _480P = "480p",
+  _720P = "720p",
 }
 export interface ScenarioConfig {
   [ScenarioModel.LiveStreaming]: {
@@ -53,9 +53,9 @@ export interface ScenarioConfig {
   };
 }
 export enum LiveStreamingMode {
-  CDNLive = "CDNLive",
-  StandardLive = "StandardLive",
-  RealTimeLive = "RealTimeLive",
+  StandardLive = "StandardLive", // CDN
+  PremiumLive = "PremiumLive", // L3
+  RealTimeLive = "RealTimeLive", //RTC
 }
 export interface ZegoCloudRoomConfig {
   container?: HTMLElement | undefined | null; // 挂载容器
@@ -103,7 +103,7 @@ export interface ZegoCloudRoomConfig {
   showPinButton?: boolean; // 是否显pin按钮
   onUserAvatarSetter?: (user: ZegoUser[]) => void; //是否可以设置用户头像回调
   videoResolutionList?: VideoResolution[]; // 视频分辨率列表（默认使用第一个）
-
+  videoResolutionDefault?: VideoResolution; // 默认视频分辨率
   // @deprecate
   facingMode?: "user" | "environment"; // 前置摄像头模式
   // @deprecate

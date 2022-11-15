@@ -29,11 +29,11 @@ export class ZegoCloudUserListManager {
   userOrderList: string[] = [];
   waitingPullStreams: { streamID: string; userID: string }[] = [];
   isLive: 1 | 0 = 0;
-  get isStandardLive(): boolean {
+  get isL3Live(): boolean {
     return (
       this.scenario === ScenarioModel.LiveStreaming &&
       this.role === LiveRole.Audience &&
-      this.liveStreamingMode === LiveStreamingMode.StandardLive
+      this.liveStreamingMode === LiveStreamingMode.PremiumLive
     );
   }
   setPin(userID?: string, pined?: boolean): void {
@@ -318,7 +318,7 @@ export class ZegoCloudUserListManager {
             const stream = await this.zg.startPlayingStream(
               this.waitingPullStreams[index].streamID,
               {
-                resourceMode: this.isStandardLive ? 2 : 0,
+                resourceMode: this.isL3Live ? 2 : 0,
               }
             );
 
@@ -403,7 +403,7 @@ export class ZegoCloudUserListManager {
     ) {
       if (this.isLive === 1) {
         const stream = await this.zg.startPlayingStream(streamID, {
-          resourceMode: this.isStandardLive ? 2 : 0,
+          resourceMode: this.isL3Live ? 2 : 0,
         });
         return stream;
       } else if (this.isLive === 0) {
@@ -412,7 +412,7 @@ export class ZegoCloudUserListManager {
       }
     } else {
       const stream = await this.zg.startPlayingStream(streamID, {
-        resourceMode: this.isStandardLive ? 2 : 0,
+        resourceMode: this.isL3Live ? 2 : 0,
       });
       return stream;
     }

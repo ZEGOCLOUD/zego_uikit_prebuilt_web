@@ -21,7 +21,10 @@ export class ZegoUIKitPrebuilt {
   static GroupCall = ScenarioModel.GroupCall;
   static LiveStreaming = ScenarioModel.LiveStreaming;
   static VideoConference = ScenarioModel.VideoConference;
-  static VideoResolution = VideoResolution;
+  static VideoResolution_180P = VideoResolution._180P;
+  static VideoResolution_360P = VideoResolution._360P;
+  static VideoResolution_480P = VideoResolution._480P;
+  static VideoResolution_720P = VideoResolution._720P;
   static LiveStreamingMode = LiveStreamingMode;
   private hasJoinedRoom = false;
   root: Root | undefined;

@@ -148,11 +148,12 @@ export default class App extends React.Component {
           });
         },
         videoResolutionList: [
-          ZegoUIKitPrebuilt.VideoResolution["360P"],
-          ZegoUIKitPrebuilt.VideoResolution["180P"],
-          ZegoUIKitPrebuilt.VideoResolution["480P"],
-          ZegoUIKitPrebuilt.VideoResolution["720P"],
+          ZegoUIKitPrebuilt.VideoResolution_360P,
+          ZegoUIKitPrebuilt.VideoResolution_180P,
+          ZegoUIKitPrebuilt.VideoResolution_480P,
+          ZegoUIKitPrebuilt.VideoResolution_720P,
         ],
+        videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
       };
       if (showNonVideoUser !== undefined) {
         param.showNonVideoUser = showNonVideoUser === "true";
@@ -288,19 +289,6 @@ export default class App extends React.Component {
                 <div className={APP.settingsModeList}>
                   <div
                     className={`${APP.settingsModeItem} ${
-                      this.state.liveStreamingMode === "CDNLive"
-                        ? APP.settingsModeItemSelected
-                        : ""
-                    }`}
-                    onClick={() => {
-                      this.handleSelectMode("CDNLive");
-                    }}
-                  >
-                    <p>CDN Live</p>
-                    <span></span>
-                  </div>
-                  <div
-                    className={`${APP.settingsModeItem} ${
                       this.state.liveStreamingMode === "StandardLive"
                         ? APP.settingsModeItemSelected
                         : ""
@@ -310,6 +298,19 @@ export default class App extends React.Component {
                     }}
                   >
                     <p>Standard Live</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${
+                      this.state.liveStreamingMode === "PremiumLive"
+                        ? APP.settingsModeItemSelected
+                        : ""
+                    }`}
+                    onClick={() => {
+                      this.handleSelectMode("PremiumLive");
+                    }}
+                  >
+                    <p>Premium Live</p>
                     <span></span>
                   </div>
                   <div
