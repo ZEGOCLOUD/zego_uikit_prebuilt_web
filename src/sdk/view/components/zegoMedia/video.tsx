@@ -53,10 +53,9 @@ export default class ZegoVideo extends React.PureComponent<{
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
         if (isSafari()) {
           if (el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {
-            el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!;
             el.onloadedmetadata = this.onloadedmetadata;
+            el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!;
             el.load();
-
             const promise = el.play();
             if (promise !== undefined) {
               promise
@@ -70,6 +69,9 @@ export default class ZegoVideo extends React.PureComponent<{
                 })
                 .then(() => {
                   // Auto-play started
+                  this.setState({
+                    isPaused: false,
+                  });
                 });
             }
           }
@@ -176,6 +178,7 @@ export default class ZegoVideo extends React.PureComponent<{
             !this.videoRef && (this.videoRef = el);
           }}
           onPause={() => {
+            console.error("paused");
             this.setState({
               isPaused: true,
             });
@@ -189,10 +192,22 @@ export default class ZegoVideo extends React.PureComponent<{
             }
             this.videoRef
               ?.play()
-              .catch((error) => console.error("autoplay failed", error));
+              .then((res) => {
+                console.error("autoplay success", res);
+                this.setState({
+                  isPaused: false,
+                });
+              })
+              .catch((error) => {
+                console.error("autoplay failed", error);
+                this.setState({
+                  isPaused: true,
+                });
+              });
             this.props.onCanPlay && this.props.onCanPlay();
           }}
-          onPlay={() => {
+          onPlaying={() => {
+            console.error("onPlay");
             this.setState({
               isPaused: false,
             });
