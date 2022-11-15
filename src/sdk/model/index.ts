@@ -101,7 +101,7 @@ export interface ZegoCloudRoomConfig {
 
   showLayoutButton?: boolean; // 是否显示布局切换按钮
   showPinButton?: boolean; // 是否显pin按钮
-  onCanSetUserAvatar?: (user: ZegoUser[]) => void; //是否可以设置用户头像回调
+  onUserAvatarSetter?: (user: ZegoUser[]) => void; //是否可以设置用户头像回调
   videoResolutionList?: VideoResolution[]; // 视频分辨率列表（默认使用第一个）
 
   // @deprecate

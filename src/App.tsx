@@ -138,7 +138,7 @@ export default class App extends React.Component {
           },
         },
         showUserList: true,
-        onCanSetUserAvatar: (user) => {
+        onUserAvatarSetter: (user) => {
           user.forEach((u) => {
             u.setUserAvatar &&
               u.setUserAvatar(

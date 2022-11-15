@@ -1149,7 +1149,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               {getNameFirstLetter(
                 this.state.screenSharingUserList[0].userName || ""
               )}
-              {user[0].avatar && (
+              {user?.[0]?.avatar && (
                 <img
                   src={user[0].avatar}
                   onError={(e: any) => {

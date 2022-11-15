@@ -122,7 +122,7 @@ export class ZegoCloudRTCCore {
     onLeaveRoom: () => {},
     onUserJoin: (user: ZegoUser[]) => {}, // 用户进入回调
     onUserLeave: (user: ZegoUser[]) => {}, // 用户退入回调
-    onCanSetUserAvatar: (user: ZegoUser[]) => {}, // 用户可以设置头像时机回调
+    onUserAvatarSetter: (user: ZegoUser[]) => {}, // 用户可以设置头像时机回调
     sharedLinks: [], // 产品链接描述
     showScreenSharingButton: true, // 是否显示屏幕共享按钮
     scenario: {
@@ -643,8 +643,8 @@ export class ZegoCloudRTCCore {
             return user;
           });
           if (updateType === "ADD") {
-            this._config.onCanSetUserAvatar &&
-              this._config.onCanSetUserAvatar(newUserList);
+            this._config.onUserAvatarSetter &&
+              this._config.onUserAvatarSetter(newUserList);
             this._config.onUserJoin && this._config.onUserJoin(userList);
           } else {
             this._config.onUserLeave && this._config.onUserLeave(userList);
@@ -765,8 +765,8 @@ export class ZegoCloudRTCCore {
           }
         },
       };
-      this._config.onCanSetUserAvatar &&
-        this._config.onCanSetUserAvatar([user]);
+      this._config.onUserAvatarSetter &&
+        this._config.onUserAvatarSetter([user]);
     });
     ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300);
     this.streamUpdateTimer(this.waitingHandlerStreams);
