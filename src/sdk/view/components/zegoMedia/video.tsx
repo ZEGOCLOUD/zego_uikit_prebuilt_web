@@ -62,7 +62,6 @@ export default class ZegoVideo extends React.PureComponent<{
                 .catch((error) => {
                   // Auto-play was prevented
                   // Show a UI element to let the user manually start playback
-                  console.error("play", error);
                   this.setState({
                     isPaused: true,
                   });
@@ -135,7 +134,6 @@ export default class ZegoVideo extends React.PureComponent<{
             this.flvPlayer.load();
             clearTimeout(this.retryTimer);
             this.retryTimer = null;
-            console.error("retryTimer");
           }
         }
       }
@@ -178,7 +176,6 @@ export default class ZegoVideo extends React.PureComponent<{
             !this.videoRef && (this.videoRef = el);
           }}
           onPause={() => {
-            console.error("paused");
             this.setState({
               isPaused: true,
             });
@@ -193,13 +190,11 @@ export default class ZegoVideo extends React.PureComponent<{
             this.videoRef
               ?.play()
               .then((res) => {
-                console.error("autoplay success", res);
                 this.setState({
                   isPaused: false,
                 });
               })
               .catch((error) => {
-                console.error("autoplay failed", error);
                 this.setState({
                   isPaused: true,
                 });
@@ -207,7 +202,6 @@ export default class ZegoVideo extends React.PureComponent<{
             this.props.onCanPlay && this.props.onCanPlay();
           }}
           onPlaying={() => {
-            console.error("onPlay");
             this.setState({
               isPaused: false,
             });
