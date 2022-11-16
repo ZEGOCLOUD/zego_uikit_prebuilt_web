@@ -1,6 +1,6 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
-import ShowManageContext, { ShowManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export declare class ZegoMore extends React.PureComponent<{
     user: ZegoCloudUser;
 }> {

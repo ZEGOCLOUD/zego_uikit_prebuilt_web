@@ -9,3 +9,4 @@ export declare function getConfig(token: string): {
 export declare function copy(text: string): void;
 export declare function formatTime(s: number): string;
 export declare function generateStreamID(userID: string, roomID: string, type?: "main" | "media" | "screensharing"): string;
+export declare function changeCDNUrlOrigin(url: string): string;

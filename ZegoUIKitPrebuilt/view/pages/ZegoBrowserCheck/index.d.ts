@@ -1,5 +1,5 @@
 import React, { ChangeEvent, RefObject } from "react";
-import { ZegoBrowserCheckProp } from "../../../model";
+import { VideoResolution, ZegoBrowserCheckProp } from "../../../model";
 export declare class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     state: {
         localStream: undefined;
@@ -16,7 +16,7 @@ export declare class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckPr
         selectMic: undefined;
         selectSpeaker: undefined;
         selectCamera: undefined;
-        selectVideoResolution: string;
+        selectVideoResolution: VideoResolution;
         isJoining: boolean;
         showNonVideo: boolean | undefined;
         sharedLinks: {
