@@ -322,6 +322,25 @@ export function getNameFirstLetter(name: string): string {
   return runes(name).shift() || "";
 }
 
+export function chooseFile(callback: (file: File) => void): void {
+  const inputObj = document.createElement("input");
+  inputObj.setAttribute("id", "zego_whiteboard_UIKits_file");
+  inputObj.setAttribute("type", "file");
+  inputObj.setAttribute("name", "file");
+  inputObj.setAttribute("style", "visibility:hidden");
+  inputObj.setAttribute("accept", "image/jpeg,image/png");
+  document.body.appendChild(inputObj);
+  // inputObj.value;
+  inputObj.click();
+  (
+    document.querySelector("#zego_whiteboard_UIKits_file") as HTMLInputElement
+  ).addEventListener("change", (ev) => {
+    const target = ev.target as HTMLInputElement;
+    target.files && callback(target.files[0]);
+    document.body.removeChild(inputObj);
+  });
+}
+
 /**
  * Generate token
  *

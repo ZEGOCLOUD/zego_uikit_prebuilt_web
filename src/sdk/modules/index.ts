@@ -377,11 +377,30 @@ export class ZegoCloudRTCCore {
 
   setWhiteboardToolType(type: number, fontSize?: number, color?: string) {
     this.zegoSuperBoard.setToolType(type);
-    if (type === 1) {
+    if ([1, 4, 8, 16].includes(type)) {
       fontSize && this.zegoSuperBoard.setBrushSize(fontSize);
       color && this.zegoSuperBoard.setBrushColor(color);
     }
   }
+
+  setWhiteboardFont(
+    font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
+    fontSize?: number,
+    color?: string
+  ) {
+    if (font === "BOLD") {
+      this.zegoSuperBoard.setFontBold(true);
+    } else if (font === "NO_BOLD") {
+      this.zegoSuperBoard.setFontBold(false);
+    } else if (font === "ITALIC") {
+      this.zegoSuperBoard.setFontItalic(true);
+    } else if (font === "NO_ITALIC") {
+      this.zegoSuperBoard.setFontItalic(false);
+    }
+    fontSize && this.zegoSuperBoard.setFontSize(fontSize);
+    color && this.zegoSuperBoard.setBrushColor(color);
+  }
+
   async setVideoConfig(
     media: MediaStream,
     constraints: ZegoPublishStreamConfig

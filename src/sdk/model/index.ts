@@ -189,6 +189,11 @@ export interface ZegoWhiteboardSharingLayoutProps {
   onResize: (el: HTMLDivElement) => void;
   onclose: () => void;
   onToolChange: (type: number, fontSize?: number, color?: string) => void;
+  onFontChange: (
+    font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
+    fontSize?: number,
+    color?: string
+  ) => void;
   soundLevel?: SoundLevelMap;
   handleFullScreen?: (fullScreen: boolean) => void;
   zegoSuperBoardView?: ZegoSuperBoardView | null;

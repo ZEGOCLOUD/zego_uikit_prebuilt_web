@@ -1108,6 +1108,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           onToolChange={(type: number, fontSize?: number, color?: string) => {
             this.props.core.setWhiteboardToolType(type, fontSize, color);
           }}
+          onFontChange={(
+            font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
+            fontSize?: number,
+            color?: string
+          ) => {
+            this.props.core.setWhiteboardFont(font, fontSize, color);
+          }}
           zegoSuperBoardView={this.state.zegoSuperBoardView}
         ></ZegoWhiteboardSharingLayout>
       );
@@ -1265,6 +1272,21 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             !!this.props.core._config.showPinButton &&
             this.getShownUser().length > 1,
           speakerId: this.state.selectSpeaker,
+          whiteboard_page:
+            this.state.zegoSuperBoardView
+              ?.getCurrentSuperBoardSubView()
+              ?.getCurrentPage() || 1,
+          whiteboard_toolType:
+            this.props.core.zegoSuperBoard?.getToolType() || 0,
+          whiteboard_fontSize:
+            this.props.core.zegoSuperBoard?.getFontSize() || 0,
+          whiteboard_brushSize:
+            this.props.core.zegoSuperBoard?.getBrushSize() || 0,
+          whiteboard_brushColor:
+            this.props.core.zegoSuperBoard?.getBrushColor() || "",
+          whiteboard_isFontBold: this.props.core.zegoSuperBoard?.isFontBold(),
+          whiteboard_isFontItalic:
+            this.props.core.zegoSuperBoard?.isFontItalic(),
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>
@@ -1450,7 +1472,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
               {this.props.core._config.showWhiteboardButton && (
                 <div
                   className={`${ZegoRoomCss.whiteboardButton} ${
-                    this.state.isScreenSharingBySelf && ZegoRoomCss.sharing
+                    this.state.isZegoWhiteboardSharing && ZegoRoomCss.sharing
                   }`}
                   onClick={() => {
                     this.toggleWhiteboardSharing();
