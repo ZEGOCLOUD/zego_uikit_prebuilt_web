@@ -40,7 +40,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     cameraDevices: [],
     localVideoStream: undefined,
     localAudioStream: undefined,
-    selectVideoResolution: "360",
+    selectVideoResolution: "360p",
     audioVolume: 0,
     speakerVolume: 0,
     isSpeakerPlaying: false,
@@ -52,24 +52,9 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   micTimer: NodeJS.Timer | null = null;
   micSounder: SoundMeter = new SoundMeter();
   speakerSounder: SoundMeter = new SoundMeter();
-  solutionList = [
-    {
-      name: "180p",
-      value: "180",
-    },
-    {
-      name: "360p",
-      value: "360",
-    },
-    {
-      name: "480p",
-      value: "480",
-    },
-    {
-      name: "720p",
-      value: "720",
-    },
-  ];
+  solutionList = this.sortResolution(
+    this.props.core._config.videoResolutionList!
+  );
   async componentDidMount() {
     const state = await this.getDevices();
     this.setState({ ...state }, () => {
@@ -340,6 +325,14 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     this.setState({
       showNonVideo: !this.state.showNonVideo,
     });
+  }
+  private sortResolution(list: string[]): { name: string; value: string }[] {
+    return list
+      .sort(
+        (a: string, b: string) =>
+          Number(a.replace("p", "")) - Number(b.replace("p", ""))
+      )
+      .map((l) => ({ name: l, value: l }));
   }
   render(): React.ReactNode {
     return (

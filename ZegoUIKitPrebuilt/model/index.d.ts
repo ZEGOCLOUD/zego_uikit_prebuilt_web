@@ -1,4 +1,4 @@
-import { ZegoUser, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRTCCore } from "../modules";
 import { ZegoCloudUser, ZegoCloudUserList } from "../modules/tools/UserListManager";
 export interface ZegoCloudRemoteMedia {
@@ -8,6 +8,10 @@ export interface ZegoCloudRemoteMedia {
     cameraStatus: "OPEN" | "MUTE";
     state: "NO_PLAY" | "PLAY_REQUESTING" | "PLAYING";
     streamID: string;
+    urlsHttpsFLV?: string;
+    urlsHttpsHLS?: string;
+    hasAudio?: boolean;
+    hasVideo?: boolean;
 }
 export declare enum LiveRole {
     Host = "Host",
@@ -20,9 +24,16 @@ export declare enum ScenarioModel {
     VideoConference = "VideoConference",
     LiveStreaming = "LiveStreaming"
 }
+export declare enum VideoResolution {
+    _180P = "180p",
+    _360P = "360p",
+    _480P = "480p",
+    _720P = "720p"
+}
 export interface ScenarioConfig {
     [ScenarioModel.LiveStreaming]: {
         role: LiveRole;
+        liveStreamingMode: LiveStreamingMode;
     };
     [ScenarioModel.OneONoneCall]: {
         role: LiveRole;
@@ -33,6 +44,11 @@ export interface ScenarioConfig {
     [ScenarioModel.VideoConference]: {
         role: LiveRole;
     };
+}
+export declare enum LiveStreamingMode {
+    StandardLive = "StandardLive",
+    PremiumLive = "PremiumLive",
+    RealTimeLive = "RealTimeLive"
 }
 export interface ZegoCloudRoomConfig {
     container?: HTMLElement | undefined | null;
@@ -76,6 +92,9 @@ export interface ZegoCloudRoomConfig {
     };
     showLayoutButton?: boolean;
     showPinButton?: boolean;
+    onUserAvatarSetter?: (user: ZegoUser[]) => void;
+    videoResolutionList?: VideoResolution[];
+    videoResolutionDefault?: VideoResolution;
     facingMode?: "user" | "environment";
     joinRoomCallback?: () => void;
     leaveRoomCallback?: () => void;
@@ -154,4 +173,13 @@ export declare enum ZegoStreamType {
     main = 0,
     media = 1,
     screensharing = 2
+}
+export interface ZegoUser {
+    userID: string;
+    userName?: string;
+    setUserAvatar?: (avatar: string) => void;
+}
+export declare enum CoreError {
+    notSupportCDNLive = 10001,
+    notSupportStandardLive = 10002
 }

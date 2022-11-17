@@ -7,7 +7,7 @@ import {
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
 import { LiveRole, ScenarioModel, SoundLevelMap } from "../../../../model";
-import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export class ZegoUserList extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   userList: ZegoCloudUserList;
@@ -15,8 +15,8 @@ export class ZegoUserList extends React.PureComponent<{
   handleSetPin: Function;
   soundLevel?: SoundLevelMap;
 }> {
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
-  context!: React.ContextType<typeof ShowPCManageContext>;
+  static contextType?: React.Context<ShowManageType> = ShowManageContext;
+  context!: React.ContextType<typeof ShowManageContext>;
   componentDidMount() {
     document.addEventListener("click", this.onBodyClick.bind(this));
   }
@@ -81,9 +81,19 @@ export class ZegoUserList extends React.PureComponent<{
               <div
                 className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper}`}
               >
+                {user.avatar && (
+                  <img
+                    src={user.avatar}
+                    onError={(e: any) => {
+                      e.target.style.display = "none";
+                    }}
+                    alt=""
+                  />
+                )}
                 <span style={{ color: userNameColor(user.userName || "") }}>
                   {getNameFirstLetter(user.userName || "")}
                 </span>
+
                 <p>{user.userName}</p>
                 {user.userID === this.props.selfUserID && "(You)"}
               </div>

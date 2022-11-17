@@ -3,7 +3,9 @@ import { getNameFirstLetter, userNameColor } from "../../../../util";
 import zegoUserVideoCss from "./zegoUserVideo.module.scss";
 import { ZegoMore } from "./zegoMore";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
-import ShowManageContext, { ShowManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
+import ZegoVideo from "../../../components/zegoMedia/video";
+import ZegoAudio from "../../../components/zegoMedia/audio";
 export class ZegoUserVideo extends React.PureComponent<{
   user: ZegoCloudUser;
   onLocalStreamPaused?: () => void;
@@ -19,10 +21,6 @@ export class ZegoUserVideo extends React.PureComponent<{
 }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
-  video: HTMLVideoElement | null = null;
-  componentWillUnmount() {
-    this.video?.srcObject && (this.video.srcObject = null);
-  }
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.user?.streamList?.[0]?.streamID];
@@ -32,29 +30,22 @@ export class ZegoUserVideo extends React.PureComponent<{
       <div className={`${zegoUserVideoCss.container} zegoUserVideo_click`}>
         {this.props.user.streamList &&
           this.props.user.streamList[0] &&
-          this.props.user.streamList[0] &&
-          this.props.user.streamList[0].media && (
-            <video
+          (this.props.user.streamList[0].media ||
+            this.props.user.streamList[0].urlsHttpsFLV) && (
+            <ZegoVideo
               muted={this.props.muted}
-              playsInline
-              autoPlay
-              className={`${
+              userInfo={this.props.user}
+              classList={`${
                 zegoUserVideoCss.videoCommon
               } zegoUserVideo_videoCommon ${
                 this.props.user.streamList[0].cameraStatus === "MUTE"
                   ? zegoUserVideoCss.hideVideo
                   : ""
               }`}
-              ref={(el) => {
-                this.video = el;
-                el &&
-                  el.srcObject !== this.props.user.streamList[0].media &&
-                  (el.srcObject = this.props.user.streamList[0].media!);
-              }}
               onCanPlay={() => {
                 this.props.onCanPlay && this.props.onCanPlay();
               }}
-            ></video>
+            ></ZegoVideo>
           )}
         {(!this.props.user.streamList ||
           !this.props.user.streamList[0] ||
@@ -83,6 +74,15 @@ export class ZegoUserVideo extends React.PureComponent<{
                 }}
               >
                 {getNameFirstLetter(this.props.user.userName || "")}
+                {this.props.user.avatar && (
+                  <img
+                    src={this.props.user.avatar}
+                    onError={(e: any) => {
+                      e.target.style.display = "none";
+                    }}
+                    alt=""
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -103,18 +103,20 @@ export class ZegoUserVideo extends React.PureComponent<{
               {userInfo.userID === this.props.user.userID && (
                 <span>（You）</span>
               )}
-              <span
-                className={`${zegoUserVideoCss.micIcon}  ${
-                  !this.props.user.streamList[0] ||
-                  this.props.user.streamList[0].micStatus !== "OPEN"
-                    ? zegoUserVideoCss.close
-                    : ""
-                }`}
-              >
-                {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
-                  <span style={{ height: height + "px" }}></span>
-                )}
-              </span>
+              {!this.props.user?.streamList?.[0]?.urlsHttpsFLV && (
+                <span
+                  className={`${zegoUserVideoCss.micIcon}  ${
+                    !this.props.user.streamList[0] ||
+                    this.props.user.streamList[0].micStatus !== "OPEN"
+                      ? zegoUserVideoCss.close
+                      : ""
+                  }`}
+                >
+                  {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
+                    <span style={{ height: height + "px" }}></span>
+                  )}
+                </span>
+              )}
             </div>
           </div>
         )}
@@ -133,23 +135,14 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
   render(): React.ReactNode {
     return (
       <div className={`${zegoUserVideoCss.container} zegoUserVideo_click`}>
-        {this.props.user.streamList &&
-          this.props.user.streamList[0] &&
-          this.props.user.streamList[0].media && (
-            <audio
-              key={this.props.user.streamList[0].streamID}
-              className={zegoUserVideoCss.videoCommon}
-              onCanPlay={(ev) => {
-                (ev.target as HTMLAudioElement).play();
-                console.warn("choui played");
-              }}
-              ref={(el) => {
-                el &&
-                  el.srcObject !== this.props.user.streamList[0].media &&
-                  (el.srcObject = this.props.user.streamList[0].media!);
-              }}
-            ></audio>
-          )}
+        {this.props.user.streamList && this.props.user.streamList[0] && (
+          <ZegoAudio
+            muted={false}
+            classList={zegoUserVideoCss.videoCommon}
+            userInfo={this.props.user}
+            key={this.props.user.streamList[0].streamID}
+          ></ZegoAudio>
+        )}
 
         <div
           className={`${zegoUserVideoCss.noVideoWrapper} zegoUserVideo_click`}
@@ -169,6 +162,15 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
               }}
             >
               {getNameFirstLetter(this.props.user.userName || "")}
+              {this.props.user.avatar && (
+                <img
+                  src={this.props.user.avatar}
+                  onError={(e: any) => {
+                    e.target.style.display = "none";
+                  }}
+                  alt=""
+                />
+              )}
             </div>
             <div
               className={`${zegoUserVideoCss.nameCircle}  zegoUserVideo_click ${
@@ -182,6 +184,15 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
               }}
             >
               {getNameFirstLetter(this.props.nextUser.userName || "")}
+              {this.props.nextUser.avatar && (
+                <img
+                  src={this.props.nextUser.avatar}
+                  onError={(e: any) => {
+                    e.target.style.display = "none";
+                  }}
+                  alt=""
+                />
+              )}
             </div>
           </div>
 

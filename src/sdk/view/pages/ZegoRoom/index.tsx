@@ -1,6 +1,8 @@
 import React, { RefObject } from "react";
 import {
+  CoreError,
   LiveRole,
+  LiveStreamingMode,
   ScenarioModel,
   SoundLevelMap,
   ZegoBroadcastMessageInfo2,
@@ -16,20 +18,30 @@ import {
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { getVideoResolution, randomNumber, throttle } from "../../../util";
-import { ZegoSettings, ZegoSettingsAlert } from "../../components/zegoSetting";
+import {
+  getVideoResolution,
+  isFireFox,
+  isSafari,
+  randomNumber,
+  throttle,
+} from "../../../util";
+import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
 import { ZegoGridLayout } from "./components/zegoGridLayout";
 import { ZegoSidebarLayout } from "./components/zegoSidebarLayout";
-import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
+import {
+  ZegoCloudUser,
+  ZegoCloudUserList,
+} from "../../../modules/tools/UserListManager";
 import { ZegoRoomInvite } from "./components/zegoRoomInvite";
 import { ZegoUserList } from "./components/zegoUserList";
 import { ZegoSoundLevelInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 import { ZegoScreenSharingLayout } from "./components/ZegoScreenSharingLayout";
-import ShowPCManageContext from "./context/showManage";
 import { ZegoSuperBoardView } from "zego-superboard-web";
-import { ZegoWhiteboardSharingLayout } from "./components/zegoWhiteboardSharingLayout";
+import { ZegoWhiteboardSharingLayout } from "./components/ZegoWhiteboardSharingLayout";
+import ShowManageContext from "../context/showManage";
+import ZegoAudio from "../../components/zegoMedia/audio";
 export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -79,7 +91,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     selectMic: this.props.core.status.micDeviceID,
     selectSpeaker: this.props.core.status.speakerDeviceID,
     selectCamera: this.props.core.status.cameraDeviceID,
-    selectVideoResolution: this.props.core.status.videoResolution || "360",
+    selectVideoResolution:
+      this.props.core.status.videoResolution ||
+      this.props.core._config.videoResolutionList![0],
     videoShowNumber: 9,
     gridRowNumber: 3,
     layout: this.props.core._config.layout || "Auto",
@@ -116,6 +130,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   isCreatingScreenSharing = false;
   isCreatingWhiteboardSharing = false;
   fullScreen = false;
+  showNotSupported = 0;
+  notSupportMultipleVideoNotice = 0;
+  get isCDNLive(): boolean {
+    return (
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this.props.core._config.scenario.config?.role === LiveRole.Audience &&
+      (this.props.core._config.scenario.config as any).liveStreamingMode ===
+        LiveStreamingMode.StandardLive
+    );
+  }
   userUpdateCallBack = () => {};
   componentDidMount() {
     this.setAllSinkId(this.state.selectSpeaker || "");
@@ -278,8 +302,58 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.subscribeUserList((userList) => {
-      // console.warn("【ZEGOCLOUD】subscribeUserList choui", userList);
       this.userUpdateCallBack();
+      if (this.isCDNLive) {
+        // CDN拉流最大限制6条，超过限制就不拉了
+        let userListCopy: ZegoCloudUserList = JSON.parse(
+          JSON.stringify(userList)
+        );
+        const userNum = userListCopy.filter(
+          (user) =>
+            user.streamList.length > 0 &&
+            (user.streamList[0].cameraStatus === "OPEN" ||
+              user.streamList[0].micStatus === "OPEN")
+        ).length;
+        let limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
+        if (isSafari()) {
+          limitNum = 1;
+        }
+        if (userNum > limitNum) {
+          let i = 0;
+          let targetUsers = userListCopy
+            .reverse()
+            .map((user: ZegoCloudUser) => {
+              if (
+                user.streamList.length > 0 &&
+                (user.streamList[0].cameraStatus === "OPEN" ||
+                  user.streamList[0].micStatus === "OPEN")
+              ) {
+                if (i >= limitNum) {
+                  user.streamList = [];
+                } else {
+                  i++;
+                }
+              }
+              return user;
+            });
+          this.setState({
+            zegoCloudUserList: targetUsers.reverse(),
+          });
+          if (isSafari() && this.notSupportMultipleVideoNotice === 0) {
+            this.notSupportMultipleVideoNotice = 1;
+            ZegoModelShow(
+              {
+                header: "Notice",
+                contentText:
+                  "Your current browser does not support the display of multiple video screens during the live streaming.",
+                okText: "Okay",
+              },
+              document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+            );
+          }
+          return;
+        }
+      }
       this.setState({
         zegoCloudUserList: userList,
       });
@@ -299,9 +373,24 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       });
     });
     this.props.core.subscribeScreenStream((userList) => {
-      this.setState({ screenSharingUserList: userList }, () => {
-        this.computeByResize();
-      });
+      if (
+        this.isCDNLive &&
+        isSafari() &&
+        this.state.zegoCloudUserList.filter(
+          (user) =>
+            user.streamList.length > 0 &&
+            (user.streamList[0].cameraStatus === "OPEN" ||
+              user.streamList[0].micStatus === "OPEN")
+        ).length > 0
+      ) {
+        this.setState({ screenSharingUserList: [] }, () => {
+          this.computeByResize();
+        });
+      } else {
+        this.setState({ screenSharingUserList: userList }, () => {
+          this.computeByResize();
+        });
+      }
     });
     this.props.core.subscribeWhiteBoard(
       (superBoardView: ZegoSuperBoardView | null) => {
@@ -332,6 +421,24 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core.onScreenSharingEnded((stream: MediaStream) => {
       if (stream === this.state.screenSharingStream) {
         this.closeScreenSharing();
+      }
+    });
+    this.props.core.onCoreError((code: CoreError, msg: string) => {
+      if (
+        code === CoreError.notSupportStandardLive ||
+        code === CoreError.notSupportCDNLive
+      ) {
+        if (this.showNotSupported) return;
+        this.showNotSupported = 1;
+        ZegoModelShow(
+          {
+            header: "Notice",
+            contentText:
+              "The service is not available, please contact the live streaming service provider to resolve.",
+            okText: "Okay",
+          },
+          document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+        );
       }
     });
     const logInRsp = await this.props.core.enterRoom();
@@ -409,6 +516,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         const res = this.props.core.publishLocalStream(localStream);
         if (res !== false) {
           this.localStreamID = res as string;
+          this.props.core.setStreamExtraInfo(
+            res as string,
+            JSON.stringify({
+              isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
+              isMicrophoneOn:
+                this.props.core._config.turnOnMicrophoneWhenJoining,
+              hasVideo: !this.props.core.status.videoRefuse,
+              hasAudio: !this.props.core.status.audioRefuse,
+            })
+          );
         }
         return true;
       } catch (error) {
@@ -446,6 +563,15 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       this.state.localStream.getAudioTracks().length > 0
     ) {
       result = await this.props.core.muteMicrophone(this.state.micOpen);
+      this.props.core.setStreamExtraInfo(
+        this.localStreamID as string,
+        JSON.stringify({
+          isCameraOn: this.state.cameraOpen,
+          isMicrophoneOn: !this.state.micOpen,
+          hasVideo: !this.props.core.status.videoRefuse,
+          hasAudio: !this.props.core.status.audioRefuse,
+        })
+      );
     }
 
     this.micStatus = !this.state.micOpen ? 1 : 0;
@@ -459,7 +585,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             micOpen: !!this.micStatus,
           },
           () => {
-            this.computeByResize(true);
+            this.computeByResize(this.state.cameraOpen || this.state.micOpen);
           }
         );
     }
@@ -490,6 +616,15 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         this.state.localStream,
         !this.state.cameraOpen
       );
+      this.props.core.setStreamExtraInfo(
+        this.localStreamID as string,
+        JSON.stringify({
+          isCameraOn: !this.state.cameraOpen,
+          isMicrophoneOn: this.state.micOpen,
+          hasVideo: !this.props.core.status.videoRefuse,
+          hasAudio: !this.props.core.status.audioRefuse,
+        })
+      );
     }
     this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
     if (result) {
@@ -502,7 +637,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             cameraOpen: !!this.cameraStatus,
           },
           () => {
-            this.computeByResize(true);
+            this.computeByResize(this.state.cameraOpen || this.state.micOpen);
           }
         );
     }
@@ -528,13 +663,27 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     this.isCreatingScreenSharing = true;
     try {
       const screenSharingStream = await this.props.core.createStream({
-        screen: { videoQuality: 2, bitRate: 1500, frameRate: 15, audio: true },
+        screen: {
+          videoQuality: 2,
+          bitRate: 1500,
+          frameRate: 15,
+          audio: !isFireFox(),
+        },
       });
       const streamID = this.props.core.publishLocalStream(
         screenSharingStream,
         "screensharing"
       );
       streamID && (this.screenSharingStreamID = streamID as string);
+      this.props.core.setStreamExtraInfo(
+        streamID as string,
+        JSON.stringify({
+          isCameraOn: true,
+          isMicrophoneOn: true,
+          hasVideo: screenSharingStream.getVideoTracks().length > 0,
+          hasAudio: screenSharingStream.getAudioTracks()[0].enabled,
+        })
+      );
       this.setState({
         isScreenSharingBySelf: true,
         screenSharingStream: screenSharingStream,
@@ -750,8 +899,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     }
   }
   async computeByResize(justSetNum = false) {
-    const width = Math.max(document.body.clientWidth, 826);
-    const height = Math.max(document.body.clientHeight, 280);
+    const width = Math.max(this.props.core._config.container!.clientWidth, 640);
+    const height = Math.max(
+      this.props.core._config.container!.clientHeight,
+      328
+    );
     let videoShowNumber = 0,
       gridRowNumber = 0;
 
@@ -767,13 +919,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
         5
       );
-      this.setState({
-        videoShowNumber: videoShowNumber,
-      });
+
       !justSetNum && (await this.props.core.setSidebarLayOut(false));
       if (this.fullScreen) {
+        this.setState({
+          videoShowNumber: 0,
+        });
         await this.props.core.setMaxScreenNum(0);
       } else {
+        this.setState({
+          videoShowNumber: videoShowNumber,
+        });
         await this.props.core.setMaxScreenNum(
           this.showSelf ? videoShowNumber - 1 : videoShowNumber
         );
@@ -790,8 +946,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
         5
       );
-      !justSetNum &&
-        (await this.props.core.setSidebarLayOut(!this.localUserPin));
+      const sidebarEnabled =
+        this.state.cameraOpen || this.state.micOpen ? !this.localUserPin : true;
+      !justSetNum && (await this.props.core.setSidebarLayOut(sidebarEnabled));
       this.setState({
         videoShowNumber: videoShowNumber,
       });
@@ -872,12 +1029,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     });
   }
 
-  getAllUser() {
+  getAllUser(): ZegoCloudUserList {
     return [
       {
         userID: this.props.core._expressConfig.userID,
         userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
+        avatar: this.props.core._expressConfig.avatar,
         streamList: [
           {
             media: this.state.localStream!,
@@ -898,7 +1056,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   getShownUser(forceShowNonVideoUser = false) {
     const shownUser = this.getAllUser().filter((item) => {
       if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
-        if (item.streamList && item.streamList[0] && item.streamList[0].media) {
+        if (
+          item.streamList &&
+          item.streamList[0] &&
+          (item.streamList[0].media ||
+            item.streamList[0].urlsHttpsFLV ||
+            item.streamList[0].urlsHttpsHLS)
+        ) {
           if (item.streamList[0].cameraStatus === "OPEN") {
             return true;
           } else if (
@@ -925,6 +1089,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         {
           userID: this.props.core._expressConfig.userID,
           userName: this.props.core._expressConfig.userName,
+          avatar: this.props.core._expressConfig.avatar,
           pin: false,
           streamList: [
             {
@@ -951,7 +1116,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         !this.props.core._config.showNonVideoUser &&
         item.streamList &&
         item.streamList[0] &&
-        item.streamList[0].media &&
+        (item.streamList[0].media ||
+          item.streamList[0].urlsHttpsFLV ||
+          item.streamList[0].urlsHttpsHLS) &&
         item.streamList[0].cameraStatus !== "OPEN" &&
         !this.props.core._config.showOnlyAudioUser &&
         item.streamList[0].micStatus === "OPEN"
@@ -966,17 +1133,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       <>
         {hiddenUser.map((user) => {
           return (
-            <audio
-              autoPlay
+            <ZegoAudio
               muted={user.userID === this.props.core._expressConfig.userID}
+              userInfo={user}
               key={user.userID + "_hiddenAudio"}
-              ref={(el) => {
-                el &&
-                  el.srcObject !== user.streamList[0].media &&
-                  (el.srcObject = user.streamList[0].media!);
-                el && (el as any)?.setSinkId?.(this.state.selectSpeaker || "");
-              }}
-            ></audio>
+            ></ZegoAudio>
           );
         })}
       </>
@@ -1266,7 +1427,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         : this.state.notificationList.length - 2;
 
     return (
-      <ShowPCManageContext.Provider
+      <ShowManageContext.Provider
         value={{
           showPinButton:
             !!this.props.core._config.showPinButton &&
@@ -1287,6 +1448,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           whiteboard_isFontBold: this.props.core.zegoSuperBoard?.isFontBold(),
           whiteboard_isFontItalic:
             this.props.core.zegoSuperBoard?.isFontItalic(),
+          userInfo: { userID: this.props.core._expressConfig.userID },
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>
@@ -1754,7 +1916,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             ></ZegoSettings>
           )}
         </div>
-      </ShowPCManageContext.Provider>
+      </ShowManageContext.Provider>
     );
   }
 }

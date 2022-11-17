@@ -1,8 +1,9 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import { getNameFirstLetter, userNameColor } from "../../../../util";
-import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
+import ZegoVideo from "../../../components/zegoMedia/video";
 export class VideoPlayer extends React.PureComponent<{
   userInfo: ZegoCloudUser;
   muted: boolean;
@@ -16,20 +17,16 @@ export class VideoPlayer extends React.PureComponent<{
   hiddenName?: boolean;
   hiddenMore?: boolean;
 }> {
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
-  context!: React.ContextType<typeof ShowPCManageContext>;
-  video: HTMLVideoElement | null = null;
+  static contextType?: React.Context<ShowManageType> = ShowManageContext;
+  context!: React.ContextType<typeof ShowManageContext>;
   state = {
     hovered: false,
   };
-  componentWillUnmount() {
-    this.video?.srcObject && (this.video.srcObject = null);
-  }
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.userInfo?.streamList?.[0]?.streamID];
     const height = volume === undefined ? 5 : Math.ceil((volume * 7) / 100);
-    let { showPinButton, speakerId } = this.context;
+    let { showPinButton } = this.context;
     return (
       <div
         className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
@@ -44,26 +41,17 @@ export class VideoPlayer extends React.PureComponent<{
           });
         }}
       >
-        <video
+        <ZegoVideo
           muted={this.props.muted}
-          autoPlay
-          className={ZegoVideoPlayerCss.videoCommon}
-          playsInline={true}
-          ref={(el) => {
-            this.video = el;
-            el &&
-              el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
-              (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
-            el && (el as any)?.setSinkId?.(speakerId || "");
-          }}
+          classList={ZegoVideoPlayerCss.videoCommon}
+          userInfo={this.props.userInfo}
           onPause={() => {
-            console.error("Paused");
             this.props.onPause && this.props.onPause();
           }}
           onCanPlay={() => {
             this.props.onCanPlay && this.props.onCanPlay();
           }}
-        ></video>
+        ></ZegoVideo>
         <div
           className={ZegoVideoPlayerCss.cameraMask}
           style={{
@@ -73,6 +61,15 @@ export class VideoPlayer extends React.PureComponent<{
                 : "flex",
           }}
         >
+          {this.props.userInfo.avatar && (
+            <img
+              src={this.props.userInfo.avatar}
+              onError={(e: any) => {
+                e.target.style.display = "none";
+              }}
+              alt=""
+            />
+          )}
           <div
             style={{
               color: userNameColor(this.props.userInfo?.userName as string),
@@ -84,16 +81,18 @@ export class VideoPlayer extends React.PureComponent<{
 
         {!this.props.hiddenName && (
           <div className={ZegoVideoPlayerCss.name}>
-            <span
-              className={`${ZegoVideoPlayerCss.micIcon} ${
-                this.props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
-                ZegoVideoPlayerCss.close
-              }`}
-            >
-              {this.props.userInfo?.streamList?.[0]?.micStatus === "OPEN" && (
-                <span style={{ height: height + "px" }}></span>
-              )}
-            </span>
+            {!this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV && (
+              <span
+                className={`${ZegoVideoPlayerCss.micIcon} ${
+                  this.props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
+                  ZegoVideoPlayerCss.close
+                }`}
+              >
+                {this.props.userInfo?.streamList?.[0]?.micStatus === "OPEN" && (
+                  <span style={{ height: height + "px" }}></span>
+                )}
+              </span>
+            )}
             <p
               className={
                 this.props.userInfo.overScreenMuteVideo

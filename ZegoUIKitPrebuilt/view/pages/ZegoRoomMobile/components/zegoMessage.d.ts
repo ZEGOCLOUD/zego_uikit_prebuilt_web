@@ -6,17 +6,22 @@ export declare class ZegoMessage extends React.PureComponent<{
     sendMessage: (msg: string) => void;
     userID: string;
     closeCallBac: () => void;
+    getAvatar: (userID: string) => string;
 }> {
     state: {
         message: string;
+        isFocus: boolean;
     };
     sendTime: number;
     msgContentListRef: RefObject<HTMLDivElement>;
+    isIOS: boolean;
+    isFireFox: boolean;
     constructor(props: {
         messageList: ZegoBroadcastMessageInfo2[];
         sendMessage: (msg: string) => void;
         userID: string;
         closeCallBac: () => void;
+        getAvatar: (userID: string) => string;
     });
     componentDidMount(): void;
     componentDidUpdate(prevProps: {
@@ -27,5 +32,7 @@ export declare class ZegoMessage extends React.PureComponent<{
     }): void;
     messageInput(event: ChangeEvent<HTMLInputElement>): void;
     handleSend(): false | undefined;
+    onFocus: (ev: ChangeEvent<HTMLInputElement>) => void;
+    onBlur: (ev: ChangeEvent<HTMLInputElement>) => void;
     render(): React.ReactNode;
 }

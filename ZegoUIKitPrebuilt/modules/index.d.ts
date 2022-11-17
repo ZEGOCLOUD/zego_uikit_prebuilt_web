@@ -1,8 +1,8 @@
 /// <reference types="node" />
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoDeviceInfo, ZegoLocalStreamConfig, ZegoPublishStreamConfig, ZegoServerResponse, ZegoSoundLevelInfo, ZegoStreamList } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
-import { ZegoUser, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { ZegoCloudRemoteMedia, ZegoCloudRoomConfig } from "../model";
+import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import { ZegoCloudRemoteMedia, ZegoCloudRoomConfig, ZegoUser } from "../model";
 import { ZegoCloudUserList, ZegoCloudUserListManager } from "./tools/UserListManager";
 export declare class ZegoCloudRTCCore {
     static _instance: ZegoCloudRTCCore;
@@ -14,6 +14,7 @@ export declare class ZegoCloudRTCCore {
         userName: string;
         roomID: string;
         token: string;
+        avatar?: string;
     };
     static getInstance(kitToken: string): ZegoCloudRTCCore;
     status: {
@@ -28,14 +29,24 @@ export declare class ZegoCloudRTCCore {
     remoteStreamMap: {
         [index: string]: ZegoCloudRemoteMedia;
     };
-    checkWebRTC(): Promise<boolean>;
+    waitingHandlerStreams: {
+        add: ZegoStreamList[];
+        delete: ZegoStreamList[];
+    };
     _config: ZegoCloudRoomConfig;
+    _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom";
+    extraInfoKey: string;
+    _roomExtraInfo: {
+        [index: string]: any;
+    };
+    NetworkStatusTimer: NodeJS.Timer | null;
+    get isCDNLive(): boolean;
     setConfig(config: ZegoCloudRoomConfig): boolean;
+    checkWebRTC(): Promise<boolean>;
     setPin(userID?: string, pined?: boolean, stopUpdateUser?: boolean): void;
     setMaxScreenNum(num: number, stopUpdateUser?: boolean): Promise<void>;
     setSidebarLayOut(enable: boolean, stopUpdateUser?: boolean): Promise<void>;
     setShowNonVideo(enable: boolean): Promise<void>;
-    _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom";
     setCurrentPage(page: "BrowserCheckPage" | "Room" | "RejoinRoom"): void;
     getCameras(): Promise<ZegoDeviceInfo[]>;
     useVideoDevice(localStream: MediaStream, deviceID: string): Promise<ZegoServerResponse>;
@@ -53,10 +64,6 @@ export declare class ZegoCloudRTCCore {
     mutePublishStreamVideo(localStream: MediaStream, enable: boolean): Promise<boolean>;
     mutePublishStreamAudio(localStream: MediaStream, enable: boolean): Promise<boolean>;
     muteMicrophone(enable: boolean): Promise<boolean>;
-    extraInfoKey: string;
-    _roomExtraInfo: {
-        [index: string]: any;
-    };
     set roomExtraInfo(value: {
         [index: string]: any;
     });
@@ -65,10 +72,6 @@ export declare class ZegoCloudRTCCore {
     };
     setLive(status: "live" | "stop"): Promise<boolean>;
     enterRoom(): Promise<number>;
-    waitingHandlerStreams: {
-        add: ZegoStreamList[];
-        delete: ZegoStreamList[];
-    };
     streamUpdateTimer(_waitingHandlerStreams: {
         add: ZegoStreamList[];
         delete: ZegoStreamList[];
@@ -80,7 +83,6 @@ export declare class ZegoCloudRTCCore {
     private subscribeScreenStreamCallBack;
     subscribeScreenStream(callback: (userList: ZegoCloudUserList) => void): void;
     private onRemoteMediaUpdateCallBack;
-    onRemoteMediaUpdate(func: (updateType: "DELETE" | "ADD" | "UPDATE", streamList: ZegoCloudRemoteMedia[]) => void): void;
     private onNetworkStatusQualityCallBack;
     onNetworkStatusQuality(func: (roomID: string, level: number) => void): void;
     private onRemoteUserUpdateCallBack;
@@ -94,8 +96,11 @@ export declare class ZegoCloudRTCCore {
     onRoomMessageUpdate(func: (roomID: string, info: ZegoBroadcastMessageInfo[]) => void): void;
     private onScreenSharingEndedCallBack;
     onScreenSharingEnded(func: (stream: MediaStream) => void): void;
-    NetworkStatusTimer: NodeJS.Timer | null;
     private onNetworkStatusCallBack;
     onNetworkStatus(func: (roomID: string, type: "ROOM" | "STREAM", status: "DISCONNECTED" | "CONNECTING" | "CONNECTED") => void): void;
+    private streamExtraInfoUpdateCallBack;
+    private coreErrorCallback;
+    onCoreError(func: (errCode: number, errMsg: string) => void): void;
     leaveRoom(): void;
+    setStreamExtraInfo(streamID: string, extraInfo: string): Promise<ZegoServerResponse>;
 }

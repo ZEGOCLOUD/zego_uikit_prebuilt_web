@@ -1,5 +1,5 @@
 import "polyfill-object.fromentries";
-import React from "react";
+import React, { Ref } from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
 import { ZegoUIKitPrebuilt } from "./sdk/index";
@@ -17,7 +17,12 @@ export default class App extends React.Component {
         : process.env.REACT_APP_PATH === "1on1_call"
         ? "https://docs.zegocloud.com/article/14728"
         : "https://docs.zegocloud.com/article/14922",
+    showSettings: false,
+    showSettingsBtn: false,
+    liveStreamingMode:
+      getUrlParams().get("liveStreamingMode") || "RealTimeLive",
   };
+  settingsEl = null;
   constructor(props: any) {
     super(props);
     const userName = getUrlParams().get("UserName");
@@ -47,7 +52,7 @@ export default class App extends React.Component {
     let sharedLinks: { name: string; url: string }[] = [];
     let maxUsers = 50;
     let showNonVideoUser = getUrlParams().get("showNonVideoUser") || undefined;
-
+    let liveStreamingMode;
     let mode = ScenarioModel.OneONoneCall;
     if (process.env.REACT_APP_PATH === "1on1_call") {
       maxUsers = 2;
@@ -61,6 +66,8 @@ export default class App extends React.Component {
       });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       mode = ScenarioModel.LiveStreaming;
+      liveStreamingMode =
+        getUrlParams().get("liveStreamingMode") || "RealTimeLive";
       if (role === LiveRole.Host || role === LiveRole.Cohost) {
         sharedLinks.push({
           name: "Join as co-host",
@@ -69,8 +76,10 @@ export default class App extends React.Component {
             window.location.pathname +
             "?roomID=" +
             roomID +
-            "&role=Cohost",
+            "&role=Cohost&liveStreamingMode=" +
+            liveStreamingMode,
         });
+        this.state.showSettingsBtn = true;
       }
       sharedLinks.push({
         name: "Join as audience",
@@ -79,7 +88,8 @@ export default class App extends React.Component {
           window.location.pathname +
           "?roomID=" +
           roomID +
-          "&role=Audience",
+          "&role=Audience&liveStreamingMode=" +
+          liveStreamingMode,
       });
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       mode = ScenarioModel.VideoConference;
@@ -134,18 +144,60 @@ export default class App extends React.Component {
           mode,
           config: {
             role,
+            liveStreamingMode,
           },
         },
         showWhiteboardButton: true,
         plugins: { ZegoSuperBoardManager },
+        showUserList: true,
+        onUserAvatarSetter: (user) => {
+          user.forEach((u) => {
+            u.setUserAvatar &&
+              u.setUserAvatar(
+                // "https://images.pexels.com/photos/4172877/pexels-photo-4172877.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
+                `https://api.multiavatar.com/${u.userID}.svg?apikey=XqHm465NYsdLfb` // random avatar
+              );
+          });
+        },
+        videoResolutionList: [
+          ZegoUIKitPrebuilt.VideoResolution_360P,
+          ZegoUIKitPrebuilt.VideoResolution_180P,
+          ZegoUIKitPrebuilt.VideoResolution_480P,
+          ZegoUIKitPrebuilt.VideoResolution_720P,
+        ],
+        videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
       };
       if (showNonVideoUser !== undefined) {
-        param.showNonVideoUser = showNonVideoUser == "true";
+        param.showNonVideoUser = showNonVideoUser === "true";
       }
       zp.joinRoom(param);
     };
   }
-
+  handleSelectMode(mode: string) {
+    this.setState(
+      {
+        liveStreamingMode: mode,
+      },
+      () => {
+        !isPc() && this.handleSettingsConfirm();
+      }
+    );
+  }
+  handleSettingsConfirm() {
+    let param = getUrlParams();
+    if (param.get("liveStreamingMode") === this.state.liveStreamingMode) {
+      this.setState({
+        showSettings: false,
+      });
+      return;
+    }
+    param.set("liveStreamingMode", this.state.liveStreamingMode);
+    window.location.href =
+      window.location.origin +
+      window.location.pathname +
+      "?" +
+      param.toString();
+  }
   render(): React.ReactNode {
     return (
       <div className={`${APP.app} ${isPc() ? "" : APP.mobileApp}`}>
@@ -160,6 +212,22 @@ export default class App extends React.Component {
               }}
             ></div>
             <div className={`${APP.link} ${isPc() ? "" : APP.mobileLink}`}>
+              {this.state.showSettingsBtn && (
+                <a
+                  className={APP.link_item}
+                  onClick={() => {
+                    this.setState({
+                      showSettings: true,
+                      liveStreamingMode:
+                        getUrlParams().get("liveStreamingMode") ||
+                        "RealTimeLive",
+                    });
+                  }}
+                >
+                  <span className={APP.icon_settings}></span>{" "}
+                  {isPc() && "Settings"}
+                </a>
+              )}
               <a
                 href={this.state.docs}
                 target="_blank"
@@ -208,6 +276,83 @@ export default class App extends React.Component {
           </a>
           .
         </div>
+        {this.state.showSettings && (
+          <div
+            className={`${
+              isPc() ? APP.pcSettingsModel : APP.mobileSettingsModel
+            }`}
+          >
+            <div className={APP.settingsWrapper}>
+              <div className={APP.settingsHeader}>
+                <p>{isPc() ? "Settings" : "Live streaming mode"}</p>
+                <span
+                  className={APP.settingsClose}
+                  onClick={() => {
+                    this.setState({
+                      showSettings: false,
+                    });
+                  }}
+                ></span>
+              </div>
+              <div className={APP.settingsBody}>
+                {isPc() && (
+                  <div className={APP.settingsMode}>Live streaming mode</div>
+                )}
+                <div className={APP.settingsModeList}>
+                  <div
+                    className={`${APP.settingsModeItem} ${
+                      this.state.liveStreamingMode === "StandardLive"
+                        ? APP.settingsModeItemSelected
+                        : ""
+                    }`}
+                    onClick={() => {
+                      this.handleSelectMode("StandardLive");
+                    }}
+                  >
+                    <p>Standard Live</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${
+                      this.state.liveStreamingMode === "PremiumLive"
+                        ? APP.settingsModeItemSelected
+                        : ""
+                    }`}
+                    onClick={() => {
+                      this.handleSelectMode("PremiumLive");
+                    }}
+                  >
+                    <p>Premium Live</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${
+                      this.state.liveStreamingMode === "RealTimeLive"
+                        ? APP.settingsModeItemSelected
+                        : ""
+                    }`}
+                    onClick={() => {
+                      this.handleSelectMode("RealTimeLive");
+                    }}
+                  >
+                    <p>Real-time Live</p>
+                    <span></span>
+                  </div>
+                </div>
+                {isPc() && (
+                  <div
+                    className={APP.settingsBtn}
+                    onClick={() => {
+                      this.handleSettingsConfirm();
+                    }}
+                  >
+                    Confirm
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

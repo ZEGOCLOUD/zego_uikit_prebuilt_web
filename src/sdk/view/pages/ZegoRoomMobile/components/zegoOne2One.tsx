@@ -1,6 +1,5 @@
 import React from "react";
 import zegoOne2OneCss from "./zegoOne2One.module.scss";
-import { ZegoMore } from "./zegoMore";
 import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 import { ZegoUserVideo } from "./zegoUserVideo";
 import { SoundLevelMap } from "../../../../model";

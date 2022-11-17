@@ -10927,7 +10927,7 @@
     "es5-ext" "^0.10.35"
     "es6-symbol" "^3.1.1"
 
-"es6-promise@^4.0.3":
+"es6-promise@^4.0.3", "es6-promise@^4.2.8":
   "integrity" "sha512-HJDGx5daxeIvxdBxvG2cb9g4tEvwIk3i8+nhX0yGrYmZUzbkdg8QbDevheDB8gd0//uPj4c1EQua8Q+MViT0/w=="
   "resolved" "https://mirrors.cloud.tencent.com/npm/es6-promise/-/es6-promise-4.2.8.tgz"
   "version" "4.2.8"
@@ -12242,6 +12242,14 @@
   dependencies:
     "inherits" "^2.0.3"
     "readable-stream" "^2.3.6"
+
+"flv.js@^1.6.2":
+  "integrity" "sha512-xre4gUbX1MPtgQRKj2pxJENp/RnaHaxYvy3YToVVCrSmAWUu85b9mug6pTXF6zakUjNP2lFWZ1rkSX7gxhB/2A=="
+  "resolved" "https://registry.npmjs.org/flv.js/-/flv.js-1.6.2.tgz"
+  "version" "1.6.2"
+  dependencies:
+    "es6-promise" "^4.2.8"
+    "webworkify-webpack" "^2.1.5"
 
 "focus-lock@^0.11.2":
   "integrity" "sha512-pZ2bO++NWLHhiKkgP1bEXHhR1/OjVcSvlCJ98aNJDFeb7H5OOQaO+SKOZle6041O9rv2tmbrO4JzClAvDUHf0g=="
@@ -17051,7 +17059,7 @@
 
 "long@^4.0.0":
   "integrity" "sha512-XsP+KhQif4bjX1kbuSiySJFNAehNxgLb6hPRGJ9QsUr8ajHkuXGdrHmFUTUUXhDwVX2R5bY4JNZEwbUiMhV+MA=="
-  "resolved" "https://mirrors.cloud.tencent.com/npm/long/-/long-4.0.0.tgz"
+  "resolved" "https://registry.npmjs.org/long/-/long-4.0.0.tgz"
   "version" "4.0.0"
 
 "long@^5.0.0":
@@ -20961,7 +20969,7 @@
 
 "protobufjs@6.11.2":
   "integrity" "sha512-4BQJoPooKJl2G9j3XftkIXjoC9C0Av2NOrWmbLWT1vH32GcSUHjM0Arra6UfTsVyfMAuFzaLucXn1sadxJydAw=="
-  "resolved" "https://mirrors.cloud.tencent.com/npm/protobufjs/-/protobufjs-6.11.2.tgz"
+  "resolved" "https://registry.npmjs.org/protobufjs/-/protobufjs-6.11.2.tgz"
   "version" "6.11.2"
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
@@ -27343,6 +27351,11 @@
   "resolved" "https://mirrors.cloud.tencent.com/npm/websocket-extensions/-/websocket-extensions-0.1.4.tgz"
   "version" "0.1.4"
 
+"webworkify-webpack@^2.1.5":
+  "integrity" "sha512-2akF8FIyUvbiBBdD+RoHpoTbHMQF2HwjcxfDvgztAX5YwbZNyrtfUMgvfgFVsgDhDPVTlkbb5vyasqDHfIDPQw=="
+  "resolved" "https://registry.npmjs.org/webworkify-webpack/-/webworkify-webpack-2.1.5.tgz"
+  "version" "2.1.5"
+
 "whatwg-encoding@^1.0.1", "whatwg-encoding@^1.0.3", "whatwg-encoding@^1.0.5":
   "integrity" "sha512-b5lim54JOPN9HtzvK9HFXvBma/rnfFeqsic0hSpjtDbVxR3dJKLc+KB4V6GgiGOvl7CY/KNh8rxSo9DKQrnUEw=="
   "resolved" "https://mirrors.cloud.tencent.com/npm/whatwg-encoding/-/whatwg-encoding-1.0.5.tgz"
@@ -28040,24 +28053,24 @@
   "resolved" "https://mirrors.cloud.tencent.com/npm/yocto-queue/-/yocto-queue-0.1.0.tgz"
   "version" "0.1.0"
 
-"zego-express-engine-webrtc@^2.18.0":
-  "integrity" "sha512-9BXfECPoyLzbRUGDqF7xQibm3ibR6ZewnAaAZa+zmjfAIpP9v1s368ACNiSwCTe5qf3VA20vpr4Pw27SJZS1VQ=="
-  "resolved" "https://mirrors.cloud.tencent.com/npm/zego-express-engine-webrtc/-/zego-express-engine-webrtc-2.18.0.tgz"
-  "version" "2.18.0"
+"zego-express-engine-webrtc@^2.20.2":
+  "integrity" "sha512-lLeROWj91yZ1bq5vDRory508tOBrVnQhmC4IcgTz4NSn14/rK60Qna+xXDkha4xctBy4FZPE5tZZi1MlvETPuw=="
+  "resolved" "https://registry.npmjs.org/zego-express-engine-webrtc/-/zego-express-engine-webrtc-2.20.2.tgz"
+  "version" "2.20.2"
   dependencies:
-    "zego-express-engine-webrtm" "1.17.0"
+    "zego-express-engine-webrtm" "1.19.2"
 
-"zego-express-engine-webrtm@1.17.0":
-  "integrity" "sha512-TuAiLmHWMwD9Jo6dryQsx8ozld9cV5afET1bPvUqsPCOu+H1isEcTEIkMd9zOh2K+LwLqLBKRJ8xmFs/sEFTmA=="
-  "resolved" "https://mirrors.cloud.tencent.com/npm/zego-express-engine-webrtm/-/zego-express-engine-webrtm-1.17.0.tgz"
-  "version" "1.17.0"
+"zego-express-engine-webrtm@1.19.2":
+  "integrity" "sha512-yXSoNc3LN5Gxyy9V9MpRCar/hjknsSc3PDJmICBLh0Or960DjJvDwuUcIPSBrEptkEXWsEkPy4qS90EmoD4q2g=="
+  "resolved" "https://registry.npmjs.org/zego-express-engine-webrtm/-/zego-express-engine-webrtm-1.19.2.tgz"
+  "version" "1.19.2"
   dependencies:
     "protobufjs" "6.11.2"
     "zego-express-logger" "1.2.0"
 
 "zego-express-logger@1.2.0":
   "integrity" "sha512-wtKhEmkr7D+K9LJ8XJtCw0c/T0KjcczhQ5lc+XudFWENSHTo3Zs0bWuVAa64EbwQzTw6FuCrBcnG683sNQcS1Q=="
-  "resolved" "https://mirrors.cloud.tencent.com/npm/zego-express-logger/-/zego-express-logger-1.2.0.tgz"
+  "resolved" "https://registry.npmjs.org/zego-express-logger/-/zego-express-logger-1.2.0.tgz"
   "version" "1.2.0"
 
 "zego-superboard-web@^2.8.1":

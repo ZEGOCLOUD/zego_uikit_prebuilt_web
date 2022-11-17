@@ -1,14 +1,14 @@
 import React from "react";
 import ShowPCManageContext, {
-  ShowPCManageType,
-} from "../../context/showManage";
+  ShowManageType,
+} from "../../../context/showManage";
 import ZegoWhiteboardToolsGraphicsTooTipsCss from "./ZegoWhiteboardToolsGraphicsTooTips.module.scss";
 
 export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
   onToolChange: (type: number, fontSize: number, color: string) => void;
   onClose: () => void;
 }> {
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
+  static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
   OnDocumentClick(ev: MouseEvent) {
     // @ts-ignore

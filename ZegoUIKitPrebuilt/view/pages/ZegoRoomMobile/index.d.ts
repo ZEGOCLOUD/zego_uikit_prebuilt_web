@@ -5,7 +5,7 @@ import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh
 import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
 import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
 export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
-    static contextType: React.Context<import("./context/showManage").ShowManageType>;
+    static contextType: React.Context<import("../context/showManage").ShowManageType>;
     state: {
         localStream: undefined | MediaStream;
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE";
@@ -37,6 +37,9 @@ export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheck
     userUpdateCallBack: () => void;
     localStreamID: string;
     safariLimitationNoticed: -1 | 0 | 1;
+    iosLimitationNoticed: number;
+    showNotSupported: number;
+    get isCDNLive(): boolean;
     componentDidMount(): void;
     componentWillUnmount(): void;
     componentDidUpdate(preProps: ZegoBrowserCheckProp, preState: {

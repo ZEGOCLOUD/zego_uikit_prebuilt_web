@@ -23,7 +23,19 @@ export function isIOS() {
   let u = navigator.userAgent;
   return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 }
-
+export function isAndroid(): boolean {
+  let u = navigator.userAgent;
+  return u.indexOf("Android") > -1 || u.indexOf("Adr") > -1;
+}
+export function isSafari(): boolean {
+  return (
+    /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
+  );
+}
+export function isFireFox() {
+  let u = navigator.userAgent;
+  return !!u.match(/firefox|fxios/i);
+}
 export function IsLowVersionSafari() {
   const is_safari = navigator.userAgent.toLowerCase().indexOf("safari/") > -1;
   const is_chrome = navigator.userAgent.match("CriOS");
@@ -113,19 +125,19 @@ export function getVideoResolution(level: string): {
     bitrate: 400,
     frameRate: 15,
   };
-  if (level === "180") {
+  if (level === "180p") {
     width = 320;
     height = 180;
     bitrate = 140;
-  } else if (level === "360") {
+  } else if (level === "360p") {
     width = 640;
     height = 360;
     bitrate = 400;
-  } else if (level === "480") {
+  } else if (level === "480p") {
     width = 640;
     height = 480;
     bitrate = 500;
-  } else if (level === "720") {
+  } else if (level === "720p") {
     width = 1280;
     height = 720;
     bitrate = 1130;

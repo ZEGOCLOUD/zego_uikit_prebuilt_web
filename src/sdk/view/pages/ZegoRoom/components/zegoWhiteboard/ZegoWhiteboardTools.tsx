@@ -3,8 +3,8 @@ import ZegoWhiteboardToolsCss from "./ZegoWhiteboardTools.module.scss";
 import { ZegoWhiteboardToolsPenTooTips } from "./ZegoWhiteboardToolsPenToolTips";
 import { ZegoWhiteboardToolsGraphicsTooTips } from "./ZegoWhiteboardToolsGraphicsTooTips";
 import ShowPCManageContext, {
-  ShowPCManageType,
-} from "../../context/showManage";
+  ShowManageType,
+} from "../../../context/showManage";
 import { ZegoWhiteboardToolsTextTooTips } from "./ZegoWhiteboardToolsTextToolTips";
 import { chooseFile } from "../../../../../util";
 
@@ -18,7 +18,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
   onAddImage: (file: File) => void;
   onSnapshot: () => void;
 }> {
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
+  static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
   state: {
     hideTools: boolean;

@@ -1,6 +1,8 @@
 import React from "react";
 import {
+  CoreError,
   LiveRole,
+  LiveStreamingMode,
   ScenarioModel,
   SoundLevelMap,
   ZegoBroadcastMessageInfo2,
@@ -21,6 +23,8 @@ import {
   randomNumber,
   userNameColor,
   getNameFirstLetter,
+  getVideoResolution,
+  isSafari,
 } from "../../../util";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
@@ -40,9 +44,10 @@ import { ZegoLayout } from "./components/zegoLayout";
 import { ZegoManage } from "./components/zegoManage";
 import { ZegoGrid } from "./components/zegoGrid";
 import { ZegoSidebar } from "./components/zegoSidebar";
-import ShowManageContext from "./context/showManage";
+import ShowManageContext from "../context/showManage";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoScreen } from "./components/zegoScreen";
+import ZegoAudio from "../../components/zegoMedia/audio";
 
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
@@ -108,6 +113,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   userUpdateCallBack = () => {};
   localStreamID = "";
   safariLimitationNoticed: -1 | 0 | 1 = -1;
+  iosLimitationNoticed = 0;
+  showNotSupported = 0;
+  get isCDNLive(): boolean {
+    return (
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this.props.core._config.scenario.config?.role === LiveRole.Audience &&
+      (this.props.core._config.scenario.config as any).liveStreamingMode ===
+        LiveStreamingMode.StandardLive
+    );
+  }
 
   componentDidMount() {
     this.initSDK();
@@ -253,70 +268,99 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     );
     this.props.core.subscribeUserList((userList) => {
       this.userUpdateCallBack();
-      const notSupportPhone =
-        !isPc() &&
-        isIOS() &&
-        IsLowVersionSafari() &&
-        userList.filter((u) => {
-          return (
-            u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
-          );
-        }).length > (this.state.screenSharingUserList.length > 0 ? 0 : 1);
-      if (notSupportPhone) {
-        let targetUsers = userList.reverse();
 
-        let targetUser = targetUsers.find(
-          (u) => u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
+      if ((IsLowVersionSafari() && isIOS()) || this.isCDNLive) {
+        let userListCopy: ZegoCloudUserList = JSON.parse(
+          JSON.stringify(userList)
         );
-
-        if (this.safariLimitationNoticed === -1) {
-          this.safariLimitationNoticed = 0;
-          ZegoModelShow({
-            header: "Notice",
-            contentText:
-              "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
-
-            okText: "Okay",
-            onOk: () => {
-              this.safariLimitationNoticed = 1;
-              this.setState(
-                {
-                  zegoCloudUserList: [targetUser],
-                  memberList: userList,
-                  screenSharingUserList: [],
-                },
-                () => {
-                  this.handleLayoutChange(this.state.userLayoutStatus);
-                }
-              );
-            },
-          });
-        } else if (this.safariLimitationNoticed != 0) {
-          // do nothing
+        const userNum = userListCopy.filter(
+          (user) =>
+            user.streamList.length > 0 &&
+            (user.streamList[0].cameraStatus === "OPEN" ||
+              user.streamList[0].micStatus === "OPEN")
+        ).length;
+        let limitNum = 1;
+        if (this.isCDNLive && !isIOS()) {
+          limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
         }
-      } else {
-        this.setState({
-          zegoCloudUserList: userList,
-          memberList: userList,
-        });
+        if (userNum > limitNum) {
+          let i = 0;
+          let targetUsers = userListCopy
+            .reverse()
+            .map((user: ZegoCloudUser) => {
+              if (
+                user.streamList.length > 0 &&
+                (user.streamList[0].cameraStatus === "OPEN" ||
+                  user.streamList[0].micStatus === "OPEN")
+              ) {
+                if (i >= limitNum) {
+                  user.streamList = [];
+                } else {
+                  i++;
+                }
+              }
+              return user;
+            });
+          const users = targetUsers.reverse();
+
+          this.setState(
+            {
+              zegoCloudUserList: targetUsers,
+              memberList: users,
+            },
+            () => {
+              this.handleLayoutChange(this.state.userLayoutStatus);
+            }
+          );
+          if (!this.isCDNLive && this.safariLimitationNoticed === -1) {
+            this.safariLimitationNoticed = 0;
+            ZegoModelShow({
+              header: "Notice",
+              contentText:
+                "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
+              okText: "Okay",
+              onOk: () => {
+                this.safariLimitationNoticed = 1;
+              },
+            });
+          }
+          if (isIOS() && this.isCDNLive && this.iosLimitationNoticed === 0) {
+            this.iosLimitationNoticed = 1;
+            ZegoModelShow({
+              header: "Notice",
+              contentText:
+                "Your current mobile system does not support the display of multiple video screens during the live streaming.",
+              okText: "Okay",
+            });
+          }
+          return;
+        }
       }
+
+      this.setState({
+        zegoCloudUserList: userList,
+        memberList: userList,
+      });
     });
 
     this.props.core.subscribeScreenStream((userList) => {
       const notSupportPhone =
         !isPc() &&
         isIOS() &&
-        IsLowVersionSafari() &&
+        (IsLowVersionSafari() || this.isCDNLive) &&
         this.state.zegoCloudUserList.filter((u) => {
           return (
-            u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
+            u.streamList.length > 0 &&
+            (u.streamList[0].micStatus === "OPEN" ||
+              u.streamList[0].cameraStatus === "OPEN")
           );
         }).length > 0;
-
-      !notSupportPhone &&
-        this.setState({ screenSharingUserList: userList }, () => {
+      this.setState(
+        { screenSharingUserList: notSupportPhone ? [] : userList },
+        () => {
           this.handleLayoutChange(this.state.userLayoutStatus);
-        });
+        }
+      );
     });
     this.props.core.onSoundLevelUpdate(
       (soundLevelList: ZegoSoundLevelInfo[]) => {
@@ -354,7 +398,24 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         }
       );
     });
-
+    this.props.core.onCoreError((code: CoreError, msg: string) => {
+      if (
+        code === CoreError.notSupportStandardLive ||
+        code === CoreError.notSupportCDNLive
+      ) {
+        if (this.showNotSupported) return;
+        this.showNotSupported = 1;
+        ZegoModelShow(
+          {
+            header: "Notice",
+            contentText:
+              "The service is not available, please contact the live streaming service provider to resolve.",
+            okText: "Okay",
+          },
+          document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+        );
+      }
+    });
     const logInRsp = await this.props.core.enterRoom();
     let massage = "";
     if (logInRsp === 0) {
@@ -409,16 +470,20 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       try {
         let localStream: MediaStream | null = null;
         try {
+          const solution = getVideoResolution(
+            this.props.core._config.videoResolutionList![0]
+          );
           localStream = await this.props.core.createStream({
             camera: {
               video: !this.props.core.status.videoRefuse,
               audio: !this.props.core.status.audioRefuse,
               videoQuality: 4,
               facingMode: this.faceModel ? "user" : "environment",
-              width: 640,
-              height: 360,
-              bitrate: 400,
-              frameRate: 15,
+              ...solution,
+              //   width: 640,
+              //   height: 360,
+              //   bitrate: 400,
+              //   frameRate: 15,
             },
           });
         } catch (error) {
@@ -448,6 +513,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         const res = this.props.core.publishLocalStream(localStream);
         if (res !== false) {
           this.localStreamID = res as string;
+          this.props.core.setStreamExtraInfo(
+            res as string,
+            JSON.stringify({
+              isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
+              isMicrophoneOn:
+                this.props.core._config.turnOnMicrophoneWhenJoining,
+              hasVideo: !this.props.core.status.videoRefuse,
+              hasAudio: !this.props.core.status.audioRefuse,
+            })
+          );
         }
         return true;
       } catch (error) {
@@ -482,6 +557,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.state.localStream.getAudioTracks().length > 0
     ) {
       result = await this.props.core.muteMicrophone(this.state.micOpen);
+      this.props.core.setStreamExtraInfo(
+        this.localStreamID as string,
+        JSON.stringify({
+          isCameraOn: this.state.cameraOpen,
+          isMicrophoneOn: !this.state.micOpen,
+          hasVideo: !this.props.core.status.videoRefuse,
+          hasAudio: !this.props.core.status.audioRefuse,
+        })
+      );
     }
 
     this.micStatus = !this.state.micOpen ? 1 : 0;
@@ -522,6 +606,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       result = await this.props.core.mutePublishStreamVideo(
         this.state.localStream,
         this.state.cameraOpen
+      );
+      this.props.core.setStreamExtraInfo(
+        this.localStreamID as string,
+        JSON.stringify({
+          isCameraOn: !this.state.cameraOpen,
+          isMicrophoneOn: this.state.micOpen,
+          hasVideo: !this.props.core.status.videoRefuse,
+          hasAudio: !this.props.core.status.audioRefuse,
+        })
       );
     }
     this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
@@ -566,16 +659,20 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.state.localStream.getVideoTracks()[0].stop();
     this.state.localStream.getAudioTracks()[0].stop();
     try {
+      const solution = getVideoResolution(
+        this.props.core._config.videoResolutionList![0]
+      );
       const stream = await this.props.core.createStream({
         camera: {
           video: !this.props.core.status.videoRefuse,
           audio: !this.props.core.status.audioRefuse,
           videoQuality: 4,
           facingMode: !this.state.cameraFront ? "user" : "environment",
-          width: 640,
-          height: 360,
-          bitrate: 400,
-          frameRate: 15,
+          ...solution,
+          //   width: 640,
+          //   height: 360,
+          //   bitrate: 400,
+          //   frameRate: 15,
         },
       });
       let videoTrack = stream.getVideoTracks()[0];
@@ -711,6 +808,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         userID: this.props.core._expressConfig.userID,
         userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
+        avatar: this.props.core._expressConfig.avatar,
         streamList: [
           {
             media: this.state.localStream!,
@@ -735,6 +833,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         userID: this.props.core._expressConfig.userID,
         userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
+        avatar: this.props.core._expressConfig.avatar,
         streamList: [
           {
             media: this.state.localStream!,
@@ -756,7 +855,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   getShownUser() {
     const shownUser = this.getAllUser().filter((item) => {
       if (!this.props.core._config.showNonVideoUser) {
-        if (item.streamList && item.streamList[0] && item.streamList[0].media) {
+        if (
+          item.streamList &&
+          item.streamList[0] &&
+          (item.streamList[0].media ||
+            item.streamList[0].urlsHttpsFLV ||
+            item.streamList[0].urlsHttpsHLS)
+        ) {
           if (item.streamList[0].cameraStatus === "OPEN") {
             return true;
           } else if (
@@ -794,7 +899,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         !this.props.core._config.showNonVideoUser &&
         item.streamList &&
         item.streamList[0] &&
-        item.streamList[0].media &&
+        (item.streamList[0].media ||
+          item.streamList[0].urlsHttpsFLV ||
+          item.streamList[0].urlsHttpsHLS) &&
         item.streamList[0].cameraStatus !== "OPEN" &&
         !this.props.core._config.showOnlyAudioUser &&
         item.streamList[0].micStatus === "OPEN"
@@ -809,20 +916,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       <>
         {hiddenUser.map((user) => {
           return (
-            <audio
-              autoPlay
-              style={{ width: "1px", height: "1px" }}
+            <ZegoAudio
               muted={user.userID === this.props.core._expressConfig.userID}
               key={user.userID + "_hiddenAudio"}
-              onCanPlay={(ev) => {
-                (ev.target as HTMLAudioElement).play();
-              }}
-              ref={(el) => {
-                el &&
-                  el.srcObject !== user.streamList[0].media &&
-                  (el.srcObject = user.streamList[0].media!);
-              }}
-            ></audio>
+              userInfo={user}
+            ></ZegoAudio>
           );
         })}
       </>
@@ -869,13 +967,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       setTimeout(() => {
         resolve(false);
       }, 5000);
+      let sidebarEnabled = false;
 
+      if (selectLayout === "Sidebar") {
+        if (this.state.cameraOpen || this.state.micOpen) {
+          sidebarEnabled = !this.localUserPin;
+        } else {
+          sidebarEnabled = true;
+        }
+      }
       await this.props.core.setSidebarLayOut(
-        this.state.screenSharingUserList.length > 0
-          ? false
-          : selectLayout === "Sidebar"
-          ? !this.localUserPin
-          : false
+        this.state.screenSharingUserList.length > 0 ? false : sidebarEnabled
       );
     });
   }
@@ -912,6 +1014,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           messageList={this.state.messageList}
           sendMessage={(msg: string) => {
             this.sendMessage(msg);
+          }}
+          getAvatar={(userID: string) => {
+            const user = this.getAllMemberList().find(
+              (u) => u.userID === userID
+            );
+            return user?.avatar || "";
           }}
           closeCallBac={() => {
             this.setState({
@@ -1025,6 +1133,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
 
     if (this.state.screenSharingUserList.length > 0) {
+      const user = this.getAllMemberList().filter(
+        (u) => u.userID === this.state.screenSharingUserList[0].userID
+      );
       return (
         <>
           <div className={ZegoRoomCss.screenTopBar}>
@@ -1037,6 +1148,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             >
               {getNameFirstLetter(
                 this.state.screenSharingUserList[0].userName || ""
+              )}
+              {user?.[0]?.avatar && (
+                <img
+                  src={user[0].avatar}
+                  onError={(e: any) => {
+                    e.target.style.display = "none";
+                  }}
+                  alt=""
+                />
               )}
             </span>
             <p>

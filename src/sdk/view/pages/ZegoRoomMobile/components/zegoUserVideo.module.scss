@@ -30,6 +30,7 @@
     background: #242736;
     // border-radius: vw(14px);
     .nameWrapper {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -48,12 +49,27 @@
         background: #ffffff1a;
         border: 0px solid #242736;
         border-radius: 50%;
+        img {
+          position: absolute;
+          top: 0;
+          width: vw(160px);
+          height: vw(160px);
+          object-fit: cover;
+          border-radius: 50%;
+        }
       }
+
       .gridCircle {
         width: vw(120.28px);
         height: vw(120px);
+
         &:nth-of-type(2) {
           margin-left: vw(-28.28px);
+        }
+        img {
+          width: vw(120.28px);
+          height: vw(120px);
+          object-fit: cover;
         }
       }
       .sidebarCircle {
@@ -61,6 +77,12 @@
         height: vw(84px);
         &:nth-of-type(2) {
           margin-left: vw(-20px);
+        }
+        &img,
+        img {
+          width: vw(84px);
+          height: vw(84px);
+          object-fit: cover;
         }
       }
     }

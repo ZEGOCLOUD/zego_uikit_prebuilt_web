@@ -54,6 +54,7 @@ export declare class ZegoSettings extends React.Component<ZegoSettingsProps> {
     captureMicVolume(): void;
     onTestMusicEnded(): void;
     handleShowNonVideo(): void;
+    private sortResolution;
     render(): React.ReactNode;
 }
 export declare const ZegoSettingsAlert: (config: ZegoSettingsProps) => void;

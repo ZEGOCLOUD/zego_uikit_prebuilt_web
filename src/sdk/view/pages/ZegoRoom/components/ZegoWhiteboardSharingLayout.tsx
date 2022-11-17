@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { ZegoWhiteboardSharingLayoutProps } from "../../../../model";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import zegoWhiteboardSharingLayout from "./zegoWhiteboardSharingLayout.module.scss";
-import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+import ShowPCManageContext, { ShowManageType } from "../../context/showManage";
 import { OthersVideo } from "./zegoOthersVideo";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import { ZegoWhiteboardTools } from "./zegoWhiteboard/ZegoWhiteboardTools";
@@ -18,7 +18,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
   } = {
     currentZoom: 100,
   };
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
+  static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
   componentDidMount() {
     const currentZoom = this.props.zegoSuperBoardView
@@ -224,10 +224,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                   return (
                     <div key={"screen_container_" + user.userID}>
                       <OthersVideo
-                        users={[
-                          arr[index].userName!,
-                          arr[index + 1]?.userName!,
-                        ]}
+                        users={[arr[index]!, arr[index + 1]!]}
                         others={arr.length - this.props.videoShowNumber + 1}
                       ></OthersVideo>
                       <audio

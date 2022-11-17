@@ -4,7 +4,7 @@ import { ZegoSidebarLayoutProps } from "../../../../model";
 import { OthersVideo } from "./zegoOthersVideo";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
-import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+import ZegoAudio from "../../../components/zegoMedia/audio";
 
 export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProps> {
   get pinUser() {
@@ -13,8 +13,6 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
       index > -1 ? index : this.props.userList.length - 1
     ];
   }
-  static contextType?: React.Context<ShowPCManageType> = ShowPCManageContext;
-  context!: React.ContextType<typeof ShowPCManageContext>;
   render(): React.ReactNode {
     let wrapClassName = clsx({
       [ZegoSidebarCss.rightWrapper]: true,
@@ -45,44 +43,23 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
                   return (
                     <div key={"container_" + user.userID}>
                       <OthersVideo
-                        users={[
-                          arr[index].userName!,
-                          arr[index + 1]?.userName!,
-                        ]}
+                        users={[arr[index]!, arr[index + 1]!]}
                         others={arr.length - this.props.videoShowNumber + 1}
                       ></OthersVideo>
-                      <audio
-                        autoPlay
+                      <ZegoAudio
                         muted={user.userID === this.props.selfInfo.userID}
-                        ref={(el) => {
-                          el &&
-                            el.srcObject !== user?.streamList?.[0]?.media &&
-                            (el.srcObject = user?.streamList?.[0]?.media!);
-                          el &&
-                            (el as any)?.setSinkId?.(
-                              this.context.speakerId || ""
-                            );
-                        }}
-                      ></audio>
+                        userInfo={user}
+                      ></ZegoAudio>
                     </div>
                   );
                 }
                 if (index > this.props.videoShowNumber - 1) {
                   return (
-                    <audio
-                      key={user.userID}
-                      autoPlay
+                    <ZegoAudio
                       muted={user.userID === this.props.selfInfo.userID}
-                      ref={(el) => {
-                        el &&
-                          el.srcObject !== user?.streamList?.[0]?.media &&
-                          (el.srcObject = user?.streamList?.[0]?.media!);
-                        el &&
-                          (el as any)?.setSinkId?.(
-                            this.context.speakerId || ""
-                          );
-                      }}
-                    ></audio>
+                      key={user.userID}
+                      userInfo={user}
+                    ></ZegoAudio>
                   );
                 }
               }

@@ -1,5 +1,5 @@
 import {
-  ZegoUser,
+  // ZegoUser,
   ZegoBroadcastMessageInfo,
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoSuperBoardManager, ZegoSuperBoardView } from "zego-superboard-web";
@@ -15,6 +15,11 @@ export interface ZegoCloudRemoteMedia {
   cameraStatus: "OPEN" | "MUTE";
   state: "NO_PLAY" | "PLAY_REQUESTING" | "PLAYING";
   streamID: string;
+  // 新增 CDN 拉流地址
+  urlsHttpsFLV?: string;
+  urlsHttpsHLS?: string;
+  hasAudio?: boolean;
+  hasVideo?: boolean;
 }
 
 export enum LiveRole {
@@ -29,10 +34,16 @@ export enum ScenarioModel {
   VideoConference = "VideoConference",
   LiveStreaming = "LiveStreaming",
 }
-
+export enum VideoResolution {
+  _180P = "180p",
+  _360P = "360p",
+  _480P = "480p",
+  _720P = "720p",
+}
 export interface ScenarioConfig {
   [ScenarioModel.LiveStreaming]: {
     role: LiveRole;
+    liveStreamingMode: LiveStreamingMode;
   };
   [ScenarioModel.OneONoneCall]: {
     role: LiveRole;
@@ -44,7 +55,11 @@ export interface ScenarioConfig {
     role: LiveRole;
   };
 }
-
+export enum LiveStreamingMode {
+  StandardLive = "StandardLive", // CDN
+  PremiumLive = "PremiumLive", // L3
+  RealTimeLive = "RealTimeLive", //RTC
+}
 export interface ZegoCloudRoomConfig {
   container?: HTMLElement | undefined | null; // 挂载容器
   preJoinViewConfig?: {
@@ -89,7 +104,9 @@ export interface ZegoCloudRoomConfig {
 
   showLayoutButton?: boolean; // 是否显示布局切换按钮
   showPinButton?: boolean; // 是否显pin按钮
-
+  onUserAvatarSetter?: (user: ZegoUser[]) => void; //是否可以设置用户头像回调
+  videoResolutionList?: VideoResolution[]; // 视频分辨率列表（默认使用第一个）
+  videoResolutionDefault?: VideoResolution; // 默认视频分辨率
   // @deprecate
   facingMode?: "user" | "environment"; // 前置摄像头模式
   // @deprecate
@@ -207,4 +224,13 @@ export enum ZegoStreamType {
   main,
   media,
   screensharing,
+}
+export interface ZegoUser {
+  userID: string;
+  userName?: string;
+  setUserAvatar?: (avatar: string) => void;
+}
+export enum CoreError {
+  notSupportCDNLive = 10001,
+  notSupportStandardLive = 10002,
 }

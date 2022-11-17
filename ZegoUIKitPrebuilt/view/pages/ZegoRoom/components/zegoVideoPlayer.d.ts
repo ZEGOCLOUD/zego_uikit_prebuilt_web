@@ -1,6 +1,6 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
-import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export declare class VideoPlayer extends React.PureComponent<{
     userInfo: ZegoCloudUser;
     muted: boolean;
@@ -14,12 +14,10 @@ export declare class VideoPlayer extends React.PureComponent<{
     hiddenName?: boolean;
     hiddenMore?: boolean;
 }> {
-    static contextType?: React.Context<ShowPCManageType>;
-    context: React.ContextType<typeof ShowPCManageContext>;
-    video: HTMLVideoElement | null;
+    static contextType?: React.Context<ShowManageType>;
+    context: React.ContextType<typeof ShowManageContext>;
     state: {
         hovered: boolean;
     };
-    componentWillUnmount(): void;
     render(): React.ReactNode;
 }

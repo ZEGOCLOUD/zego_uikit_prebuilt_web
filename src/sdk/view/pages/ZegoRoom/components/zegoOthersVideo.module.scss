@@ -16,6 +16,7 @@
     margin-bottom: 14px;
   }
   .nameCircle {
+    position: relative;
     box-sizing: border-box;
     width: 94px;
     height: 94px;
@@ -28,6 +29,15 @@
     border-radius: 50%;
     &:nth-of-type(2) {
       margin-left: -30px;
+    }
+    img {
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      width: 94px;
+      height: 94px;
+      object-fit: cover;
+      border-radius: 50%;
     }
   }
 
@@ -50,6 +60,10 @@
       line-height: 70px;
       &:nth-of-type(2) {
         margin-left: -19px;
+      }
+      img {
+        width: 70px;
+        height: 70px;
       }
     }
   }

@@ -2,7 +2,7 @@ import React from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 import { SoundLevelMap } from "../../../../model";
-import ShowPCManageContext, { ShowPCManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export declare class ZegoUserList extends React.PureComponent<{
     core: ZegoCloudRTCCore;
     userList: ZegoCloudUserList;
@@ -10,8 +10,8 @@ export declare class ZegoUserList extends React.PureComponent<{
     handleSetPin: Function;
     soundLevel?: SoundLevelMap;
 }> {
-    static contextType?: React.Context<ShowPCManageType>;
-    context: React.ContextType<typeof ShowPCManageContext>;
+    static contextType?: React.Context<ShowManageType>;
+    context: React.ContextType<typeof ShowManageContext>;
     componentDidMount(): void;
     componentWillUnmount(): void;
     onBodyClick(e: Event): void;

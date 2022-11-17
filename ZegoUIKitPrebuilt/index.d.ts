@@ -1,5 +1,5 @@
 import { Root } from "react-dom/client";
-import { LiveRole, ScenarioModel, ZegoCloudRoomConfig } from "./model/index";
+import { LiveRole, LiveStreamingMode, ScenarioModel, VideoResolution, ZegoCloudRoomConfig } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
 export declare class ZegoUIKitPrebuilt {
     static core: ZegoCloudRTCCore | undefined;
@@ -11,6 +11,11 @@ export declare class ZegoUIKitPrebuilt {
     static GroupCall: ScenarioModel;
     static LiveStreaming: ScenarioModel;
     static VideoConference: ScenarioModel;
+    static VideoResolution_180P: VideoResolution;
+    static VideoResolution_360P: VideoResolution;
+    static VideoResolution_480P: VideoResolution;
+    static VideoResolution_720P: VideoResolution;
+    static LiveStreamingMode: typeof LiveStreamingMode;
     private hasJoinedRoom;
     root: Root | undefined;
     static generateKitTokenForTest(appID: number, serverSecret: string, roomID: string, userID: string, userName?: string, ExpirationSeconds?: number): string;

@@ -357,6 +357,7 @@
       line-height: vw(40px);
     }
     span {
+      position: relative;
       width: vw(42px);
       height: vw(42px);
       margin-right: vw(16px);
@@ -367,6 +368,15 @@
       text-align: center;
       background: rgba($color: #fff, $alpha: 0.1);
       border-radius: 50%;
+      img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: vw(42px);
+        height: vw(42px);
+        object-fit: cover;
+        border-radius: 50%;
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
-import ShowManageContext, { ShowManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export declare class ZegoUserList extends React.PureComponent<{
     userList: ZegoCloudUserList;
     core: ZegoCloudRTCCore;

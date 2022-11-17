@@ -78,3 +78,9 @@ export function generateStreamID(
   type = type || "main";
   return `${roomID}_${userID}_${type}`;
 }
+export function changeCDNUrlOrigin(url: string) {
+  if (/^http:\/\//.test(url)) {
+    return url.replace(/http:/, "https:");
+  }
+  return url;
+}

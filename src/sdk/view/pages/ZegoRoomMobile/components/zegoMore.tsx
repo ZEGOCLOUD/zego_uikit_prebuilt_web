@@ -1,7 +1,7 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import ZegoMoreCss from "./zegoMore.module.scss";
-import ShowManageContext, { ShowManageType } from "../context/showManage";
+import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export class ZegoMore extends React.PureComponent<{ user: ZegoCloudUser }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
@@ -12,7 +12,7 @@ export class ZegoMore extends React.PureComponent<{ user: ZegoCloudUser }> {
         style={{ display: showPinButton ? "block" : "none" }}
         className={`${ZegoMoreCss.more} zegoMore_more`}
         onClick={() => {
-          show(this.props.user);
+          show && show(this.props.user);
         }}
       ></div>
     );

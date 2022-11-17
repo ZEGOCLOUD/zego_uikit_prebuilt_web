@@ -1,6 +1,11 @@
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { LiveRole, ScenarioModel, ZegoCloudRemoteMedia } from "../../model";
+import {
+  LiveRole,
+  LiveStreamingMode,
+  ScenarioModel,
+  ZegoCloudRemoteMedia,
+} from "../../model";
 import { isPc } from "../../util";
 export type ZegoCloudUserList = ZegoCloudUser[];
 
@@ -8,6 +13,7 @@ export type ZegoCloudUser = ZegoUser & {
   pin: boolean;
   overScreenMuteVideo?: boolean;
   streamList: ZegoCloudRemoteMedia[];
+  avatar?: string;
 };
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}
@@ -17,6 +23,19 @@ export class ZegoCloudUserListManager {
   sidebarEnabled = false;
   remoteUserList: ZegoCloudUserList = [];
   remoteScreenStreamList: ZegoCloudUserList = [];
+  scenario: ScenarioModel = ScenarioModel.OneONoneCall;
+  role: LiveRole = LiveRole.Host;
+  liveStreamingMode: LiveStreamingMode = LiveStreamingMode.RealTimeLive;
+  userOrderList: string[] = [];
+  waitingPullStreams: { streamID: string; userID: string }[] = [];
+  isLive: 1 | 0 = 0;
+  get isL3Live(): boolean {
+    return (
+      this.scenario === ScenarioModel.LiveStreaming &&
+      this.role === LiveRole.Audience &&
+      this.liveStreamingMode === LiveStreamingMode.PremiumLive
+    );
+  }
   setPin(userID?: string, pined?: boolean): void {
     this.remoteUserList = this.remoteUserList.map((u) => {
       if (u.userID === userID) {
@@ -89,7 +108,9 @@ export class ZegoCloudUserListManager {
           count > this.screenNumber ||
           (count === this.screenNumber &&
             noPinUserList[index + 1] &&
-            noPinUserList[index + 1].streamList.length > 0)
+            noPinUserList[index + 1].streamList.length > 0 &&
+            (noPinUserList[index + 1].streamList[0].cameraStatus === "OPEN" ||
+              noPinUserList[index + 1].streamList[0].micStatus === "OPEN"))
         ) {
           await this.muteVideo(noPinUserList[index]);
         } else {
@@ -137,7 +158,6 @@ export class ZegoCloudUserListManager {
     }
   }
 
-  userOrderList: string[] = [];
   async userUpdate(
     roomID: string,
     updateType: "DELETE" | "ADD",
@@ -206,7 +226,7 @@ export class ZegoCloudUserListManager {
             (u) => u.userID === stream.fromUser.userID
           );
           const s_index = this.remoteUserList[u_index].streamList.findIndex(
-            (s) => s.media === stream.media
+            (s) => s.streamID === stream.streamID
           );
 
           if (updateType === "ADD") {
@@ -264,7 +284,7 @@ export class ZegoCloudUserListManager {
           );
           const s_index = this.remoteScreenStreamList[
             u_index
-          ].streamList.findIndex((s) => s.media === stream.media);
+          ].streamList.findIndex((s) => s.streamID === stream.streamID);
 
           if (updateType === "ADD") {
             this.remoteScreenStreamList[u_index].streamList.push(stream);
@@ -286,9 +306,6 @@ export class ZegoCloudUserListManager {
       });
   }
 
-  waitingPullStreams: { streamID: string; userID: string }[] = [];
-  isLive: 1 | 0 = 0;
-
   async setLiveStates(state: 1 | 0) {
     if (
       this.scenario === ScenarioModel.LiveStreaming &&
@@ -299,7 +316,10 @@ export class ZegoCloudUserListManager {
         for (let index = 0; index < this.waitingPullStreams.length; index++) {
           try {
             const stream = await this.zg.startPlayingStream(
-              this.waitingPullStreams[index].streamID
+              this.waitingPullStreams[index].streamID,
+              {
+                resourceMode: this.isL3Live ? 2 : 0,
+              }
             );
 
             if (
@@ -331,10 +351,10 @@ export class ZegoCloudUserListManager {
       } else {
         this.remoteUserList = this.remoteUserList.map((remoteUser) => {
           remoteUser.streamList = remoteUser.streamList.map((mediaInfo) => {
-            this.zg.stopPlayingStream(mediaInfo.streamID);
+            mediaInfo.media && this.zg.stopPlayingStream(mediaInfo.streamID);
             if (
               !this.waitingPullStreams.some(
-                (ws) => ws.streamID == mediaInfo.streamID
+                (ws) => ws.streamID === mediaInfo.streamID
               )
             ) {
               this.waitingPullStreams.push({
@@ -352,10 +372,10 @@ export class ZegoCloudUserListManager {
         this.remoteScreenStreamList = this.remoteScreenStreamList.map(
           (remoteUser) => {
             remoteUser.streamList = remoteUser.streamList.map((mediaInfo) => {
-              this.zg.stopPlayingStream(mediaInfo.streamID);
+              mediaInfo.media && this.zg.stopPlayingStream(mediaInfo.streamID);
               if (
                 !this.waitingPullStreams.some(
-                  (ws) => ws.streamID == mediaInfo.streamID
+                  (ws) => ws.streamID === mediaInfo.streamID
                 )
               ) {
                 this.waitingPullStreams.push({
@@ -373,9 +393,6 @@ export class ZegoCloudUserListManager {
     }
   }
 
-  scenario: ScenarioModel = ScenarioModel.OneONoneCall;
-  role: LiveRole = LiveRole.Host;
-
   async startPullStream(
     userID: string,
     streamID: string
@@ -385,14 +402,18 @@ export class ZegoCloudUserListManager {
       this.role === LiveRole.Audience
     ) {
       if (this.isLive === 1) {
-        const stream = await this.zg.startPlayingStream(streamID);
+        const stream = await this.zg.startPlayingStream(streamID, {
+          resourceMode: this.isL3Live ? 2 : 0,
+        });
         return stream;
       } else if (this.isLive === 0) {
         this.waitingPullStreams.push({ streamID, userID });
         return undefined;
       }
     } else {
-      const stream = await this.zg.startPlayingStream(streamID);
+      const stream = await this.zg.startPlayingStream(streamID, {
+        resourceMode: this.isL3Live ? 2 : 0,
+      });
       return stream;
     }
 
@@ -426,5 +447,52 @@ export class ZegoCloudUserListManager {
     this.sidebarEnabled = false;
     this.remoteUserList = [];
     this.remoteScreenStreamList = [];
+  }
+  updateUserInfo(userID: string, key: keyof ZegoCloudUser, value: any) {
+    this.remoteUserList.some((user: ZegoCloudUser) => {
+      if (user.userID === userID) {
+        user[key] = value as never;
+        return true;
+      }
+      return false;
+    });
+    this.remoteScreenStreamList.some((user: ZegoCloudUser) => {
+      if (user.userID === userID) {
+        user[key] = value as never;
+        return true;
+      }
+      return false;
+    });
+  }
+  updateStreamInfo(
+    userID: string,
+    streamID: string,
+    key: keyof ZegoCloudRemoteMedia,
+    value: any
+  ) {
+    this.remoteUserList.some((user: ZegoCloudUser) => {
+      if (user.userID === userID) {
+        user.streamList.some((stream) => {
+          if (stream.streamID === streamID) {
+            stream[key] = value as never;
+            return true;
+          }
+          return false;
+        });
+      }
+      return false;
+    });
+    this.remoteScreenStreamList.some((user: ZegoCloudUser) => {
+      if (user.userID === userID) {
+        user.streamList.some((stream) => {
+          if (stream.streamID === streamID) {
+            stream[key] = value as never;
+            return true;
+          }
+          return false;
+        });
+      }
+      return false;
+    });
   }
 }

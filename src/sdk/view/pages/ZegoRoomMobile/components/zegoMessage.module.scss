@@ -12,7 +12,9 @@
   height: 70vh;
   background: #242736;
   border-radius: vw(46px) vw(46px) 0px 0px;
-
+  &.msgListExpend {
+    height: 40vh;
+  }
   .msgListHeader {
     display: flex;
     align-items: center;
@@ -49,6 +51,7 @@
       margin-top: vw(46px);
 
       i {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -63,6 +66,15 @@
         line-height: vw(33px);
         background: rgba(255, 255, 255, 0.1);
         border-radius: vw(28px);
+        img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: vw(56px);
+          height: vw(56px);
+          object-fit: cover;
+          border-radius: 50%;
+        }
       }
 
       .msgContentRight {
@@ -166,7 +178,6 @@
     padding: vw(16px) vw(30px);
     background: #242736;
     box-shadow: 0px vw(-1px) 0px 0px #3d4054;
-
     input {
       flex: 1;
       box-sizing: border-box;

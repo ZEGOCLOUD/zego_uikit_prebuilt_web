@@ -1,5 +1,6 @@
 import React from "react";
 import { ZegoScreenSharingLayoutProps } from "../../../../model";
+import ZegoAudio from "../../../components/zegoMedia/audio";
 import ZegoSidebarCss from "./zegoSidebar.module.scss";
 import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
 
@@ -14,7 +15,11 @@ export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps
   }
   render(): React.ReactNode {
     return (
-      <div className={ZegoSidebarCss.sidebarWrapper}>
+      <div
+        className={`${ZegoSidebarCss.sidebarWrapper} ${
+          this.props.userList.length === 0 ? ZegoSidebarCss.fullScreen : ""
+        }`}
+      >
         <div className={ZegoSidebarCss.upWrapper}>
           {this.props.userList.map((value, index, arr) => {
             if (arr.length > this.props.videoShowNumber - 1) {
@@ -32,18 +37,13 @@ export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps
               if (index > this.props.videoShowNumber - 2) {
                 return (
                   value.streamList &&
-                  value.streamList[0] &&
-                  value.streamList[0].media && (
-                    <audio
-                      autoPlay={true}
-                      key={index}
-                      className={ZegoSidebarCss.videoCommon}
-                      ref={(el) => {
-                        el &&
-                          el.srcObject !== value.streamList[0].media &&
-                          (el.srcObject = value.streamList[0].media!);
-                      }}
-                    ></audio>
+                  value.streamList[0] && (
+                    <ZegoAudio
+                      muted={false}
+                      classList={ZegoSidebarCss.videoCommon}
+                      userInfo={value}
+                      key={index + "_audio_" + value.userID}
+                    ></ZegoAudio>
                   )
                 );
               }

@@ -48,6 +48,7 @@
         display: flex;
         align-items: center;
         i {
+          position: relative;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -60,6 +61,14 @@
           font-style: normal;
           background: rgba(255, 255, 255, 0.1);
           border-radius: vw(36px);
+          img {
+            position: absolute;
+            top: 0;
+            width: vw(72px);
+            height: vw(72px);
+            object-fit: cover;
+            border-radius: 50%;
+          }
         }
         a {
           max-width: vw(300px);

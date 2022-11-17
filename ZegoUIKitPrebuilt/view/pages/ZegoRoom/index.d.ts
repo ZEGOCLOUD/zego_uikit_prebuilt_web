@@ -45,6 +45,9 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
     screenSharingStreamID: string;
     isCreatingScreenSharing: boolean;
     fullScreen: boolean;
+    showNotSupported: number;
+    notSupportMultipleVideoNotice: number;
+    get isCDNLive(): boolean;
     userUpdateCallBack: () => void;
     componentDidMount(): void;
     componentDidUpdate(preProps: ZegoBrowserCheckProp, preState: {
@@ -82,22 +85,7 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
     onWindowResize: () => void;
     showLayoutSettings(show: boolean): void;
     changeLayout(type: string): Promise<unknown>;
-    getAllUser(): (import("../../../modules/tools/UserListManager").ZegoCloudUser | {
-        userID: string;
-        userName: string;
-        pin: boolean;
-        streamList: {
-            media: MediaStream;
-            fromUser: {
-                userID: string;
-                userName: string;
-            };
-            micStatus: string;
-            cameraStatus: string;
-            state: string;
-            streamID: string;
-        }[];
-    })[];
+    getAllUser(): ZegoCloudUserList;
     getShownUser(forceShowNonVideoUser?: boolean): ZegoCloudUserList;
     get getScreenSharingUser(): ZegoCloudUserList;
     getHiddenUser(): JSX.Element;
