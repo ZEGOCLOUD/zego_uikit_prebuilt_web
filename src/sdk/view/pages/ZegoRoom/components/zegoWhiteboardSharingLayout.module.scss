@@ -8,8 +8,9 @@
     align-items: center;
     justify-content: space-between;
     height: 54px;
-    padding: 0 23px 0 30px;
+    padding: 0 25px 0 30px;
     background: #ffffff;
+    border-radius: 14px;
     .toolLeft {
       display: flex;
       align-items: center;
@@ -30,6 +31,7 @@
         border-radius: 6px;
       }
       .undo {
+        margin-right: 16px;
         background-image: url(../../../../sdkAssets/icon_undo_gray@2x.png);
         &:hover {
           background: #f5f7fa;
@@ -54,13 +56,18 @@
           cursor: pointer;
         }
       }
+      .zoom {
+        width: 122px;
+      }
+      .page {
+        width: 128px;
+      }
       .zoom,
       .page {
         display: flex;
         align-items: center;
         justify-content: space-between;
         box-sizing: border-box;
-        width: 122px;
         height: 34px;
         padding: 5px 6px;
         background: #ffffff;

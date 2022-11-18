@@ -43,7 +43,7 @@ export class ZegoWhiteboardToolsPenTooTips extends React.PureComponent<{
         <div className={ZegoWhiteboardToolsPenToolTipsCss.penTools_bold}>
           <h3>笔触粗细</h3>
           <ul>
-            {[4, 6, 8, 12].map((fontSize) => {
+            {[4, 6, 8, 10].map((fontSize) => {
               return (
                 <li
                   key={fontSize}

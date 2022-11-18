@@ -5,8 +5,9 @@
   justify-content: center;
   width: 48px;
   height: auto;
+  margin-top: -41px;
   margin-right: 10px;
-  padding: 8px 0px;
+  padding: 4px 0px;
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.08);
@@ -100,6 +101,8 @@
     }
   }
   .tool_hide {
+    width: 18px;
+    height: 18px;
     margin-top: 4px;
     background-image: url(../../../../../sdkAssets/icon_tools_up_gray@2x.png);
     &:hover {
@@ -107,6 +110,8 @@
     }
   }
   .tool_show {
+    width: 18px;
+    height: 18px;
     margin-top: 4px;
     background-image: url(../../../../../sdkAssets/icon_tools_down_gray@2x.png);
     &:hover {

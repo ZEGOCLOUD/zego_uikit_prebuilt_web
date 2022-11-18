@@ -425,6 +425,7 @@ export class ZegoCloudRTCCore {
       perPageHeight: 758.5, // 白板每页高度
       pageCount: 5, // 白板页数
     });
+    // this.zegoSuperBoard.setBrushColor("#F64326"); not working to set default color
     return this.zegoSuperBoard.getSuperBoardView();
   }
 

@@ -653,6 +653,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   async createScreenSharing() {
+    if (this.state.isZegoWhiteboardSharing) return;
     if (this.state.screenSharingUserList.length > 0) {
       ZegoToast({
         content: `${this.state.screenSharingUserList[0].userName} is presenting now. You cannot share your screen.`,
@@ -733,6 +734,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   async toggleWhiteboardSharing() {
+    if (this.getScreenSharingUser.length > 0) return;
     if (this.state.isZegoWhiteboardSharing) {
       this.closeWhiteboardSharing();
     } else {
@@ -1625,6 +1627,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                 <div
                   className={`${ZegoRoomCss.screenButton} ${
                     this.state.isScreenSharingBySelf && ZegoRoomCss.sharing
+                  } ${
+                    this.state.isZegoWhiteboardSharing && ZegoRoomCss.forbidden
                   }`}
                   onClick={() => {
                     this.toggleScreenSharing();
@@ -1635,6 +1639,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                 <div
                   className={`${ZegoRoomCss.whiteboardButton} ${
                     this.state.isZegoWhiteboardSharing && ZegoRoomCss.sharing
+                  }  ${
+                    this.getScreenSharingUser.length > 0 &&
+                    ZegoRoomCss.forbidden
                   }`}
                   onClick={() => {
                     this.toggleWhiteboardSharing();

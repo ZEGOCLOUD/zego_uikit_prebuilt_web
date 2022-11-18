@@ -1,11 +1,12 @@
 .penTools {
   position: absolute;
-  top: -50%;
+  top: -172%;
   left: 43px;
   z-index: 110;
   display: flex;
   flex-direction: column;
-  width: 180px;
+  box-sizing: border-box;
+  width: 200px;
   padding: 16px;
   background-color: #ffffff;
   border: 1px solid #f2f2f2;
@@ -38,14 +39,14 @@
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      margin-top: 8px;
+      margin-top: 5px;
+
       li {
         display: flex;
         align-items: center;
         justify-content: center;
         width: 16px;
         height: 16px;
-        margin-right: 22px;
         i {
           display: inline-block;
           background: #dedede;
@@ -55,16 +56,28 @@
     }
   }
   .penTools_bold {
-    li {
-      i {
-        &.selected {
-          background: #0055ff;
+    ul {
+      margin-left: -4px;
+      li {
+        i {
+          &.selected {
+            background: #0055ff;
+          }
         }
+      }
+      li:nth-child(1) {
+        margin-right: 9px;
+      }
+      li:nth-child(2) {
+        margin-right: 11px;
+      }
+      li:nth-child(3) {
+        margin-right: 13px;
       }
     }
   }
   .penTools_color {
-    margin-top: 16px;
+    margin-top: 13px;
     ul {
       flex-wrap: wrap;
       li {
@@ -73,13 +86,17 @@
         height: 16px;
         margin-right: 14px;
         margin-bottom: 8px;
-        border: 2px solid #dedede;
         border-radius: 50%;
         &.selected {
           background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@2x.png);
           background-position: center;
           background-size: contain;
         }
+      }
+      li:first-child {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #dedede;
       }
       li:nth-child(6n + 6) {
         margin-right: 0px;
