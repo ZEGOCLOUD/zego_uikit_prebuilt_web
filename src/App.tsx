@@ -105,20 +105,20 @@ export default class App extends React.Component {
 
     this.myMeeting = async (element: HTMLDivElement) => {
       console.log(" userName || getRandomName()", userName || getRandomName());
-      // let { token } = await generateToken(
-      //   randomID(5),
-      //   roomID,
-      //   userName || getRandomName()
-      // );
-
-      let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        1484647939,
-        "22076fd0a8388f31dc1f6e344171b2b1",
-        roomID,
+      let { token } = await generateToken(
         randomID(5),
-        userName || getRandomName(),
-        7200
+        roomID,
+        userName || getRandomName()
       );
+
+      // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+      //   1484647939,
+      //   "22076fd0a8388f31dc1f6e344171....",
+      //   roomID,
+      //   randomID(5),
+      //   userName || getRandomName(),
+      //   7200
+      // );
 
       const zp = ZegoUIKitPrebuilt.create(token);
       const param: ZegoCloudRoomConfig = {
