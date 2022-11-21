@@ -15,7 +15,7 @@ export function generateToken(
 ): Promise<{ token: string }> {
   if (process.env.REACT_APP_ENV === "test") {
     return fetch(
-      `https://choui-prebuilt.herokuapp.com/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=86400`,
+      `https://nextjs-token-7berndqqr-choui666.vercel.app/api/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=86400`,
       {
         method: "GET",
       }
