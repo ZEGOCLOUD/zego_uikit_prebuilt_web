@@ -13,6 +13,7 @@ export function generateToken(
   roomID: string,
   userName: string
 ): Promise<{ token: string }> {
+  console.log("generateToken:", process.env);
   if (process.env.REACT_APP_ENV === "test") {
     return fetch(
       `https://nextjs-token-7berndqqr-choui666.vercel.app/api/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=86400`,
