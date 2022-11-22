@@ -532,14 +532,14 @@ export class ZegoCloudRTCCore {
   set roomExtraInfo(value: { [index: string]: any }) {
     if (this._currentPage === "Room") {
       this._roomExtraInfo = value;
-      this.zum.setLiveStates(this._roomExtraInfo.live_status.v);
+      this.zum.setLiveStates(this._roomExtraInfo.live_status);
       // console.error(
       //   "【ZEGOCLOUD】roomExtraInfo choui",
       //   value,
       //   this.onRoomLiveStateUpdateCallBack
       // );
       this.onRoomLiveStateUpdateCallBack &&
-        this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status.v);
+        this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status);
     } else if (
       this._currentPage === "BrowserCheckPage" ||
       this._currentPage === "RejoinRoom"
@@ -556,18 +556,7 @@ export class ZegoCloudRTCCore {
     const setRoomExtraInfo = {
       ...this._roomExtraInfo,
       ...{
-        live_status: {
-          v: status === "live" ? 1 : 0,
-          u: ZegoCloudRTCCore._instance._expressConfig.userID,
-          r:
-            ZegoCloudRTCCore._instance._config.scenario?.config?.role ===
-            LiveRole.Host
-              ? 1
-              : ZegoCloudRTCCore._instance._config.scenario?.config?.role ===
-                LiveRole.Audience
-              ? 2
-              : 3,
-        },
+        live_status: status === "live" ? "1" : "0",
       },
     };
     const res = await ZegoCloudRTCCore._zg.setRoomExtraInfo(
@@ -1133,8 +1122,8 @@ export class ZegoCloudRTCCore {
     this.onSoundLevelUpdateCallBack = func;
   }
 
-  private onRoomLiveStateUpdateCallBack!: (live: 1 | 0) => void;
-  onRoomLiveStateUpdate(func: (live: 1 | 0) => void) {
+  private onRoomLiveStateUpdateCallBack!: (live: "1" | "0") => void;
+  onRoomLiveStateUpdate(func: (live: "1" | "0") => void) {
     this.onRoomLiveStateUpdateCallBack = func;
   }
   sendRoomMessage(message: string) {
