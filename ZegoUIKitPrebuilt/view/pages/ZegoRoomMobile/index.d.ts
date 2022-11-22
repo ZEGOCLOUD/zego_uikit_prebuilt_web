@@ -24,7 +24,7 @@ export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheck
         isNetworkPoor: boolean;
         soundLevel: SoundLevelMap;
         liveCountdown: number;
-        liveStatus: 1 | 0;
+        liveStatus: "1" | "0";
         screenSharingUserList: ZegoCloudUserList;
     };
     micStatus: -1 | 0 | 1;

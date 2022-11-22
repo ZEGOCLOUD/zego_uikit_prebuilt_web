@@ -25,7 +25,7 @@ export declare class ZegoCloudUserListManager {
         streamID: string;
         userID: string;
     }[];
-    isLive: 1 | 0;
+    isLive: "1" | "0";
     get isL3Live(): boolean;
     setPin(userID?: string, pined?: boolean): void;
     setShowNonVideo(enable: boolean): Promise<boolean>;
@@ -37,7 +37,7 @@ export declare class ZegoCloudUserListManager {
     userUpdate(roomID: string, updateType: "DELETE" | "ADD", users: ZegoUser[]): Promise<boolean>;
     mainStreamUpdate(updateType: "DELETE" | "ADD" | "UPDATE", streamList: ZegoCloudRemoteMedia[]): Promise<boolean>;
     screenStreamUpdate(updateType: "DELETE" | "ADD" | "UPDATE", streamList: ZegoCloudRemoteMedia[]): void;
-    setLiveStates(state: 1 | 0): Promise<void>;
+    setLiveStates(state: "1" | "0"): Promise<void>;
     startPullStream(userID: string, streamID: string): Promise<MediaStream | undefined>;
     stopPullStream(userID: string, streamID: string): void;
     reset(): void;

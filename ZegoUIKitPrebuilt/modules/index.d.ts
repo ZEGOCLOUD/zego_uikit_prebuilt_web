@@ -90,7 +90,7 @@ export declare class ZegoCloudRTCCore {
     private onSoundLevelUpdateCallBack;
     onSoundLevelUpdate(func: (soundLevelList: ZegoSoundLevelInfo[]) => void): void;
     private onRoomLiveStateUpdateCallBack;
-    onRoomLiveStateUpdate(func: (live: 1 | 0) => void): void;
+    onRoomLiveStateUpdate(func: (live: "1" | "0") => void): void;
     sendRoomMessage(message: string): Promise<import("zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d").ZegoServerResponse>;
     private onRoomMessageUpdateCallBack;
     onRoomMessageUpdate(func: (roomID: string, info: ZegoBroadcastMessageInfo[]) => void): void;

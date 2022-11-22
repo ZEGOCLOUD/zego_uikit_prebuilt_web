@@ -27,7 +27,7 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
         isLayoutChanging: boolean;
         soundLevel: SoundLevelMap;
         liveCountdown: number;
-        liveStatus: 1 | 0;
+        liveStatus: "1" | "0";
         isScreenSharingBySelf: boolean;
         screenSharingStream: undefined | MediaStream;
         screenSharingUserList: ZegoCloudUserList;
@@ -61,7 +61,7 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
         showMore: boolean;
         layout: string;
         videoShowNumber: number;
-        liveStatus: 1 | 0;
+        liveStatus: "1" | "0";
         isScreenSharingBySelf: boolean;
         screenSharingUserList: ZegoCloudUserList;
     }): void;

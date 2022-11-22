@@ -75,7 +75,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     isNetworkPoor: boolean;
     soundLevel: SoundLevelMap;
     liveCountdown: number;
-    liveStatus: 1 | 0;
+    liveStatus: "1" | "0";
     screenSharingUserList: ZegoCloudUserList;
   } = {
     micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
@@ -95,7 +95,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     isNetworkPoor: false,
     soundLevel: {},
     liveCountdown: -1,
-    liveStatus: 0,
+    liveStatus: "0",
     screenSharingUserList: [],
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
@@ -380,14 +380,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         });
       }
     );
-    this.props.core.onRoomLiveStateUpdate((res: 1 | 0) => {
+    this.props.core.onRoomLiveStateUpdate((res: "1" | "0") => {
       this.setState(
         (preState: { liveCountdown: number }) => {
           return {
             liveStatus: res,
             liveCountdown:
               preState.liveCountdown === -1 || preState.liveCountdown == 0
-                ? res == 1
+                ? res == "1"
                   ? 0
                   : -1
                 : preState.liveCountdown,
@@ -1105,7 +1105,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
-      this.state.liveStatus != 1
+      this.state.liveStatus != "1"
     ) {
       return (
         <div className={`${ZegoRoomCss.liveNotStart} zegoUserVideo_click`}>
@@ -1582,7 +1582,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
           {this.props.core._config.scenario?.mode ===
             ScenarioModel.LiveStreaming &&
-            (this.state.liveCountdown === 0 || this.state.liveStatus == 1) && (
+            (this.state.liveCountdown === 0 ||
+              this.state.liveStatus == "1") && (
               <button
                 className={`${ZegoRoomCss.LiveStateButton}  ${
                   this.state.showFooter

@@ -28,7 +28,7 @@ export class ZegoCloudUserListManager {
   liveStreamingMode: LiveStreamingMode = LiveStreamingMode.RealTimeLive;
   userOrderList: string[] = [];
   waitingPullStreams: { streamID: string; userID: string }[] = [];
-  isLive: 1 | 0 = 0;
+  isLive: "1" | "0" = "0";
   get isL3Live(): boolean {
     return (
       this.scenario === ScenarioModel.LiveStreaming &&
@@ -306,13 +306,13 @@ export class ZegoCloudUserListManager {
       });
   }
 
-  async setLiveStates(state: 1 | 0) {
+  async setLiveStates(state: "1" | "0") {
     if (
       this.scenario === ScenarioModel.LiveStreaming &&
       this.role === LiveRole.Audience
     ) {
       this.isLive = state;
-      if (state === 1) {
+      if (state === "1") {
         for (let index = 0; index < this.waitingPullStreams.length; index++) {
           try {
             const stream = await this.zg.startPlayingStream(
@@ -401,12 +401,12 @@ export class ZegoCloudUserListManager {
       this.scenario === ScenarioModel.LiveStreaming &&
       this.role === LiveRole.Audience
     ) {
-      if (this.isLive === 1) {
+      if (this.isLive === "1") {
         const stream = await this.zg.startPlayingStream(streamID, {
           resourceMode: this.isL3Live ? 2 : 0,
         });
         return stream;
-      } else if (this.isLive === 0) {
+      } else if (this.isLive === "0") {
         this.waitingPullStreams.push({ streamID, userID });
         return undefined;
       }
@@ -425,9 +425,9 @@ export class ZegoCloudUserListManager {
       this.scenario === ScenarioModel.LiveStreaming &&
       this.role === LiveRole.Audience
     ) {
-      if (this.isLive === 1) {
+      if (this.isLive === "1") {
         this.zg.stopPlayingStream(streamID);
-      } else if (this.isLive === 0) {
+      } else if (this.isLive === "0") {
         const _index = this.waitingPullStreams.findIndex((info) => {
           return info.streamID === streamID;
         });
@@ -441,7 +441,7 @@ export class ZegoCloudUserListManager {
   reset() {
     this.remoteUserList = [];
     this.waitingPullStreams = [];
-    this.isLive = 0;
+    this.isLive = "0";
 
     this.screenNumber = 0;
     this.sidebarEnabled = false;
