@@ -1,0 +1,115 @@
+@import "../../../../var.scss";
+.upWrapper {
+  padding: vw(10px);
+}
+.whiteboardWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #f2f2f2;
+  border-radius: vw(14px);
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: vw(84px);
+    padding: vw(12px) vw(12px) vw(12px) vw(24px);
+    background: #ffffff;
+    border-radius: vw(12px) vw(12px) 0px 0px;
+    .toolLeft {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .undo,
+      .redo {
+        box-sizing: border-box;
+        width: vw(64px);
+        height: vw(64px);
+        margin-right: vw(16px);
+        padding: vw(12px);
+        // background-color: #f5f7fa;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: vw(40px);
+      }
+      .undo {
+        background-image: url(../../../../sdkAssets/icon_undo_gray@2x.png);
+        &.active {
+          background-image: url(../../../../sdkAssets/icon_undo_blue@2x.png);
+          cursor: pointer;
+        }
+      }
+
+      .redo {
+        background-image: url(../../../../sdkAssets/icon_redo_gray@2x.png);
+        &.active {
+          background-image: url(../../../../sdkAssets/icon_redo_blue@2x.png);
+          cursor: pointer;
+        }
+      }
+    }
+    .stop {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 146px;
+      height: 34px;
+      color: #ff4a50;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 22px;
+      background: #ffffff;
+      border: 1px solid #ff4a50;
+      border-radius: 6px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  .content {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: #f2f2f2;
+  }
+  .page {
+    position: absolute;
+    bottom: vw(154px);
+    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: vw(256px);
+    height: vw(68px);
+    padding: vw(14px);
+    border: 2px solid #dedede;
+    border-radius: vw(12px);
+    transform: translateX(-50%);
+    a {
+      display: inline-block;
+      width: vw(40px);
+      height: vw(40px);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 18px;
+      border-radius: 6px;
+    }
+    .page_sub {
+      margin-right: vw(34px);
+      background-image: url(../../../../sdkAssets/icon_left_gray@2x.png);
+      &.active {
+        background-image: url(../../../../sdkAssets/icon_left_blue@2x.png);
+      }
+    }
+    .page_add {
+      margin-left: vw(34px);
+      background-image: url(../../../../sdkAssets/icon_right_gray@2x.png);
+      &.active {
+        background-image: url(../../../../sdkAssets/icon_right_blue@2x.png);
+      }
+    }
+  }
+}

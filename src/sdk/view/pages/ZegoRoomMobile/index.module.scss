@@ -168,6 +168,17 @@
               background-size: contain;
               background-size: vw(56px) vw(56px);
             }
+            .whiteboard {
+              background-image: url(../../../sdkAssets/icon_inner_whiteboard.png);
+              background-repeat: no-repeat;
+              background-position: center;
+              background-size: contain;
+              background-size: vw(56px) vw(56px);
+              &.sharing {
+                background-image: url(../../../sdkAssets/icon_inner_whiteboard_close.png);
+              }
+            }
+
             .switchCamera {
               background-image: url(../../../sdkMobileAssets/Room_camera_switch@2x.png);
               background-repeat: no-repeat;

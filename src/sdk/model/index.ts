@@ -121,7 +121,9 @@ export interface ZegoCloudRoomConfig {
   // @deprecate
   roomTimerDisplayed?: boolean; // 是否显示倒计时
 
-  showWhiteboardButton?: boolean; // 是否显示白板按钮
+  whiteboardConfig?: {
+    showAddImageButton?: boolean; //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
+  };
   plugins?: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager };
 }
 
@@ -201,7 +203,7 @@ export interface ZegoWhiteboardSharingLayoutProps {
     userID: string;
   };
   roomID?: String;
-  isSelfScreen: boolean;
+  isSelfScreen?: boolean;
   onShow: (el: HTMLDivElement) => void;
   onResize: (el: HTMLDivElement) => void;
   onclose: () => void;

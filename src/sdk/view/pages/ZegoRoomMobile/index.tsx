@@ -35,7 +35,7 @@ import {
   ZegoDeviceInfo,
   ZegoSoundLevelInfo,
 } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
-
+import { ZegoSuperBoardView } from "zego-superboard-web";
 import {
   ZegoCloudUser,
   ZegoCloudUserList,
@@ -48,7 +48,7 @@ import ShowManageContext from "../context/showManage";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoScreen } from "./components/zegoScreen";
 import ZegoAudio from "../../components/zegoMedia/audio";
-
+import { ZegoWhiteboard } from "./components/zegoWhiteboard";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
@@ -59,7 +59,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       | "USER_LIST"
       | "MESSAGE"
       | "LAYOUT"
-      | "MANAGE";
+      | "MANAGE"
+      | "WHITEBOARD";
     userLayoutStatus: "Auto" | "Grid" | "Sidebar";
     zegoCloudUserList: ZegoCloudUserList;
     memberList: ZegoCloudUserList;
@@ -77,6 +78,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     liveCountdown: number;
     liveStatus: 1 | 0;
     screenSharingUserList: ZegoCloudUserList;
+    zegoSuperBoardView: ZegoSuperBoardView | null; // 本地白板共享
+    isZegoWhiteboardSharing: boolean; // 是否开启白板共享
   } = {
     micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
     cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
@@ -97,6 +100,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     liveCountdown: -1,
     liveStatus: 0,
     screenSharingUserList: [],
+    zegoSuperBoardView: null, // 本地白板共享
+    isZegoWhiteboardSharing: false, // 是否开启白板共享
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
@@ -342,7 +347,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         memberList: userList,
       });
     });
-
+    this.props.core.subscribeWhiteBoard(
+      (superBoardView: ZegoSuperBoardView | null) => {
+        this.setState({
+          zegoSuperBoardView: superBoardView,
+          isZegoWhiteboardSharing: !!superBoardView,
+        });
+      }
+    );
     this.props.core.subscribeScreenStream((userList) => {
       const notSupportPhone =
         !isPc() &&
@@ -691,7 +703,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   toggleLayOut(
-    layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT"
+    layOutStatus:
+      | "ONE_VIDEO"
+      | "INVITE"
+      | "USER_LIST"
+      | "MESSAGE"
+      | "LAYOUT"
+      | "WHITEBOARD"
   ) {
     this.setState(
       (state: {
@@ -700,7 +718,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           | "INVITE"
           | "USER_LIST"
           | "MESSAGE"
-          | "LAYOUT";
+          | "LAYOUT"
+          | "WHITEBOARD";
         showMore: boolean;
       }) => {
         return {
@@ -1175,6 +1194,81 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         </>
       );
     }
+
+    if (this.state.isZegoWhiteboardSharing) {
+      return (
+        <ZegoWhiteboard
+          handleSetPin={(userID: string) => {
+            // this.handleSetPin(userID);
+          }}
+          userList={this.getShownUser()}
+          videoShowNumber={5}
+          selfInfo={{
+            userID: this.props.core._expressConfig.userID,
+          }}
+          // isSelfScreen={this.state.isWhiteboardSharingBySelf}
+          soundLevel={this.state.soundLevel}
+          roomID={this.props.core._expressConfig.roomID}
+          onShow={async (el: HTMLDivElement) => {
+            // 主动渲染
+            if (this.isCreatingWhiteboardSharing) {
+              try {
+                const zegoSuperBoardView =
+                  await this.props.core.createAndPublishWhiteboard(
+                    el,
+                    this.props.core._expressConfig.userName
+                  );
+                this.setState({
+                  isWhiteboardSharingBySelf: true,
+                  zegoSuperBoardView,
+                });
+              } catch (error: any) {
+                ZegoModelShow(
+                  {
+                    header: "Notice",
+                    contentText:
+                      "Your browser does not support screen sharing.",
+                    okText: "Okay",
+                  },
+                  document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+                );
+              }
+              this.isCreatingWhiteboardSharing = false;
+            } else if (this.state.zegoSuperBoardView) {
+              // 被动渲染
+              const uniqueID = this.state.zegoSuperBoardView
+                .getCurrentSuperBoardSubView()
+                ?.getModel().uniqueID;
+              uniqueID &&
+                this.state.zegoSuperBoardView.switchSuperBoardSubView(uniqueID);
+            }
+          }}
+          onResize={(el: HTMLDivElement) => {
+            // 主动渲染
+            if (this.state.isZegoWhiteboardSharing) {
+              this.state.zegoSuperBoardView
+                ?.getCurrentSuperBoardSubView()
+                ?.reloadView();
+            }
+          }}
+          onclose={() => {
+            this.toggleWhiteboardSharing();
+          }}
+          onToolChange={(type: number, fontSize?: number, color?: string) => {
+            this.props.core.setWhiteboardToolType(type, fontSize, color);
+          }}
+          onFontChange={(
+            font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
+            fontSize?: number,
+            color?: string
+          ) => {
+            this.props.core.setWhiteboardFont(font, fontSize, color);
+          }}
+          zegoSuperBoardView={this.state.zegoSuperBoardView}
+        ></ZegoWhiteboard>
+      );
+    }
+
     if (
       (this.state.userLayoutStatus === "Auto" &&
         this.getShownUser().length < 3) ||
@@ -1314,6 +1408,53 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     );
   }
 
+  async toggleWhiteboardSharing() {
+    if (this.state.screenSharingUserList.length > 0) return;
+    if (this.state.isZegoWhiteboardSharing) {
+      this.closeWhiteboardSharing();
+    } else {
+      this.createWhiteboardSharing();
+    }
+  }
+
+  isCreatingWhiteboardSharing = false;
+  async createWhiteboardSharing() {
+    if (this.state.screenSharingUserList.length > 0) {
+      ZegoToast({
+        content: `${this.state.screenSharingUserList[0].userName} is presenting now. You cannot share your whiteboard.`,
+      });
+
+      return;
+    } else if (this.state.zegoSuperBoardView) {
+      ZegoToast({
+        content: `${
+          this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.getModel
+            .name
+        } is presenting now. You cannot share your whiteboard.`,
+      });
+      return;
+    }
+
+    if (this.isCreatingWhiteboardSharing) return;
+    this.isCreatingWhiteboardSharing = true;
+    this.setState({ isZegoWhiteboardSharing: true });
+  }
+
+  closeWhiteboardSharing() {
+    try {
+      this.state.zegoSuperBoardView &&
+        this.props.core.destroyAndStopPublishWhiteboard();
+      this.setState({
+        isWhiteboardSharingBySelf: false,
+        isZegoWhiteboardSharing: false,
+        zegoSuperBoardView: null,
+      });
+      this.isCreatingWhiteboardSharing = false;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
@@ -1332,6 +1473,23 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           showPinButton:
             !!this.props.core._config.showPinButton &&
             this.getShownUser().length > 1,
+          whiteboard_page:
+            this.state.zegoSuperBoardView
+              ?.getCurrentSuperBoardSubView()
+              ?.getCurrentPage() || 1,
+          whiteboard_toolType:
+            this.props.core.zegoSuperBoard?.getToolType() || 0,
+          whiteboard_fontSize:
+            this.props.core.zegoSuperBoard?.getFontSize() || 0,
+          whiteboard_brushSize:
+            this.props.core.zegoSuperBoard?.getBrushSize() || 0,
+          whiteboard_brushColor:
+            this.props.core.zegoSuperBoard?.getBrushColor() || "",
+          whiteboard_isFontBold: this.props.core.zegoSuperBoard?.isFontBold(),
+          whiteboard_isFontItalic:
+            this.props.core.zegoSuperBoard?.isFontItalic(),
+          whiteboard_showAddImage:
+            this.props.core._config.whiteboardConfig?.showAddImageButton,
           userInfo: { userID: this.props.core._expressConfig.userID },
         }}
       >
@@ -1489,6 +1647,26 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                             <span>Layout</span>
                           </div>
                         )}
+
+                        {this.props.core._config.plugins
+                          ?.ZegoSuperBoardManager && (
+                          <div
+                            onClick={(ev) => {
+                              ev.stopPropagation();
+                              this.toggleLayOut("WHITEBOARD");
+                              this.toggleWhiteboardSharing();
+                            }}
+                          >
+                            <i
+                              className={`${ZegoRoomCss.whiteboard} ${
+                                this.state.isZegoWhiteboardSharing
+                                  ? ZegoRoomCss.sharing
+                                  : ""
+                              }`}
+                            ></i>
+                            <span>Whiteboard</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1562,23 +1740,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               }
             ></ZegoReconnect>
           )}
-          {/* <div
-            style={{
-              zIndex: 100000,
-              position: "fixed",
-              width: "100px",
-              height: "50px",
-              top: "20vh",
-              left: 0,
-            }}
-          >
-            {this.state.liveStatus +
-              "," +
-              this.state.liveCountdown +
-              "," +
-              (this.props.core._config.scenario?.mode ===
-                ScenarioModel.LiveStreaming)}
-          </div> */}
 
           {this.props.core._config.scenario?.mode ===
             ScenarioModel.LiveStreaming &&

@@ -176,19 +176,30 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
               onAddImage={(file: File) => {
                 this.props.zegoSuperBoardView
                   ?.getCurrentSuperBoardSubView()
-                  ?.addImage(0, 10, 10, file, () => {
+                  ?.addImage(0, 10, 10, file, (res: string) => {
                     ZegoToast({ content: "add Image Success!!" });
+                  })
+                  .catch((error: any) => {
+                    console.error("onAddImage:", error);
+                    if (error.code == 60022) {
+                      ZegoToast({
+                        content:
+                          "Failed to add image, this feature is not supported.",
+                      });
+                    }
                   });
               }}
               onSnapshot={() => {
                 const zegoSuperBoardSubView =
                   this.props.zegoSuperBoardView?.getCurrentSuperBoardSubView();
-                zegoSuperBoardSubView?.snapshot().then(function (data) {
-                  const link = document.createElement("a");
-                  link.href = data.image;
-                  link.download = "snapshot" + ".png";
-                  link.click();
-                });
+                zegoSuperBoardSubView
+                  ?.snapshot()
+                  .then(function (data: { image: string; userData?: string }) {
+                    const link = document.createElement("a");
+                    link.href = data.image;
+                    link.download = "snapshot" + ".png";
+                    link.click();
+                  });
               }}
             ></ZegoWhiteboardTools>
             <div

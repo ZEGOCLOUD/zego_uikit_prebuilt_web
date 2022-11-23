@@ -1450,6 +1450,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           whiteboard_isFontBold: this.props.core.zegoSuperBoard?.isFontBold(),
           whiteboard_isFontItalic:
             this.props.core.zegoSuperBoard?.isFontItalic(),
+          whiteboard_showAddImage:
+            this.props.core._config.whiteboardConfig?.showAddImageButton,
           userInfo: { userID: this.props.core._expressConfig.userID },
         }}
       >
@@ -1635,7 +1637,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                   }}
                 ></div>
               )}
-              {this.props.core._config.showWhiteboardButton && (
+              {this.props.core._config.plugins?.ZegoSuperBoardManager && (
                 <div
                   className={`${ZegoRoomCss.whiteboardButton} ${
                     this.state.isZegoWhiteboardSharing && ZegoRoomCss.sharing

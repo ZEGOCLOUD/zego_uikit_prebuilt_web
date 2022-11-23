@@ -143,7 +143,9 @@ export class ZegoCloudRTCCore {
     userUpdateCallback: () => {},
     showLayoutButton: true, // 是否显示布局切换按钮
     showPinButton: true, // 是否显pin按钮
-    showWhiteboardButton: false, // 是否显示白板按钮
+    whiteboardConfig: {
+      showAddImageButton: false, //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
+    },
     plugins: {},
     videoResolutionList: [], //视频分辨率可选列表
   };
@@ -216,9 +218,6 @@ export class ZegoCloudRTCCore {
 
       if (!config.maxUsers) {
         config.maxUsers = 5000;
-      }
-      if (!config.showWhiteboardButton || true) {
-        config.showWhiteboardButton = false;
       }
 
       if (
@@ -328,10 +327,7 @@ export class ZegoCloudRTCCore {
     this.zum.showOnlyAudioUser = !!this._config.showOnlyAudioUser;
     this.zum.setShowNonVideo(!!this._config.showNonVideoUser);
 
-    if (
-      this._config.showWhiteboardButton &&
-      this._config.plugins?.ZegoSuperBoardManager
-    ) {
+    if (this._config.plugins?.ZegoSuperBoardManager) {
       this.zegoSuperBoard =
         this._config.plugins.ZegoSuperBoardManager.getInstance();
       this.zegoSuperBoard.init(ZegoCloudRTCCore._zg, {

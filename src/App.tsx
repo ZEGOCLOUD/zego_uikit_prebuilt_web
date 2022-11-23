@@ -104,7 +104,6 @@ export default class App extends React.Component {
     }
 
     this.myMeeting = async (element: HTMLDivElement) => {
-      console.log(" userName || getRandomName()", userName || getRandomName());
       let { token } = await generateToken(
         randomID(5),
         roomID,
@@ -112,8 +111,8 @@ export default class App extends React.Component {
       );
 
       // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      //   1484647939,
-      //   "22076fd0a8388f31dc1f6e344171....",
+      //   956018575,
+      //   "4412536005543057615113b9faa123b7",
       //   roomID,
       //   randomID(5),
       //   userName || getRandomName(),
@@ -147,7 +146,9 @@ export default class App extends React.Component {
             liveStreamingMode,
           },
         },
-        showWhiteboardButton: true,
+        whiteboardConfig: {
+          showAddImageButton: true,
+        },
         plugins: { ZegoSuperBoardManager },
         showUserList: true,
         onUserAvatarSetter: (user) => {
