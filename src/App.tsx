@@ -167,6 +167,12 @@ export default class App extends React.Component {
           ZegoUIKitPrebuilt.VideoResolution_720P,
         ],
         videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
+        onLiveStart: (user) => {
+          console.warn("onLiveStart", user);
+        },
+        onLiveEnd: (user) => {
+          console.warn("onLiveEnd", user);
+        },
       };
       if (showNonVideoUser !== undefined) {
         param.showNonVideoUser = showNonVideoUser === "true";

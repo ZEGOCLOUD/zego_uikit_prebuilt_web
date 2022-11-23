@@ -107,6 +107,8 @@ export interface ZegoCloudRoomConfig {
   onUserAvatarSetter?: (user: ZegoUser[]) => void; //是否可以设置用户头像回调
   videoResolutionList?: VideoResolution[]; // 视频分辨率列表（默认使用第一个）
   videoResolutionDefault?: VideoResolution; // 默认视频分辨率
+  onLiveStart?: (user: ZegoUser) => void; //直播开始回调
+  onLiveEnd?: (user: ZegoUser) => void; //直播结束回调
   // @deprecate
   facingMode?: "user" | "environment"; // 前置摄像头模式
   // @deprecate
@@ -118,6 +120,7 @@ export interface ZegoCloudRoomConfig {
     updateType: "DELETE" | "ADD",
     userList: ZegoUser[]
   ) => void; // 用户新增/退出 回调
+
   // @deprecate
   roomTimerDisplayed?: boolean; // 是否显示倒计时
 

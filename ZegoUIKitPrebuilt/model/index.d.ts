@@ -95,6 +95,8 @@ export interface ZegoCloudRoomConfig {
     onUserAvatarSetter?: (user: ZegoUser[]) => void;
     videoResolutionList?: VideoResolution[];
     videoResolutionDefault?: VideoResolution;
+    onLiveStart?: (user: ZegoUser) => void;
+    onLiveEnd?: (user: ZegoUser) => void;
     facingMode?: "user" | "environment";
     joinRoomCallback?: () => void;
     leaveRoomCallback?: () => void;

@@ -533,11 +533,21 @@ export class ZegoCloudRTCCore {
     if (this._currentPage === "Room") {
       this._roomExtraInfo = value;
       this.zum.setLiveStates(this._roomExtraInfo.live_status);
-      // console.error(
-      //   "【ZEGOCLOUD】roomExtraInfo choui",
-      //   value,
-      //   this.onRoomLiveStateUpdateCallBack
-      // );
+      if (this._config.onLiveStart && this._roomExtraInfo.live_status == "1") {
+        this._config.onLiveStart({
+          userID: this._expressConfig.userID,
+          userName: this._expressConfig.userID,
+        });
+      } else if (
+        this._config.onLiveEnd &&
+        this._roomExtraInfo.live_status == "0"
+      ) {
+        this._config.onLiveEnd({
+          userID: this._expressConfig.userID,
+          userName: this._expressConfig.userID,
+        });
+      }
+
       this.onRoomLiveStateUpdateCallBack &&
         this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status);
     } else if (
