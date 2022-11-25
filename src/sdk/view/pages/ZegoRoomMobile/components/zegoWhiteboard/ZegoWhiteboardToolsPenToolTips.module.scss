@@ -1,7 +1,8 @@
+@import "../../../../../var.scss";
 .penTools {
   position: absolute;
-  top: -172%;
-  right: 43px;
+  top: 8%;
+  right: vw(110px);
   z-index: 110;
   display: flex;
   flex-direction: column;
@@ -15,18 +16,10 @@
   div {
     margin: 0;
     padding: 0;
-    &:hover {
-      background-color: #ffffff;
-    }
   }
 
   .penTools_bold,
   .penTools_color {
-    h3 {
-      &:hover {
-        background-color: #ffffff;
-      }
-    }
     width: 100%;
     height: auto;
     color: #666666;

@@ -1328,7 +1328,19 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   clickVideo(e: MouseEvent) {
     // @ts-ignore
-    const className: string = e.target.className;
+    let className: string = e.target.className;
+    let whiteboardClick = false;
+    if (
+      // @ts-ignore
+      (e.target?.id as string).startsWith("zego-whiteboard-") &&
+      // @ts-ignore
+      e.target.parentElement
+    ) {
+      // @ts-ignore
+      className = e.target.parentElement?.className;
+      whiteboardClick = true;
+    }
+
     if (
       className.includes("zegoUserVideo_videoCommon") ||
       className.includes("zegoMore_more") ||
@@ -1350,7 +1362,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           this.setState({ showFooter: false, showMore: false });
         }
       }
-      e.stopPropagation();
+      !whiteboardClick && e.stopPropagation();
     } else {
       clearTimeout(this.footerTimer);
       this.footerTimer = setTimeout(() => {

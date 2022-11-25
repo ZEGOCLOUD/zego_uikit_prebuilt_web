@@ -15,18 +15,10 @@
   div {
     margin: 0;
     padding: 0;
-    &:hover {
-      background-color: #ffffff;
-    }
   }
   .graphicsTools_react,
   .graphicsTools_bold,
   .graphicsTools_color {
-    h3 {
-      &:hover {
-        background-color: #ffffff;
-      }
-    }
     width: 100%;
     height: auto;
     color: #666666;

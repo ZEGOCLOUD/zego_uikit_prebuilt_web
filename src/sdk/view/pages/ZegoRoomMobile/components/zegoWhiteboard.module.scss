@@ -33,7 +33,7 @@
         background-size: vw(40px);
       }
       .undo {
-        background-image: url(../../../../sdkAssets/icon_undo_gray@2x.png);
+        background-image: url(../../../../sdkAssets/icon_undo_blue@2x.png);
         &.active {
           background-image: url(../../../../sdkAssets/icon_undo_blue@2x.png);
           cursor: pointer;
@@ -41,7 +41,7 @@
       }
 
       .redo {
-        background-image: url(../../../../sdkAssets/icon_redo_gray@2x.png);
+        background-image: url(../../../../sdkAssets/icon_redo_blue@2x.png);
         &.active {
           background-image: url(../../../../sdkAssets/icon_redo_blue@2x.png);
           cursor: pointer;

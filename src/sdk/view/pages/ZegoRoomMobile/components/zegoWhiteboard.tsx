@@ -7,6 +7,7 @@ import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
 import ShowPCManageContext, { ShowManageType } from "../../context/showManage";
 import { ZegoWhiteboardTools } from "./zegoWhiteboard/ZegoWhiteboardTools";
 import { ZegoToast } from "../../../components/mobile/zegoToast";
+import { FingerGestureUtils } from "../../../../fingerGestureUtil";
 
 export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLayoutProps> {
   container: HTMLDivElement | null = null;
@@ -121,6 +122,11 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
                   this.containerHeight = el.clientHeight;
                   this.containerWidth = el.clientWidth;
                   this.props.onShow(el);
+                  new FingerGestureUtils().addDomListener(el, (x, y, scale) => {
+                    this.props.zegoSuperBoardView
+                      ?.getCurrentSuperBoardSubView()
+                      ?.setScaleFactor(scale / 1);
+                  });
                 } else if (
                   el.clientWidth &&
                   el.clientHeight &&
