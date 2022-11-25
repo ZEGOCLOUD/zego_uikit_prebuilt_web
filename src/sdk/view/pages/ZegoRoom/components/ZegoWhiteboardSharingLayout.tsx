@@ -15,8 +15,10 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
   containerHeight: number = 0;
   state: {
     currentZoom: number;
+    rows: 1 | 2;
   } = {
     currentZoom: 100,
+    rows: 1,
   };
   static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
@@ -153,6 +155,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
           </div>
           <div className={zegoWhiteboardSharingLayout.content}>
             <ZegoWhiteboardTools
+              rows={this.state.rows}
               onToolChange={(
                 type: number,
                 fontSize?: number,
@@ -207,6 +210,10 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
               id="ZegoCloudWhiteboardContainer"
               ref={(el: HTMLDivElement) => {
                 if (el) {
+                  this.setState({
+                    rows: el.clientHeight < 410 ? 2 : 1,
+                  });
+
                   if (!this.container) {
                     this.container = el;
                     this.containerHeight = el.clientHeight;

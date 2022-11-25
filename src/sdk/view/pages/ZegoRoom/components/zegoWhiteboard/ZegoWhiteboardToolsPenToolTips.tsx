@@ -7,6 +7,7 @@ import ZegoWhiteboardToolsPenToolTipsCss from "./ZegoWhiteboardToolsPenToolTips.
 export class ZegoWhiteboardToolsPenTooTips extends React.PureComponent<{
   onToolChange: (fontSize: number, color: string) => void;
   onClose: () => void;
+  rows: 1 | 2 | undefined;
 }> {
   static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
@@ -38,7 +39,9 @@ export class ZegoWhiteboardToolsPenTooTips extends React.PureComponent<{
   render(): React.ReactNode {
     return (
       <div
-        className={`${ZegoWhiteboardToolsPenToolTipsCss.penTools} ZegoWhiteboardToolsPenToolTips`}
+        className={`${ZegoWhiteboardToolsPenToolTipsCss.penTools} ${
+          this.props.rows === 2 ? ZegoWhiteboardToolsPenToolTipsCss.twoRows : ""
+        } ZegoWhiteboardToolsPenToolTips`}
       >
         <div className={ZegoWhiteboardToolsPenToolTipsCss.penTools_bold}>
           <h3>笔触粗细</h3>

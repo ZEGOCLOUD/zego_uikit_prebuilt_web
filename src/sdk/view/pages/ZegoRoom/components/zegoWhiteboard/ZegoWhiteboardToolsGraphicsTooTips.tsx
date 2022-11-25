@@ -7,6 +7,7 @@ import ZegoWhiteboardToolsGraphicsTooTipsCss from "./ZegoWhiteboardToolsGraphics
 export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
   onToolChange: (type: number, fontSize: number, color: string) => void;
   onClose: () => void;
+  rows: 1 | 2 | undefined;
 }> {
   static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
@@ -37,7 +38,11 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
   render(): React.ReactNode {
     return (
       <div
-        className={`${ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools} ZegoWhiteboardToolsGraphicsTooTips`}
+        className={`${ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools} ${
+          this.props.rows === 2
+            ? ZegoWhiteboardToolsGraphicsTooTipsCss.twoRows
+            : ""
+        } ZegoWhiteboardToolsGraphicsTooTips`}
         ref={(el) => {
           // console.error("graphicsTools", el);
         }}

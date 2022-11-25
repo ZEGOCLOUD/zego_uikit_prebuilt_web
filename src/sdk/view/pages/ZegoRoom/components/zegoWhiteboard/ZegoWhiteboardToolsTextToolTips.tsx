@@ -11,6 +11,7 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
     color?: string
   ) => void;
   onClose: () => void;
+  rows: 1 | 2 | undefined;
 }> {
   static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
@@ -42,7 +43,11 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
   render(): React.ReactNode {
     return (
       <div
-        className={`${ZegoWhiteboardToolsTextToolTipsCss.textTools} ZegoWhiteboardToolsTextToolTips`}
+        className={`${ZegoWhiteboardToolsTextToolTipsCss.textTools} ${
+          this.props.rows === 2
+            ? ZegoWhiteboardToolsTextToolTipsCss.twoRows
+            : ""
+        } ZegoWhiteboardToolsTextToolTips`}
       >
         <div className={ZegoWhiteboardToolsTextToolTipsCss.textTools_font}>
           <h3>Font</h3>
