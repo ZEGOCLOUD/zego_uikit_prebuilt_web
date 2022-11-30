@@ -117,7 +117,7 @@ export class ZegoCloudRTCCore {
 
     showLeavingView: true, // 离开房间后页面，默认有
 
-    maxUsers: 2, // 房间人数2～20，默认2
+    maxUsers: 0, // 房间人数2～20，默认2
     layout: "Auto", // 默认Default
 
     showNonVideoUser: true, // 是否显示无视频用户，默认显示
@@ -217,7 +217,7 @@ export class ZegoCloudRTCCore {
       }
 
       if (!config.maxUsers) {
-        config.maxUsers = 5000;
+        config.maxUsers = 0;
       }
 
       if (
@@ -249,7 +249,7 @@ export class ZegoCloudRTCCore {
       config.scenario.mode === ScenarioModel.OneONoneCall
     ) {
       if (!config.maxUsers) {
-        config.maxUsers = 2;
+        config.maxUsers = 0;
       }
       config.showLayoutButton = false;
       config.showPinButton = false;
@@ -257,7 +257,7 @@ export class ZegoCloudRTCCore {
 
     if (config.scenario && config.scenario.mode === ScenarioModel.GroupCall) {
       if (!config.maxUsers) {
-        config.maxUsers = 50;
+        config.maxUsers = 0;
       }
     }
 

@@ -1,11 +1,17 @@
 {
   "files": {
+<<<<<<< HEAD
     "main.css": "./static/css/main.20175464.css",
     "main.js": "./static/js/main.cbcb7538.js",
+=======
+    "main.css": "./static/css/main.02b17825.css",
+    "main.js": "./static/js/main.81cf7858.js",
+>>>>>>> 4759ea5 (✨ 1 auto layout logo & 2 max users & 3 whiteboard in mobile)
     "static/js/988.6b8eaea0.chunk.js": "./static/js/988.6b8eaea0.chunk.js",
     "static/media/logo_zegocloud@2x.png": "./static/media/logo_zegocloud@2x.a4c5068052a5a36bfe16.png",
     "static/media/App_logo@2x.png": "./static/media/App_logo@2x.adc9e061a5eb259bc8c1.png",
     "index.html": "./index.html",
+<<<<<<< HEAD
     "main.20175464.css.map": "./static/css/main.20175464.css.map",
     "main.cbcb7538.js.map": "./static/js/main.cbcb7538.js.map",
     "988.6b8eaea0.chunk.js.map": "./static/js/988.6b8eaea0.chunk.js.map"
@@ -13,5 +19,14 @@
   "entrypoints": [
     "static/css/main.20175464.css",
     "static/js/main.cbcb7538.js"
+=======
+    "main.02b17825.css.map": "./static/css/main.02b17825.css.map",
+    "main.81cf7858.js.map": "./static/js/main.81cf7858.js.map",
+    "988.6b8eaea0.chunk.js.map": "./static/js/988.6b8eaea0.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.02b17825.css",
+    "static/js/main.81cf7858.js"
+>>>>>>> 4759ea5 (✨ 1 auto layout logo & 2 max users & 3 whiteboard in mobile)
   ]
 }
