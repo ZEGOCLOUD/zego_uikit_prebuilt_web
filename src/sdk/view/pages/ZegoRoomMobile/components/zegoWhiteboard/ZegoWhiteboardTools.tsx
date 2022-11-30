@@ -27,17 +27,21 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
     showGraphicsTools: boolean;
     showFontTools: boolean;
   } = {
-    hideTools: false,
+    hideTools: true,
     selectedTool: 3,
     showTextTools: false,
     showFontTools: false,
     showGraphicsTools: false,
   };
 
+  showTool(type: number): boolean {
+    return !this.state.hideTools || this.state.selectedTool === type;
+  }
+
   render(): React.ReactNode {
     return (
       <div className={ZegoWhiteboardToolsCss.tools}>
-        {!this.state.hideTools && (
+        {this.showTool(1) && (
           <div
             className={`${ZegoWhiteboardToolsCss.tool_select} ${
               this.state.selectedTool === 1
@@ -50,7 +54,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
             }}
           ></div>
         )}
-        {!this.state.hideTools && (
+        {this.showTool(2) && (
           <div
             className={`${ZegoWhiteboardToolsCss.tool_drag} ${
               this.state.selectedTool === 2
@@ -64,30 +68,34 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
           ></div>
         )}
 
-        <div
-          className={`ZegoWhiteboardToolsPenToolTips ${
-            ZegoWhiteboardToolsCss.tool_pen
-          } ${
-            this.state.selectedTool === 3 ? ZegoWhiteboardToolsCss.selected : ""
-          }`}
-          onClick={() => {
-            this.setState({ selectedTool: 3, showFontTools: true });
-            this.props.onToolChange(1);
-          }}
-        >
-          {this.state.showFontTools && (
-            <ZegoWhiteboardToolsPenTooTips
-              onToolChange={(fontSize: number, color: string) => {
-                this.props.onToolChange(1, fontSize, color);
-              }}
-              onClose={() => {
-                this.setState({ showFontTools: false });
-              }}
-            ></ZegoWhiteboardToolsPenTooTips>
-          )}
-        </div>
+        {this.showTool(3) && (
+          <div
+            className={`ZegoWhiteboardToolsPenToolTips ${
+              ZegoWhiteboardToolsCss.tool_pen
+            } ${
+              this.state.selectedTool === 3
+                ? ZegoWhiteboardToolsCss.selected
+                : ""
+            }`}
+            onClick={() => {
+              this.setState({ selectedTool: 3, showFontTools: true });
+              this.props.onToolChange(1);
+            }}
+          >
+            {this.state.showFontTools && (
+              <ZegoWhiteboardToolsPenTooTips
+                onToolChange={(fontSize: number, color: string) => {
+                  this.props.onToolChange(1, fontSize, color);
+                }}
+                onClose={() => {
+                  this.setState({ showFontTools: false });
+                }}
+              ></ZegoWhiteboardToolsPenTooTips>
+            )}
+          </div>
+        )}
 
-        {!this.state.hideTools && (
+        {this.showTool(4) && (
           <div
             className={`ZegoWhiteboardToolsTextToolTips ${
               ZegoWhiteboardToolsCss.tool_text
@@ -117,7 +125,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
             )}
           </div>
         )}
-        {!this.state.hideTools && (
+        {this.showTool(5) && (
           <div
             className={`ZegoWhiteboardToolsGraphicsTooTips ${
               ZegoWhiteboardToolsCss.tool_react
@@ -144,7 +152,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
             )}
           </div>
         )}
-        {!this.state.hideTools && this.context.whiteboard_showAddImage && (
+        {this.showTool(6) && this.context.whiteboard_showAddImage && (
           <div
             className={`${ZegoWhiteboardToolsCss.tool_image} ${
               this.state.selectedTool === 6
@@ -152,14 +160,14 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
                 : ""
             }`}
             onClick={() => {
-              this.setState({ selectedTool: 6 });
+              // this.setState({ selectedTool: 6 });
               chooseFile((file: File) => {
                 this.props.onAddImage(file);
               });
             }}
           ></div>
         )}
-        {!this.state.hideTools && (
+        {this.showTool(7) && (
           <div
             className={`${ZegoWhiteboardToolsCss.tool_eraser} ${
               this.state.selectedTool === 7
@@ -172,7 +180,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
             }}
           ></div>
         )}
-        {!this.state.hideTools && (
+        {this.showTool(8) && (
           <div
             className={`${ZegoWhiteboardToolsCss.tool_delete} ${
               this.state.selectedTool === 8
@@ -185,7 +193,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
             }}
           ></div>
         )}
-        {!this.state.hideTools && (
+        {this.showTool(9) && (
           <div
             className={`${ZegoWhiteboardToolsCss.tool_snapshot} ${
               this.state.selectedTool === 9

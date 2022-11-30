@@ -1245,10 +1245,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           }}
           onResize={(el: HTMLDivElement) => {
             // 主动渲染
-            if (this.state.isZegoWhiteboardSharing) {
-              this.state.zegoSuperBoardView
-                ?.getCurrentSuperBoardSubView()
-                ?.reloadView();
+            if (this.state.isZegoWhiteboardSharing && el) {
+              try {
+                this.state.zegoSuperBoardView
+                  ?.getCurrentSuperBoardSubView()
+                  ?.reloadView();
+              } catch (error) {
+                console.warn("【ZEGOCLOUD】:reloadView", error);
+              }
             }
           }}
           onclose={() => {
@@ -1282,7 +1286,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           userList={this.getShownUser()}
           soundLevel={this.state.soundLevel}
           onLocalStreamPaused={async () => {
-            console.warn("onLocalStreamPaused");
             await this.props.core.enableVideoCaptureDevice(
               this.state.localStream!,
               !this.state.cameraOpen

@@ -111,8 +111,8 @@ export default class App extends React.Component {
       );
 
       // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      //   968058413,
-      //   "a1fe0988ceafc1c09d727bdc3c04....",
+      //   1484647939,
+      //   "22076fd0a8388f31dc1f6e344171....",
       //   roomID,
       //   randomID(5),
       //   userName || getRandomName(),

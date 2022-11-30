@@ -1259,10 +1259,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           }}
           onResize={(el: HTMLDivElement) => {
             // 主动渲染
-            if (this.state.isZegoWhiteboardSharing) {
-              this.state.zegoSuperBoardView
-                ?.getCurrentSuperBoardSubView()
-                ?.reloadView();
+            if (this.state.isZegoWhiteboardSharing && el) {
+              try {
+                this.state.zegoSuperBoardView
+                  ?.getCurrentSuperBoardSubView()
+                  ?.reloadView();
+              } catch (error) {
+                console.warn("【ZEGOCLOUD】onResize", error);
+              }
             }
           }}
           onclose={() => {
@@ -1784,6 +1788,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                       ></span>
                       Auto
                     </p>
+                    <img
+                      src={require("../../../sdkAssets/img_layout_auto@2x.png")}
+                      alt="grid layout"
+                    />
                   </div>
                   <div
                     className={ZegoRoomCss.layoutSettingsItemRow}
