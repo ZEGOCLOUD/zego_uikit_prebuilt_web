@@ -39,13 +39,13 @@
     flex-direction: column;
     margin-top: vw(16px);
     margin-bottom: vw(14px);
-    padding: 0 16px;
+    padding: 0 vw(32px);
     .title {
-      margin-bottom: 8px;
+      margin-bottom: vw(16px);
       color: #ffffff;
       font-weight: 400;
-      font-size: 14px;
-      line-height: 20px;
+      font-size: vw(28px);
+      line-height: vw(40px);
     }
     .inviteLink {
       display: flex;
@@ -65,7 +65,7 @@
       text-overflow: ellipsis;
       background: rgba(48, 51, 65, 0.7);
       border: 0;
-      border-radius: 10px;
+      border-radius: vw(20px);
       outline: none;
       input {
         width: 100%;
@@ -83,14 +83,14 @@
       display: flex;
       align-items: center;
 
-      width: 20px;
-      height: 20px;
+      width: vw(40px);
+      height: vw(40px);
       margin-right: vw(25px);
       margin-left: vw(16px);
       color: #ffb763;
       font-weight: 400;
-      font-size: 14px;
-      line-height: 20px;
+      font-size: vw(28px);
+      line-height: vw(40px);
       background: url("../../../../sdkMobileAssets/icon_inner_copy@2x.png")
         no-repeat center/cover;
       cursor: pointer;

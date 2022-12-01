@@ -191,14 +191,14 @@
               bottom: 0;
               color: #ffffff;
               font-weight: 400;
-              font-size: 10px;
+              font-size: vw(20px);
               //   font-family: PingFangSC-Regular, PingFang SC;
             }
           }
           div:nth-child(4) {
             margin-right: 0;
           }
-          div:nth-child(5) {
+          div:nth-child(n + 5) {
             margin-top: vw(27px);
           }
           div:last-child {

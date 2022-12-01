@@ -14,7 +14,7 @@ export class ZegoWhiteboardToolsPenTooTips extends React.PureComponent<{
 
   OnDocumentClick(ev: MouseEvent) {
     // @ts-ignore
-    const path: HTMLElement[] = ev.path;
+    const path: HTMLElement[] = ev.path || ev.composedPath();
     if (
       !path.some((item) => {
         console.log(item.className);
