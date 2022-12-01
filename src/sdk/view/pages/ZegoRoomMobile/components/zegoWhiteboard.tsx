@@ -141,37 +141,42 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
             }}
           ></div>
           <div className={zegoWhiteboardSharingLayout.page}>
-            <a
-              className={`${zegoWhiteboardSharingLayout.page_sub}  ${
-                this.context.whiteboard_page && this.context.whiteboard_page > 1
-                  ? zegoWhiteboardSharingLayout.active
-                  : ""
-              }`}
-              onClick={() => {
-                this.props.zegoSuperBoardView
-                  ?.getCurrentSuperBoardSubView()
-                  ?.flipToPrePage();
-              }}
-            ></a>
-            <span className={zegoWhiteboardSharingLayout.page_value}>
-              {this.context.whiteboard_page}
-            </span>
-            <span className={zegoWhiteboardSharingLayout.page_value_total}>
-              /5
-            </span>
-            <a
-              className={`${zegoWhiteboardSharingLayout.page_add} ${
-                this.context.whiteboard_page && this.context.whiteboard_page < 5
-                  ? zegoWhiteboardSharingLayout.active
-                  : ""
-              }`}
-              onClick={() => {
-                this.props.zegoSuperBoardView
-                  ?.getCurrentSuperBoardSubView()
-                  ?.flipToNextPage();
-              }}
-            ></a>
+            <div>
+              <a
+                className={`${zegoWhiteboardSharingLayout.page_sub}  ${
+                  this.context.whiteboard_page &&
+                  this.context.whiteboard_page > 1
+                    ? zegoWhiteboardSharingLayout.active
+                    : ""
+                }`}
+                onClick={() => {
+                  this.props.zegoSuperBoardView
+                    ?.getCurrentSuperBoardSubView()
+                    ?.flipToPrePage();
+                }}
+              ></a>
+              <span className={zegoWhiteboardSharingLayout.page_value}>
+                {this.context.whiteboard_page}
+              </span>
+              <span className={zegoWhiteboardSharingLayout.page_value_total}>
+                /5
+              </span>
+              <a
+                className={`${zegoWhiteboardSharingLayout.page_add} ${
+                  this.context.whiteboard_page &&
+                  this.context.whiteboard_page < 5
+                    ? zegoWhiteboardSharingLayout.active
+                    : ""
+                }`}
+                onClick={() => {
+                  this.props.zegoSuperBoardView
+                    ?.getCurrentSuperBoardSubView()
+                    ?.flipToNextPage();
+                }}
+              ></a>
+            </div>
           </div>
+
           <ZegoWhiteboardTools
             onToolChange={(type: number, fontSize?: number, color?: string) => {
               if (type === 512) {

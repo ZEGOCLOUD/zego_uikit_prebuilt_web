@@ -1,22 +1,22 @@
+@import "../../../../../var.scss";
 .textTools {
   position: absolute;
-  top: 33.5%;
-  right: 61px;
+  top: vw(-204px);
+  right: vw(105px);
   z-index: 110;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  width: 200px;
-  padding: 16px;
-  background-color: #ffffff;
-  border: 1px solid #f2f2f2;
-  border-radius: 6px;
-  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.04);
+  width: vw(400px);
+  padding: vw(32px);
+  background-color: #ffffff !important;
+  border: vw(2px) solid #f2f2f2;
+  border-radius: vw(12px);
+  box-shadow: 0px vw(4px) vw(16px) 0px rgba(0, 0, 0, 0.04);
   div {
     margin: 0;
     padding: 0;
   }
-
   .textTools_font,
   .textTools_size,
   .textTools_color {
@@ -24,15 +24,15 @@
     height: auto;
     color: #666666;
     font-weight: 400;
-    font-size: 12px !important;
-    line-height: 17px;
+    font-size: vw(24px) !important;
+    line-height: vw(34px);
     ul {
       display: flex;
       flex-direction: row;
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      margin-top: 8px;
+      margin-top: vw(16px);
       li {
         display: flex;
         align-items: center;
@@ -48,10 +48,10 @@
   }
   .textTools_font {
     li {
-      width: 24px;
-      height: 24px;
-      margin-right: 10px;
-      border-radius: 6px;
+      width: vw(48px);
+      height: vw(48px);
+      margin-right: vw(20px);
+      border-radius: vw(12px);
       &.selected {
         color: #ffffff;
         background-color: #0055ff;
@@ -59,15 +59,15 @@
     }
   }
   .textTools_size {
-    margin-top: 16px;
+    margin-top: vw(32px);
     li {
-      width: 24px;
-      height: 24px;
-      margin-right: 10px;
+      width: vw(48px);
+      height: vw(48px);
+      margin-right: vw(20px);
       color: #2a2a2a;
       font-weight: 400;
-      line-height: 16px;
-      border-radius: 6px;
+      line-height: vw(32px);
+      border-radius: vw(12px);
       &.selected {
         color: #ffffff;
         background-color: #0055ff;
@@ -75,15 +75,15 @@
     }
   }
   .textTools_color {
-    margin-top: 16px;
+    margin-top: vw(32px);
     ul {
       flex-wrap: wrap;
       li {
         box-sizing: border-box;
-        width: 16px;
-        height: 16px;
-        margin-right: 14px;
-        margin-bottom: 8px;
+        width: vw(32px);
+        height: vw(32px);
+        margin-right: vw(28px);
+        margin-bottom: vw(16px);
 
         border-radius: 50%;
         &.selected {
@@ -93,7 +93,7 @@
         }
       }
       li:first-child {
-        border: 2px solid #dedede;
+        border: vw(4px) solid #dedede;
       }
       li:nth-child(6n + 6) {
         margin-right: 0px;

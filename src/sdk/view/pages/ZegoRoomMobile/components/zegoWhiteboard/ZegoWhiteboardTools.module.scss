@@ -2,14 +2,15 @@
 .tools {
   position: absolute;
   right: vw(20px);
-  bottom: vw(182px);
+  bottom: vw(172px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   width: vw(96px);
   height: auto;
-  padding: 4px 0px;
+  padding: vw(16px) vw(8px);
   background: #ffffff;
   border-radius: 10px;
   box-shadow: 0px vw(4px) vw(16px) 0px rgba(0, 0, 0, 0.08);
@@ -24,15 +25,17 @@
   .tool_snapshot,
   .tool_hide,
   .tool_show {
+    position: relative;
     box-sizing: border-box;
-    width: vw(64px);
-    height: vw(64px);
-    margin: 0px vw(16px) vw(8px) vw(16px);
+    width: vw(68px);
+    height: vw(68px);
+    margin: 0px vw(14px) vw(8px) vw(14px);
     padding: vw(14px);
     background-repeat: no-repeat;
     background-position: center;
     background-size: vw(36px);
     border-radius: vw(12px);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     &:hover {
       background-color: #f5f7fa;
       cursor: pointer;

@@ -12,6 +12,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-sizing: border-box;
     height: vw(84px);
     padding: vw(12px) vw(12px) vw(12px) vw(24px);
     background: #ffffff;
@@ -52,15 +53,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 146px;
-      height: 34px;
+      box-sizing: border-box;
+      width: vw(240px);
+      height: vw(60px);
+      padding: vw(10px) vw(15px) vw(10px) vw(15px);
       color: #ff4a50;
       font-weight: 400;
-      font-size: 16px;
-      line-height: 22px;
+      font-size: vw(27px);
+      line-height: vw(40px);
       background: #ffffff;
-      border: 1px solid #ff4a50;
-      border-radius: 6px;
+      border: vw(2px) solid #ff4a50;
+      border-radius: vw(12px);
       &:hover {
         cursor: pointer;
       }
@@ -68,47 +71,46 @@
   }
   .content {
     display: flex;
-    flex: 1;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    height: vw(384px);
+    margin: vw(153px) 0 vw(290px) 0;
     background: #f2f2f2;
   }
   .page {
-    position: absolute;
-    bottom: vw(154px);
-    left: 50%;
     display: flex;
-    align-items: center;
     justify-content: center;
-    width: vw(256px);
-    height: vw(68px);
-    padding: vw(14px);
-    border: 2px solid #dedede;
-    border-radius: vw(12px);
-    transform: translateX(-50%);
-    a {
-      display: inline-block;
-      width: vw(40px);
-      height: vw(40px);
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: 18px;
-      border-radius: 6px;
-    }
-    .page_sub {
-      margin-right: vw(34px);
-      background-image: url(../../../../sdkAssets/icon_left_gray@2x.png);
-      &.active {
-        background-image: url(../../../../sdkAssets/icon_left_blue@2x.png);
+    width: 100%;
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: vw(256px);
+      height: vw(68px);
+      border-radius: vw(12px);
+      a {
+        display: inline-block;
+        width: vw(40px);
+        height: vw(40px);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 18px;
+        border-radius: 6px;
       }
-    }
-    .page_add {
-      margin-left: vw(34px);
-      background-image: url(../../../../sdkAssets/icon_right_gray@2x.png);
-      &.active {
-        background-image: url(../../../../sdkAssets/icon_right_blue@2x.png);
+      .page_sub {
+        margin-right: vw(44px);
+        background-image: url(../../../../sdkAssets/icon_left_gray@2x.png);
+        &.active {
+          background-image: url(../../../../sdkAssets/icon_left_blue@2x.png);
+        }
+      }
+      .page_add {
+        margin-left: vw(46px);
+        background-image: url(../../../../sdkAssets/icon_right_gray@2x.png);
+        &.active {
+          background-image: url(../../../../sdkAssets/icon_right_blue@2x.png);
+        }
       }
     }
   }

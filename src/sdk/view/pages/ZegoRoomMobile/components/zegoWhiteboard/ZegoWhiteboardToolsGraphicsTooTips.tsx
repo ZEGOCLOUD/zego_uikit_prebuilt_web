@@ -38,9 +38,6 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
     return (
       <div
         className={`${ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools} ZegoWhiteboardToolsGraphicsTooTips`}
-        ref={(el) => {
-          // console.error("graphicsTools", el);
-        }}
       >
         <div
           className={ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools_react}
