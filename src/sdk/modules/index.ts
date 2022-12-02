@@ -714,26 +714,20 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.on(
       "roomUserUpdate",
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
-        console.warn("【ZEGOCLOUD】roomUserUpdate", updateType, userList);
-        this.onRemoteUserUpdateCallBack &&
+        console.warn(
+          "【ZEGOCLOUD】roomUserUpdate",
+          updateType,
+          userList,
+          this.onRemoteUserUpdateCallBack
+        );
+        if (this.onRemoteUserUpdateCallBack) {
           this.onRemoteUserUpdateCallBack(roomID, updateType, userList);
-        setTimeout(() => {
-          const newUserList = userList.map((user) => {
-            user.setUserAvatar = (avatar: string) => {
-              if (avatar && typeof avatar === "string") {
-                this.zum.updateUserInfo(user.userID, "avatar", avatar);
-              }
-            };
-            return user;
-          });
-          if (updateType === "ADD") {
-            this._config.onUserAvatarSetter &&
-              this._config.onUserAvatarSetter(newUserList);
-            this._config.onUserJoin && this._config.onUserJoin(userList);
-          } else {
-            this._config.onUserLeave && this._config.onUserLeave(userList);
-          }
-        }, 0);
+        } else {
+          setTimeout(() => {
+            this.onRemoteUserUpdateCallBack &&
+              this.onRemoteUserUpdateCallBack(roomID, updateType, userList);
+          }, 1000);
+        }
       }
     );
     ZegoCloudRTCCore._zg.on(
@@ -1111,8 +1105,30 @@ export class ZegoCloudRTCCore {
           this.onRemoteUserUpdateCallBack(roomID, updateType, users);
         }, 1000);
       } else if (this._currentPage === "Room") {
+        // 人员进出通知
         func(roomID, updateType, users);
+
+        // 本地数据管理
         await this.zum.userUpdate(roomID, updateType, users);
+
+        // 用户监听回调
+        const newUserList = users.map((user) => {
+          user.setUserAvatar = (avatar: string) => {
+            if (avatar && typeof avatar === "string") {
+              this.zum.updateUserInfo(user.userID, "avatar", avatar);
+            }
+          };
+          return user;
+        });
+        if (updateType === "ADD") {
+          this._config.onUserAvatarSetter &&
+            this._config.onUserAvatarSetter(newUserList);
+          this._config.onUserJoin && this._config.onUserJoin(users);
+        } else {
+          this._config.onUserLeave && this._config.onUserLeave(users);
+        }
+
+        // 页面渲染
         setTimeout(() => {
           console.warn(
             "【ZEGOCLOUD】roomUserUpdate",
