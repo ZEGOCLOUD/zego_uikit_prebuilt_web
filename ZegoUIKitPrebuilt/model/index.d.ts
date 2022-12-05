@@ -1,4 +1,5 @@
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import { ZegoSuperBoardManager, ZegoSuperBoardView } from "zego-superboard-web";
 import { ZegoCloudRTCCore } from "../modules";
 import { ZegoCloudUser, ZegoCloudUserList } from "../modules/tools/UserListManager";
 export interface ZegoCloudRemoteMedia {
@@ -102,6 +103,12 @@ export interface ZegoCloudRoomConfig {
     leaveRoomCallback?: () => void;
     userUpdateCallback?: (updateType: "DELETE" | "ADD", userList: ZegoUser[]) => void;
     roomTimerDisplayed?: boolean;
+    whiteboardConfig?: {
+        showAddImageButton?: boolean;
+    };
+    plugins?: {
+        ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+    };
 }
 export interface ZegoBrowserCheckProp {
     core: ZegoCloudRTCCore;
@@ -165,6 +172,24 @@ export interface ZegoScreenSharingLayoutProps {
     screenSharingUser: ZegoCloudUser;
     soundLevel?: SoundLevelMap;
     handleFullScreen?: (fullScreen: boolean) => void;
+}
+export interface ZegoWhiteboardSharingLayoutProps {
+    handleSetPin?: Function;
+    userList: ZegoCloudUserList;
+    videoShowNumber: number;
+    selfInfo: {
+        userID: string;
+    };
+    roomID?: String;
+    isSelfScreen?: boolean;
+    onShow: (el: HTMLDivElement) => void;
+    onResize: (el: HTMLDivElement) => void;
+    onclose: () => void;
+    onToolChange: (type: number, fontSize?: number, color?: string) => void;
+    onFontChange: (font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC", fontSize?: number, color?: string) => void;
+    soundLevel?: SoundLevelMap;
+    handleFullScreen?: (fullScreen: boolean) => void;
+    zegoSuperBoardView?: ZegoSuperBoardView | null;
 }
 export interface SoundLevelMap {
     [userID: string]: {

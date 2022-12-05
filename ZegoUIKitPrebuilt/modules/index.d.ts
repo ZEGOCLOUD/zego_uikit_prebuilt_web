@@ -4,6 +4,7 @@ import { ZegoDeviceInfo, ZegoLocalStreamConfig, ZegoPublishStreamConfig, ZegoSer
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoCloudRemoteMedia, ZegoCloudRoomConfig, ZegoUser } from "../model";
 import { ZegoCloudUserList, ZegoCloudUserListManager } from "./tools/UserListManager";
+import { ZegoSuperBoardManager, ZegoSuperBoardView } from "zego-superboard-web";
 export declare class ZegoCloudRTCCore {
     static _instance: ZegoCloudRTCCore;
     static _zg: ZegoExpressEngine;
@@ -16,6 +17,8 @@ export declare class ZegoCloudRTCCore {
         token: string;
         avatar?: string;
     };
+    zegoSuperBoard: ZegoSuperBoardManager;
+    zegoSuperBoardView: ZegoSuperBoardView | null | undefined;
     static getInstance(kitToken: string): ZegoCloudRTCCore;
     status: {
         loginRsp: boolean;
@@ -54,9 +57,13 @@ export declare class ZegoCloudRTCCore {
     getSpeakers(): Promise<ZegoDeviceInfo[]>;
     setVolume(media: HTMLVideoElement, volume: number): void;
     createStream(source?: ZegoLocalStreamConfig): Promise<MediaStream>;
+    createAndPublishWhiteboard(parentDom: HTMLDivElement, name: string): Promise<ZegoSuperBoardView>;
+    setWhiteboardToolType(type: number, fontSize?: number, color?: string): void;
+    setWhiteboardFont(font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC", fontSize?: number, color?: string): void;
     setVideoConfig(media: MediaStream, constraints: ZegoPublishStreamConfig): Promise<ZegoServerResponse>;
     stopPublishingStream(streamID: string): boolean;
     destroyStream(stream: MediaStream): void;
+    destroyAndStopPublishWhiteboard(): void;
     useCameraDevice(media: MediaStream, deviceID: string): Promise<ZegoServerResponse>;
     useMicrophoneDevice(media: MediaStream, deviceID: string): Promise<ZegoServerResponse>;
     useSpeakerDevice(media: HTMLMediaElement, deviceID: string): Promise<ZegoServerResponse>;
@@ -82,6 +89,8 @@ export declare class ZegoCloudRTCCore {
     subscribeUserList(callback: (userList: ZegoCloudUserList) => void): void;
     private subscribeScreenStreamCallBack;
     subscribeScreenStream(callback: (userList: ZegoCloudUserList) => void): void;
+    subscribeWhiteBoardCallBack: (zegoSuperBoardView: ZegoSuperBoardView | null) => void;
+    subscribeWhiteBoard(callback: (zegoSuperBoardView: ZegoSuperBoardView | null) => void): void;
     private onRemoteMediaUpdateCallBack;
     private onNetworkStatusQualityCallBack;
     onNetworkStatusQuality(func: (roomID: string, level: number) => void): void;

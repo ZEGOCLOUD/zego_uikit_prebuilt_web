@@ -24,10 +24,8 @@
     const roomID = 'room01';
     const userID = Math.floor(Math.random() * 10000) + "";
     const userName = "userName" + userID;
-    //   1484647939,
-    //   "22076fd0a8388f31dc1f6e344171....",
-    const appID = 1484647939;
-    const serverSecret = "22076fd0a8388f31dc1f6e344171b2b1";
+    const appID = 11111;
+    const serverSecret = "22076fd0a8388.......";
     const TOKEN = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, userID, userName);
 
 
@@ -35,24 +33,14 @@
     const zp = ZegoUIKitPrebuilt.create(TOKEN);
     zp.joinRoom({
         container: document.querySelector("#root"),
-        // sharedLinks: [{
-        //     name: 'Join as Host',
-        //     url: window.location.origin + window.location.pathname + '?roomID=' + roomID,
-        // }],
+        sharedLinks: [{
+            name: 'Join as Host',
+            url: window.location.origin + window.location.pathname + '?roomID=' + roomID,
+        }],
         scenario: {
             mode: ZegoUIKitPrebuilt.OneONoneCall, //  To implement group calls, modify the parameter here to [ZegoUIKitPrebuilt.GroupCall].
         },
-        showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
-        showMyMicrophoneToggleButton: false,  // 是否显示控制自己摄像头按钮,默认显示
-        showAudioVideoSettingsButton: false, // 是否显示音视频设置按钮,默认显示
-        showTextChat: false, // 是否开启聊天，默认开启
-        showUserList: false, //是否显示成员列表，默认不展示
-        showLeavingView: false,
-        layout: 'Grid',
-        sharedLinks: [],
-        showLayoutButton: false,
-        showPinButton: false,
-        showScreenSharingButton: false
+
     });
 </script>
 

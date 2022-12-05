@@ -2,6 +2,7 @@
 import React, { RefObject } from "react";
 import { SoundLevelMap, ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoNotification } from "../../../model";
 import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
+import { ZegoSuperBoardView } from "zego-superboard-web";
 export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     state: {
         localStream: undefined | MediaStream;
@@ -29,7 +30,10 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
         liveCountdown: number;
         liveStatus: "1" | "0";
         isScreenSharingBySelf: boolean;
+        isWhiteboardSharingBySelf: boolean;
         screenSharingStream: undefined | MediaStream;
+        zegoSuperBoardView: ZegoSuperBoardView | null;
+        isZegoWhiteboardSharing: boolean;
         screenSharingUserList: ZegoCloudUserList;
         showZegoSettings: boolean;
         haveUnReadMsg: boolean;
@@ -44,6 +48,7 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
     localStreamID: string;
     screenSharingStreamID: string;
     isCreatingScreenSharing: boolean;
+    isCreatingWhiteboardSharing: boolean;
     fullScreen: boolean;
     showNotSupported: number;
     notSupportMultipleVideoNotice: number;
@@ -73,6 +78,9 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
     toggleScreenSharing(): Promise<void>;
     createScreenSharing(): Promise<void>;
     closeScreenSharing(): void;
+    toggleWhiteboardSharing(): Promise<void>;
+    createWhiteboardSharing(): Promise<void>;
+    closeWhiteboardSharing(): void;
     toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE"): void;
     sendMessage(msg: string): Promise<void>;
     openSettings(): void;

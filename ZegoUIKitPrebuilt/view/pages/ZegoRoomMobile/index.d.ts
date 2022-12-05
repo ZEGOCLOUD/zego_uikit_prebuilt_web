@@ -3,12 +3,13 @@ import React from "react";
 import { SoundLevelMap, ZegoBroadcastMessageInfo2, ZegoBrowserCheckProp, ZegoNotification } from "../../../model";
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoDeviceInfo } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web";
+import { ZegoSuperBoardView } from "zego-superboard-web";
 import { ZegoCloudUserList } from "../../../modules/tools/UserListManager";
 export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     static contextType: React.Context<import("../context/showManage").ShowManageType>;
     state: {
         localStream: undefined | MediaStream;
-        layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE";
+        layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE" | "WHITEBOARD";
         userLayoutStatus: "Auto" | "Grid" | "Sidebar";
         zegoCloudUserList: ZegoCloudUserList;
         memberList: ZegoCloudUserList;
@@ -26,6 +27,8 @@ export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheck
         liveCountdown: number;
         liveStatus: "1" | "0";
         screenSharingUserList: ZegoCloudUserList;
+        zegoSuperBoardView: ZegoSuperBoardView | null;
+        isZegoWhiteboardSharing: boolean;
     };
     micStatus: -1 | 0 | 1;
     cameraStatus: -1 | 0 | 1;
@@ -58,7 +61,7 @@ export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheck
     toggleMic(): Promise<void>;
     toggleCamera(): Promise<void>;
     switchCamera(): Promise<void>;
-    toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT"): void;
+    toggleLayOut(layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "WHITEBOARD"): void;
     sendMessage(msg: string): Promise<void>;
     onblur: (e: {
         path?: any[];
@@ -77,5 +80,9 @@ export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheck
     clickVideo(e: MouseEvent): void;
     setLive(): Promise<void>;
     liveCountdownTimer(): void;
+    toggleWhiteboardSharing(): Promise<void>;
+    isCreatingWhiteboardSharing: boolean;
+    createWhiteboardSharing(): Promise<void>;
+    closeWhiteboardSharing(): void;
     render(): React.ReactNode;
 }

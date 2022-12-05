@@ -94,6 +94,11 @@
       }
       li:first-child {
         border: vw(4px) solid #dedede;
+        &.selected {
+          background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@3x.png);
+          background-position: center;
+          background-size: contain;
+        }
       }
       li:nth-child(6n + 6) {
         margin-right: 0px;
