@@ -10,7 +10,7 @@
     height: 54px;
     padding: 0 25px 0 30px;
     background: #ffffff;
-    border-radius: 14px;
+    // border-radius: 14px;
     .toolLeft {
       display: flex;
       align-items: center;
@@ -144,6 +144,10 @@
         }
         .page_value {
           background: #f5f7fa;
+          border-radius: 6px;
+        }
+        .page_value_total {
+          color: #666666;
         }
       }
     }
@@ -151,6 +155,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      box-sizing: border-box;
       width: 146px;
       height: 34px;
       color: #ff4a50;
@@ -161,7 +166,8 @@
       border: 1px solid #ff4a50;
       border-radius: 6px;
       &:hover {
-        // color: #ffffff;
+        color: #ffffff;
+        background: #ff4a50;
         // background-color: rgb(69, 42, 239);
         // border: 1px solid #ffffff;
         cursor: pointer;

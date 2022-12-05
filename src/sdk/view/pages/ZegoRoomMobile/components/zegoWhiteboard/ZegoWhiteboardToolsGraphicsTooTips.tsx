@@ -42,7 +42,7 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
         <div
           className={ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools_react}
         >
-          <h3>形状选择</h3>
+          <h3>Shape</h3>
           <ul>
             {[8, 16, 4].map((react) => {
               return (
@@ -72,7 +72,7 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
         <div
           className={ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools_bold}
         >
-          <h3>笔触粗细</h3>
+          <h3>Thickness</h3>
           <ul>
             {[4, 6, 8, 12].map((fontSize) => {
               return (
@@ -105,7 +105,7 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
         <div
           className={ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools_color}
         >
-          <h3>笔触颜色</h3>
+          <h3>Color</h3>
           <ul>
             {[
               "#FFFFFF",

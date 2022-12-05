@@ -317,9 +317,6 @@
   &.sharing {
     background-image: url("../../../sdkAssets/icon_inner_screen_close.png");
   }
-  &.forbidden {
-    cursor: not-allowed;
-  }
 }
 .whiteboardButton {
   background-image: url("../../../sdkAssets/icon_inner_whiteboard.png");
@@ -327,6 +324,7 @@
     background-image: url("../../../sdkAssets/icon_inner_whiteboard_close.png");
   }
   &.forbidden {
+    background-image: url("../../../sdkAssets/icon_inner_whiteboard_forbid.png");
     cursor: not-allowed;
   }
 }

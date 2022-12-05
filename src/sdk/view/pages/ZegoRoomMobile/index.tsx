@@ -1677,6 +1677,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                                 this.state.isZegoWhiteboardSharing
                                   ? ZegoRoomCss.sharing
                                   : ""
+                              } ${
+                                this.state.screenSharingUserList.length > 0
+                                  ? ZegoRoomCss.forbiddenSharing
+                                  : ""
                               }`}
                             ></i>
                             <span>Whiteboard</span>

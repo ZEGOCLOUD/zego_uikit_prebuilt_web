@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "./static/css/main.607fda87.css",
-    "main.js": "./static/js/main.2a4de711.js",
+    "main.css": "./static/css/main.94cecb38.css",
+    "main.js": "./static/js/main.5e7fa9cb.js",
     "static/js/988.6b8eaea0.chunk.js": "./static/js/988.6b8eaea0.chunk.js",
     "static/media/logo_zegocloud@2x.png": "./static/media/logo_zegocloud@2x.a4c5068052a5a36bfe16.png",
     "static/media/App_logo@2x.png": "./static/media/App_logo@2x.adc9e061a5eb259bc8c1.png",
     "index.html": "./index.html",
-    "main.607fda87.css.map": "./static/css/main.607fda87.css.map",
-    "main.2a4de711.js.map": "./static/js/main.2a4de711.js.map",
+    "main.94cecb38.css.map": "./static/css/main.94cecb38.css.map",
+    "main.5e7fa9cb.js.map": "./static/js/main.5e7fa9cb.js.map",
     "988.6b8eaea0.chunk.js.map": "./static/js/988.6b8eaea0.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.607fda87.css",
-    "static/js/main.2a4de711.js"
+    "static/css/main.94cecb38.css",
+    "static/js/main.5e7fa9cb.js"
   ]
 }

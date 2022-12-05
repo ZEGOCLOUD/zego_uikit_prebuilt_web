@@ -177,6 +177,9 @@
               &.sharing {
                 background-image: url(../../../sdkAssets/icon_inner_whiteboard_close.png);
               }
+              &.forbiddenSharing {
+                background-image: url(../../../sdkAssets/icon_inner_whiteboard_forbid.png);
+              }
             }
 
             .switchCamera {

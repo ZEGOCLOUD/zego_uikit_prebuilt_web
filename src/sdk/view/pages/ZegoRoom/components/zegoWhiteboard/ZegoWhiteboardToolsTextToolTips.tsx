@@ -89,7 +89,7 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
           </ul>
         </div>
         <div className={ZegoWhiteboardToolsTextToolTipsCss.textTools_size}>
-          <h3>笔触粗细</h3>
+          <h3>Thickness</h3>
           <ul>
             {[12, 14, 16, 18].map((fontSize: number) => {
               const fontMap: { [index: number]: number } = {
@@ -125,7 +125,7 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
           </ul>
         </div>
         <div className={ZegoWhiteboardToolsTextToolTipsCss.textTools_color}>
-          <h3>笔触颜色</h3>
+          <h3>Color</h3>
           <ul>
             {[
               "#FFFFFF",

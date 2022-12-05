@@ -41,7 +41,7 @@ export class ZegoWhiteboardToolsPenTooTips extends React.PureComponent<{
         className={`${ZegoWhiteboardToolsPenToolTipsCss.penTools} ZegoWhiteboardToolsPenToolTips`}
       >
         <div className={ZegoWhiteboardToolsPenToolTipsCss.penTools_bold}>
-          <h3>笔触粗细</h3>
+          <h3>Thickness</h3>
           <ul>
             {[4, 6, 8, 10].map((fontSize) => {
               return (
@@ -71,7 +71,7 @@ export class ZegoWhiteboardToolsPenTooTips extends React.PureComponent<{
           </ul>
         </div>
         <div className={ZegoWhiteboardToolsPenToolTipsCss.penTools_color}>
-          <h3>笔触颜色</h3>
+          <h3>Color</h3>
           <ul>
             {[
               "#FFFFFF",
