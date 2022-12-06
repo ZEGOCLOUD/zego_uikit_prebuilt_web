@@ -1247,9 +1247,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             // 主动渲染
             if (this.state.isZegoWhiteboardSharing && el) {
               try {
-                this.state.zegoSuperBoardView
-                  ?.getCurrentSuperBoardSubView()
-                  ?.reloadView();
+                // this.state.zegoSuperBoardView
+                //   ?.getCurrentSuperBoardSubView()
+                //   ?.reloadView();
               } catch (error) {
                 console.warn("【ZEGOCLOUD】:reloadView", error);
               }

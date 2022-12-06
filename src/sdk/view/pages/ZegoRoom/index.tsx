@@ -735,9 +735,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 
   async toggleWhiteboardSharing() {
     if (this.getScreenSharingUser.length > 0) return;
-    if (this.state.isZegoWhiteboardSharing) {
+    if (this.state.zegoSuperBoardView) {
       this.closeWhiteboardSharing();
-    } else {
+    } else if (!this.state.isZegoWhiteboardSharing) {
       this.createWhiteboardSharing();
     }
   }
@@ -1225,7 +1225,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           roomID={this.props.core._expressConfig.roomID}
           onShow={async (el: HTMLDivElement) => {
             // 主动渲染
-            if (this.isCreatingWhiteboardSharing) {
+            if (
+              this.isCreatingWhiteboardSharing &&
+              !this.state.zegoSuperBoardView
+            ) {
               try {
                 const zegoSuperBoardView =
                   await this.props.core.createAndPublishWhiteboard(

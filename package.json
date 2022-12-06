@@ -28,7 +28,7 @@
     },
     "homepage": "./",
     "scripts": {
-        "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='live_stream' react-scripts start",
+        "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='video_conference' react-scripts start",
         "start:m": "REACT_APP_MOBILE='yes'   npm run start",
         "dev": "webpack serve --config webpack.config.sample.ts",
         "build:1on1_call": "REACT_APP_ENV='prd' REACT_APP_PATH='1on1_call' BUILD_PATH='1on1_call'  react-scripts build",

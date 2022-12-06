@@ -189,6 +189,10 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                         content:
                           "Failed to add image, this feature is not supported.",
                       });
+                    } else {
+                      ZegoToast({
+                        content: "Failed to add image," + JSON.stringify(error),
+                      });
                     }
                   });
               }}

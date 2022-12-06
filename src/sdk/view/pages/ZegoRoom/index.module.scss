@@ -317,6 +317,9 @@
   &.sharing {
     background-image: url("../../../sdkAssets/icon_inner_screen_close.png");
   }
+  &.forbidden {
+    cursor: not-allowed;
+  }
 }
 .whiteboardButton {
   background-image: url("../../../sdkAssets/icon_inner_whiteboard.png");

@@ -327,18 +327,6 @@ export class ZegoCloudRTCCore {
     this.zum.showOnlyAudioUser = !!this._config.showOnlyAudioUser;
     this.zum.setShowNonVideo(!!this._config.showNonVideoUser);
 
-    if (this._config.plugins?.ZegoSuperBoardManager) {
-      this.zegoSuperBoard =
-        this._config.plugins.ZegoSuperBoardManager.getInstance();
-      this.zegoSuperBoard.init(ZegoCloudRTCCore._zg, {
-        isTestEnv: false,
-        parentDomID: "ZegoCloudWhiteboardContainer", // 需要挂载的父容器 ID
-        appID: this._expressConfig.appID, // 申请到的 AppID
-        userID: this._expressConfig.userID, // 用户自定义生成的用户 ID
-        token: this._expressConfig.token, // 登录房间需要用于验证身份的 Token
-      });
-      this.zegoSuperBoard.setWhiteboardBackgroundColor("#ffffff");
-    }
     return true;
   }
   async checkWebRTC(): Promise<boolean> {
@@ -581,6 +569,18 @@ export class ZegoCloudRTCCore {
   async enterRoom(): Promise<number> {
     // 已经登陆过不再登录
     if (this.status.loginRsp) return Promise.resolve(0);
+    if (this._config.plugins?.ZegoSuperBoardManager) {
+      this.zegoSuperBoard =
+        this._config.plugins.ZegoSuperBoardManager.getInstance();
+      this.zegoSuperBoard.init(ZegoCloudRTCCore._zg, {
+        isTestEnv: false,
+        parentDomID: "ZegoCloudWhiteboardContainer", // 需要挂载的父容器 ID
+        appID: this._expressConfig.appID, // 申请到的 AppID
+        userID: this._expressConfig.userID, // 用户自定义生成的用户 ID
+        token: this._expressConfig.token, // 登录房间需要用于验证身份的 Token
+      });
+      this.zegoSuperBoard.setWhiteboardBackgroundColor("#ffffff");
+    }
     ZegoCloudRTCCore._zg.off("roomExtraInfoUpdate");
     ZegoCloudRTCCore._zg.off("roomStreamUpdate");
     ZegoCloudRTCCore._zg.off("remoteCameraStatusUpdate");
@@ -592,6 +592,15 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.off("publisherStateUpdate");
     ZegoCloudRTCCore._zg.off("publishQualityUpdate");
     ZegoCloudRTCCore._zg.off("soundLevelUpdate");
+
+    if (this.zegoSuperBoard) {
+      // 监听远端新增白板
+      this.zegoSuperBoard.off("remoteSuperBoardSubViewAdded");
+
+      // 监听远端销毁白板
+      this.zegoSuperBoard.off("remoteSuperBoardSubViewRemoved");
+    }
+
     ZegoCloudRTCCore._zg.on(
       "roomStreamUpdate",
       async (
