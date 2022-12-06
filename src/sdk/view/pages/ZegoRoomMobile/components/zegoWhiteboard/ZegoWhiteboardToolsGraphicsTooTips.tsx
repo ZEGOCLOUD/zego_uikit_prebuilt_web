@@ -26,7 +26,18 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
     }
   }
 
+  state = {
+    fontColor: "",
+    react: 0,
+    fontSize: 0,
+  };
+
   componentDidMount() {
+    this.setState({
+      fontColor: this.context.whiteboard_brushColor,
+      react: this.context.whiteboard_toolType,
+      fontSize: this.context.whiteboard_brushSize,
+    });
     window.document.addEventListener("click", this.OnDocumentClick.bind(this));
   }
 
@@ -59,7 +70,7 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
                     );
                   }}
                   className={
-                    this.context.whiteboard_toolType === react
+                    this.state.react === react
                       ? ZegoWhiteboardToolsGraphicsTooTipsCss.selected
                       : ""
                   }
@@ -91,7 +102,7 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
                 >
                   <i
                     className={
-                      this.context.whiteboard_brushSize === fontSize
+                      this.state.fontSize === fontSize
                         ? ZegoWhiteboardToolsGraphicsTooTipsCss.selected
                         : ""
                     }
@@ -136,7 +147,7 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
                     );
                   }}
                   className={
-                    this.context.whiteboard_brushColor === fontColor
+                    this.state.fontColor === fontColor
                       ? ZegoWhiteboardToolsGraphicsTooTipsCss.selected
                       : ""
                   }

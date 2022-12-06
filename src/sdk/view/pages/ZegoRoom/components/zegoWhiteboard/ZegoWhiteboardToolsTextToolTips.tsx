@@ -32,7 +32,22 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
     }
   }
 
+  state = {
+    font: "",
+    fontColor: "",
+    fontSize: 0,
+  };
+
   componentDidMount() {
+    this.setState({
+      font: this.context.whiteboard_isFontBold
+        ? "BOLD"
+        : this.context.whiteboard_isFontItalic
+        ? "ITALIC"
+        : "",
+      fontColor: this.context.whiteboard_brushColor,
+      fontSize: this.context.whiteboard_brushSize,
+    });
     window.document.addEventListener("click", this.OnDocumentClick.bind(this));
   }
 
@@ -112,7 +127,7 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
                     );
                   }}
                   className={
-                    this.context.whiteboard_fontSize === fontMap[fontSize]
+                    this.state.fontSize === fontSize
                       ? ZegoWhiteboardToolsTextToolTipsCss.selected
                       : ""
                   }
@@ -156,7 +171,7 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
                     );
                   }}
                   className={
-                    this.context.whiteboard_brushColor === fontColor
+                    this.state.fontColor === fontColor
                       ? ZegoWhiteboardToolsTextToolTipsCss.selected
                       : ""
                   }

@@ -27,7 +27,16 @@ export class ZegoWhiteboardToolsPenTooTips extends React.PureComponent<{
     }
   }
 
+  state = {
+    fontColor: "",
+    fontSize: 0,
+  };
+
   componentDidMount() {
+    this.setState({
+      fontColor: this.context.whiteboard_brushColor,
+      fontSize: this.context.whiteboard_brushSize,
+    });
     window.document.addEventListener("click", this.OnDocumentClick.bind(this));
   }
 
@@ -59,7 +68,7 @@ export class ZegoWhiteboardToolsPenTooTips extends React.PureComponent<{
                 >
                   <i
                     className={
-                      this.context.whiteboard_brushSize === fontSize
+                      this.state.fontSize === fontSize
                         ? ZegoWhiteboardToolsPenToolTipsCss.selected
                         : ""
                     }
@@ -101,7 +110,7 @@ export class ZegoWhiteboardToolsPenTooTips extends React.PureComponent<{
                     );
                   }}
                   className={
-                    this.context.whiteboard_brushColor === fontColor
+                    this.state.fontColor === fontColor
                       ? ZegoWhiteboardToolsPenToolTipsCss.selected
                       : ""
                   }
