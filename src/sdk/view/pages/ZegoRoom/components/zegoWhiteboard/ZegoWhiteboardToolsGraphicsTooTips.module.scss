@@ -67,19 +67,22 @@
       }
       li:nth-child(1) {
         background-image: url(../../../../../sdkAssets/icon_tools_text_react_gray@2x.png);
-        &.selected {
+        &.selected,
+        &:hover {
           background-image: url(../../../../../sdkAssets/icon_tools_text_react_blue@2x.png);
         }
       }
       li:nth-child(2) {
         background-image: url(../../../../../sdkAssets/icon_tools_text_eclipse_gray@2x.png);
-        &.selected {
+        &.selected,
+        &:hover {
           background-image: url(../../../../../sdkAssets/icon_tools_text_eclipse_blue@2x.png);
         }
       }
       li:nth-child(3) {
         background-image: url(../../../../../sdkAssets/icon_tools_text_line_gray@2x.png);
-        &.selected {
+        &.selected,
+        &:hover {
           background-image: url(../../../../../sdkAssets/icon_tools_text_line_blue@2x.png);
         }
       }
@@ -94,7 +97,8 @@
         width: 16px;
         height: 16px;
         i {
-          &.selected {
+          &.selected,
+          &:hover {
             background: #0055ff;
           }
         }

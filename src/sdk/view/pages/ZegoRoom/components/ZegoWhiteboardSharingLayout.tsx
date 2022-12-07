@@ -8,6 +8,10 @@ import { OthersVideo } from "./zegoOthersVideo";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import { ZegoWhiteboardTools } from "./zegoWhiteboard/ZegoWhiteboardTools";
 import { ZegoToast } from "../../../components/zegoToast";
+import {
+  ZegoLoadingHide,
+  ZegoLoadingShow,
+} from "../../../components/zegoLoading";
 
 export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhiteboardSharingLayoutProps> {
   container: HTMLDivElement | null = null;
@@ -176,25 +180,39 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
               ) => {
                 this.props.onFontChange(font, fontSize, color);
               }}
-              onAddImage={(file: File) => {
-                this.props.zegoSuperBoardView
+              onAddImage={async (file: File) => {
+                ZegoLoadingShow({
+                  contentText: "The picture is being uploaded",
+                });
+                const result = await this.props.zegoSuperBoardView
                   ?.getCurrentSuperBoardSubView()
                   ?.addImage(0, 10, 10, file, (res: string) => {
+                    debugger;
+                    ZegoLoadingHide();
                     ZegoToast({ content: "add Image Success!!" });
                   })
                   .catch((error: any) => {
+                    debugger;
+                    ZegoLoadingHide();
                     console.error("onAddImage:", error);
                     if (error.code == 60022) {
                       ZegoToast({
                         content:
                           "Failed to add image, this feature is not supported.",
                       });
+                    } else if (error.code == 3130009) {
+                      ZegoToast({
+                        content: "Failed to add image, Unsupported image type.",
+                      });
                     } else {
                       ZegoToast({
-                        content: "Failed to add image," + JSON.stringify(error),
+                        content:
+                          "Failed to add image, error code:" + error.code,
                       });
                     }
                   });
+
+                ZegoLoadingHide();
               }}
               onSnapshot={() => {
                 const zegoSuperBoardSubView =

@@ -63,7 +63,8 @@
       margin-left: -4px;
       li {
         i {
-          &.selected {
+          &.selected,
+          &:hover {
             background: #0055ff;
           }
         }

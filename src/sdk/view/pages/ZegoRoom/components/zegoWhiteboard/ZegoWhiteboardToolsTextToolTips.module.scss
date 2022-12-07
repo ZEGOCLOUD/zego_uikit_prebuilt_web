@@ -64,8 +64,11 @@
       margin-right: 10px;
       border-radius: 6px;
       &.selected {
-        color: #ffffff;
+        color: #ffffff !important;
         background-color: #0055ff;
+      }
+      &:hover {
+        color: #0055ff;
       }
     }
   }
@@ -80,7 +83,7 @@
       line-height: 16px;
       border-radius: 6px;
       &.selected {
-        color: #ffffff;
+        color: #ffffff !important;
         background-color: #0055ff;
       }
       &:hover {

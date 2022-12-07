@@ -8,6 +8,10 @@ import ShowPCManageContext, { ShowManageType } from "../../context/showManage";
 import { ZegoWhiteboardTools } from "./zegoWhiteboard/ZegoWhiteboardTools";
 import { ZegoToast } from "../../../components/mobile/zegoToast";
 import { FingerGestureUtils } from "../../../../fingerGestureUtil";
+import {
+  ZegoLoadingHide,
+  ZegoLoadingShow,
+} from "../../../components/zegoLoading";
 
 export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLayoutProps> {
   container: HTMLDivElement | null = null;
@@ -194,21 +198,35 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
             ) => {
               this.props.onFontChange(font, fontSize, color);
             }}
-            onAddImage={(file: File) => {
-              this.props.zegoSuperBoardView
+            onAddImage={async (file: File) => {
+              ZegoLoadingShow({
+                contentText: "The picture is being uploaded",
+              });
+              const result = await this.props.zegoSuperBoardView
                 ?.getCurrentSuperBoardSubView()
                 ?.addImage(0, 10, 10, file, (res: string) => {
+                  ZegoLoadingHide();
                   ZegoToast({ content: "add Image Success!!" });
                 })
                 .catch((error: any) => {
+                  ZegoLoadingHide();
                   console.error("onAddImage:", error);
                   if (error.code == 60022) {
                     ZegoToast({
                       content:
                         "Failed to add image, this feature is not supported.",
                     });
+                  } else if (error.code == 3130009) {
+                    ZegoToast({
+                      content: "Failed to add image, Unsupported image type.",
+                    });
+                  } else {
+                    ZegoToast({
+                      content: "Failed to add image, error code:" + error.code,
+                    });
                   }
                 });
+              ZegoLoadingHide();
             }}
             onSnapshot={() => {
               const zegoSuperBoardSubView =

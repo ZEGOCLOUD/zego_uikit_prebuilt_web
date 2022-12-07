@@ -170,6 +170,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       videoShowNumber: number;
       liveStatus: "1" | "0";
       isScreenSharingBySelf: boolean;
+      isWhiteboardSharingBySelf: boolean;
       screenSharingUserList: ZegoCloudUserList;
     }
   ) {
@@ -192,7 +193,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     }
     if (
       preState.layout !== this.state.layout ||
-      preState.isScreenSharingBySelf !== this.state.isScreenSharingBySelf
+      preState.isScreenSharingBySelf !== this.state.isScreenSharingBySelf ||
+      preState.isWhiteboardSharingBySelf !==
+        this.state.isWhiteboardSharingBySelf
     ) {
       this.computeByResize();
     }

@@ -458,7 +458,15 @@ export class ZegoCloudRTCCore {
       ?.getCurrentSuperBoardSubView()
       ?.getModel().uniqueID;
 
-    uniqueID && this.zegoSuperBoard.destroySuperBoardSubView(uniqueID);
+    if (uniqueID) {
+      this.zegoSuperBoard.destroySuperBoardSubView(uniqueID);
+      this.zegoSuperBoard.setToolType(1);
+      this.zegoSuperBoard.setBrushColor("#f54326");
+      this.zegoSuperBoard.setBrushSize(6);
+      this.zegoSuperBoard.setFontItalic(false);
+      this.zegoSuperBoard.setFontBold(false);
+      this.zegoSuperBoard.setFontSize(24);
+    }
   }
 
   useCameraDevice(
@@ -664,7 +672,7 @@ export class ZegoCloudRTCCore {
             ...streamList,
           ];
         }
-        console.error("roomStreamUpdate", this.waitingHandlerStreams);
+        // console.error("roomStreamUpdate", this.waitingHandlerStreams);
       }
     );
     ZegoCloudRTCCore._zg.on(

@@ -342,8 +342,6 @@ export function chooseFile(callback: (file: File) => void): void {
   inputObj.setAttribute("style", "visibility:hidden");
   inputObj.setAttribute("accept", "image/jpeg,image/png");
   document.body.appendChild(inputObj);
-  // inputObj.value;
-  inputObj.click();
   (
     document.querySelector("#zego_whiteboard_UIKits_file") as HTMLInputElement
   ).addEventListener("change", (ev) => {
@@ -351,6 +349,7 @@ export function chooseFile(callback: (file: File) => void): void {
     target.files && callback(target.files[0]);
     document.body.removeChild(inputObj);
   });
+  inputObj.click();
 }
 
 /**

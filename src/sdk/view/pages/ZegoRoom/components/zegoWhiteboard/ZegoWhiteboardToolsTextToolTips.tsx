@@ -127,7 +127,8 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
                     );
                   }}
                   className={
-                    this.state.fontSize === fontSize
+                    this.state.fontSize === fontSize ||
+                    this.context.whiteboard_fontSize === fontMap[fontSize]
                       ? ZegoWhiteboardToolsTextToolTipsCss.selected
                       : ""
                   }
