@@ -91,9 +91,7 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
                       : ""
                   }
                   style={{ fontStyle: font }}
-                >
-                  {font.substring(0, 1)}
-                </li>
+                ></li>
               );
             })}
           </ul>

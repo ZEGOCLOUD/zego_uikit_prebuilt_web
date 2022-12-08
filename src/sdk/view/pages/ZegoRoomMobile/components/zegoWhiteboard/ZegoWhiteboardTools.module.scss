@@ -12,7 +12,8 @@
   height: auto;
   padding: vw(16px) vw(8px);
   background: #ffffff;
-  border-radius: 10px;
+  border: vw(2px) solid #f2f2f2;
+  border-radius: vw(10px);
   box-shadow: 0px vw(4px) vw(16px) 0px rgba(0, 0, 0, 0.08);
   .tool_select,
   .tool_drag,
@@ -45,7 +46,7 @@
     }
   }
   p {
-    width: 100%;
+    width: 115%;
     height: 1px;
     margin-top: vw(8px);
     background-color: #f2f2f2;
@@ -107,7 +108,7 @@
   .tool_hide {
     width: vw(36px);
     height: vw(36px);
-    margin-top: vw(8px);
+    margin: vw(8px) 0 0 0;
     background-image: url(../../../../../sdkAssets/icon_tools_up_gray@2x.png);
     &:hover {
       background-color: #ffffff;
@@ -116,7 +117,7 @@
   .tool_show {
     width: vw(36px);
     height: vw(36px);
-    margin-top: vw(8px);
+    margin: vw(8px) 0 0 0;
     background-image: url(../../../../../sdkAssets/icon_tools_down_gray@2x.png);
     &:hover {
       background-color: #ffffff;

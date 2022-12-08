@@ -186,7 +186,7 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
               if (type === 512) {
                 this.props.zegoSuperBoardView
                   ?.getCurrentSuperBoardSubView()
-                  ?.clearCurrentPage();
+                  ?.clearAllPage();
               }
 
               this.props.onToolChange(type, fontSize, color);

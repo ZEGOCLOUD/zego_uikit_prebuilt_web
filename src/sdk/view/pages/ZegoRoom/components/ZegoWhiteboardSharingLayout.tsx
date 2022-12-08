@@ -168,7 +168,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                 if (type === 512) {
                   this.props.zegoSuperBoardView
                     ?.getCurrentSuperBoardSubView()
-                    ?.clearCurrentPage();
+                    ?.clearAllPage();
                 }
 
                 this.props.onToolChange(type, fontSize, color);
@@ -187,12 +187,10 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                 const result = await this.props.zegoSuperBoardView
                   ?.getCurrentSuperBoardSubView()
                   ?.addImage(0, 10, 10, file, (res: string) => {
-                    debugger;
                     ZegoLoadingHide();
                     ZegoToast({ content: "add Image Success!!" });
                   })
                   .catch((error: any) => {
-                    debugger;
                     ZegoLoadingHide();
                     console.error("onAddImage:", error);
                     if (error.code == 60022) {

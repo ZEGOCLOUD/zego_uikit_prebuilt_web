@@ -403,12 +403,19 @@ export class ZegoCloudRTCCore {
     parentDom: HTMLDivElement,
     name: string
   ): Promise<ZegoSuperBoardView> {
+    this.zegoSuperBoard.setToolType(1);
+    this.zegoSuperBoard.setBrushColor("#333333");
+    this.zegoSuperBoard.setBrushSize(6);
+    this.zegoSuperBoard.setFontItalic(false);
+    this.zegoSuperBoard.setFontBold(false);
+    this.zegoSuperBoard.setFontSize(24);
     await this.zegoSuperBoard.createWhiteboardView({
       name,
       perPageWidth: 1480.3, // 白板每页宽度
       perPageHeight: 758.5, // 白板每页高度
       pageCount: 5, // 白板页数
     });
+
     // this.zegoSuperBoard.setBrushColor("#F64326"); not working to set default color
     return this.zegoSuperBoard.getSuperBoardView();
   }
@@ -460,12 +467,6 @@ export class ZegoCloudRTCCore {
 
     if (uniqueID) {
       this.zegoSuperBoard.destroySuperBoardSubView(uniqueID);
-      this.zegoSuperBoard.setToolType(1);
-      this.zegoSuperBoard.setBrushColor("#f54326");
-      this.zegoSuperBoard.setBrushSize(6);
-      this.zegoSuperBoard.setFontItalic(false);
-      this.zegoSuperBoard.setFontBold(false);
-      this.zegoSuperBoard.setFontSize(24);
     }
   }
 
@@ -814,6 +815,12 @@ export class ZegoCloudRTCCore {
         "remoteSuperBoardSubViewAdded",
         async (uniqueID: string) => {
           await this.zegoSuperBoard.querySuperBoardSubViewList();
+          this.zegoSuperBoard.setToolType(1);
+          this.zegoSuperBoard.setBrushColor("#333333");
+          this.zegoSuperBoard.setBrushSize(6);
+          this.zegoSuperBoard.setFontItalic(false);
+          this.zegoSuperBoard.setFontBold(false);
+          this.zegoSuperBoard.setFontSize(24);
           this.zegoSuperBoardView = this.zegoSuperBoard.getSuperBoardView();
         }
       );
@@ -872,6 +879,12 @@ export class ZegoCloudRTCCore {
         }
       );
       if (this.zegoSuperBoard) {
+        this.zegoSuperBoard.setToolType(1);
+        this.zegoSuperBoard.setBrushColor("#333333");
+        this.zegoSuperBoard.setBrushSize(6);
+        this.zegoSuperBoard.setFontItalic(false);
+        this.zegoSuperBoard.setFontBold(false);
+        this.zegoSuperBoard.setFontSize(24);
         const result: ZegoSuperBoardSubViewModel[] =
           await this.zegoSuperBoard.querySuperBoardSubViewList();
         result.length > 0 &&

@@ -26,6 +26,7 @@ export class ZegoUserVideo extends React.PureComponent<{
       this.props.volume?.[this.props.user?.streamList?.[0]?.streamID];
     const height = volume === undefined ? 7 : Math.ceil((volume * 7) / 100);
     let { userInfo } = this.context;
+
     return (
       <div className={`${zegoUserVideoCss.container} zegoUserVideo_click`}>
         {this.props.user.streamList &&
@@ -76,6 +77,7 @@ export class ZegoUserVideo extends React.PureComponent<{
                 {getNameFirstLetter(this.props.user.userName || "")}
                 {this.props.user.avatar && (
                   <img
+                    className="zegoUserVideo_click"
                     src={this.props.user.avatar}
                     onError={(e: any) => {
                       e.target.style.display = "none";
@@ -164,6 +166,7 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
               {getNameFirstLetter(this.props.user.userName || "")}
               {this.props.user.avatar && (
                 <img
+                  className="zegoUserVideo_click"
                   src={this.props.user.avatar}
                   onError={(e: any) => {
                     e.target.style.display = "none";

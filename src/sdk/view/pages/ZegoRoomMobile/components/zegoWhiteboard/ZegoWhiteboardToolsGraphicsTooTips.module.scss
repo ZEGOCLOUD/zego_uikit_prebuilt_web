@@ -2,13 +2,13 @@
 .graphicsTools {
   position: absolute;
   top: vw(-190px);
-  right: vw(105px);
+  right: vw(90px);
   z-index: 110;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   width: vw(402px);
-  padding: vw(32px);
+  padding: vw(30px) vw(30px) vw(14px) vw(30px);
   background-color: #ffffff;
   border: 1px solid #f2f2f2;
   border-radius: vw(12px);

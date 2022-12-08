@@ -397,10 +397,21 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     });
     this.props.core.subscribeWhiteBoard(
       (superBoardView: ZegoSuperBoardView | null) => {
-        this.setState({
-          zegoSuperBoardView: superBoardView,
-          isZegoWhiteboardSharing: !!superBoardView,
-        });
+        // 有变化才设置，否则不管，防止多个白板时被覆盖
+        if (
+          (!this.state.zegoSuperBoardView && superBoardView) ||
+          (this.state.zegoSuperBoardView && !superBoardView)
+        ) {
+          this.setState(
+            {
+              zegoSuperBoardView: superBoardView,
+              isZegoWhiteboardSharing: !!superBoardView,
+            },
+            () => {
+              this.computeByResize();
+            }
+          );
+        }
       }
     );
     this.props.core.onSoundLevelUpdate(
@@ -1227,6 +1238,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           handleFullScreen={this.handleFullScreen.bind(this)}
           roomID={this.props.core._expressConfig.roomID}
           onShow={async (el: HTMLDivElement) => {
+            console.error(
+              "【ZEGOCLOUD】onShow",
+              this.isCreatingWhiteboardSharing,
+              !this.state.zegoSuperBoardView
+            );
             // 主动渲染
             if (
               this.isCreatingWhiteboardSharing &&

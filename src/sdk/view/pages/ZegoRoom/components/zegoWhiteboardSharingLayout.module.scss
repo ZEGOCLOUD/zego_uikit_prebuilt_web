@@ -181,6 +181,10 @@
     justify-content: center;
     height: 100%;
     padding: 10px;
+    pre {
+      padding-right: 5px;
+      line-height: 2;
+    }
     .contentRight {
       flex: 1;
       background: #f2f2f2;

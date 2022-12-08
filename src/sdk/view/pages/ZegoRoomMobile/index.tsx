@@ -325,6 +325,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
               okText: "Okay",
               onOk: () => {
+                console.error("this.getShownUser().", this.getShownUser());
                 this.safariLimitationNoticed = 1;
               },
             });
@@ -1511,12 +1512,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         <div
           className={`${ZegoRoomCss.ZegoRoom}  ZegoRoomMobile_ZegoRoom ${
             this.props.core._config.scenario?.mode ===
-              ScenarioModel.LiveStreaming &&
-            this.props.core._config.scenario?.config?.role === LiveRole.Host
-              ? ZegoRoomCss.host
-              : this.props.core._config.scenario?.config?.role ===
-                LiveRole.Audience
-              ? ZegoRoomCss.audience
+            ScenarioModel.LiveStreaming
+              ? this.props.core._config.scenario?.config?.role === LiveRole.Host
+                ? ZegoRoomCss.host
+                : this.props.core._config.scenario?.config?.role ===
+                  LiveRole.Audience
+                ? ZegoRoomCss.audience
+                : ""
               : ""
           }`}
           onClick={(e) => {

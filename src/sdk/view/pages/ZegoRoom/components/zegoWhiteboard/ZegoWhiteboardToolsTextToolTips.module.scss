@@ -62,13 +62,24 @@
       width: 24px;
       height: 24px;
       margin-right: 10px;
+      background-position: center;
+      background-size: contain;
       border-radius: 6px;
-      &.selected {
-        color: #ffffff !important;
-        background-color: #0055ff;
-      }
+    }
+    li:first-child {
+      background-image: url(../../../../../sdkAssets/text_bold_gray@2x.png);
+      &.selected,
       &:hover {
-        color: #0055ff;
+        background-color: #0055ff;
+        background-image: url(../../../../../sdkAssets/text_bold_white@2x.png);
+      }
+    }
+    li:last-child {
+      background-image: url(../../../../../sdkAssets/text_xieti_gray@2x.png);
+      &.selected,
+      &:hover {
+        background-color: #0055ff;
+        background-image: url(../../../../../sdkAssets/text_xieti_white@2x.png);
       }
     }
   }
@@ -103,7 +114,8 @@
         margin-bottom: 8px;
 
         border-radius: 50%;
-        &.selected {
+        &.selected,
+        &:hover {
           background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@2x.png);
           background-position: center;
           background-size: contain;
@@ -111,7 +123,8 @@
       }
       li:first-child {
         border: 2px solid #dedede;
-        &.selected {
+        &.selected,
+        &:hover {
           background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@3x.png);
           background-position: center;
           background-size: contain;

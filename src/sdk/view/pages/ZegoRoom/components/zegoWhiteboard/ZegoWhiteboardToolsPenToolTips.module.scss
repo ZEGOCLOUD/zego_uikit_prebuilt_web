@@ -90,21 +90,19 @@
         height: 16px;
         margin-right: 14px;
         margin-bottom: 8px;
+        background-position: center;
+        background-size: contain;
         border-radius: 50%;
-        &.selected {
+        &.selected,
+        &:hover {
           background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@2x.png);
-          background-position: center;
-          background-size: contain;
         }
       }
       li:first-child {
-        width: 16px;
-        height: 16px;
-        border: 2px solid #dedede;
-        &.selected {
+        border: 1px solid #dedede;
+        &.selected,
+        &:hover {
           background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@3x.png);
-          background-position: center;
-          background-size: contain;
         }
       }
       li:nth-child(6n + 6) {

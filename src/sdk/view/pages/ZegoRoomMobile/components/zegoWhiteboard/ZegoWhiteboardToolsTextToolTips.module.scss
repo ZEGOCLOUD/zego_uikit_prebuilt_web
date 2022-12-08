@@ -2,13 +2,13 @@
 .textTools {
   position: absolute;
   top: vw(-204px);
-  right: vw(105px);
+  right: vw(90px);
   z-index: 110;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   width: vw(400px);
-  padding: vw(32px);
+  padding: vw(30px) vw(30px) vw(14px) vw(30px);
   background-color: #ffffff !important;
   border: vw(2px) solid #f2f2f2;
   border-radius: vw(12px);
@@ -51,10 +51,24 @@
       width: vw(48px);
       height: vw(48px);
       margin-right: vw(20px);
+      background-position: center;
+      background-size: contain;
       border-radius: vw(12px);
+    }
+    li:first-child {
+      background-color: #f5f7fa;
+      background-image: url(../../../../../sdkAssets/text_bold_gray@2x.png);
       &.selected {
-        color: #ffffff;
         background-color: #0055ff;
+        background-image: url(../../../../../sdkAssets/text_bold_white@2x.png);
+      }
+    }
+    li:last-child {
+      background-color: #f5f7fa;
+      background-image: url(../../../../../sdkAssets/text_xieti_gray@2x.png);
+      &.selected {
+        background-color: #0055ff;
+        background-image: url(../../../../../sdkAssets/text_xieti_white@2x.png);
       }
     }
   }

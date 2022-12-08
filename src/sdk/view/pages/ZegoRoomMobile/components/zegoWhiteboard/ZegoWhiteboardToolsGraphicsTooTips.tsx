@@ -35,9 +35,14 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
   componentDidMount() {
     this.setState({
       fontColor: this.context.whiteboard_brushColor,
-      react: this.context.whiteboard_toolType,
+      react: 8,
       fontSize: this.context.whiteboard_brushSize,
     });
+    this.props.onToolChange(
+      8,
+      this.context.whiteboard_brushSize!,
+      this.context.whiteboard_brushColor!
+    );
     window.document.addEventListener("click", this.OnDocumentClick.bind(this));
   }
 
