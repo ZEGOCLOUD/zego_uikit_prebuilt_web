@@ -68,6 +68,7 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
         videoShowNumber: number;
         liveStatus: "1" | "0";
         isScreenSharingBySelf: boolean;
+        isWhiteboardSharingBySelf: boolean;
         screenSharingUserList: ZegoCloudUserList;
     }): void;
     componentWillUnmount(): void;

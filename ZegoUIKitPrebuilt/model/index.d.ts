@@ -1,5 +1,5 @@
 import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { ZegoSuperBoardManager, ZegoSuperBoardView } from "zego-superboard-web";
+import { ZegoSuperBoardView } from "zego-superboard-web";
 import { ZegoCloudRTCCore } from "../modules";
 import { ZegoCloudUser, ZegoCloudUserList } from "../modules/tools/UserListManager";
 export interface ZegoCloudRemoteMedia {
@@ -106,9 +106,6 @@ export interface ZegoCloudRoomConfig {
     whiteboardConfig?: {
         showAddImageButton?: boolean;
     };
-    plugins?: {
-        ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
-    };
 }
 export interface ZegoBrowserCheckProp {
     core: ZegoCloudRTCCore;
@@ -189,6 +186,7 @@ export interface ZegoWhiteboardSharingLayoutProps {
     onFontChange: (font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC", fontSize?: number, color?: string) => void;
     soundLevel?: SoundLevelMap;
     handleFullScreen?: (fullScreen: boolean) => void;
+    onImageAdd?: () => void;
     zegoSuperBoardView?: ZegoSuperBoardView | null;
 }
 export interface SoundLevelMap {

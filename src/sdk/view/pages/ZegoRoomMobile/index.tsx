@@ -24,7 +24,7 @@ import {
   userNameColor,
   getNameFirstLetter,
   getVideoResolution,
-  isSafari,
+  isFireFox,
 } from "../../../util";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
@@ -1290,6 +1290,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             color?: string
           ) => {
             this.props.core.setWhiteboardFont(font, fontSize, color);
+          }}
+          onImageAdd={async () => {
+            if (isFireFox()) {
+              await this.switchCamera();
+              setTimeout(() => {
+                this.switchCamera();
+              }, 1000);
+            }
           }}
           zegoSuperBoardView={this.state.zegoSuperBoardView}
         ></ZegoWhiteboard>

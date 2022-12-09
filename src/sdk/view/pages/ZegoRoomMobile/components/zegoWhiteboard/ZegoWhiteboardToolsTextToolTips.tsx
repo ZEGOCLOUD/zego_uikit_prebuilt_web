@@ -47,11 +47,16 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
       fontColor: this.context.whiteboard_brushColor,
       fontSize: this.context.whiteboard_brushSize,
     });
-    window.document.addEventListener("click", this.OnDocumentClick.bind(this));
+    window.document.addEventListener(
+      "touchstart",
+      //@ts-ignore
+      this.OnDocumentClick.bind(this)
+    );
   }
 
   componentWillUnmount(): void {
-    window.document.removeEventListener("click", this.OnDocumentClick);
+    //@ts-ignore
+    window.document.removeEventListener("touchstart", this.OnDocumentClick);
   }
 
   render(): React.ReactNode {
@@ -120,7 +125,8 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
                     );
                   }}
                   className={
-                    this.state.fontSize === fontSize
+                    this.state.fontSize === fontSize ||
+                    this.context.whiteboard_fontSize === fontMap[fontSize]
                       ? ZegoWhiteboardToolsTextToolTipsCss.selected
                       : ""
                   }

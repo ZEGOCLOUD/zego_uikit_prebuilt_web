@@ -169,9 +169,9 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                   this.props.zegoSuperBoardView
                     ?.getCurrentSuperBoardSubView()
                     ?.clearAllPage();
+                } else {
+                  this.props.onToolChange(type, fontSize, color);
                 }
-
-                this.props.onToolChange(type, fontSize, color);
               }}
               onFontChange={(
                 font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",

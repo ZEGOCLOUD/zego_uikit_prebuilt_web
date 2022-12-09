@@ -8,6 +8,11 @@ export declare class ZegoWhiteboardToolsGraphicsTooTips extends React.PureCompon
     static contextType?: React.Context<ShowManageType>;
     context: React.ContextType<typeof ShowPCManageContext>;
     OnDocumentClick(ev: MouseEvent): void;
+    state: {
+        fontColor: string;
+        react: number;
+        fontSize: number;
+    };
     componentDidMount(): void;
     componentWillUnmount(): void;
     render(): React.ReactNode;

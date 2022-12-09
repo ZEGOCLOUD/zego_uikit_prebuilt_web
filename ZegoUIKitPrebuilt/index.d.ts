@@ -1,4 +1,5 @@
 import { Root } from "react-dom/client";
+import { ZegoSuperBoardManager } from "zego-superboard-web";
 import { LiveRole, LiveStreamingMode, ScenarioModel, VideoResolution, ZegoCloudRoomConfig } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
 export declare class ZegoUIKitPrebuilt {
@@ -21,6 +22,9 @@ export declare class ZegoUIKitPrebuilt {
     static generateKitTokenForTest(appID: number, serverSecret: string, roomID: string, userID: string, userName?: string, ExpirationSeconds?: number): string;
     static generateKitTokenForProduction(appID: number, token: string, roomID: string, userID: string, userName?: string): string;
     static create(kitToken: string): ZegoUIKitPrebuilt;
+    addPlugins(plugins?: {
+        ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+    }): void;
     joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
     destroy(): void;
 }

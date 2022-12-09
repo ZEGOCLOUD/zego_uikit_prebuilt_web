@@ -187,9 +187,9 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
                 this.props.zegoSuperBoardView
                   ?.getCurrentSuperBoardSubView()
                   ?.clearAllPage();
+              } else {
+                this.props.onToolChange(type, fontSize, color);
               }
-
-              this.props.onToolChange(type, fontSize, color);
             }}
             onFontChange={(
               font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
@@ -227,6 +227,7 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
                   }
                 });
               ZegoLoadingHide();
+              this.props.onImageAdd && this.props.onImageAdd();
             }}
             onSnapshot={() => {
               const zegoSuperBoardSubView =
@@ -236,7 +237,7 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
                 .then(function (data: { image: string; userData?: string }) {
                   const link = document.createElement("a");
                   link.href = data.image;
-                  link.download = "snapshot" + ".png";
+                  link.download = "snapshot.png";
                   link.click();
                 });
             }}

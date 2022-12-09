@@ -193,7 +193,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
                       : ""
                   }`}
                   onClick={() => {
-                    this.setState({ selectedTool: 8 });
+                    // this.setState({ selectedTool: 8 });
                     this.props.onToolChange(512);
                   }}
                 ></div>
@@ -294,7 +294,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
                     : ""
                 }`}
                 onClick={() => {
-                  this.setState({ selectedTool: 8 });
+                  // this.setState({ selectedTool: 8 });
                   this.props.onToolChange(512);
                 }}
               ></div>

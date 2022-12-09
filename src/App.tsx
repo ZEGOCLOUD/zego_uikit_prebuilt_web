@@ -112,7 +112,7 @@ export default class App extends React.Component {
 
       // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
       //   1484647939,
-      //   "22076fd0a8388f31dc1f6e344171....",
+      //   "22076fd0a8388f31dc1f6e344171。。。。",
       //   roomID,
       //   randomID(5),
       //   userName || getRandomName(),
@@ -120,6 +120,7 @@ export default class App extends React.Component {
       // );
 
       const zp = ZegoUIKitPrebuilt.create(token);
+      zp.addPlugins({ ZegoSuperBoardManager });
       const param: ZegoCloudRoomConfig = {
         // @ts-ignore
         container: element, // 挂载容器
@@ -149,7 +150,6 @@ export default class App extends React.Component {
         whiteboardConfig: {
           showAddImageButton: true,
         },
-        plugins: { ZegoSuperBoardManager },
         showUserList: true,
         onUserAvatarSetter: (user) => {
           user.forEach((u) => {

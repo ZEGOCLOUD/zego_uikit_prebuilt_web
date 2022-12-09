@@ -1,4 +1,5 @@
 import ReactDOM, { Root } from "react-dom/client";
+import { ZegoSuperBoardManager } from "zego-superboard-web";
 import {
   LiveRole,
   LiveStreamingMode,
@@ -69,9 +70,16 @@ export class ZegoUIKitPrebuilt {
     return ZegoUIKitPrebuilt._instance;
   }
 
+  addPlugins(plugins?: {
+    ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+  }) {
+    // @ts-ignore
+    ZegoUIKitPrebuilt.core?.addPlugins(plugins);
+  }
+
   joinRoom(roomConfig?: ZegoCloudRoomConfig) {
     if (!ZegoUIKitPrebuilt.core) {
-      console.error("【ZEGOCLOUD】 please call init first !!");
+      console.error("【ZEGOCLOUD】 please call init frst !!");
       return;
     }
     if (this.hasJoinedRoom) {

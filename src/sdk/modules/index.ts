@@ -90,7 +90,9 @@ export class ZegoCloudRTCCore {
     delete: ZegoStreamList[];
   } = { add: [], delete: [] };
 
-  _config: ZegoCloudRoomConfig = {
+  _config: ZegoCloudRoomConfig & {
+    plugins: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager };
+  } = {
     // @ts-ignore
     container: undefined, // 挂载容器
     preJoinViewConfig: {
@@ -146,8 +148,8 @@ export class ZegoCloudRTCCore {
     whiteboardConfig: {
       showAddImageButton: false, //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
     },
-    plugins: {},
     videoResolutionList: [], //视频分辨率可选列表
+    plugins: {},
   };
   _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
   extraInfoKey = "extra_info";
@@ -166,6 +168,12 @@ export class ZegoCloudRTCCore {
       (this._config.scenario.config as any).liveStreamingMode ===
         LiveStreamingMode.StandardLive
     );
+  }
+
+  addPlugins(plugins: {
+    ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+  }): void {
+    this._config.plugins = plugins;
   }
   setConfig(config: ZegoCloudRoomConfig): boolean {
     if (
@@ -459,7 +467,7 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.destroyStream(stream);
   }
 
-  destroyAndStopPublishWhiteboard(): void {
+  async destroyAndStopPublishWhiteboard(): Promise<void> {
     const uniqueID = this.zegoSuperBoard
       .getSuperBoardView()
       ?.getCurrentSuperBoardSubView()
@@ -467,6 +475,13 @@ export class ZegoCloudRTCCore {
 
     if (uniqueID) {
       this.zegoSuperBoard.destroySuperBoardSubView(uniqueID);
+    }
+
+    const result: ZegoSuperBoardSubViewModel[] =
+      await this.zegoSuperBoard.querySuperBoardSubViewList();
+
+    for (let i = 0; i < result.length; i++) {
+      await this.zegoSuperBoard.destroySuperBoardSubView(result[i].uniqueID);
     }
   }
 

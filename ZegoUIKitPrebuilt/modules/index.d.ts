@@ -36,7 +36,11 @@ export declare class ZegoCloudRTCCore {
         add: ZegoStreamList[];
         delete: ZegoStreamList[];
     };
-    _config: ZegoCloudRoomConfig;
+    _config: ZegoCloudRoomConfig & {
+        plugins: {
+            ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+        };
+    };
     _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom";
     extraInfoKey: string;
     _roomExtraInfo: {
@@ -44,6 +48,9 @@ export declare class ZegoCloudRTCCore {
     };
     NetworkStatusTimer: NodeJS.Timer | null;
     get isCDNLive(): boolean;
+    addPlugins(plugins: {
+        ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+    }): void;
     setConfig(config: ZegoCloudRoomConfig): boolean;
     checkWebRTC(): Promise<boolean>;
     setPin(userID?: string, pined?: boolean, stopUpdateUser?: boolean): void;
@@ -63,7 +70,7 @@ export declare class ZegoCloudRTCCore {
     setVideoConfig(media: MediaStream, constraints: ZegoPublishStreamConfig): Promise<ZegoServerResponse>;
     stopPublishingStream(streamID: string): boolean;
     destroyStream(stream: MediaStream): void;
-    destroyAndStopPublishWhiteboard(): void;
+    destroyAndStopPublishWhiteboard(): Promise<void>;
     useCameraDevice(media: MediaStream, deviceID: string): Promise<ZegoServerResponse>;
     useMicrophoneDevice(media: MediaStream, deviceID: string): Promise<ZegoServerResponse>;
     useSpeakerDevice(media: HTMLMediaElement, deviceID: string): Promise<ZegoServerResponse>;
