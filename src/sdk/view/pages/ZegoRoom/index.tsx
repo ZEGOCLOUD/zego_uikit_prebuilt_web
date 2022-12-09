@@ -775,7 +775,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 
     if (this.isCreatingWhiteboardSharing) return;
     this.isCreatingWhiteboardSharing = true;
-    this.setState({ isZegoWhiteboardSharing: true,isWhiteboardSharingBySelf: true, });
+    this.setState({
+      isZegoWhiteboardSharing: true,
+      isWhiteboardSharingBySelf: true,
+    });
   }
 
   closeWhiteboardSharing() {
@@ -1263,7 +1266,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                   {
                     header: "Notice",
                     contentText:
-                      "Your browser does not support screen sharing.",
+                      "Operation too frequent, failed to load the whiteboard.",
                     okText: "Okay",
                   },
                   document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)

@@ -1234,7 +1234,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           roomID={this.props.core._expressConfig.roomID}
           onShow={async (el: HTMLDivElement) => {
             // 主动渲染
-            if (this.isCreatingWhiteboardSharing) {
+            if (
+              this.isCreatingWhiteboardSharing &&
+              !this.state.zegoSuperBoardView
+            ) {
               try {
                 const zegoSuperBoardView =
                   await this.props.core.createAndPublishWhiteboard(
@@ -1250,7 +1253,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 ZegoModelShow(
                   {
                     header: "Notice",
-                    contentText: "Your browser sharing whiteboard failed.",
+                    contentText:
+                      "Operation too frequent, failed to load the whiteboard.",
                     okText: "Okay",
                   },
                   document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
@@ -1458,7 +1462,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (this.state.screenSharingUserList.length > 0) return;
     if (this.state.isZegoWhiteboardSharing) {
       this.closeWhiteboardSharing();
-    } else {
+    } else if (!this.state.isZegoWhiteboardSharing) {
       this.createWhiteboardSharing();
     }
   }
