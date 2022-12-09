@@ -1246,11 +1246,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                   zegoSuperBoardView,
                 });
               } catch (error: any) {
+                console.error("createAndPublishWhiteboard", error);
                 ZegoModelShow(
                   {
                     header: "Notice",
-                    contentText:
-                      "Your browser does not support screen sharing.",
+                    contentText: "Your browser sharing whiteboard failed.",
                     okText: "Okay",
                   },
                   document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
