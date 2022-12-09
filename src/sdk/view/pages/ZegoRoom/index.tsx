@@ -69,7 +69,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     liveCountdown: number;
     liveStatus: "1" | "0";
     isScreenSharingBySelf: boolean; // 自己是否正在屏幕共享
-    isWhiteboardSharingBySelf: boolean; // 自己是否正在白板共享
+
     screenSharingStream: undefined | MediaStream; // 本地屏幕共享流
     zegoSuperBoardView: ZegoSuperBoardView | null; // 本地白板共享
     isZegoWhiteboardSharing: boolean; // 是否开启白板共享
@@ -104,7 +104,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     liveCountdown: -1,
     liveStatus: "0",
     isScreenSharingBySelf: false,
-    isWhiteboardSharingBySelf: false,
+
     screenSharingStream: undefined,
     zegoSuperBoardView: null,
     screenSharingUserList: [],
@@ -170,7 +170,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       videoShowNumber: number;
       liveStatus: "1" | "0";
       isScreenSharingBySelf: boolean;
-      isWhiteboardSharingBySelf: boolean;
+      isZegoWhiteboardSharing: boolean;
       screenSharingUserList: ZegoCloudUserList;
     }
   ) {
@@ -194,8 +194,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     if (
       preState.layout !== this.state.layout ||
       preState.isScreenSharingBySelf !== this.state.isScreenSharingBySelf ||
-      preState.isWhiteboardSharingBySelf !==
-        this.state.isWhiteboardSharingBySelf
+      preState.isZegoWhiteboardSharing !== this.state.isZegoWhiteboardSharing
     ) {
       this.computeByResize();
     }
@@ -775,10 +774,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 
     if (this.isCreatingWhiteboardSharing) return;
     this.isCreatingWhiteboardSharing = true;
-    this.setState({
-      isZegoWhiteboardSharing: true,
-      isWhiteboardSharingBySelf: true,
-    });
+    this.setState({ isZegoWhiteboardSharing: true });
   }
 
   closeWhiteboardSharing() {
@@ -786,7 +782,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       this.state.zegoSuperBoardView &&
         this.props.core.destroyAndStopPublishWhiteboard();
       this.setState({
-        isWhiteboardSharingBySelf: false,
         isZegoWhiteboardSharing: false,
         zegoSuperBoardView: null,
       });
@@ -932,7 +927,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     ) {
       //Screen Sidebar
       const videWrapHight =
-        height - (this.props.core._config.branding?.logoURL ? 64 : 0) - 84 - 38;
+        height -
+        (this.props.core._config.branding?.logoURL ? 64 : 0) -
+        84 -
+        (this.state.isZegoWhiteboardSharing ? 0 : 38);
       const n = parseInt(String(videWrapHight / 124)) || 1;
       videoShowNumber = Math.min(
         n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
@@ -1236,7 +1234,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           selfInfo={{
             userID: this.props.core._expressConfig.userID,
           }}
-          isSelfScreen={this.state.isWhiteboardSharingBySelf}
           soundLevel={this.state.soundLevel}
           handleFullScreen={this.handleFullScreen.bind(this)}
           roomID={this.props.core._expressConfig.roomID}
@@ -1258,7 +1255,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                     this.props.core._expressConfig.userName
                   );
                 this.setState({
-                  isWhiteboardSharingBySelf: true,
                   zegoSuperBoardView,
                 });
               } catch (error: any) {
