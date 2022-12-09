@@ -206,7 +206,6 @@ export interface ZegoWhiteboardSharingLayoutProps {
     userID: string;
   };
   roomID?: String;
-  isSelfScreen?: boolean;
   onShow: (el: HTMLDivElement) => void;
   onResize: (el: HTMLDivElement) => void;
   onclose: () => void;
