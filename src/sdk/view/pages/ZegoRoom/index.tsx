@@ -775,7 +775,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 
     if (this.isCreatingWhiteboardSharing) return;
     this.isCreatingWhiteboardSharing = true;
-    this.setState({ isZegoWhiteboardSharing: true });
+    this.setState({ isZegoWhiteboardSharing: true,isWhiteboardSharingBySelf: true, });
   }
 
   closeWhiteboardSharing() {

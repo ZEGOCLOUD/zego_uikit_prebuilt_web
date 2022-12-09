@@ -169,6 +169,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
         this.setState({
           localVideoStream,
+          isVideoOpening: false,
         });
       }
     } catch (error) {
@@ -370,19 +371,14 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 </div>
               )}
             {(this.props.core._config.showMyCameraToggleButton ||
-              this.props.core._config.turnOnCameraWhenJoining) &&
-              !this.state.videoOpen &&
-              !this.state.isVideoOpening && (
-                <div className={ZegoBrowserCheckCss.videoTip}>
-                  Camera is off
-                </div>
-              )}
-            {this.state.isVideoOpening && (
+              this.props.core._config.turnOnCameraWhenJoining) && (
               <div className={ZegoBrowserCheckCss.videoTip}>
-                Camera is starting…
+                {!this.state.videoOpen &&
+                  !this.state.isVideoOpening &&
+                  "Camera is off"}
+                {this.state.isVideoOpening && "Camera is starting…"}
               </div>
             )}
-
             <div className={ZegoBrowserCheckCss.toolsWrapper}>
               {this.props.core._config.showMyMicrophoneToggleButton && (
                 <div
