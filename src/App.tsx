@@ -104,24 +104,30 @@ export default class App extends React.Component {
     }
 
     this.myMeeting = async (element: HTMLDivElement) => {
-      let { token } = await generateToken(
-        randomID(5),
-        roomID,
-        userName || getRandomName()
-      );
-
-      // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      //   1484647939,
-      //   "22076fd0a8388f31dc1f6e344171。。。。",
-      //   roomID,
+      // let { token } = await generateToken(
       //   randomID(5),
-      //   userName || getRandomName(),
-      //   7200
+      //   roomID,
+      //   userName || getRandomName()
       // );
+
+      let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+        1484647939,
+        "22076fd0a8388f31dc1f6e344171b2b1",
+        roomID,
+        randomID(5),
+        userName || getRandomName(),
+        7200
+      );
 
       const zp = ZegoUIKitPrebuilt.create(token);
       zp.addPlugins({ ZegoSuperBoardManager });
       const param: ZegoCloudRoomConfig = {
+        turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
+        turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
+        showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
+        showMyMicrophoneToggleButton: false, // 是否显示控制自己摄像头按钮,默认显示
+        showAudioVideoSettingsButton: false, // 是否显示音视频设置按钮,默认显示
+        showNonVideoUser: false,
         // @ts-ignore
         container: element, // 挂载容器
         preJoinViewConfig: {
