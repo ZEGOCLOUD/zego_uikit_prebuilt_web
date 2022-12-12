@@ -68,18 +68,24 @@
     }
     li:first-child {
       background-image: url(../../../../../sdkAssets/text_bold_gray@2x.png);
-      &.selected,
-      &:hover {
+      &.selected {
         background-color: #0055ff;
-        background-image: url(../../../../../sdkAssets/text_bold_white@2x.png);
+        background-image: url(../../../../../sdkAssets/text_bold_white@2x.png) !important;
+      }
+      &:hover {
+        // color: #0055ff;
+        background-image: url(../../../../../sdkAssets/text_bold_blue@2x.png);
       }
     }
     li:last-child {
       background-image: url(../../../../../sdkAssets/text_xieti_gray@2x.png);
-      &.selected,
-      &:hover {
+      &.selected {
         background-color: #0055ff;
-        background-image: url(../../../../../sdkAssets/text_xieti_white@2x.png);
+        background-image: url(../../../../../sdkAssets/text_xieti_white@2x.png) !important;
+      }
+      &:hover {
+        background-image: url(../../../../../sdkAssets/text_xieti_blue@2x.png);
+        // color: #0055ff;
       }
     }
   }

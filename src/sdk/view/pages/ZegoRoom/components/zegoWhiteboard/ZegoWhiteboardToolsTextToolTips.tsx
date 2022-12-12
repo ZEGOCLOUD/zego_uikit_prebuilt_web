@@ -4,6 +4,20 @@ import ShowPCManageContext, {
 } from "../../../context/showManage";
 import ZegoWhiteboardToolsTextToolTipsCss from "./ZegoWhiteboardToolsTextToolTips.module.scss";
 
+const fontMap: { [index: number]: number } = {
+  12: 18,
+  14: 24,
+  16: 36,
+  18: 48,
+};
+
+const fontMapRevers: { [index: number]: number } = {
+  18: 12,
+  24: 14,
+  36: 16,
+  48: 18,
+};
+
 export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
   onFontChange: (
     font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
@@ -33,20 +47,18 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
   }
 
   state = {
-    font: "",
     fontColor: "",
     fontSize: 0,
+    isFontBold: false,
+    isFontItalic: false,
   };
 
   componentDidMount() {
     this.setState({
-      font: this.context.whiteboard_isFontBold
-        ? "BOLD"
-        : this.context.whiteboard_isFontItalic
-        ? "ITALIC"
-        : "",
       fontColor: this.context.whiteboard_brushColor,
-      fontSize: this.context.whiteboard_brushSize,
+      fontSize: fontMapRevers[this.context.whiteboard_fontSize!],
+      isFontBold: this.context.whiteboard_isFontBold,
+      isFontItalic: this.context.whiteboard_isFontItalic,
     });
     window.document.addEventListener("click", this.OnDocumentClick.bind(this));
   }
@@ -72,26 +84,35 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
                 <li
                   key={font}
                   onClick={() => {
-                    if (font === "BOLD" && this.context.whiteboard_isFontBold) {
-                      font = "NO_BOLD";
-                    } else if (
-                      font === "ITALIC" &&
-                      this.context.whiteboard_isFontItalic
-                    ) {
-                      font = "NO_ITALIC";
+                    let wbFont;
+                    if (font === "BOLD") {
+                      if (this.state.isFontBold) {
+                        wbFont = "NO_BOLD";
+                      } else {
+                        wbFont = "BOLD";
+                      }
+                      this.setState((preState: { isFontBold: boolean }) => {
+                        return { isFontBold: !preState.isFontBold };
+                      });
+                    } else if (font === "ITALIC") {
+                      if (this.state.isFontItalic) {
+                        wbFont = "NO_ITALIC";
+                      } else {
+                        wbFont = "ITALIC";
+                      }
+                      this.setState((preState: { isFontItalic: boolean }) => {
+                        return { isFontItalic: !preState.isFontItalic };
+                      });
                     }
-                    this.setState({
-                      font,
-                    });
                     this.props.onFontChange(
-                      font as "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
+                      wbFont as "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
                       this.context.whiteboard_fontSize,
                       this.context.whiteboard_brushColor!
                     );
                   }}
                   className={
-                    (font === "BOLD" && this.context.whiteboard_isFontBold) ||
-                    (font === "ITALIC" && this.context.whiteboard_isFontItalic)
+                    (font === "BOLD" && this.state.isFontBold) ||
+                    (font === "ITALIC" && this.state.isFontItalic)
                       ? ZegoWhiteboardToolsTextToolTipsCss.selected
                       : ""
                   }
@@ -105,12 +126,6 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
           <h3>Thickness</h3>
           <ul>
             {[12, 14, 16, 18].map((fontSize: number) => {
-              const fontMap: { [index: number]: number } = {
-                12: 18,
-                14: 24,
-                16: 36,
-                18: 48,
-              };
               return (
                 <li
                   key={fontSize}
@@ -125,8 +140,7 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
                     );
                   }}
                   className={
-                    this.state.fontSize === fontSize ||
-                    this.context.whiteboard_fontSize === fontMap[fontSize]
+                    this.state.fontSize === fontSize
                       ? ZegoWhiteboardToolsTextToolTipsCss.selected
                       : ""
                   }

@@ -183,13 +183,7 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
 
           <ZegoWhiteboardTools
             onToolChange={(type: number, fontSize?: number, color?: string) => {
-              if (type === 512) {
-                this.props.zegoSuperBoardView
-                  ?.getCurrentSuperBoardSubView()
-                  ?.clearAllPage();
-              } else {
-                this.props.onToolChange(type, fontSize, color);
-              }
+              this.props.onToolChange(type, fontSize, color);
             }}
             onFontChange={(
               font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",

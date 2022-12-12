@@ -1238,11 +1238,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           handleFullScreen={this.handleFullScreen.bind(this)}
           roomID={this.props.core._expressConfig.roomID}
           onShow={async (el: HTMLDivElement) => {
-            console.error(
-              "【ZEGOCLOUD】onShow",
-              this.isCreatingWhiteboardSharing,
-              !this.state.zegoSuperBoardView
-            );
+            // console.error(
+            //   "【ZEGOCLOUD】onShow",
+            //   this.isCreatingWhiteboardSharing,
+            //   !this.state.zegoSuperBoardView
+            // );
             // 主动渲染
             if (
               this.isCreatingWhiteboardSharing &&

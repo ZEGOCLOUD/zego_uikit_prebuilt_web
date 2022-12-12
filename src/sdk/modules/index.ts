@@ -428,11 +428,18 @@ export class ZegoCloudRTCCore {
     return this.zegoSuperBoard.getSuperBoardView();
   }
 
-  setWhiteboardToolType(type: number, fontSize?: number, color?: string) {
-    this.zegoSuperBoard.setToolType(type);
-    if ([1, 4, 8, 16].includes(type)) {
-      fontSize && this.zegoSuperBoard.setBrushSize(fontSize);
-      color && this.zegoSuperBoard.setBrushColor(color);
+  async setWhiteboardToolType(type: number, fontSize?: number, color?: string) {
+    if (type === 512) {
+      const zegoSuperBoardSubView = this.zegoSuperBoard
+        .getSuperBoardView()
+        .getCurrentSuperBoardSubView();
+      zegoSuperBoardSubView && zegoSuperBoardSubView.clearCurrentPage();
+    } else {
+      this.zegoSuperBoard.setToolType(type);
+      if ([1, 4, 8, 16].includes(type)) {
+        fontSize && this.zegoSuperBoard.setBrushSize(fontSize);
+        color && this.zegoSuperBoard.setBrushColor(color);
+      }
     }
   }
 

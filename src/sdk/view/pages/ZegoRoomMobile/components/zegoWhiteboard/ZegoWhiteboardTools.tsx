@@ -6,7 +6,7 @@ import ShowPCManageContext, {
   ShowManageType,
 } from "../../../context/showManage";
 import { ZegoWhiteboardToolsTextTooTips } from "./ZegoWhiteboardToolsTextToolTips";
-import { chooseFile } from "../../../../../util";
+import { chooseFile, isIOS, isSafari } from "../../../../../util";
 
 export class ZegoWhiteboardTools extends React.PureComponent<{
   onToolChange: (type: number, fontSize?: number, color?: string) => void;
@@ -193,7 +193,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
             }}
           ></div>
         )}
-        {this.showTool(9) && (
+        {this.showTool(9) && false && (
           <div
             className={`${ZegoWhiteboardToolsCss.tool_snapshot} ${
               this.state.selectedTool === 9
