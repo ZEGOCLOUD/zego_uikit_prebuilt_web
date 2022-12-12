@@ -122,12 +122,12 @@ export default class App extends React.Component {
       const zp = ZegoUIKitPrebuilt.create(token);
       zp.addPlugins({ ZegoSuperBoardManager });
       const param: ZegoCloudRoomConfig = {
-        turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
-        turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
-        showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
-        showMyMicrophoneToggleButton: false, // 是否显示控制自己摄像头按钮,默认显示
-        showAudioVideoSettingsButton: false, // 是否显示音视频设置按钮,默认显示
-        showNonVideoUser: false,
+        // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+        // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
+        // showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
+        // showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
+        // showAudioVideoSettingsButton: false, // 是否显示音视频设置按钮,默认显示
+        // showNonVideoUser: false,
         // @ts-ignore
         container: element, // 挂载容器
         preJoinViewConfig: {
