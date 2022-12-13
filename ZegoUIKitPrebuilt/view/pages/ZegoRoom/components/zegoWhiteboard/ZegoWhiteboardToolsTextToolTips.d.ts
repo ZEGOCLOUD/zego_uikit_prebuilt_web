@@ -9,9 +9,10 @@ export declare class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<
     context: React.ContextType<typeof ShowPCManageContext>;
     OnDocumentClick(ev: MouseEvent): void;
     state: {
-        font: string;
         fontColor: string;
         fontSize: number;
+        isFontBold: boolean;
+        isFontItalic: boolean;
     };
     componentDidMount(): void;
     componentWillUnmount(): void;

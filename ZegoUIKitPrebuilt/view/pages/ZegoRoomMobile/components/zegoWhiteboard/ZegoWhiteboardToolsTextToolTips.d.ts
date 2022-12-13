@@ -11,6 +11,8 @@ export declare class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<
         font: string;
         fontColor: string;
         fontSize: number;
+        isFontBold: boolean;
+        isFontItalic: boolean;
     };
     componentDidMount(): void;
     componentWillUnmount(): void;

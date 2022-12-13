@@ -30,7 +30,6 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
         liveCountdown: number;
         liveStatus: "1" | "0";
         isScreenSharingBySelf: boolean;
-        isWhiteboardSharingBySelf: boolean;
         screenSharingStream: undefined | MediaStream;
         zegoSuperBoardView: ZegoSuperBoardView | null;
         isZegoWhiteboardSharing: boolean;
@@ -68,7 +67,7 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
         videoShowNumber: number;
         liveStatus: "1" | "0";
         isScreenSharingBySelf: boolean;
-        isWhiteboardSharingBySelf: boolean;
+        isZegoWhiteboardSharing: boolean;
         screenSharingUserList: ZegoCloudUserList;
     }): void;
     componentWillUnmount(): void;

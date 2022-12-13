@@ -65,7 +65,7 @@ export declare class ZegoCloudRTCCore {
     setVolume(media: HTMLVideoElement, volume: number): void;
     createStream(source?: ZegoLocalStreamConfig): Promise<MediaStream>;
     createAndPublishWhiteboard(parentDom: HTMLDivElement, name: string): Promise<ZegoSuperBoardView>;
-    setWhiteboardToolType(type: number, fontSize?: number, color?: string): void;
+    setWhiteboardToolType(type: number, fontSize?: number, color?: string): Promise<void>;
     setWhiteboardFont(font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC", fontSize?: number, color?: string): void;
     setVideoConfig(media: MediaStream, constraints: ZegoPublishStreamConfig): Promise<ZegoServerResponse>;
     stopPublishingStream(streamID: string): boolean;
