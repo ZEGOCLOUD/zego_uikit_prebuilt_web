@@ -35,10 +35,13 @@ import {
   ZegoSuperBoardSubViewModel,
   ZegoSuperBoardView,
 } from "zego-superboard-web";
+import ZIM from "zego-zim-web";
+import { ZimManager } from "./tools/ZimManager";
 
 export class ZegoCloudRTCCore {
   static _instance: ZegoCloudRTCCore;
   static _zg: ZegoExpressEngine;
+  _zimManager: ZimManager | null = null;
   zum!: ZegoCloudUserListManager;
   _expressConfig!: {
     appID: number;
@@ -172,8 +175,12 @@ export class ZegoCloudRTCCore {
 
   addPlugins(plugins: {
     ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+    ZIM?: ZIM;
   }): void {
     this._config.plugins = plugins;
+    if (plugins.ZIM && this._expressConfig.token) {
+      this.initZIM(plugins.ZIM);
+    }
   }
   setConfig(config: ZegoCloudRoomConfig): boolean {
     if (
@@ -1348,5 +1355,9 @@ export class ZegoCloudRTCCore {
     extraInfo: string
   ): Promise<ZegoServerResponse> {
     return ZegoCloudRTCCore._zg.setStreamExtraInfo(streamID, extraInfo);
+  }
+  private initZIM(ZIM: ZIM) {
+    if (this._zimManager) return;
+    this._zimManager = new ZimManager(ZIM, this._expressConfig);
   }
 }

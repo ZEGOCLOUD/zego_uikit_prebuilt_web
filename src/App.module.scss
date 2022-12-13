@@ -69,7 +69,6 @@
   .myMeeting {
     flex: 1 0 auto;
     width: 100%;
-    // height: calc(100vh - 64px);
   }
   .serviceTips {
     position: fixed;
@@ -203,6 +202,127 @@
         border-radius: 6px;
         cursor: pointer;
       }
+    }
+  }
+  .callInvitationWrapper {
+    position: relative;
+    flex: 1 0 auto;
+    width: 100%;
+    .invitationModel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      box-sizing: border-box;
+      width: 450px;
+      height: 425px;
+      padding: 30px 40px;
+      background: #ffffff;
+      border: 1px solid #e8eaef;
+      border-radius: 20px;
+      box-shadow: 0px 14px 24px 0px #eaecf1;
+      transform: translate(-50%, -50%);
+    }
+    .invitationUserHeader {
+      display: flex;
+      align-items: center;
+      margin-bottom: 55px;
+      .invitationAvatar {
+        width: 38px;
+        height: 38px;
+        margin-right: 12px;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 16px;
+        font-family: PingFangSC-Semibold, PingFang SC;
+        line-height: 38px;
+        text-align: center;
+        background: #3a3d4a;
+        border-radius: 50%;
+        user-select: none;
+      }
+      .invitationUserInfo {
+        p {
+          color: #333333;
+          font-weight: 500;
+          font-size: 16px;
+          font-family: PingFangSC-Medium, PingFang SC;
+          line-height: 22px;
+          user-select: none;
+        }
+        span {
+          color: #666666;
+          font-weight: 400;
+          font-size: 12px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          line-height: 17px;
+        }
+      }
+    }
+    .invitationTitle {
+      margin-bottom: 26px;
+      color: #333333;
+      font-weight: 600;
+      font-size: 22px;
+      font-family: PingFangSC-Semibold, PingFang SC;
+      line-height: 30px;
+    }
+    .invitationInput {
+      box-sizing: border-box;
+      width: 370px;
+      height: 46px;
+      margin-bottom: 38px;
+      padding: 10px 16px;
+      color: #333333;
+      font-weight: 500;
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      line-height: 22px;
+      border: 2px solid #333333;
+      border-radius: 10px;
+      &::placeholder {
+        color: #ababb5;
+        font-weight: 500;
+        font-size: 16px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        line-height: 22px;
+        outline: none;
+      }
+      &:focus {
+        outline: none;
+      }
+      &:valid ~ div {
+        cursor: pointer;
+        opacity: 1;
+      }
+    }
+    .invitationVideoCallBtn {
+      width: 370px;
+      height: 46px;
+      margin-bottom: 16px;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 16px;
+      font-family: PingFangSC-Semibold, PingFang SC;
+      line-height: 46px;
+      text-align: center;
+      background: #0055ff;
+      border-radius: 10px;
+      cursor: no-drop;
+      opacity: 0.3;
+    }
+    .invitationVoiceCallBtn {
+      width: 370px;
+      height: 46px;
+      color: #0055ff;
+      font-weight: 600;
+      font-size: 16px;
+      font-family: PingFangSC-Semibold, PingFang SC;
+      line-height: 46px;
+      text-align: center;
+      border: 2px solid #0055ff;
+      border-radius: 10px;
+      cursor: no-drop;
+      opacity: 0.3;
     }
   }
 }

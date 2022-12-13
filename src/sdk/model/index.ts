@@ -238,3 +238,43 @@ export enum CoreError {
   notSupportCDNLive = 10001,
   notSupportStandardLive = 10002,
 }
+export enum ZegoInvitationType {
+  VoiceCall = 0,
+  VideoCall,
+}
+export interface ZegoCallInvitationConfig {
+  enableCustomCallInvitationWaitingPage: boolean; // 是否自定义呼叫邀请等待页面
+  enableCustomCallInvitationDialog: boolean; // 是否自定义呼叫邀请弹窗
+  // 进入呼叫等待页面时的回调，返回cancel方法，调用的话可以取消邀请
+  onCallInvitationWaitingPageShowed?: (
+    invitees: ZegoUser[],
+    cancel: CancelCallInvitationFunc
+  ) => boolean;
+
+  // 被呼叫者收到邀请时，邀请弹窗展示回调，返回accept、refuse方法给用户绑定UI
+  onCallInvitationDialogShowed?: (
+    type: ZegoInvitationType,
+    inviter: ZegoUser,
+    accept: AcceptCallInvitationFunc,
+    refuse: RefuseCallInvitationFunc,
+    data: string
+  ) => boolean;
+
+  // 接受邀请后进房前的回调，用于设置房间配置，由内部自动加入房间，房间配置根据ZegoInvitationType默认的来
+  onSetRoomConfigBeforeJoining?: (
+    type: ZegoInvitationType,
+    data: string
+  ) => ZegoCloudRoomConfig;
+
+  // 呼叫邀请结束回调（呼叫拒绝、超时、占线，用户退出呼叫邀请的房间等情况触发）
+  onCallInvitationEnded?: (
+    reason: "Refused" | "Timeout" | "Canceled" | "Busy",
+    data: string
+  ) => void;
+}
+export type CancelCallInvitationFunc = (
+  invitees: string[],
+  data?: string
+) => void; // 取消邀请
+export type AcceptCallInvitationFunc = (data?: string) => void; // 接受邀请
+export type RefuseCallInvitationFunc = (data?: string) => void; // 拒绝邀请
