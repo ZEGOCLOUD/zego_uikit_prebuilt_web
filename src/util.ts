@@ -53,7 +53,14 @@ export function randomID(len: number): string {
   }
   return result;
 }
-
+export function randomNumID(len: number): string {
+  len = len || 5;
+  var r = Math.floor(Math.random() * Math.pow(10, len)).toString();
+  if (r.length < len) {
+    r = randomNumID(len);
+  }
+  return r;
+}
 export function getRandomName() {
   const names = [
     "Oliver",

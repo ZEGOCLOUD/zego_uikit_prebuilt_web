@@ -1,11 +1,16 @@
+import { type } from "os";
 import ReactDOM, { Root } from "react-dom/client";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
+import ZIM from "zego-zim-web";
 import {
   LiveRole,
   LiveStreamingMode,
   ScenarioModel,
   VideoResolution,
+  ZegoCallInvitationConfig,
   ZegoCloudRoomConfig,
+  ZegoInvitationType,
+  ZegoUser,
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
 import { generatePrebuiltToken } from "./util";
@@ -27,6 +32,8 @@ export class ZegoUIKitPrebuilt {
   static VideoResolution_480P = VideoResolution._480P;
   static VideoResolution_720P = VideoResolution._720P;
   static LiveStreamingMode = LiveStreamingMode;
+  static InvitationTypeVoiceCall = ZegoInvitationType.VoiceCall;
+  static InvitationTypeVideoCall = ZegoInvitationType.VideoCall;
   private hasJoinedRoom = false;
   root: Root | undefined;
 
@@ -72,6 +79,7 @@ export class ZegoUIKitPrebuilt {
 
   addPlugins(plugins?: {
     ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+    ZIM?: typeof ZIM;
   }) {
     // @ts-ignore
     ZegoUIKitPrebuilt.core?.addPlugins(plugins);
@@ -79,7 +87,7 @@ export class ZegoUIKitPrebuilt {
 
   joinRoom(roomConfig?: ZegoCloudRoomConfig) {
     if (!ZegoUIKitPrebuilt.core) {
-      console.error("【ZEGOCLOUD】 please call init frst !!");
+      console.error("【ZEGOCLOUD】 please call init first !!");
       return;
     }
     if (this.hasJoinedRoom) {
@@ -127,6 +135,26 @@ export class ZegoUIKitPrebuilt {
     this.root?.unmount?.();
     this.root = undefined;
     this.hasJoinedRoom = false;
+  }
+  setCallInvitationConfig(config?: ZegoCallInvitationConfig): void {
+    // TODO:
+  }
+  // 发起邀请
+  async sendCallInvitation(params: {
+    invitees: ZegoUser[];
+    type: ZegoInvitationType;
+    timeout?: number;
+    data?: string;
+  }): Promise<void> {
+    // TODO
+    const { invitees, type, timeout = 60, data = "" } = params;
+    const invitationSentResult =
+      await ZegoUIKitPrebuilt.core?._zimManager?.sendInvitation(
+        invitees,
+        type,
+        timeout,
+        data
+      );
   }
 }
 
