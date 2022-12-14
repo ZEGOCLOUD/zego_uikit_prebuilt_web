@@ -1,0 +1,56 @@
+@import "../../../var.scss";
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  background: #1c1f2e;
+  .tip {
+    margin-top: 13.333vh;
+    margin-bottom: 16.6667vh;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 37px;
+  }
+  .userWrapper {
+    width: 244px;
+    margin: 0 auto 26.667vh;
+    .avatar {
+      width: 136px;
+      height: 136px;
+      margin: 0 auto 20px;
+      color: #e9473a;
+      font-weight: 600;
+      font-size: 40px;
+      line-height: 136px;
+      background: #333543;
+      border-radius: 50%;
+    }
+    .userName {
+      width: 244px;
+      overflow: hidden;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: 22px;
+      line-height: 30px;
+      text-overflow: ellipsis;
+      word-break: keep-all;
+    }
+  }
+  .endBtn {
+    width: 146px;
+    height: 46px;
+    margin: 0 auto;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 46px;
+    background: #e8543b;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+}

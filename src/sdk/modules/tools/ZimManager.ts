@@ -1,7 +1,7 @@
-import ReactDOM, { Root } from "react-dom/client";
 import ZIM, { ZIMCallInvitationSentResult } from "zego-zim-web";
 import { ZegoUser } from "../../model";
-import { CallInvitationDialog } from "../../view/pages/ZegoCallInvitation/callInvitationDialog";
+import { callInvitationControl } from "../../view/pages/ZegoCallInvitation/callInvitationControl";
+
 export class ZimManager {
   _zim: ZIM | null;
   isLogin = false;
@@ -12,7 +12,6 @@ export class ZimManager {
     roomID: string;
     token: string;
   };
-  root: Root | undefined;
   constructor(
     ZIM: ZIM,
     expressConfig: {
@@ -33,9 +32,8 @@ export class ZimManager {
     )
       .then(() => {
         // 登录成功
-        console.warn("zim login success!!", expressConfig);
+        console.warn("zim login success!!");
         this.isLogin = true;
-        this.createDialogContainer();
       })
       .catch((err: any) => {
         // 登录失败
@@ -43,21 +41,7 @@ export class ZimManager {
         console.error("【ZEGOCLOUD】zim login failed !!", err);
       });
   }
-  createDialogContainer() {
-    const div = document.createElement("div");
-    div.style.position = "fixed";
-    div.style.width = "100vw";
-    div.style.height = "100vh";
-    div.style.minWidth = "345px";
-    div.style.top = "0px";
-    div.style.left = "0px";
-    div.style.zIndex = "10000";
-    div.style.overflow = "hidden";
-    div.id = "iiii";
-    document.body.appendChild(div);
-    this.root = ReactDOM.createRoot(div);
-    // this.root.render(<CallInvitationDialog> </CallInvitationDialog>);
-  }
+
   initListener() {
     // 被邀请者收到邀请后的回调通知
     this._zim!.on(
@@ -125,8 +109,11 @@ export class ZimManager {
   ) {
     const inviteesID = invitees.map((i) => i.userID);
     const _data = JSON.stringify({
-      call_id: `call_${this.expressConfig.userID}_${this.expressConfig.roomID}`,
-      invitees: invitees,
+      call_id: this.expressConfig.roomID,
+      invitees: invitees.map((u) => ({
+        user_id: u.userID,
+        user_name: u.userName,
+      })),
       custom_data: data,
     });
     const extendedData = JSON.stringify({

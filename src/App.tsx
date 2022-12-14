@@ -35,7 +35,7 @@ export default class App extends React.PureComponent {
     const userName = getUrlParams().get("UserName");
 
     const roomID = getUrlParams().get("roomID") || randomID(5);
-    const userID = getUrlParams().get("userID") || randomNumID(8);
+    const userID = getUrlParams().get("userID") || randomNumID(4);
     if (!getUrlParams().get("roomID") || !getUrlParams().get("userID")) {
       window.history.replaceState(
         "",
