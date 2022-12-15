@@ -14,6 +14,7 @@ import {
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
 import { generatePrebuiltToken } from "./util";
+import { ZegoToast } from "./view/components/zegoToast";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 
 export class ZegoUIKitPrebuilt {
@@ -83,6 +84,11 @@ export class ZegoUIKitPrebuilt {
   }) {
     // @ts-ignore
     ZegoUIKitPrebuilt.core?.addPlugins(plugins);
+    if (ZegoUIKitPrebuilt.core?._zimManager) {
+      ZegoUIKitPrebuilt.core?._zimManager.onJoinRoom((type) => {
+        console.warn("onJoinRoom", type);
+      });
+    }
   }
 
   joinRoom(roomConfig?: ZegoCloudRoomConfig) {
@@ -147,14 +153,37 @@ export class ZegoUIKitPrebuilt {
     data?: string;
   }): Promise<void> {
     // TODO
-    const { invitees, type, timeout = 60, data = "" } = params;
-    const invitationSentResult =
-      await ZegoUIKitPrebuilt.core?._zimManager?.sendInvitation(
+
+    if (!ZegoUIKitPrebuilt.core?._zimManager) {
+      console.error("【ZEGOCLOUD】Please add ZIM plugin first");
+      return;
+    }
+    const { invitees, type, timeout = 10, data = "" } = params;
+    if (!Array.isArray(invitees) || invitees.length < 1) {
+      console.error(
+        "【ZEGOCLOUD】sendCallInvitation params error: invitees !!"
+      );
+      return;
+    }
+    if (
+      type !== ZegoInvitationType.VideoCall &&
+      type !== ZegoInvitationType.VoiceCall
+    ) {
+      console.error("【ZEGOCLOUD】sendCallInvitation params error: type !!");
+      return;
+    }
+    const invitationSentResult: { code: number; msg: string } =
+      await ZegoUIKitPrebuilt.core._zimManager.sendInvitation(
         invitees,
         type,
         timeout,
         data
       );
+    if (invitationSentResult.code !== 0) {
+      ZegoToast({
+        content: invitationSentResult.msg,
+      });
+    }
   }
 }
 

@@ -1,7 +1,6 @@
 import ZIM, { ZIMCallInvitationSentResult } from "zego-zim-web";
-import { ZegoUser } from "../../model";
+import { CallInvitationInfo, ZegoInvitationType, ZegoUser } from "../../model";
 import { callInvitationControl } from "../../view/pages/ZegoCallInvitation/callInvitationControl";
-
 export class ZimManager {
   _zim: ZIM | null;
   isLogin = false;
@@ -12,6 +11,8 @@ export class ZimManager {
     roomID: string;
     token: string;
   };
+  callInfo = {} as CallInvitationInfo;
+  inOperation = false; //防止重复点击
   constructor(
     ZIM: ZIM,
     expressConfig: {
@@ -53,9 +54,41 @@ export class ZimManager {
           timeout,
           extendedData,
         });
+        if (this.callInfo.callID) {
+          // 如果已被邀请，就拒绝其他的
+          this.refuseInvitation("Busy", callID);
+        } else {
+          const { inviter_name, type, data } = JSON.parse(extendedData);
+          const { call_id, invitees, custom_data } = JSON.parse(data);
+          this.callInfo = {
+            callID,
+            invitees: invitees.map((i: { user_id: any; user_name: any }) => ({
+              userID: i.user_id,
+              userName: i.user_name,
+            })),
+            inviter: {
+              userID: inviter,
+              userName: inviter_name,
+            },
+            roomID: call_id,
+            type: type,
+          };
+          callInvitationControl.callInvitationDialogShow(
+            { userID: inviter, userName: inviter_name },
+            () => {
+              this.refuseInvitation();
+              callInvitationControl.callInvitationDialogHide();
+            },
+            () => {
+              this.acceptInvitation();
+              callInvitationControl.callInvitationDialogHide();
+              // TODO: joinRoom
+            }
+          );
+        }
       }
     );
-    // 被邀请者收到取消邀请后的回调通知
+    // 被邀请者收到邀请被取消后的回调通知
     this._zim!.on(
       "callInvitationCancelled",
       (zim, { callID, inviter, extendedData }) => {
@@ -64,9 +97,11 @@ export class ZimManager {
           inviter,
           extendedData,
         });
+        callInvitationControl.callInvitationDialogHide();
+        this.clearCallInfo();
       }
     );
-    // 邀请者接受邀请后的回调通知
+    // 邀请者的邀请被接受后的回调通知
     this._zim!.on(
       "callInvitationAccepted",
       (zim, { callID, invitee, extendedData }) => {
@@ -75,9 +110,11 @@ export class ZimManager {
           invitee,
           extendedData,
         });
+        // TODO：joinRoom
+        callInvitationControl.callInvitationWaitingPageHide();
       }
     );
-    // 邀请者拒绝邀请后的回调通知
+    // 邀请者的邀请被拒绝后的回调通知
     this._zim!.on(
       "callInvitationRejected",
       (zim, { callID, invitee, extendedData }) => {
@@ -86,6 +123,13 @@ export class ZimManager {
           invitee,
           extendedData,
         });
+        if (this.callInfo.callID && this.callInfo.invitees.length <= 1) {
+          // 单人邀请，隐藏waitingPage,清除callInfo
+          callInvitationControl.callInvitationWaitingPageHide();
+          this.clearCallInfo();
+        } else {
+          // 多人邀请，全部拒绝后需要退出房间
+        }
       }
     );
     //被邀请者响应超时后,“邀请者”收到的回调通知, 超时时间单位：秒
@@ -93,12 +137,20 @@ export class ZimManager {
       "callInviteesAnsweredTimeout",
       (zim, { callID, invitees }) => {
         console.warn("callInviteesAnsweredTimeout", { callID, invitees });
+        if (this.callInfo.invitees.length > 1) {
+          // TODO
+        } else {
+          callInvitationControl.callInvitationDialogHide();
+          this.clearCallInfo();
+        }
       }
     );
 
     //被邀请者响应超时后,“被邀请者”收到的回调通知, 超时时间单位：秒
     this._zim!.on("callInvitationTimeout", (zim, { callID }) => {
       console.warn("callInvitationTimeout", { callID });
+      callInvitationControl.callInvitationDialogHide();
+      this.clearCallInfo();
     });
   }
   async sendInvitation(
@@ -106,7 +158,9 @@ export class ZimManager {
     type: number,
     timeout: number,
     data: string
-  ) {
+  ): Promise<{ code: number; msg: string }> {
+    if (this.inOperation) return { code: 1, msg: "send invitation repeat!!" };
+    this.inOperation = true;
     const inviteesID = invitees.map((i) => i.userID);
     const _data = JSON.stringify({
       call_id: this.expressConfig.roomID,
@@ -128,19 +182,110 @@ export class ZimManager {
     //   payload: data,
     //   resourcesID: "",
     // };
-    const res: ZIMCallInvitationSentResult | undefined =
-      await this._zim?.callInvite(inviteesID, {
-        timeout,
-        extendedData,
-        // pushConfig,
-      });
-    console.warn("callInvite", res);
+    try {
+      const res: ZIMCallInvitationSentResult = await this._zim!.callInvite(
+        inviteesID,
+        {
+          timeout,
+          extendedData,
+          // pushConfig,
+        }
+      );
+      console.warn("callInvite", res);
+      if (invitees.length > 1) {
+        // 多人邀请
+      } else {
+        // 单人邀请
+        if (res.errorInvitees.length >= invitees.length) {
+          return { code: 1, msg: "The user dose not exist or is offline." };
+        }
+        // 保存邀请信息
+        this.callInfo = {
+          callID: res.callID,
+          invitees: invitees,
+          inviter: {
+            userID: this.expressConfig.userID,
+            userName: this.expressConfig.userName,
+          },
+          roomID: this.expressConfig.roomID,
+          type,
+        };
+        callInvitationControl.callInvitationWaitingPageShow(
+          invitees[0],
+          type,
+          () => {
+            this.cancelInvitation();
+            callInvitationControl.callInvitationWaitingPageHide();
+          }
+        );
+      }
+    } catch (error) {
+      this.inOperation = false;
+      return { code: 0, msg: JSON.stringify(error) };
+    }
+    this.inOperation = false;
+    return { code: 0, msg: "" };
   }
-  cancelInvitation(invitees: string[], data: string) {}
-  refuseInvitation(inviterID: string, data: string) {}
-  acceptInvitation(inviterID: string, data: string) {}
+  async cancelInvitation(data?: string) {
+    if (this.inOperation) return;
+    this.inOperation = true;
+    const invitees = this.callInfo.invitees.map((i) => i.userID);
+    const extendedData: any = {};
+    if (data) {
+      extendedData.custom_data = data;
+    }
+    try {
+      await this._zim?.callCancel(invitees, this.callInfo.callID, {
+        extendedData: JSON.stringify(extendedData),
+      });
+      this.clearCallInfo();
+    } catch (error) {
+      console.error("【ZEGOCLOUD】cancelInvitation", error);
+    }
+    this.inOperation = false;
+  }
+  async refuseInvitation(reason?: string, callID?: string, data?: string) {
+    if (this.inOperation) return;
+    this.inOperation = true;
+    const extendedData: any = {};
+    if (data) {
+      extendedData.custom_data = data;
+    }
+    if (reason) {
+      extendedData.reason = reason;
+    }
+    try {
+      await this._zim?.callReject(callID || this.callInfo.callID, {
+        extendedData: JSON.stringify(extendedData),
+      });
+    } catch (error) {
+      console.error("【ZEGOCLOUD】refuseInvitation", error);
+    }
+    this.inOperation = false;
+  }
+  async acceptInvitation(data?: string) {
+    if (this.inOperation) return;
+    this.inOperation = true;
+    const extendedData: any = {};
+    if (data) {
+      extendedData.custom_data = data;
+    }
+    try {
+      await this._zim?.callAccept(this.callInfo.callID, {
+        extendedData: JSON.stringify(extendedData),
+      });
+    } catch (error) {
+      console.error("【ZEGOCLOUD】acceptInvitation", error);
+    }
+  }
+  clearCallInfo() {
+    this.callInfo = {} as CallInvitationInfo;
+  }
   destroy() {
     this._zim?.destroy();
     this._zim = null;
+  }
+  onJoinRoom(func: (type: ZegoInvitationType) => void) {
+    func && func(this.callInfo.type);
   }
 }

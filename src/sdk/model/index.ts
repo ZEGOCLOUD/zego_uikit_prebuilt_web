@@ -278,3 +278,10 @@ export type CancelCallInvitationFunc = (
 ) => void; // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void; // 接受邀请
 export type RefuseCallInvitationFunc = (data?: string) => void; // 拒绝邀请
+export interface CallInvitationInfo {
+  callID: string;
+  roomID: string;
+  inviter: ZegoUser;
+  invitees: ZegoUser[];
+  type: ZegoInvitationType;
+}
