@@ -85,9 +85,23 @@ export class ZegoUIKitPrebuilt {
     // @ts-ignore
     ZegoUIKitPrebuilt.core?.addPlugins(plugins);
     if (ZegoUIKitPrebuilt.core?._zimManager) {
-      ZegoUIKitPrebuilt.core?._zimManager.onJoinRoom((type) => {
-        console.warn("onJoinRoom", type);
-      });
+      ZegoUIKitPrebuilt.core?._zimManager.notifyJoinRoom(
+        (type: ZegoInvitationType, config: ZegoCloudRoomConfig) => {
+          console.warn("notifyJoinRoom", type, config);
+          //   ZegoCloudRoomConfig部分参数不允许自定义
+          let roomConfig = Object.assign(config, {
+            showPreJoinView: false,
+            showLeavingView: false,
+            scenario: {
+              mode: ScenarioModel.GroupCall,
+            },
+          }) as ZegoCloudRoomConfig;
+          if (type === ZegoInvitationType.VoiceCall) {
+            roomConfig.turnOnCameraWhenJoining = false;
+          }
+          this.joinRoom(roomConfig);
+        }
+      );
     }
   }
 
@@ -100,9 +114,10 @@ export class ZegoUIKitPrebuilt {
       console.error("【ZEGOCLOUD】joinRoom repeat !!");
       return;
     }
+    let div: any;
     if (!roomConfig || !roomConfig.container) {
       console.warn("【ZEGOCLOUD】joinRoom/roomConfig/container required !!");
-      const div = document.createElement("div");
+      div = document.createElement("div");
       div.style.position = "fixed";
       div.style.width = "100vw";
       div.style.height = "100vh";
@@ -127,6 +142,13 @@ export class ZegoUIKitPrebuilt {
       this.root.render(
         <ZegoCloudRTCKitComponent
           core={ZegoUIKitPrebuilt.core}
+          unmount={() => {
+            // 单纯的销毁渲染的节点，不会销毁实例
+            this.root?.unmount();
+            this.root = undefined;
+            this.hasJoinedRoom = false;
+            div && div.remove();
+          }}
         ></ZegoCloudRTCKitComponent>
       );
       this.hasJoinedRoom = true;
@@ -143,7 +165,12 @@ export class ZegoUIKitPrebuilt {
     this.hasJoinedRoom = false;
   }
   setCallInvitationConfig(config?: ZegoCallInvitationConfig): void {
-    // TODO:
+    if (!ZegoUIKitPrebuilt.core?._zimManager) {
+      console.error("【ZEGOCLOUD】Please add ZIM plugin first");
+      return;
+    }
+    if (!config) return;
+    ZegoUIKitPrebuilt.core?._zimManager.setCallInvitationConfig(config);
   }
   // 发起邀请
   async sendCallInvitation(params: {
@@ -151,39 +178,36 @@ export class ZegoUIKitPrebuilt {
     type: ZegoInvitationType;
     timeout?: number;
     data?: string;
-  }): Promise<void> {
-    // TODO
-
+  }): Promise<{ errorInvitees: ZegoUser[] }> {
     if (!ZegoUIKitPrebuilt.core?._zimManager) {
       console.error("【ZEGOCLOUD】Please add ZIM plugin first");
-      return;
+      return Promise.reject("ZEGOCLOUD】Please add ZIM plugin first");
     }
     const { invitees, type, timeout = 10, data = "" } = params;
     if (!Array.isArray(invitees) || invitees.length < 1) {
       console.error(
         "【ZEGOCLOUD】sendCallInvitation params error: invitees !!"
       );
-      return;
+      return Promise.reject(
+        "【ZEGOCLOUD】sendCallInvitation params error: invitees !!"
+      );
     }
     if (
       type !== ZegoInvitationType.VideoCall &&
       type !== ZegoInvitationType.VoiceCall
     ) {
       console.error("【ZEGOCLOUD】sendCallInvitation params error: type !!");
-      return;
-    }
-    const invitationSentResult: { code: number; msg: string } =
-      await ZegoUIKitPrebuilt.core._zimManager.sendInvitation(
-        invitees,
-        type,
-        timeout,
-        data
+      return Promise.reject(
+        "【ZEGOCLOUD】sendCallInvitation params error: type !!"
       );
-    if (invitationSentResult.code !== 0) {
-      ZegoToast({
-        content: invitationSentResult.msg,
-      });
     }
+
+    return ZegoUIKitPrebuilt.core._zimManager.sendInvitation(
+      invitees,
+      type,
+      timeout,
+      data
+    );
   }
 }
 

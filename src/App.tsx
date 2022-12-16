@@ -26,10 +26,13 @@ export default class App extends React.PureComponent {
     userName: "",
     callInvitation: false,
     invitees: [],
+    toastShow: false,
+    toastText: "",
   };
   settingsEl = null;
   invitationInput = React.createRef<HTMLInputElement>();
   zp: ZegoUIKitPrebuilt;
+  toastTimer: NodeJS.Timer | null;
   constructor(props: any) {
     super(props);
     const userName = getUrlParams().get("UserName");
@@ -132,6 +135,37 @@ export default class App extends React.PureComponent {
       );
       this.zp = ZegoUIKitPrebuilt.create(token);
       this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
+      this.zp.setCallInvitationConfig({
+        onCallInvitationDialogShowed: (type, inviter, refuse, accept, data) => {
+          console.warn(
+            "【demo】onCallInvitationDialogShowed",
+            type,
+            inviter,
+            refuse,
+            accept,
+            data
+          );
+        },
+        onCallInvitationWaitingPageShowed: (invitees, cancel) => {
+          console.warn(
+            "【demo】onCallInvitationWaitingPageShowed",
+            invitees,
+            cancel
+          );
+          //   setTimeout(() => {
+          //     cancel();
+          //   }, 2000);
+        },
+        onSetRoomConfigBeforeJoining: (type) => {
+          console.warn("【demo】onSetRoomConfigBeforeJoining", type);
+          return {
+            showTextChat: false,
+          };
+        },
+        onCallInvitationEnded: (reason, data) => {
+          console.warn("【demo】onCallInvitationEnded", reason, data);
+        },
+      });
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
         //   let { token } = await generateToken(
@@ -238,23 +272,53 @@ export default class App extends React.PureComponent {
       param.toString();
   }
   onInvitationInputChange(e: ChangeEvent<HTMLInputElement>) {
-    e.target.value = e.target.value.replace(/[^\d;]|(?<!\d);/gi, "");
+    e.target.value = e.target.value.replace(/[^\d,]|(?<!\d),/gi, "");
   }
   handleSendCallInvitation(type: number) {
     if (this.invitationInput.current?.value) {
       const values = this.invitationInput.current?.value
-        .replace(/;\B/, "")
-        .split(";");
+        .replace(/,\B/, "")
+        .split(",");
       const invitees = values.map((v) => ({
         userID: v,
         userName: "user_" + v,
       }));
       console.warn(type, invitees);
-      this.zp.sendCallInvitation({
-        invitees,
-        type,
-      });
+      this.zp
+        .sendCallInvitation({
+          invitees,
+          type,
+        })
+        .then((res) => {
+          if (invitees.length === 1) {
+            res.errorInvitees.length &&
+              this.showToast("The user dose not exist or is offline.");
+          } else {
+            res.errorInvitees.length &&
+              this.showToast(
+                "The user dose not exist or is offline: " +
+                  res.errorInvitees.map((i) => i.userID).join(" ")
+              );
+          }
+          console.warn(res);
+        });
     }
+  }
+  showToast(text: string) {
+    if (this.toastTimer) {
+      clearTimeout(this.toastTimer);
+    }
+    this.setState({
+      toastText: text,
+      toastShow: true,
+    });
+    this.toastTimer = setTimeout(() => {
+      this.setState({
+        toastText: "",
+        toastShow: false,
+      });
+      this.toastTimer = null;
+    }, 2000);
   }
   render(): React.ReactNode {
     return (
@@ -328,7 +392,7 @@ export default class App extends React.PureComponent {
                 ref={this.invitationInput}
                 className={APP.invitationInput}
                 type="text"
-                placeholder={'Enter invitees\' user id, separate them by ";"'}
+                placeholder={'Enter invitees\' user id, separate them by ","'}
                 required
                 onInput={this.onInvitationInputChange.bind(this)}
               />
@@ -446,6 +510,9 @@ export default class App extends React.PureComponent {
               </div>
             </div>
           </div>
+        )}
+        {this.state.toastShow && (
+          <div className={APP.toast}>{this.state.toastText}</div>
         )}
       </div>
     );

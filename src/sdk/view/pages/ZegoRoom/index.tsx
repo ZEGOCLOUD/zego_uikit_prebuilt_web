@@ -454,6 +454,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         );
       }
     });
+    // 监听呼叫邀请离开房间的通知
+    this.props.core._zimManager &&
+      this.props.core._zimManager.notifyLeaveRoom(() => {
+        this.leaveRoom();
+      });
     const logInRsp = await this.props.core.enterRoom();
     let massage = "";
     if (logInRsp === 0) {

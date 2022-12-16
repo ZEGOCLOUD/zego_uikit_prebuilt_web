@@ -46,6 +46,7 @@ class CallInvitationControl {
         accept={accept}
       ></CallInvitationDialog>
     );
+    this.isDialogShow = true;
   }
   callInvitationDialogHide() {
     if (this.isDialogShow) {

@@ -325,6 +325,20 @@
       opacity: 0.3;
     }
   }
+  .toast {
+    position: absolute;
+    top: 74px;
+    left: 50%;
+    z-index: 10001;
+    padding: 7px 18px;
+    color: #ffffff;
+    font-size: 14px;
+    font-family: PingFang SC;
+    line-height: 19px;
+    background: rgba($color: #2a2a2a, $alpha: 0.7);
+    border-radius: 6px;
+    transform: translateX(-50%);
+  }
 }
 
 .mobileApp {

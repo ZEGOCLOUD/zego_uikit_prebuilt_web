@@ -1366,5 +1366,9 @@ export class ZegoCloudRTCCore {
   private initZIM(ZIM: ZIM) {
     if (this._zimManager) return;
     this._zimManager = new ZimManager(ZIM, this._expressConfig);
+    // 更新roomID
+    this._zimManager.onUpdateRoomID((roomID: string) => {
+      this._expressConfig.roomID = roomID;
+    });
   }
 }

@@ -13,6 +13,7 @@ import { ZegoModel } from "./components/zegoModel";
 declare const SDK_ENV: boolean;
 export class ZegoCloudRTCKitComponent extends React.Component<{
   core: ZegoCloudRTCCore;
+  unmount: () => void;
 }> {
   state = {
     step: this.props.core._config.showPreJoinView ? 0 : 1,
@@ -35,7 +36,12 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
       };
     });
   }
-
+  destroyNodeWhenNoView() {
+    //退出房间后，如果没有预览页面，就销毁渲染节点
+    if (!this.props.core._config.showLeavingView) {
+      this.props.unmount();
+    }
+  }
   render(): React.ReactNode {
     let page;
     if (this.state.isSupportWebRTC) {
@@ -110,6 +116,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
                   this.props.core._config.leaveRoomCallback();
                 this.props.core._config.onLeaveRoom &&
                   this.props.core._config.onLeaveRoom();
+                this.destroyNodeWhenNoView();
               }, 0);
             }}
           ></ZegoRoom>
@@ -123,6 +130,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
                   this.props.core._config.leaveRoomCallback();
                 this.props.core._config.onLeaveRoom &&
                   this.props.core._config.onLeaveRoom();
+                this.destroyNodeWhenNoView();
               }, 0);
             }}
           ></ZegoRoomMobile>
