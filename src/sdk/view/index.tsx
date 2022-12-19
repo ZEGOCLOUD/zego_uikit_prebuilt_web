@@ -9,6 +9,7 @@ import index from "./index.module.scss";
 import { ZegoRejoinRoom } from "./pages/ZegoRejoinRoom";
 import { isPc } from "../util";
 import { ZegoModel } from "./components/zegoModel";
+import { CallInvitationEndReason } from "../model";
 
 declare const SDK_ENV: boolean;
 export class ZegoCloudRTCKitComponent extends React.Component<{
@@ -117,6 +118,10 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
                 this.props.core._config.onLeaveRoom &&
                   this.props.core._config.onLeaveRoom();
                 this.destroyNodeWhenNoView();
+                this.props.core._zimManager?.callInfo?.callID &&
+                  this.props.core._zimManager.endCall(
+                    CallInvitationEndReason.LeaveRoom
+                  );
               }, 0);
             }}
           ></ZegoRoom>
@@ -131,6 +136,11 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
                 this.props.core._config.onLeaveRoom &&
                   this.props.core._config.onLeaveRoom();
                 this.destroyNodeWhenNoView();
+                // 主动退出房间，呼叫邀请结束
+                this.props.core._zimManager?.callInfo?.callID &&
+                  this.props.core._zimManager.endCall(
+                    CallInvitationEndReason.LeaveRoom
+                  );
               }, 0);
             }}
           ></ZegoRoomMobile>

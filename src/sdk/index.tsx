@@ -10,6 +10,7 @@ import {
   ZegoCallInvitationConfig,
   ZegoCloudRoomConfig,
   ZegoInvitationType,
+  ZegoSignalingPluginNotificationConfig,
   ZegoUser,
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
@@ -178,12 +179,19 @@ export class ZegoUIKitPrebuilt {
     type: ZegoInvitationType;
     timeout?: number;
     data?: string;
+    notificationConfig?: ZegoSignalingPluginNotificationConfig;
   }): Promise<{ errorInvitees: ZegoUser[] }> {
     if (!ZegoUIKitPrebuilt.core?._zimManager) {
       console.error("【ZEGOCLOUD】Please add ZIM plugin first");
       return Promise.reject("ZEGOCLOUD】Please add ZIM plugin first");
     }
-    const { invitees, type, timeout = 10, data = "" } = params;
+    const {
+      invitees,
+      type,
+      timeout = 60,
+      data = "",
+      notificationConfig,
+    } = params;
     if (!Array.isArray(invitees) || invitees.length < 1) {
       console.error(
         "【ZEGOCLOUD】sendCallInvitation params error: invitees !!"
@@ -191,6 +199,8 @@ export class ZegoUIKitPrebuilt {
       return Promise.reject(
         "【ZEGOCLOUD】sendCallInvitation params error: invitees !!"
       );
+    } else if (invitees.length > 9) {
+      return Promise.reject("【ZEGOCLOUD】Maximum number of users exceeded");
     }
     if (
       type !== ZegoInvitationType.VideoCall &&
@@ -206,7 +216,8 @@ export class ZegoUIKitPrebuilt {
       invitees,
       type,
       timeout,
-      data
+      data,
+      notificationConfig
     );
   }
 }

@@ -451,6 +451,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         );
       }
     });
+    // 监听呼叫邀请离开房间的通知
+    this.props.core._zimManager &&
+      this.props.core._zimManager.notifyLeaveRoom(() => {
+        this.state.localStream &&
+          this.props.core.destroyStream(this.state.localStream);
+        this.props.core.leaveRoom();
+        this.props.leaveRoom && this.props.leaveRoom();
+      });
     const logInRsp = await this.props.core.enterRoom();
     let massage = "";
     if (logInRsp === 0) {

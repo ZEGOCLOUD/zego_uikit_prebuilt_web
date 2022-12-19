@@ -2,13 +2,12 @@ import {
   // ZegoUser,
   ZegoBroadcastMessageInfo,
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { ZegoSuperBoardManager, ZegoSuperBoardView } from "zego-superboard-web";
+import { ZegoSuperBoardView } from "zego-superboard-web";
 import { ZegoCloudRTCCore } from "../modules";
 import {
   ZegoCloudUser,
   ZegoCloudUserList,
 } from "../modules/tools/UserListManager";
-import { CallInvitationDialog } from "../view/pages/ZegoCallInvitation/callInvitationDialog";
 export interface ZegoCloudRemoteMedia {
   media: MediaStream | undefined;
   fromUser: ZegoUser;
@@ -244,8 +243,9 @@ export enum ZegoInvitationType {
   VideoCall,
 }
 export interface ZegoCallInvitationConfig {
-  enableCustomCallInvitationWaitingPage?: boolean; // 是否自定义呼叫邀请等待页面
-  enableCustomCallInvitationDialog?: boolean; // 是否自定义呼叫邀请弹窗
+  enableCustomCallInvitationWaitingPage?: boolean; // 是否自定义呼叫邀请等待页面，默认false
+  enableCustomCallInvitationDialog?: boolean; // 是否自定义呼叫邀请弹窗,默认false
+  enableNotifyWhenAppRunningInBackgroundOrQuit?: boolean; // Notify users when the app is running in the background or the app is killed, 默认false
   // 进入呼叫等待页面时的回调，返回cancel方法，调用的话可以取消邀请
   onCallInvitationWaitingPageShowed?: (
     invitees: ZegoUser[],
@@ -289,4 +289,9 @@ export enum CallInvitationEndReason {
   Canceled = "Canceled",
   Busy = "Busy",
   LeaveRoom = "LeaveRoom",
+}
+export interface ZegoSignalingPluginNotificationConfig {
+  resourcesID?: string;
+  title?: string;
+  message?: string;
 }

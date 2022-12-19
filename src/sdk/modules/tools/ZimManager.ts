@@ -1,10 +1,15 @@
-import ZIM, { ZIMCallInvitationSentResult } from "zego-zim-web";
+import ZIM, {
+  ZIMCallInvitationSentResult,
+  ZIMCallInviteConfig,
+  ZIMEventOfConnectionStateChangedResult,
+} from "zego-zim-web";
 import {
   CallInvitationEndReason,
   CallInvitationInfo,
   ZegoCallInvitationConfig,
   ZegoCloudRoomConfig,
   ZegoInvitationType,
+  ZegoSignalingPluginNotificationConfig,
   ZegoUser,
 } from "../../model";
 import { callInvitationControl } from "../../view/pages/ZegoCallInvitation/callInvitationControl";
@@ -23,6 +28,7 @@ export class ZimManager {
   config: ZegoCallInvitationConfig = {
     enableCustomCallInvitationWaitingPage: false,
     enableCustomCallInvitationDialog: false,
+    enableNotifyWhenAppRunningInBackgroundOrQuit: false,
   };
   constructor(
     ZIM: ZIM,
@@ -67,7 +73,8 @@ export class ZimManager {
         });
         if (this.callInfo.callID) {
           // 如果已被邀请，就拒绝其他的
-          this.refuseInvitation("busy", callID);
+          callID !== this.callInfo.callID &&
+            this.refuseInvitation("busy", callID);
         } else {
           const { inviter_name, type, data } = JSON.parse(extendedData);
           const { call_id, invitees, custom_data } = JSON.parse(data);
@@ -200,12 +207,19 @@ export class ZimManager {
       callInvitationControl.callInvitationDialogHide();
       this.endCall(CallInvitationEndReason.Timeout);
     });
+    this._zim?.on(
+      "connectionStateChanged",
+      (zim, data: ZIMEventOfConnectionStateChangedResult) => {
+        console.warn("【zim】connectionStateChanged", data);
+      }
+    );
   }
   async sendInvitation(
     invitees: ZegoUser[],
     type: number,
     timeout: number,
-    data: string
+    data: string,
+    notificationConfig?: ZegoSignalingPluginNotificationConfig
   ): Promise<{ errorInvitees: ZegoUser[] }> {
     if (this.inOperation) return Promise.reject("send invitation repeat !!");
     this.inOperation = true;
@@ -213,6 +227,7 @@ export class ZimManager {
     const roomID =
       this.expressConfig.roomID ||
       `call_${this.expressConfig.userID}_${new Date().getTime()}`;
+
     const _data = JSON.stringify({
       call_id: roomID,
       invitees: invitees.map((u) => ({
@@ -226,21 +241,30 @@ export class ZimManager {
       type,
       data: _data,
     });
-    // TODO:
-    // const pushConfig = {
-    //   title: "离线通知",
-    //   content: "这是一个离线通知",
-    //   payload: data,
-    //   resourcesID: "",
-    // };
+    const config: ZIMCallInviteConfig = {
+      timeout,
+      extendedData,
+    };
+
+    // 发送离线消息
+    if (this.config.enableNotifyWhenAppRunningInBackgroundOrQuit) {
+      const pushConfig = {
+        title: notificationConfig?.title || this.expressConfig.userName,
+        content:
+          notificationConfig?.message ||
+          `Incoming ${invitees.length > 0 ? "group" : ""} ${
+            type === 0 ? "voice" : "video"
+          } call...`,
+        payload: extendedData,
+        resourcesID: notificationConfig?.resourcesID ?? "",
+      };
+      config.pushConfig = pushConfig;
+    }
+
     try {
       const res: ZIMCallInvitationSentResult = await this._zim!.callInvite(
         inviteesID,
-        {
-          timeout,
-          extendedData,
-          // pushConfig,
-        }
+        config
       );
       console.warn("callInvite", res);
       const errorInvitees = res.errorInvitees.map((i) => {
