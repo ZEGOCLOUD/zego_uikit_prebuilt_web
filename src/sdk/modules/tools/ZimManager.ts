@@ -67,7 +67,7 @@ export class ZimManager {
         });
         if (this.callInfo.callID) {
           // 如果已被邀请，就拒绝其他的
-          this.refuseInvitation("Busy", callID);
+          this.refuseInvitation("busy", callID);
         } else {
           const { inviter_name, type, data } = JSON.parse(extendedData);
           const { call_id, invitees, custom_data } = JSON.parse(data);
@@ -102,6 +102,7 @@ export class ZimManager {
           // 对外再包一层，不暴露内部逻辑
           const refuse = (data?: string) => {
             this.refuseInvitation("", "", data);
+            this.endCall(CallInvitationEndReason.Declined);
           };
           const accept = (data?: string) => {
             this.acceptInvitation(data);

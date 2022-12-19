@@ -2,12 +2,13 @@ import { CallInvitationWaiting } from "./callInvitationWaiting";
 import { CallInvitationDialog } from "./callInvitationDialog";
 import ReactDOM, { Root } from "react-dom/client";
 import { ZegoInvitationType, ZegoUser } from "../../../model";
-
+import { isPc } from "../../../util";
 class CallInvitationControl {
   isWaitingPageShow = false;
   isDialogShow = false;
   container: Element;
   root: Root | undefined;
+  isPc = isPc();
   constructor(container: Element) {
     this.container = container;
   }
@@ -22,6 +23,7 @@ class CallInvitationControl {
         invitee={invitee}
         type={type}
         cancel={cancel}
+        isPc={this.isPc}
       ></CallInvitationWaiting>
     );
     this.isWaitingPageShow = true;
@@ -44,6 +46,7 @@ class CallInvitationControl {
         inviter={inviter}
         refuse={refuse}
         accept={accept}
+        isPc={this.isPc}
       ></CallInvitationDialog>
     );
     this.isDialogShow = true;

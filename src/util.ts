@@ -108,3 +108,25 @@ export function getRandomName() {
   index = index == names.length ? index - 1 : index;
   return names[index];
 }
+export function isAndroid(): boolean {
+  let u = navigator.userAgent;
+  return u.indexOf("Android") > -1 || u.indexOf("Adr") > -1;
+}
+export function isPc(): boolean {
+  const p = navigator.platform;
+  let system = { win: p.indexOf("Win") === 0, mac: p.indexOf("Mac") === 0 };
+  if (process.env.REACT_APP_MOBILE === "yes") {
+    return false;
+  }
+  return system.win || system.mac;
+}
+export function isIOS() {
+  let u = navigator.userAgent;
+  return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+}
+export function getUrlParams(
+  url: string = window.location.href
+): URLSearchParams {
+  let urlStr = url.split("?")[1];
+  return new URLSearchParams(urlStr);
+}

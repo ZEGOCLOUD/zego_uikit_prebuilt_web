@@ -1,23 +1,32 @@
 import "polyfill-object.fromentries";
-import React, { ChangeEvent, Ref } from "react";
+import React, { ChangeEvent, Ref, RefObject } from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
 import { ZegoUIKitPrebuilt } from "./sdk/index";
 import { LiveRole, ScenarioModel, ZegoCloudRoomConfig } from "./sdk/model";
-import { getUrlParams, isPc } from "./sdk/util";
-import { generateToken, getRandomName, randomID, randomNumID } from "./util";
+import {
+  generateToken,
+  getRandomName,
+  randomID,
+  randomNumID,
+  isAndroid,
+  isPc,
+  getUrlParams,
+  isIOS,
+} from "./util";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
 import { ZIM } from "zego-zim-web";
 export default class App extends React.PureComponent {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
+  docsLink = {
+    live_streaming: "https://docs.zegocloud.com/article/14885",
+    "1on1_call": "https://docs.zegocloud.com/article/14728",
+    video_conference: "https://docs.zegocloud.com/article/14922",
+    call_invitation: "",
+  };
   state = {
     showPreviewHeader: getUrlParams().get("preHeader") || "show",
-    docs:
-      process.env.REACT_APP_PATH === "live_streaming"
-        ? "https://docs.zegocloud.com/article/14885"
-        : process.env.REACT_APP_PATH === "1on1_call"
-        ? "https://docs.zegocloud.com/article/14728"
-        : "https://docs.zegocloud.com/article/14922",
+    docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"],
     showSettings: false,
     showSettingsBtn: false,
     liveStreamingMode:
@@ -30,9 +39,12 @@ export default class App extends React.PureComponent {
     toastText: "",
   };
   settingsEl = null;
-  invitationInput = React.createRef<HTMLInputElement>();
+  invitationInput: RefObject<HTMLInputElement> = React.createRef();
   zp: ZegoUIKitPrebuilt;
   toastTimer: NodeJS.Timer | null;
+  clientHeight = 0;
+  isAndroid = isAndroid();
+  isIOS = isIOS();
   constructor(props: any) {
     super(props);
     const userName = getUrlParams().get("UserName");
@@ -117,6 +129,7 @@ export default class App extends React.PureComponent {
       this.state.userID = userID;
       this.state.userName = "user_" + userID;
       this.state.callInvitation = true;
+      this.state.showPreviewHeader = "hide";
       //   let { token } = await generateToken(
       //     randomID(5),
       //     roomID,
@@ -246,6 +259,15 @@ export default class App extends React.PureComponent {
       };
     }
   }
+  componentDidMount(): void {
+    this.clientHeight =
+      document.documentElement.clientHeight || document.body.clientHeight;
+    this.isAndroid &&
+      window.addEventListener("resize", this.onResize, { passive: false });
+  }
+  componentWillUnmount(): void {
+    window.removeEventListener("resize", this.onResize);
+  }
   handleSelectMode(mode: string) {
     this.setState(
       {
@@ -272,17 +294,18 @@ export default class App extends React.PureComponent {
       param.toString();
   }
   onInvitationInputChange(e: ChangeEvent<HTMLInputElement>) {
-    e.target.value = e.target.value.replace(/[^\d,]|(?<!\d),/gi, "");
+    // const regExp = new RegExp("[^[0-9],", "ig");
+    e.target.value = e.target.value.replace(/[^\d,]/, "");
   }
   handleSendCallInvitation(type: number) {
     if (this.invitationInput.current?.value) {
-      const values = this.invitationInput.current?.value
-        .replace(/,\B/, "")
-        .split(",");
-      const invitees = values.map((v) => ({
-        userID: v,
-        userName: "user_" + v,
-      }));
+      const values = this.invitationInput.current?.value.split(",");
+      const invitees = values
+        .filter((v) => v.length)
+        .map((v) => ({
+          userID: v,
+          userName: "user_" + v,
+        }));
       console.warn(type, invitees);
       this.zp
         .sendCallInvitation({
@@ -320,9 +343,24 @@ export default class App extends React.PureComponent {
       this.toastTimer = null;
     }, 2000);
   }
+  onResize = () => {
+    const clientHeight =
+      document.documentElement.clientHeight || document.body.clientHeight;
+    if (this.clientHeight <= clientHeight) {
+      setTimeout(() => {
+        this.nameInputRef.current!.scrollIntoView({
+          block: "start",
+        });
+      }, 20);
+    }
+  };
   render(): React.ReactNode {
     return (
-      <div className={`${APP.app} ${isPc() ? "" : APP.mobileApp}`}>
+      <div
+        className={`${APP.app} ${isPc() ? APP.pcApp : APP.mobileApp} ${
+          this.state.callInvitation ? APP.callInvitation : ""
+        }`}
+      >
         {this.state.showPreviewHeader === "show" && (
           <div
             className={`${APP.nav} ${isPc() ? "" : APP.mobileNav} preView_nav`}
@@ -388,13 +426,38 @@ export default class App extends React.PureComponent {
                 </div>
               </div>
               <p className={APP.invitationTitle}>Make a direct call</p>
+              <p className={APP.inputPlaceholder}>
+                Enter invitees' user id, separate them by ","
+              </p>
               <input
                 ref={this.invitationInput}
                 className={APP.invitationInput}
                 type="text"
-                placeholder={'Enter invitees\' user id, separate them by ","'}
+                placeholder={
+                  isPc()
+                    ? 'Enter invitees\' user id, separate them by ","'
+                    : "User id"
+                }
                 required
                 onInput={this.onInvitationInputChange.bind(this)}
+                onFocus={(ev: ChangeEvent<HTMLInputElement>) => {
+                  this.isIOS &&
+                    !isPc() &&
+                    setTimeout(() => {
+                      ev.target.scrollIntoView({
+                        block: "start",
+                      });
+                    }, 50);
+                }}
+                onBlur={(ev: ChangeEvent<HTMLInputElement>) => {
+                  this.isAndroid &&
+                    !isPc() &&
+                    setTimeout(() => {
+                      ev.target.scrollIntoView({
+                        block: "start",
+                      });
+                    }, 100);
+                }}
               />
               <div
                 className={APP.invitationVideoCallBtn}
@@ -434,6 +497,7 @@ export default class App extends React.PureComponent {
           </a>
           .
         </div>
+
         {this.state.showSettings && (
           <div
             className={`${

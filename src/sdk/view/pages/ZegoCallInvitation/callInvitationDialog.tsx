@@ -4,18 +4,26 @@ import { getNameFirstLetter } from "../../../util";
 import DialogCss from "./callInvitationDialog.module.scss";
 export class CallInvitationDialog extends React.Component<{
   inviter: ZegoUser;
+  isPc: boolean;
   refuse: Function;
   accept: Function;
 }> {
   render(): React.ReactNode {
     return (
-      <div className={DialogCss.wrapper}>
+      <div
+        className={`${
+          this.props.isPc ? DialogCss.wrapper : DialogCss.mobileWrapper
+        }`}
+      >
         <div className={DialogCss.centerBox}>
-          <div className={DialogCss.avatar}>
-            {getNameFirstLetter(this.props.inviter.userName || "")}
+          <div className={DialogCss.infoWrapper}>
+            <div className={DialogCss.avatar}>
+              {getNameFirstLetter(this.props.inviter.userName || "")}
+            </div>
+            <p className={DialogCss.userName}>{this.props.inviter.userName}</p>
+            <p className={DialogCss.tip}>Incoming call...</p>
           </div>
-          <p className={DialogCss.userName}>{this.props.inviter.userName}</p>
-          <p className={DialogCss.tip}>Incoming call...</p>
+
           <div className={DialogCss.btnWrapper}>
             <div
               className={DialogCss.declinedBtn}

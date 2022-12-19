@@ -6,14 +6,17 @@ import WaitingCss from "./callInvitationWaiting.module.scss";
 export class CallInvitationWaiting extends React.PureComponent<{
   invitee: ZegoUser;
   type: ZegoInvitationType;
+  isPc: boolean;
   cancel: () => void;
 }> {
   render(): React.ReactNode {
     return (
-      <div className={WaitingCss.wrapper}>
-        <p className={WaitingCss.tip}>
-          Initiating a {this.props.type === 0 ? "voice" : "video"} call…
-        </p>
+      <div
+        className={` ${
+          this.props.isPc ? WaitingCss.wrapper : WaitingCss.mobileWrapper
+        }`}
+      >
+        <p className={WaitingCss.tip}>Calling…</p>
         <div className={WaitingCss.userWrapper}>
           <div
             className={WaitingCss.avatar}

@@ -27,6 +27,7 @@
       font-weight: 600;
       font-size: 40px;
       line-height: 136px;
+      text-transform: uppercase;
       background: #333543;
       border-radius: 50%;
     }
@@ -52,5 +53,70 @@
     background: #e8543b;
     border-radius: 10px;
     cursor: pointer;
+  }
+}
+.mobileWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  background: #1c1f2e;
+  .tip {
+    margin-top: vw(60px);
+    margin-bottom: vw(42px);
+    color: #ffffff;
+    font-weight: 400;
+    font-size: vw(36px);
+    line-height: 37px;
+  }
+  .userWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .avatar {
+      width: vw(140px);
+      height: vw(140px);
+      margin-bottom: vw(18px);
+      font-weight: 600;
+      font-size: vw(41px);
+      line-height: vw(140px);
+      background: #333543;
+      border-radius: 50%;
+    }
+    .userName {
+      width: 80vw;
+      overflow: hidden;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(30px);
+      line-height: vw(42px);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+  .endBtn {
+    width: vw(130px);
+    height: vw(130px);
+    margin: 0 auto;
+    margin: vw(83px) auto vw(90px);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0;
+    line-height: 46px;
+    background: url("../../../sdkMobileAssets/icon_call_invitation_cancel.png")
+        no-repeat center,
+      #e8543b;
+    background-size: vw(81px) vw(81px), cover;
+    border-radius: 50%;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 }
