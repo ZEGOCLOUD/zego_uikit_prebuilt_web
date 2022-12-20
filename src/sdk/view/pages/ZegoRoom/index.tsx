@@ -581,7 +581,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       this.state.localStream.getAudioTracks().length > 0
     ) {
       result = await this.props.core.muteMicrophone(this.state.micOpen);
-      this.props.core.setStreamExtraInfo(
+      await this.props.core.setStreamExtraInfo(
         this.localStreamID as string,
         JSON.stringify({
           isCameraOn: this.state.cameraOpen,
@@ -634,7 +634,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         this.state.localStream,
         !this.state.cameraOpen
       );
-      this.props.core.setStreamExtraInfo(
+      await this.props.core.setStreamExtraInfo(
         this.localStreamID as string,
         JSON.stringify({
           isCameraOn: !this.state.cameraOpen,
