@@ -169,7 +169,7 @@ export class ZegoCloudRTCCore {
       this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this._config.scenario.config?.role === LiveRole.Audience &&
       (this._config.scenario.config as any).liveStreamingMode ===
-        LiveStreamingMode.StandardLive
+        LiveStreamingMode.LiveStreaming
     );
   }
 
@@ -336,13 +336,21 @@ export class ZegoCloudRTCCore {
     this.zum.scenario =
       this._config.scenario?.mode || ScenarioModel.OneONoneCall;
     this.zum.role = this._config.scenario?.config?.role || LiveRole.Host;
-    this.zum.liveStreamingMode =
-      (this._config.scenario?.config as any)?.liveStreamingMode ||
-      LiveStreamingMode.RealTimeLive;
+    this.zum.liveStreamingMode = this.getLiveStreamingMode(
+      (this._config.scenario?.config as any)?.liveStreamingMode
+    );
     this.zum.showOnlyAudioUser = !!this._config.showOnlyAudioUser;
     this.zum.setShowNonVideo(!!this._config.showNonVideoUser);
 
     return true;
+  }
+  // 兼容处理LiveStreamingMode
+  private getLiveStreamingMode(mode: string | undefined): LiveStreamingMode {
+    if (mode === "StandardLive" || mode === "LiveStreaming")
+      return LiveStreamingMode.LiveStreaming;
+    if (mode === "PremiumLive" || mode === "InteractiveLiveStreaming")
+      return LiveStreamingMode.InteractiveLiveStreaming;
+    return LiveStreamingMode.RealTimeLive;
   }
   async checkWebRTC(): Promise<boolean> {
     if (!this.isCDNLive) {

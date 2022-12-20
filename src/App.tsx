@@ -19,7 +19,7 @@ import { ZIM } from "zego-zim-web";
 export default class App extends React.PureComponent {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   docsLink = {
-    live_streaming: "https://docs.zegocloud.com/article/14885",
+    live_stream: "https://docs.zegocloud.com/article/14885",
     "1on1_call": "https://docs.zegocloud.com/article/14728",
     video_conference: "https://docs.zegocloud.com/article/14922",
     call_invitation: "",
@@ -87,10 +87,9 @@ export default class App extends React.PureComponent {
           "?roomID=" +
           roomID,
       });
-    } else if (process.env.REACT_APP_PATH === "live_streaming") {
+    } else if (process.env.REACT_APP_PATH === "live_stream") {
       mode = ScenarioModel.LiveStreaming;
-      liveStreamingMode =
-        getUrlParams().get("liveStreamingMode") || "RealTimeLive";
+      liveStreamingMode = this.getLiveStreamingMode();
       if (role === LiveRole.Host || role === LiveRole.Cohost) {
         sharedLinks.push({
           name: "Join as co-host",
@@ -130,22 +129,20 @@ export default class App extends React.PureComponent {
       this.state.userName = "user_" + userID;
       this.state.callInvitation = true;
       this.state.showPreviewHeader = "hide";
-      //   let { token } = await generateToken(
-      //     randomID(5),
-      //     roomID,
-      //     userName || getRandomName()
-      //   );
-
-      let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        // 1484647939,
-        // "22076fd0a8388f31dc1f6e344171b2b1",
-        252984006,
-        "16435f3bdb307f3020b3f9e4259a29f0",
+      let { token } = await generateToken(
+        randomID(5),
         roomID,
-        userID,
-        "user_" + userID,
-        7200
+        userName || getRandomName()
       );
+
+      //   let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+      //     252984006,
+      //     "16435f3bdb307f****b3f9e4259a29f0",
+      //     roomID,
+      //     userID,
+      //     "user_" + userID,
+      //     7200
+      //   );
       this.zp = ZegoUIKitPrebuilt.create(token);
       this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
       this.zp.setCallInvitationConfig({
@@ -181,22 +178,19 @@ export default class App extends React.PureComponent {
       });
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
-        //   let { token } = await generateToken(
-        //     randomID(5),
-        //     roomID,
-        //     userName || getRandomName()
-        //   );
-
-        let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-          1484647939,
-          "22076fd0a8388f31dc1f6e344171b2b1",
-          //   252984006,
-          //   "16435f3bdb307f3020b3f9e4259a29f0",
+        let { token } = await generateToken(
+          randomID(5),
           roomID,
-          randomNumID(4),
-          userName || getRandomName(),
-          7200
+          userName || getRandomName()
         );
+        // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+        //   1484647939,
+        //   "22076fd0a8388f31dc1f6e344171****",
+        //   roomID,
+        //   randomNumID(4),
+        //   userName || getRandomName(),
+        //   7200
+        // );
         const zp = ZegoUIKitPrebuilt.create(token);
         zp.addPlugins({ ZegoSuperBoardManager });
         const param: ZegoCloudRoomConfig = {
@@ -258,6 +252,14 @@ export default class App extends React.PureComponent {
         zp.joinRoom(param);
       };
     }
+  }
+  private getLiveStreamingMode(): string {
+    const mode = getUrlParams().get("liveStreamingMode");
+    if (mode === "StandardLive" || mode === "LiveStreaming")
+      return ZegoUIKitPrebuilt.LiveStreamingMode.LiveStreaming;
+    if (mode === "PremiumLive" || mode === "InteractiveLiveStreaming")
+      return ZegoUIKitPrebuilt.LiveStreamingMode.InteractiveLiveStreaming;
+    return ZegoUIKitPrebuilt.LiveStreamingMode.RealTimeLive;
   }
   componentDidMount(): void {
     this.clientHeight =
@@ -523,28 +525,29 @@ export default class App extends React.PureComponent {
                 <div className={APP.settingsModeList}>
                   <div
                     className={`${APP.settingsModeItem} ${
-                      this.state.liveStreamingMode === "StandardLive"
+                      this.state.liveStreamingMode === "LiveStreaming"
                         ? APP.settingsModeItemSelected
                         : ""
                     }`}
                     onClick={() => {
-                      this.handleSelectMode("StandardLive");
+                      this.handleSelectMode("LiveStreaming");
                     }}
                   >
-                    <p>Standard Live</p>
+                    <p>Live Streaming</p>
                     <span></span>
                   </div>
                   <div
                     className={`${APP.settingsModeItem} ${
-                      this.state.liveStreamingMode === "PremiumLive"
+                      this.state.liveStreamingMode ===
+                      "InteractiveLiveStreaming"
                         ? APP.settingsModeItemSelected
                         : ""
                     }`}
                     onClick={() => {
-                      this.handleSelectMode("PremiumLive");
+                      this.handleSelectMode("InteractiveLiveStreaming");
                     }}
                   >
-                    <p>Premium Live</p>
+                    <p>Interactive Live Streaming</p>
                     <span></span>
                   </div>
                   <div

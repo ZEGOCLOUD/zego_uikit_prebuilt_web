@@ -33,7 +33,7 @@ export class ZegoCloudUserListManager {
     return (
       this.scenario === ScenarioModel.LiveStreaming &&
       this.role === LiveRole.Audience &&
-      this.liveStreamingMode === LiveStreamingMode.PremiumLive
+      this.liveStreamingMode === LiveStreamingMode.InteractiveLiveStreaming
     );
   }
   setPin(userID?: string, pined?: boolean): void {

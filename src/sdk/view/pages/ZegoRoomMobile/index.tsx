@@ -125,7 +125,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this.props.core._config.scenario.config?.role === LiveRole.Audience &&
       (this.props.core._config.scenario.config as any).liveStreamingMode ===
-        LiveStreamingMode.StandardLive
+        LiveStreamingMode.LiveStreaming
     );
   }
 

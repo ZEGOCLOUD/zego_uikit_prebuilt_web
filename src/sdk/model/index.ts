@@ -56,8 +56,16 @@ export interface ScenarioConfig {
   };
 }
 export enum LiveStreamingMode {
-  StandardLive = "StandardLive", // CDN
-  PremiumLive = "PremiumLive", // L3
+  /**
+   * @Deprecated  StanderLive will be removed, please use LiveStreaming instead
+   */
+  StanderLive = "LiveStreaming",
+  /**
+   * @Deprecated  PremiumLive will be removed, please use InteractiveLiveStreaming instead
+   */
+  PremiumLive = "InteractiveLiveStreaming",
+  LiveStreaming = "LiveStreaming", // CDN
+  InteractiveLiveStreaming = "InteractiveLiveStreaming", // L3
   RealTimeLive = "RealTimeLive", //RTC
 }
 export interface ZegoCloudRoomConfig {
