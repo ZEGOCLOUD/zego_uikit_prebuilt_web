@@ -107,14 +107,16 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
               ></div>
             </div>
 
-            <div
-              className={zegoWhiteboardSharingLayout.stop}
-              onClick={() => {
-                this.props.onclose();
-              }}
-            >
-              Stop Presenting
-            </div>
+            {this.context.whiteboard_showCreateClose && (
+              <div
+                className={zegoWhiteboardSharingLayout.stop}
+                onClick={() => {
+                  this.props.onclose();
+                }}
+              >
+                Stop Presenting
+              </div>
+            )}
           </div>
           <div
             className={`${zegoWhiteboardSharingLayout.content} zegoUserVideo_click`}

@@ -126,6 +126,7 @@ export interface ZegoCloudRoomConfig {
 
   whiteboardConfig?: {
     showAddImageButton?: boolean; //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
+    showCreateAndCloseButton?: boolean;
   };
 }
 

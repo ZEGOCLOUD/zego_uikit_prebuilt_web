@@ -13,6 +13,7 @@ export type ShowManageType = {
   whiteboard_isFontBold?: boolean;
   whiteboard_isFontItalic?: boolean;
   whiteboard_showAddImage?: boolean;
+  whiteboard_showCreateClose?: boolean;
 };
 
 const ShowManageContext = React.createContext<ShowManageType>({

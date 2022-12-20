@@ -105,6 +105,7 @@ export interface ZegoCloudRoomConfig {
     roomTimerDisplayed?: boolean;
     whiteboardConfig?: {
         showAddImageButton?: boolean;
+        showCreateAndCloseButton?: boolean;
     };
 }
 export interface ZegoBrowserCheckProp {

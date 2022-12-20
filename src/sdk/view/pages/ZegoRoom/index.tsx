@@ -1478,6 +1478,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           whiteboard_showAddImage:
             this.props.core._config.whiteboardConfig?.showAddImageButton,
           userInfo: { userID: this.props.core._expressConfig.userID },
+          whiteboard_showCreateClose:
+            this.props.core._config.whiteboardConfig?.showCreateAndCloseButton,
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>
@@ -1662,19 +1664,21 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                   }}
                 ></div>
               )}
-              {this.props.core._config.plugins?.ZegoSuperBoardManager && (
-                <div
-                  className={`${ZegoRoomCss.whiteboardButton} ${
-                    this.state.isZegoWhiteboardSharing && ZegoRoomCss.sharing
-                  }  ${
-                    this.getScreenSharingUser.length > 0 &&
-                    ZegoRoomCss.forbidden
-                  }`}
-                  onClick={() => {
-                    this.toggleWhiteboardSharing();
-                  }}
-                ></div>
-              )}
+              {this.props.core._config.plugins?.ZegoSuperBoardManager &&
+                this.props.core._config.whiteboardConfig
+                  ?.showCreateAndCloseButton && (
+                  <div
+                    className={`${ZegoRoomCss.whiteboardButton} ${
+                      this.state.isZegoWhiteboardSharing && ZegoRoomCss.sharing
+                    }  ${
+                      this.getScreenSharingUser.length > 0 &&
+                      ZegoRoomCss.forbidden
+                    }`}
+                    onClick={() => {
+                      this.toggleWhiteboardSharing();
+                    }}
+                  ></div>
+                )}
 
               {(this.props.core._config.showAudioVideoSettingsButton ||
                 this.props.core._config.showLayoutButton) && (

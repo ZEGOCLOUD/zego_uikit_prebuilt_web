@@ -15,6 +15,7 @@ export declare type ShowManageType = {
     whiteboard_isFontBold?: boolean;
     whiteboard_isFontItalic?: boolean;
     whiteboard_showAddImage?: boolean;
+    whiteboard_showCreateClose?: boolean;
 };
 declare const ShowManageContext: React.Context<ShowManageType>;
 export default ShowManageContext;

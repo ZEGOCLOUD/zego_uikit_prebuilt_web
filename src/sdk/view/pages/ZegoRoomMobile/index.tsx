@@ -1540,6 +1540,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             this.props.core.zegoSuperBoard?.isFontItalic(),
           whiteboard_showAddImage:
             this.props.core._config.whiteboardConfig?.showAddImageButton,
+          whiteboard_showCreateClose:
+            this.props.core._config.whiteboardConfig?.showCreateAndCloseButton,
           userInfo: { userID: this.props.core._expressConfig.userID },
         }}
       >
@@ -1700,28 +1702,30 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                         )}
 
                         {this.props.core._config.plugins
-                          ?.ZegoSuperBoardManager && (
-                          <div
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              this.toggleLayOut("WHITEBOARD");
-                              this.toggleWhiteboardSharing();
-                            }}
-                          >
-                            <i
-                              className={`${ZegoRoomCss.whiteboard} ${
-                                this.state.isZegoWhiteboardSharing
-                                  ? ZegoRoomCss.sharing
-                                  : ""
-                              } ${
-                                this.state.screenSharingUserList.length > 0
-                                  ? ZegoRoomCss.forbiddenSharing
-                                  : ""
-                              }`}
-                            ></i>
-                            <span>Whiteboard</span>
-                          </div>
-                        )}
+                          ?.ZegoSuperBoardManager &&
+                          this.props.core._config.whiteboardConfig
+                            ?.showCreateAndCloseButton && (
+                            <div
+                              onClick={(ev) => {
+                                ev.stopPropagation();
+                                this.toggleLayOut("WHITEBOARD");
+                                this.toggleWhiteboardSharing();
+                              }}
+                            >
+                              <i
+                                className={`${ZegoRoomCss.whiteboard} ${
+                                  this.state.isZegoWhiteboardSharing
+                                    ? ZegoRoomCss.sharing
+                                    : ""
+                                } ${
+                                  this.state.screenSharingUserList.length > 0
+                                    ? ZegoRoomCss.forbiddenSharing
+                                    : ""
+                                }`}
+                              ></i>
+                              <span>Whiteboard</span>
+                            </div>
+                          )}
                       </div>
                     </div>
                   )}
