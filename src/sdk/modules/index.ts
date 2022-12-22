@@ -76,16 +76,16 @@ export class ZegoCloudRTCCore {
 
   status: {
     loginRsp: boolean;
-    videoRefuse: boolean;
-    audioRefuse: boolean;
+    videoRefuse: boolean | undefined;
+    audioRefuse: boolean | undefined;
     micDeviceID?: string;
     cameraDeviceID?: string;
     speakerDeviceID?: string;
     videoResolution?: string;
   } = {
     loginRsp: false,
-    videoRefuse: false,
-    audioRefuse: false,
+    videoRefuse: undefined,
+    audioRefuse: undefined,
   };
   remoteStreamMap: { [index: string]: ZegoCloudRemoteMedia } = {};
   waitingHandlerStreams: {
@@ -153,6 +153,7 @@ export class ZegoCloudRTCCore {
     },
     videoResolutionList: [], //视频分辨率可选列表
     plugins: {},
+    autoLeaveRoomWhenOnlySelfInRoom: false, // 当房间内只剩一个人的时候，自动退出房间
   };
   _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
   extraInfoKey = "extra_info";
@@ -195,6 +196,7 @@ export class ZegoCloudRTCCore {
       }
       config.showNonVideoUser = false;
       config.showOnlyAudioUser = true;
+      config.autoLeaveRoomWhenOnlySelfInRoom = false;
       if (
         config.scenario.config &&
         config.scenario.config.role === LiveRole.Host
@@ -1156,7 +1158,8 @@ export class ZegoCloudRTCCore {
     func: (
       roomID: string,
       updateType: "DELETE" | "ADD",
-      user: ZegoUser[]
+      user: ZegoUser[],
+      allUser: ZegoUser[]
     ) => void
   ) {
     this.onRemoteUserUpdateCallBack = async (
@@ -1172,12 +1175,10 @@ export class ZegoCloudRTCCore {
           this.onRemoteUserUpdateCallBack(roomID, updateType, users);
         }, 1000);
       } else if (this._currentPage === "Room") {
-        // 人员进出通知
-        func(roomID, updateType, users);
-
         // 本地数据管理
         await this.zum.userUpdate(roomID, updateType, users);
-
+        // 人员进出通知
+        func(roomID, updateType, users, this.zum.remoteUserList);
         // 用户监听回调
         const newUserList = users.map((user) => {
           user.setUserAvatar = (avatar: string) => {

@@ -24,7 +24,7 @@ export default class App extends React.PureComponent {
     video_conference: "https://docs.zegocloud.com/article/14922",
     call_invitation: "",
   };
-  state = {
+  state: any = {
     showPreviewHeader: getUrlParams().get("preHeader") || "show",
     docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"],
     showSettings: false,
@@ -51,18 +51,6 @@ export default class App extends React.PureComponent {
 
     const roomID = getUrlParams().get("roomID") || randomID(5);
     const userID = getUrlParams().get("userID") || randomNumID(4);
-    if (!getUrlParams().get("roomID") || !getUrlParams().get("userID")) {
-      window.history.replaceState(
-        "",
-        "You have logged into room: " + roomID,
-        window.location.origin +
-          window.location.pathname +
-          "?roomID=" +
-          roomID +
-          "&role=Host&userID=" +
-          userID
-      );
-    }
 
     let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
@@ -125,58 +113,32 @@ export default class App extends React.PureComponent {
       });
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
-      this.state.userID = userID;
-      this.state.userName = "user_" + userID;
-      this.state.callInvitation = true;
-      this.state.showPreviewHeader = "hide";
-      let { token } = await generateToken(
-        randomID(5),
-        roomID,
-        userName || getRandomName()
-      );
-
-      //   let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      //     252984006,
-      //     "16435f3bdb307f****b3f9e4259a29f0",
-      //     roomID,
-      //     userID,
-      //     "user_" + userID,
-      //     7200
-      //   );
-      this.zp = ZegoUIKitPrebuilt.create(token);
-      this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
-      this.zp.setCallInvitationConfig({
-        onCallInvitationDialogShowed: (type, inviter, refuse, accept, data) => {
-          console.warn(
-            "【demo】onCallInvitationDialogShowed",
-            type,
-            inviter,
-            refuse,
-            accept,
-            data
-          );
-        },
-        onCallInvitationWaitingPageShowed: (invitees, cancel) => {
-          console.warn(
-            "【demo】onCallInvitationWaitingPageShowed",
-            invitees,
-            cancel
-          );
-          //   setTimeout(() => {
-          //     cancel();
-          //   }, 2000);
-        },
-        onSetRoomConfigBeforeJoining: (type) => {
-          console.warn("【demo】onSetRoomConfigBeforeJoining", type);
-          return {
-            showTextChat: false,
-          };
-        },
-        onCallInvitationEnded: (reason, data) => {
-          console.warn("【demo】onCallInvitationEnded", reason, data);
-        },
-      });
+      if (!getUrlParams().get("userID")) {
+        window.history.replaceState(
+          "",
+          "You have logged into room: " + roomID,
+          window.location.origin +
+            window.location.pathname +
+            "?&userID=" +
+            userID
+        );
+        return;
+      }
+      this.initCallInvitation(userID, roomID);
     } else {
+      if (!getUrlParams().get("roomID")) {
+        window.history.replaceState(
+          "",
+          "You have logged into room: " + roomID,
+          window.location.origin +
+            window.location.pathname +
+            "?roomID=" +
+            roomID +
+            "&role=Host&userID=" +
+            userID
+        );
+        return;
+      }
       this.myMeeting = async (element: HTMLDivElement) => {
         let { token } = await generateToken(
           randomID(5),
@@ -253,6 +215,82 @@ export default class App extends React.PureComponent {
       };
     }
   }
+  private async initCallInvitation(userID: string, roomID: string) {
+    this.state.userID = userID;
+    this.state.userName = "user_" + userID;
+    this.state.callInvitation = true;
+    this.state.showPreviewHeader = isPc() ? "show" : "hide";
+    let { token } = await generateToken(randomID(5), roomID, "user_" + userID);
+
+    // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+    //   252984006,
+    //   "16435f3bdb307f****b3f9e4259a29f0",
+    //   roomID,
+    //   userID,
+    //   "user_" + userID,
+    //   7200
+    // );
+    this.zp = ZegoUIKitPrebuilt.create(token);
+    this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
+    this.zp.setCallInvitationConfig({
+      enableNotifyWhenAppRunningInBackgroundOrQuit: true,
+      onCallInvitationDialogShowed: (type, inviter, refuse, accept, data) => {
+        console.warn(
+          "【demo】onCallInvitationDialogShowed",
+          type,
+          inviter,
+          refuse,
+          accept,
+          data
+        );
+      },
+      onCallInvitationWaitingPageShowed: (invitees, cancel) => {
+        console.warn(
+          "【demo】onCallInvitationWaitingPageShowed",
+          invitees,
+          cancel
+        );
+      },
+      onSetRoomConfigBeforeJoining: (type) => {
+        console.warn("【demo】onSetRoomConfigBeforeJoining", type);
+        if (this.state.invitees.length > 1) {
+          this.showToast("Waiting for others to join the call.");
+        }
+        return {
+          showTextChat: false,
+        };
+      },
+      onCallInvitationEnded: (reason, data) => {
+        console.warn("【demo】onCallInvitationEnded", reason, data);
+        if (reason === "Canceled") {
+          this.showToast("The call has been canceled.");
+        }
+        if (this.state.invitees.length === 1) {
+          // 单人呼叫提示
+          if (reason === "Busy" || reason === "Timeout") {
+            this.showToast(this.state.invitees[0].userName + " is busy now.");
+          }
+          if (reason === "Declined") {
+            this.showToast(
+              this.state.invitees[0].userName + " declined the call."
+            );
+          }
+        }
+
+        if (isPc()) {
+          const nav = document.querySelector(`.${APP.nav}`) as HTMLDivElement;
+          const serviceTips = document.querySelector(
+            `.${APP.serviceTips}`
+          ) as HTMLDivElement;
+          const meetingEl =
+            serviceTips.previousElementSibling as HTMLDivElement;
+          nav.style.display = "flex";
+          serviceTips.style.display = "block";
+          meetingEl.style.height = "auto";
+        }
+      },
+    });
+  }
   private getLiveStreamingMode(): string {
     const mode = getUrlParams().get("liveStreamingMode");
     if (mode === "StandardLive" || mode === "LiveStreaming")
@@ -296,8 +334,7 @@ export default class App extends React.PureComponent {
       param.toString();
   }
   onInvitationInputChange(e: ChangeEvent<HTMLInputElement>) {
-    // const regExp = new RegExp("[^[0-9],", "ig");
-    e.target.value = e.target.value.replace(/[^\d,]/, "");
+    e.target.value = e.target.value.replace(/[^\d,]/gi, "");
   }
   handleSendCallInvitation(type: number) {
     if (this.invitationInput.current?.value) {
@@ -309,6 +346,9 @@ export default class App extends React.PureComponent {
           userName: "user_" + v,
         }));
       console.warn(type, invitees);
+      this.setState({
+        invitees: invitees,
+      });
       this.zp
         .sendCallInvitation({
           invitees,
@@ -326,6 +366,9 @@ export default class App extends React.PureComponent {
               );
           }
           console.warn(res);
+        })
+        .catch((err) => {
+          this.showToast(err);
         });
     }
   }
@@ -350,7 +393,7 @@ export default class App extends React.PureComponent {
       document.documentElement.clientHeight || document.body.clientHeight;
     if (this.clientHeight <= clientHeight) {
       setTimeout(() => {
-        this.nameInputRef.current!.scrollIntoView({
+        this.invitationInput?.current?.scrollIntoView({
           block: "start",
         });
       }, 20);
@@ -442,6 +485,7 @@ export default class App extends React.PureComponent {
                 }
                 required
                 onInput={this.onInvitationInputChange.bind(this)}
+                onChange={this.onInvitationInputChange.bind(this)}
                 onFocus={(ev: ChangeEvent<HTMLInputElement>) => {
                   this.isIOS &&
                     !isPc() &&

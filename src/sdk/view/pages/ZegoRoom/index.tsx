@@ -154,6 +154,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
       this.toggleLayOut("MESSAGE");
+    // if(this.props.core._zimManager && )
   }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
@@ -242,7 +243,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.onRemoteUserUpdate(
-      (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
+      (
+        roomID: string,
+        updateType: "DELETE" | "ADD",
+        userList: ZegoUser[],
+        allUsers: ZegoUser[]
+      ) => {
         let notificationList: ZegoNotification[] = [];
         if (
           this.props.core._config.lowerLeftNotification?.showUserJoinAndLeave
@@ -260,7 +266,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             });
           });
         }
-
+        // 当房间只剩自己的时候，自动离开房间
+        if (updateType === "DELETE") {
+          if (
+            this.props.core._config.autoLeaveRoomWhenOnlySelfInRoom &&
+            allUsers.length === 0
+          ) {
+            this.leaveRoom();
+            return;
+          }
+        }
         this.setState((state: { notificationList: string[] }) => {
           return {
             notificationList: [...state.notificationList, ...notificationList],
@@ -546,11 +561,19 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           );
         }
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.error(
           "【ZEGOCLOUD】createStream or publishLocalStream failed,Reason: ",
           JSON.stringify(error)
         );
+        if (error?.code === 1103064) {
+          this.props.core.status.videoRefuse = true;
+          this.props.core.status.audioRefuse = true;
+          this.setState({
+            cameraOpen: false,
+            micOpen: false,
+          });
+        }
         return false;
       }
     } else {

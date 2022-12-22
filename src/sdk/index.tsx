@@ -87,14 +87,21 @@ export class ZegoUIKitPrebuilt {
     ZegoUIKitPrebuilt.core?.addPlugins(plugins);
     if (ZegoUIKitPrebuilt.core?._zimManager) {
       ZegoUIKitPrebuilt.core?._zimManager.notifyJoinRoom(
-        (type: ZegoInvitationType, config: ZegoCloudRoomConfig) => {
+        (
+          type: ZegoInvitationType,
+          config: ZegoCloudRoomConfig,
+          mode: ScenarioModel
+        ) => {
           console.warn("notifyJoinRoom", type, config);
+          if (config.autoLeaveRoomWhenOnlySelfInRoom === undefined) {
+            config.autoLeaveRoomWhenOnlySelfInRoom = true;
+          }
           //   ZegoCloudRoomConfig部分参数不允许自定义
           let roomConfig = Object.assign(config, {
             showPreJoinView: false,
             showLeavingView: false,
             scenario: {
-              mode: ScenarioModel.GroupCall,
+              mode: mode,
             },
           }) as ZegoCloudRoomConfig;
           if (type === ZegoInvitationType.VoiceCall) {

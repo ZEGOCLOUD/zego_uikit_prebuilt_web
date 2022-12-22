@@ -368,10 +368,10 @@ export function generatePrebuiltToken(
   userName?: string,
   seconds?: number
 ) {
-  if (!roomID) {
-    console.error("【ZEGOCLOUD】:roomID required!!");
-    return "";
-  }
+  //   if (!roomID) {
+  //     console.error("【ZEGOCLOUD】:roomID required!!");
+  //     return "";
+  //   }
   if (!userID) {
     console.error("【ZEGOCLOUD】:userID required!!");
     return "";

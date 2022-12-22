@@ -6,6 +6,7 @@ import ZIM, {
 import {
   CallInvitationEndReason,
   CallInvitationInfo,
+  ScenarioModel,
   ZegoCallInvitationConfig,
   ZegoCloudRoomConfig,
   ZegoInvitationType,
@@ -16,6 +17,7 @@ import { callInvitationControl } from "../../view/pages/ZegoCallInvitation/callI
 export class ZimManager {
   _zim: ZIM | null;
   isLogin = false;
+  isServiceActivated = true; //IM 服务是否开通
   expressConfig: {
     appID: number;
     userID: string;
@@ -30,6 +32,7 @@ export class ZimManager {
     enableCustomCallInvitationDialog: false,
     enableNotifyWhenAppRunningInBackgroundOrQuit: false,
   };
+
   constructor(
     ZIM: ZIM,
     expressConfig: {
@@ -56,6 +59,9 @@ export class ZimManager {
       .catch((err: any) => {
         // 登录失败
         this.isLogin = false;
+        if (err.code === 6000014) {
+          this.isServiceActivated = false;
+        }
         console.error("【ZEGOCLOUD】zim login failed !!", err);
       });
   }
@@ -88,6 +94,7 @@ export class ZimManager {
               userID: inviter,
               userName: inviter_name,
             },
+            acceptedInvitees: [],
             roomID: call_id,
             type: type,
             isGroupCall: invitees.length > 1,
@@ -99,6 +106,8 @@ export class ZimManager {
               { userID: inviter, userName: inviter_name },
               () => {
                 this.refuseInvitation();
+                callInvitationControl.callInvitationDialogHide();
+                this.endCall(CallInvitationEndReason.Declined);
               },
               () => {
                 this.acceptInvitation();
@@ -109,6 +118,7 @@ export class ZimManager {
           // 对外再包一层，不暴露内部逻辑
           const refuse = (data?: string) => {
             this.refuseInvitation("", "", data);
+            callInvitationControl.callInvitationDialogHide();
             this.endCall(CallInvitationEndReason.Declined);
           };
           const accept = (data?: string) => {
@@ -150,6 +160,10 @@ export class ZimManager {
           invitee,
           extendedData,
         });
+        this.callInfo.acceptedInvitees.push({
+          userID: invitee,
+          userName: "",
+        });
         callInvitationControl.callInvitationWaitingPageHide();
         this.notifyJoinRoomCallback();
       }
@@ -163,10 +177,19 @@ export class ZimManager {
           invitee,
           extendedData,
         });
+        let reason;
+        if (extendedData.length) {
+          const data = JSON.parse(extendedData);
+          reason = data.reason;
+        }
         if (!this.callInfo.isGroupCall) {
           // 单人邀请，隐藏waitingPage,清除callInfo
           callInvitationControl.callInvitationWaitingPageHide();
-          this.endCall(CallInvitationEndReason.Declined);
+          this.endCall(
+            reason === "busy"
+              ? CallInvitationEndReason.Busy
+              : CallInvitationEndReason.Declined
+          );
         } else {
           // 多人邀请，
           // 移除拒绝者
@@ -221,12 +244,14 @@ export class ZimManager {
     data: string,
     notificationConfig?: ZegoSignalingPluginNotificationConfig
   ): Promise<{ errorInvitees: ZegoUser[] }> {
+    if (!this.isServiceActivated)
+      return Promise.reject(
+        "The call invitation service has not been activated."
+      );
     if (this.inOperation) return Promise.reject("send invitation repeat !!");
     this.inOperation = true;
     const inviteesID = invitees.map((i) => i.userID);
-    const roomID =
-      this.expressConfig.roomID ||
-      `call_${this.expressConfig.userID}_${new Date().getTime()}`;
+    const roomID = `call_${this.expressConfig.userID}_${new Date().getTime()}`;
 
     const _data = JSON.stringify({
       call_id: roomID,
@@ -252,11 +277,11 @@ export class ZimManager {
         title: notificationConfig?.title || this.expressConfig.userName,
         content:
           notificationConfig?.message ||
-          `Incoming ${invitees.length > 0 ? "group" : ""} ${
+          `Incoming ${invitees.length > 1 ? "group " : ""}${
             type === 0 ? "voice" : "video"
           } call...`,
         payload: extendedData,
-        resourcesID: notificationConfig?.resourcesID ?? "",
+        resourcesID: notificationConfig?.resourcesID ?? "zegouikit_call",
       };
       config.pushConfig = pushConfig;
     }
@@ -287,6 +312,7 @@ export class ZimManager {
           userID: this.expressConfig.userID,
           userName: this.expressConfig.userName,
         },
+        acceptedInvitees: [],
         roomID,
         type,
         isGroupCall: invitees.length > 1,
@@ -318,7 +344,7 @@ export class ZimManager {
       return Promise.resolve({ errorInvitees });
     } catch (error) {
       this.inOperation = false;
-      return Promise.reject(error);
+      return Promise.reject(JSON.stringify(error));
     }
   }
   async cancelInvitation(data?: string) {
@@ -356,7 +382,6 @@ export class ZimManager {
       await this._zim?.callReject(callID || this.callInfo.callID, {
         extendedData: JSON.stringify(extendedData),
       });
-      callInvitationControl.callInvitationDialogHide();
     } catch (error) {
       console.error("【ZEGOCLOUD】refuseInvitation", error);
     }
@@ -378,6 +403,7 @@ export class ZimManager {
     } catch (error) {
       console.error("【ZEGOCLOUD】acceptInvitation", error);
     }
+    this.inOperation = false;
   }
   clearCallInfo() {
     this.callInfo = {} as CallInvitationInfo;
@@ -389,14 +415,24 @@ export class ZimManager {
   private notifyJoinRoomCallback = () => {};
   /** 通知UI层调用joinRoom */
   notifyJoinRoom(
-    func: (type: ZegoInvitationType, roomConfig: ZegoCloudRoomConfig) => void
+    func: (
+      type: ZegoInvitationType,
+      roomConfig: ZegoCloudRoomConfig,
+      mode: ScenarioModel
+    ) => void
   ) {
     func &&
       (this.notifyJoinRoomCallback = () => {
         // 接收客户传递进来的roomConfig
         const roomConfig =
           this.config?.onSetRoomConfigBeforeJoining?.(this.callInfo.type) || {};
-        func(this.callInfo.type, roomConfig);
+        func(
+          this.callInfo.type,
+          roomConfig,
+          this.callInfo.isGroupCall
+            ? ScenarioModel.GroupCall
+            : ScenarioModel.OneONoneCall
+        );
       });
   }
   private notifyLeaveRoomCallback = (reason: CallInvitationEndReason) => {};
@@ -418,6 +454,14 @@ export class ZimManager {
   }
   /**结束 call,清除 callInfo */
   endCall(reason: CallInvitationEndReason) {
+    if (
+      reason === CallInvitationEndReason.LeaveRoom &&
+      !this.callInfo.acceptedInvitees.length &&
+      this.callInfo.inviter.userID === this.expressConfig.userID
+    ) {
+      // 主叫人如果在所有人接收邀请前离开房间，则取消所有人的邀请
+      this.cancelInvitation();
+    }
     this.config?.onCallInvitationEnded?.(reason, "");
     this.clearCallInfo();
   }

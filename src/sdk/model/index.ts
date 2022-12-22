@@ -117,24 +117,34 @@ export interface ZegoCloudRoomConfig {
   videoResolutionDefault?: VideoResolution; // 默认视频分辨率
   onLiveStart?: (user: ZegoUser) => void; //直播开始回调
   onLiveEnd?: (user: ZegoUser) => void; //直播结束回调
-  // @deprecate
+  /**
+   * @deprecated facingMode will be removed
+   * */
   facingMode?: "user" | "environment"; // 前置摄像头模式
-  // @deprecate
+  /**
+   * @deprecated joinRoomCallback will be removed
+   * */
   joinRoomCallback?: () => void; // 加入房间成功回调
-  // @deprecate
+  /**
+   * @deprecated leaveRoomCallback will be removed
+   * */
   leaveRoomCallback?: () => void; // 退出房间回调
-  // @deprecate
+  /**
+   * @deprecated userUpdateCallback will be removed
+   * */
   userUpdateCallback?: (
     updateType: "DELETE" | "ADD",
     userList: ZegoUser[]
   ) => void; // 用户新增/退出 回调
-
-  // @deprecate
+  /**
+   * @deprecated roomTimerDisplayed will be removed
+   * */
   roomTimerDisplayed?: boolean; // 是否显示倒计时
 
   whiteboardConfig?: {
     showAddImageButton?: boolean; //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
   };
+  autoLeaveRoomWhenOnlySelfInRoom?: boolean; // 当房间内只剩一个人的时候，自动退出房间
 }
 
 export interface ZegoBrowserCheckProp {
@@ -288,6 +298,8 @@ export interface CallInvitationInfo {
   roomID: string;
   inviter: ZegoUser;
   invitees: ZegoUser[];
+  /** 已接受邀请的用户 */
+  acceptedInvitees: ZegoUser[];
   type: ZegoInvitationType;
   isGroupCall: boolean;
 }
