@@ -195,7 +195,7 @@ export class ZegoUIKitPrebuilt {
     const {
       invitees,
       type,
-      timeout = 60,
+      timeout = 20,
       data = "",
       notificationConfig,
     } = params;

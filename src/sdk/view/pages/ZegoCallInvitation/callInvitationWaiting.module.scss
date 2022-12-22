@@ -6,6 +6,7 @@
   z-index: 10000;
   width: 100vw;
   height: 100vh;
+  overflow: auto;
   text-align: center;
   background: #1c1f2e;
   .tip {
@@ -18,7 +19,7 @@
   }
   .userWrapper {
     width: 244px;
-    margin: 0 auto 26.667vh;
+    margin: 0 auto 25.667vh;
     .avatar {
       width: 136px;
       height: 136px;
@@ -46,7 +47,7 @@
   .endBtn {
     width: 146px;
     height: 46px;
-    margin: 0 auto;
+    margin: 0 auto 14.778vh;
     color: #ffffff;
     font-weight: 600;
     font-size: 16px;
@@ -66,12 +67,12 @@
   align-items: center;
   justify-content: space-between;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   text-align: center;
   background: #1c1f2e;
   .tip {
-    margin-top: vw(60px);
-    margin-bottom: vw(42px);
+    margin-top: vw(50px);
+    margin-bottom: vw(36px);
     color: #ffffff;
     font-weight: 400;
     font-size: vw(36px);
@@ -85,7 +86,7 @@
     .avatar {
       width: vw(140px);
       height: vw(140px);
-      margin-bottom: vw(18px);
+      margin-bottom: vw(14px);
       font-weight: 600;
       font-size: vw(41px);
       line-height: vw(140px);
@@ -112,7 +113,6 @@
     color: #ffffff;
     font-weight: 600;
     font-size: 0;
-    line-height: 46px;
     background: url("../../../sdkMobileAssets/icon_call_invitation_cancel.png")
         no-repeat center,
       #e8543b;

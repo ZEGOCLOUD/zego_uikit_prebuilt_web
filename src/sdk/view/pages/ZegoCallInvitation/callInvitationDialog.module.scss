@@ -30,6 +30,7 @@
     font-size: 24px;
     line-height: 33px;
     line-height: 56px;
+    text-transform: uppercase;
     background: #3a3d4a;
     border-radius: 50%;
   }
@@ -75,8 +76,9 @@
   position: fixed;
   z-index: 10000;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
+  text-align: center;
   background: #1c1f2e;
   .centerBox {
     display: flex;

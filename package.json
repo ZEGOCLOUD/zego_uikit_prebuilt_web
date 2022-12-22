@@ -4,9 +4,11 @@
   "private": true,
   "homepage": "./",
   "scripts": {
-    "build": "npm run build:1on1_call & npm run build:live_stream & npm run build:video_conference",
+    "build": "npm run build:1on1_call & npm run build:live_stream & npm run build:video_conference & npm run build:call_invitation",
     "build:1on1_call": "REACT_APP_ENV='prd' REACT_APP_PATH='1on1_call' BUILD_PATH='1on1_call'  react-scripts build",
     "build:1on1_call:test": "REACT_APP_ENV='test' REACT_APP_PATH='1on1_call' BUILD_PATH='1on1_call'  react-scripts build",
+    "build:call_invitation": "REACT_APP_ENV='prd' REACT_APP_PATH='call_invitation' BUILD_PATH='call_invitation'  react-scripts build",
+    "build:call_invitation:test": "REACT_APP_ENV='test' REACT_APP_PATH='call_invitation' BUILD_PATH='call_invitation'  react-scripts build",
     "build:lib": "webpack",
     "build:live_stream": "REACT_APP_ENV='prd' REACT_APP_PATH='live_stream' BUILD_PATH='live_stream'  react-scripts build",
     "build:live_stream:test": "REACT_APP_ENV='test' REACT_APP_PATH='live_stream' BUILD_PATH='live_stream'  react-scripts build",

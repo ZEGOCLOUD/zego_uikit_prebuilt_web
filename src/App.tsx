@@ -50,7 +50,7 @@ export default class App extends React.PureComponent {
     const userName = getUrlParams().get("UserName");
 
     const roomID = getUrlParams().get("roomID") || randomID(5);
-    const userID = getUrlParams().get("userID") || randomNumID(4);
+    const userID = getUrlParams().get("userID") || randomNumID(8);
 
     let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
@@ -149,7 +149,7 @@ export default class App extends React.PureComponent {
         //   1484647939,
         //   "22076fd0a8388f31dc1f6e344171****",
         //   roomID,
-        //   randomNumID(4),
+        //   randomNumID(8),
         //   userName || getRandomName(),
         //   7200
         // );
@@ -242,8 +242,8 @@ export default class App extends React.PureComponent {
     this.zp.setCallInvitationConfig({
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
       ringtoneConfig: {
-        incomingCallUrl: require("./assets/zego_incoming.mp3"),
-        outgoingCallUrl: require("./assets/zego_outgoing.mp3"),
+        // incomingCallUrl: require("./assets/zego_incoming.mp3"),
+        // outgoingCallUrl: require("./assets/zego_outgoing.mp3"),
       },
       onCallInvitationDialogShowed: (type, inviter, refuse, accept, data) => {
         console.warn(
@@ -475,7 +475,9 @@ export default class App extends React.PureComponent {
           <div className={APP.callInvitationWrapper}>
             <div className={APP.invitationModel}>
               <div className={APP.invitationUserHeader}>
-                <div className={APP.invitationAvatar}>G</div>
+                <div className={APP.invitationAvatar}>
+                  {this.state.userName.slice(0, 1)}
+                </div>
                 <div className={APP.invitationUserInfo}>
                   <p>{this.state.userName}</p>
                   <span>ID: {this.state.userID}</span>

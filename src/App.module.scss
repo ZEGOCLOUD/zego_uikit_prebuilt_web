@@ -226,7 +226,7 @@
       .invitationUserHeader {
         display: flex;
         align-items: center;
-        margin-bottom: 55px;
+        margin-bottom: 54px;
         .invitationAvatar {
           width: 38px;
           height: 38px;
@@ -237,6 +237,7 @@
           font-family: PingFangSC-Semibold, PingFang SC;
           line-height: 38px;
           text-align: center;
+          text-transform: uppercase;
           background: #3a3d4a;
           border-radius: 50%;
           user-select: none;
@@ -300,9 +301,10 @@
         }
       }
       .invitationVideoCallBtn {
+        box-sizing: border-box;
         width: 370px;
         height: 46px;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
         color: #ffffff;
         font-weight: 600;
         font-size: 16px;
@@ -315,6 +317,7 @@
         opacity: 0.3;
       }
       .invitationVoiceCallBtn {
+        box-sizing: border-box;
         width: 370px;
         height: 46px;
         color: #0055ff;
