@@ -13,6 +13,7 @@ import {
   isPc,
   getUrlParams,
   isIOS,
+  generateTokenForCallInvitation,
 } from "./util";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
 import { ZIM } from "zego-zim-web";
@@ -122,7 +123,6 @@ export default class App extends React.PureComponent {
             "?&userID=" +
             userID
         );
-        return;
       }
       this.initCallInvitation(userID, roomID);
     } else {
@@ -137,7 +137,6 @@ export default class App extends React.PureComponent {
             "&role=Host&userID=" +
             userID
         );
-        return;
       }
       this.myMeeting = async (element: HTMLDivElement) => {
         let { token } = await generateToken(
@@ -227,8 +226,12 @@ export default class App extends React.PureComponent {
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
     this.state.showPreviewHeader = isPc() ? "show" : "hide";
-    let { token } = await generateToken(randomID(5), roomID, "user_" + userID);
-
+    let { token } = await generateTokenForCallInvitation(
+      userID,
+      roomID,
+      "user_" + userID
+    );
+    // console.warn(token);
     // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
     //   252984006,
     //   "16435f3bdb307f****b3f9e4259a29f0",
@@ -239,11 +242,12 @@ export default class App extends React.PureComponent {
     // );
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
+    // window.ZegoUIKitPrebuilt = ZegoUIKitPrebuilt;
     this.zp.setCallInvitationConfig({
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
       ringtoneConfig: {
-        // incomingCallUrl: require("./assets/zego_incoming.mp3"),
-        // outgoingCallUrl: require("./assets/zego_outgoing.mp3"),
+        incomingCallUrl: require("./assets/zego_incoming.mp3"),
+        outgoingCallUrl: require("./assets/zego_outgoing.mp3"),
       },
       onCallInvitationDialogShowed: (type, inviter, refuse, accept, data) => {
         console.warn(

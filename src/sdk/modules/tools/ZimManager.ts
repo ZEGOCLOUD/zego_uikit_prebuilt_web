@@ -254,6 +254,7 @@ export class ZimManager {
   }
 
   private answeredTimeoutCallback(invitees: string[]) {
+    if (!this.callInfo.callID) return;
     if (this.callInfo.isGroupCall) {
       // 多人邀请
       this.callInfo.invitees = this.callInfo.invitees.filter(

@@ -12,7 +12,7 @@
     "build:lib": "webpack",
     "build:live_stream": "REACT_APP_ENV='prd' REACT_APP_PATH='live_stream' BUILD_PATH='live_stream'  react-scripts build",
     "build:live_stream:test": "REACT_APP_ENV='test' REACT_APP_PATH='live_stream' BUILD_PATH='live_stream'  react-scripts build",
-    "build:test": "npm run build:1on1_call:test & npm run build:live_stream:test & npm run build:video_conference:test",
+    "build:test": "npm run build:1on1_call:test & npm run build:live_stream:test & npm run build:video_conference:test & npm run build:call_invitation:test",
     "build:video_conference": "REACT_APP_ENV='prd' REACT_APP_PATH='video_conference' BUILD_PATH='video_conference'  react-scripts build",
     "build:video_conference:test": "REACT_APP_ENV='test' REACT_APP_PATH='video_conference' BUILD_PATH='video_conference'  react-scripts build",
     "deploy": "gh-pages -b main -d build",

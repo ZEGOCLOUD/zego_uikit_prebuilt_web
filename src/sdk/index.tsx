@@ -94,7 +94,8 @@ export class ZegoUIKitPrebuilt {
         ) => {
           console.warn("notifyJoinRoom", type, config);
           if (config.autoLeaveRoomWhenOnlySelfInRoom === undefined) {
-            config.autoLeaveRoomWhenOnlySelfInRoom = true;
+            config.autoLeaveRoomWhenOnlySelfInRoom =
+              mode === ScenarioModel.OneONoneCall;
           }
           //   ZegoCloudRoomConfig部分参数不允许自定义
           let roomConfig = Object.assign(config, {
@@ -195,7 +196,7 @@ export class ZegoUIKitPrebuilt {
     const {
       invitees,
       type,
-      timeout = 20,
+      timeout = 60,
       data = "",
       notificationConfig,
     } = params;
