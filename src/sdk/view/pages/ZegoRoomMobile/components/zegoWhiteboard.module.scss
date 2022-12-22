@@ -75,7 +75,7 @@
     align-items: center;
     justify-content: center;
     height: vw(384px);
-    margin: vw(153px) 0 vw(295px) 0;
+    margin: vw(153px) 0 0 0;
     background: #f2f2f2;
     pre {
       padding-right: 5px;
@@ -83,6 +83,8 @@
     }
   }
   .page {
+    position: fixed;
+    bottom: vw(172px);
     display: flex;
     justify-content: center;
     width: 100%;

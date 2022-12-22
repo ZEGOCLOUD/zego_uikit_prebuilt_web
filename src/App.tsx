@@ -156,6 +156,12 @@ export default class App extends React.PureComponent {
         const zp = ZegoUIKitPrebuilt.create(token);
         zp.addPlugins({ ZegoSuperBoardManager });
         const param: ZegoCloudRoomConfig = {
+          // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+          // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
+          // showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
+          // showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
+          // showAudioVideoSettingsButton: false, // 是否显示音视频设置按钮,默认显示
+          // showNonVideoUser: false,
           // @ts-ignore
           container: element, // 挂载容器
           preJoinViewConfig: {
@@ -183,6 +189,7 @@ export default class App extends React.PureComponent {
           },
           whiteboardConfig: {
             showAddImageButton: true,
+            showCreateAndCloseButton: false,
           },
           showUserList: true,
           onUserAvatarSetter: (user) => {
@@ -220,7 +227,7 @@ export default class App extends React.PureComponent {
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
     this.state.showPreviewHeader = isPc() ? "show" : "hide";
-    // let { token } = await generateToken(randomID(5), roomID, "user_" + userID);
+    let { token } = await generateToken(randomID(5), roomID, "user_" + userID);
 
     // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
     //   252984006,

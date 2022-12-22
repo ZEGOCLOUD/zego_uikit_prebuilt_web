@@ -335,7 +335,14 @@ export function getNameFirstLetter(name: string): string {
 }
 
 export function chooseFile(callback: (file: File) => void): void {
+  const oldInputDom: HTMLInputElement | null = document.querySelector(
+    "#zego_whiteboard_UIKits_file"
+  );
+  if (oldInputDom) {
+    oldInputDom.remove();
+  }
   const inputObj = document.createElement("input");
+
   inputObj.setAttribute("id", "zego_whiteboard_UIKits_file");
   inputObj.setAttribute("type", "file");
   inputObj.setAttribute("name", "file");
