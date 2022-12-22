@@ -112,7 +112,8 @@ export class ZimManager {
               () => {
                 this.acceptInvitation();
                 this.notifyJoinRoomCallback();
-              }
+              },
+              this.config?.ringtoneConfig?.incomingCallUrl
             );
           }
           // 对外再包一层，不暴露内部逻辑
@@ -330,7 +331,8 @@ export class ZimManager {
             type,
             () => {
               this.cancelInvitation();
-            }
+            },
+            this.config?.ringtoneConfig?.outgoingCallUrl
           );
         }
         const cancel = () => {

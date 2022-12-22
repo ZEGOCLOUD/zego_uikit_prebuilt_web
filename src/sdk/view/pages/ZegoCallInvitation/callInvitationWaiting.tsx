@@ -8,6 +8,7 @@ export class CallInvitationWaiting extends React.PureComponent<{
   type: ZegoInvitationType;
   isPc: boolean;
   cancel: () => void;
+  outgoingCallUrl?: string;
 }> {
   render(): React.ReactNode {
     return (
@@ -34,6 +35,9 @@ export class CallInvitationWaiting extends React.PureComponent<{
         >
           End call
         </div>
+        {this.props.outgoingCallUrl && (
+          <audio src={this.props.outgoingCallUrl} autoPlay loop></audio>
+        )}
       </div>
     );
   }

@@ -7,6 +7,7 @@ export class CallInvitationDialog extends React.Component<{
   isPc: boolean;
   refuse: Function;
   accept: Function;
+  incomingCallUrl?: string;
 }> {
   render(): React.ReactNode {
     return (
@@ -43,6 +44,9 @@ export class CallInvitationDialog extends React.Component<{
             </div>
           </div>
         </div>
+        {this.props.incomingCallUrl && (
+          <audio src={this.props.incomingCallUrl} autoPlay loop></audio>
+        )}
       </div>
     );
   }

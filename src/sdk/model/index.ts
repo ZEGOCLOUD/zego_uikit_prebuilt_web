@@ -264,6 +264,10 @@ export interface ZegoCallInvitationConfig {
   enableCustomCallInvitationWaitingPage?: boolean; // 是否自定义呼叫邀请等待页面，默认false
   enableCustomCallInvitationDialog?: boolean; // 是否自定义呼叫邀请弹窗,默认false
   enableNotifyWhenAppRunningInBackgroundOrQuit?: boolean; // Notify users when the app is running in the background or the app is killed, 默认false
+  ringtoneConfig?: {
+    incomingCallUrl: string; // 接收时的铃声
+    outgoingCallUrl: string; // 呼出去的铃声
+  };
   // 进入呼叫等待页面时的回调，返回cancel方法，调用的话可以取消邀请
   onCallInvitationWaitingPageShowed?: (
     invitees: ZegoUser[],

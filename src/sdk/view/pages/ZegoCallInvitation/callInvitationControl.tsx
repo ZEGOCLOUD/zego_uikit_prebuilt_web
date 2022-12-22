@@ -15,7 +15,8 @@ class CallInvitationControl {
   callInvitationWaitingPageShow(
     invitee: ZegoUser,
     type: ZegoInvitationType,
-    cancel: () => void
+    cancel: () => void,
+    outgoingCallUrl?: string
   ) {
     this.root = ReactDOM.createRoot(this.container);
     this.root.render(
@@ -24,6 +25,7 @@ class CallInvitationControl {
         type={type}
         cancel={cancel}
         isPc={this.isPc}
+        outgoingCallUrl={outgoingCallUrl || ""}
       ></CallInvitationWaiting>
     );
     this.isWaitingPageShow = true;
@@ -38,7 +40,8 @@ class CallInvitationControl {
   callInvitationDialogShow(
     inviter: ZegoUser,
     refuse: Function,
-    accept: Function
+    accept: Function,
+    incomingCallUrl?: string
   ) {
     this.root = ReactDOM.createRoot(this.container);
     this.root.render(
@@ -47,6 +50,7 @@ class CallInvitationControl {
         refuse={refuse}
         accept={accept}
         isPc={this.isPc}
+        incomingCallUrl={incomingCallUrl || ""}
       ></CallInvitationDialog>
     );
     this.isDialogShow = true;

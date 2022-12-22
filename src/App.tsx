@@ -220,7 +220,7 @@ export default class App extends React.PureComponent {
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
     this.state.showPreviewHeader = isPc() ? "show" : "hide";
-    let { token } = await generateToken(randomID(5), roomID, "user_" + userID);
+    // let { token } = await generateToken(randomID(5), roomID, "user_" + userID);
 
     // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
     //   252984006,
@@ -234,6 +234,10 @@ export default class App extends React.PureComponent {
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
     this.zp.setCallInvitationConfig({
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
+      ringtoneConfig: {
+        incomingCallUrl: require("./assets/zego_incoming.mp3"),
+        outgoingCallUrl: require("./assets/zego_outgoing.mp3"),
+      },
       onCallInvitationDialogShowed: (type, inviter, refuse, accept, data) => {
         console.warn(
           "【demo】onCallInvitationDialogShowed",
