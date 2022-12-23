@@ -132,6 +132,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   fullScreen = false;
   showNotSupported = 0;
   notSupportMultipleVideoNotice = 0;
+  get showHeader(): boolean {
+    return !!(
+      this.props.core._config.branding?.logoURL ||
+      this.props.core._config.roomTimerDisplayed ||
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
+    );
+  }
   get isCDNLive(): boolean {
     return (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
@@ -956,7 +963,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       //Screen Sidebar
       const videWrapHight =
         height -
-        (this.props.core._config.branding?.logoURL ? 64 : 0) -
+        (this.showHeader ? 64 : 16) -
         84 -
         (this.state.isZegoWhiteboardSharing ? 0 : 38);
       const n = parseInt(String(videWrapHight / 124)) || 1;
@@ -984,8 +991,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     }
     if (this.state.layout === "Sidebar") {
       // Sidebar
-      const videWrapHight =
-        height - (this.props.core._config.branding?.logoURL ? 64 : 0) - 84;
+      const videWrapHight = height - (this.showHeader ? 64 : 16) - 84;
       const n = parseInt(String(videWrapHight / 124)) || 1;
       videoShowNumber = Math.min(
         n * 124 + (n - 1) * 10 <= videWrapHight ? n : n - 1 || 1,
@@ -1005,7 +1011,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     }
 
     if (this.state.layout === "Grid" || this.state.layout === "Auto") {
-      if (height < 406 - (this.props.core._config.branding?.logoURL ? 0 : 64)) {
+      if (height < 406 - (this.showHeader ? 16 : 64)) {
         const videoWrapWidth =
           width - 32 - (this.state.layOutStatus === "ONE_VIDEO" ? 0 : 350);
         const n = parseInt(String(videoWrapWidth / 160));
@@ -1014,10 +1020,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           10
         );
         gridRowNumber = 1;
-      } else if (
-        height <
-        540 - (this.props.core._config.branding?.logoURL ? 0 : 64)
-      ) {
+      } else if (height < 540 - (this.showHeader ? 16 : 64)) {
         const videoWrapWidth =
           width - 32 - (this.state.layOutStatus === "ONE_VIDEO" ? 0 : 350);
         const n = parseInt(String(videoWrapWidth / 124));
@@ -1511,10 +1514,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         }}
       >
         <div className={ZegoRoomCss.ZegoRoom}>
-          {(this.props.core._config.branding?.logoURL ||
-            this.props.core._config.roomTimerDisplayed ||
-            this.props.core._config.scenario?.mode ===
-              ScenarioModel.LiveStreaming) && (
+          {this.showHeader && (
             <div className={ZegoRoomCss.header}>
               <div className={ZegoRoomCss.headerLeft}>
                 {this.props.core._config.branding?.logoURL && (
@@ -1561,7 +1561,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
               )}
             </div>
           )}
-          <div className={ZegoRoomCss.content}>
+          <div
+            className={ZegoRoomCss.content}
+            style={{ paddingTop: this.showHeader ? 0 : "16px" }}
+          >
             <div className={ZegoRoomCss.contentLeft}>
               {this.getLayoutScreen()}
               {this.getHiddenUser()}
