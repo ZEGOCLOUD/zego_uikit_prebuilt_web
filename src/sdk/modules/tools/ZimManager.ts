@@ -186,8 +186,10 @@ export class ZimManager {
           userID: invitee,
           userName: "",
         });
-        callInvitationControl.callInvitationWaitingPageHide();
-        this.notifyJoinRoomCallback();
+        if (!this.callInfo.isGroupCall) {
+          callInvitationControl.callInvitationWaitingPageHide();
+          this.notifyJoinRoomCallback();
+        }
       }
     );
     // 邀请者的邀请被拒绝后的回调通知（邀请者）

@@ -46,6 +46,7 @@ export default class App extends React.PureComponent {
   clientHeight = 0;
   isAndroid = isAndroid();
   isIOS = isIOS();
+  inOperation = false;
   constructor(props: any) {
     super(props);
     const userName = getUrlParams().get("UserName");
@@ -272,7 +273,10 @@ export default class App extends React.PureComponent {
           this.showToast("Waiting for others to join the call.");
         }
         return {
-          showTextChat: false,
+          //   branding: {
+          //     logoURL:
+          //       "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
+          //   },
         };
       },
       onCallInvitationEnded: (reason, data) => {
@@ -352,7 +356,9 @@ export default class App extends React.PureComponent {
     e.target.value = e.target.value.replace(/[^\d,]/gi, "");
   }
   handleSendCallInvitation(type: number) {
+    if (this.inOperation) return;
     if (this.invitationInput.current?.value) {
+      this.inOperation = true;
       const values = this.invitationInput.current?.value.split(",");
       const invitees = values
         .filter((v) => v.length)
@@ -368,22 +374,22 @@ export default class App extends React.PureComponent {
         .sendCallInvitation({
           invitees,
           type,
+          timeout: 60,
         })
         .then((res) => {
           if (invitees.length === 1) {
             res.errorInvitees.length &&
               this.showToast("The user dose not exist or is offline.");
-          } else {
-            res.errorInvitees.length &&
-              this.showToast(
-                "The user dose not exist or is offline: " +
-                  res.errorInvitees.map((i) => i.userID).join(" ")
-              );
           }
           console.warn(res);
         })
         .catch((err) => {
-          this.showToast(err);
+          if (err === "The call invitation service has not been activated.") {
+            this.showToast(err);
+          }
+        })
+        .finally(() => {
+          this.inOperation = false;
         });
     }
   }

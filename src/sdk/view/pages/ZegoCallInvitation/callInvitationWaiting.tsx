@@ -10,6 +10,10 @@ export class CallInvitationWaiting extends React.PureComponent<{
   cancel: () => void;
   outgoingCallUrl?: string;
 }> {
+  audioRef: HTMLAudioElement | null = null;
+  componentWillUnmount(): void {
+    this.audioRef && (this.audioRef.src = "");
+  }
   render(): React.ReactNode {
     return (
       <div
@@ -36,7 +40,17 @@ export class CallInvitationWaiting extends React.PureComponent<{
           End call
         </div>
         {this.props.outgoingCallUrl && (
-          <audio src={this.props.outgoingCallUrl} autoPlay loop></audio>
+          <audio
+            style={{ width: "1px", height: "1px" }}
+            ref={(el) => {
+              if (el) {
+                !this.audioRef && (this.audioRef = el);
+                !el.src && (el.src = this.props.outgoingCallUrl || "");
+              }
+            }}
+            autoPlay
+            loop
+          ></audio>
         )}
       </div>
     );

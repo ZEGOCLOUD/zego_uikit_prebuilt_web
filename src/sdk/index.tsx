@@ -14,7 +14,7 @@ import {
   ZegoUser,
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
-import { generatePrebuiltToken } from "./util";
+import { generatePrebuiltToken, isPc } from "./util";
 import { ZegoToast } from "./view/components/zegoToast";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 
@@ -97,6 +97,16 @@ export class ZegoUIKitPrebuilt {
             config.autoLeaveRoomWhenOnlySelfInRoom =
               mode === ScenarioModel.OneONoneCall;
           }
+          config.turnOnMicrophoneWhenJoining =
+            config.turnOnCameraWhenJoining ?? true;
+          if (type === ZegoInvitationType.VoiceCall) {
+            config.turnOnCameraWhenJoining =
+              config.turnOnCameraWhenJoining ?? false;
+          }
+          if (type === ZegoInvitationType.VideoCall) {
+            config.turnOnCameraWhenJoining =
+              config.turnOnCameraWhenJoining ?? true;
+          }
           //   ZegoCloudRoomConfig部分参数不允许自定义
           let roomConfig = Object.assign(config, {
             showPreJoinView: false,
@@ -105,9 +115,9 @@ export class ZegoUIKitPrebuilt {
               mode: mode,
             },
           }) as ZegoCloudRoomConfig;
-          if (type === ZegoInvitationType.VoiceCall) {
-            roomConfig.turnOnCameraWhenJoining = false;
-          }
+          ZegoUIKitPrebuilt!.core!.status = {
+            loginRsp: false,
+          };
           this.joinRoom(roomConfig);
         }
       );
@@ -129,7 +139,7 @@ export class ZegoUIKitPrebuilt {
       div = document.createElement("div");
       div.style.position = "fixed";
       div.style.width = "100vw";
-      div.style.height = "100vh";
+      div.style.height = isPc() ? "100vh" : "100%";
       div.style.minWidth = "345px";
       div.style.top = "0px";
       div.style.left = "0px";

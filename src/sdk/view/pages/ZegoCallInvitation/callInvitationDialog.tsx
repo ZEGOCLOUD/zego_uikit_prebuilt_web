@@ -1,4 +1,4 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { ZegoUser } from "zego-express-engine-webrtc/sdk/src/common/zego.entity";
 import { getNameFirstLetter } from "../../../util";
 import DialogCss from "./callInvitationDialog.module.scss";
@@ -9,6 +9,10 @@ export class CallInvitationDialog extends React.Component<{
   accept: Function;
   incomingCallUrl?: string;
 }> {
+  audioRef: HTMLAudioElement | null = null;
+  componentWillUnmount(): void {
+    this.audioRef && (this.audioRef.src = "");
+  }
   render(): React.ReactNode {
     return (
       <div
@@ -45,7 +49,18 @@ export class CallInvitationDialog extends React.Component<{
           </div>
         </div>
         {this.props.incomingCallUrl && (
-          <audio src={this.props.incomingCallUrl} autoPlay loop></audio>
+          <audio
+            style={{ width: "1px", height: "1px" }}
+            src={this.props.incomingCallUrl}
+            ref={(el) => {
+              if (el) {
+                !this.audioRef && (this.audioRef = el);
+                !el.src && (el.src = this.props.incomingCallUrl || "");
+              }
+            }}
+            autoPlay
+            loop
+          ></audio>
         )}
       </div>
     );

@@ -76,8 +76,8 @@ export class ZegoCloudRTCCore {
 
   status: {
     loginRsp: boolean;
-    videoRefuse: boolean | undefined;
-    audioRefuse: boolean | undefined;
+    videoRefuse?: boolean;
+    audioRefuse?: boolean;
     micDeviceID?: string;
     cameraDeviceID?: string;
     speakerDeviceID?: string;
