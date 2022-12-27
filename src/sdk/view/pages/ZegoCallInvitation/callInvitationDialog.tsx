@@ -58,6 +58,9 @@ export class CallInvitationDialog extends React.Component<{
                 !el.src && (el.src = this.props.incomingCallUrl || "");
               }
             }}
+            onCanPlay={() => {
+              this.audioRef?.play();
+            }}
             autoPlay
             loop
           ></audio>

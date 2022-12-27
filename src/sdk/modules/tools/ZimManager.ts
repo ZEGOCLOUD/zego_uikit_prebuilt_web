@@ -167,6 +167,8 @@ export class ZimManager {
           inviter,
           extendedData,
         });
+        if (!this.callInfo.callID) return;
+
         this.clearIncomingTimer();
         callInvitationControl.callInvitationDialogHide();
         this.endCall(CallInvitationEndReason.Canceled);
@@ -181,6 +183,8 @@ export class ZimManager {
           invitee,
           extendedData,
         });
+        if (!this.callInfo.callID) return;
+
         this.clearOutgoingTimer();
         this.callInfo.acceptedInvitees.push({
           userID: invitee,
@@ -201,7 +205,7 @@ export class ZimManager {
           invitee,
           extendedData,
         });
-
+        if (!this.callInfo.callID) return;
         let reason;
         if (extendedData.length) {
           const data = JSON.parse(extendedData);
@@ -235,6 +239,7 @@ export class ZimManager {
       "callInviteesAnsweredTimeout",
       (zim, { callID, invitees }) => {
         console.warn("callInviteesAnsweredTimeout", { callID, invitees });
+        if (!this.callInfo.callID) return;
         this.clearOutgoingTimer();
         this.answeredTimeoutCallback(invitees);
       }
@@ -243,6 +248,7 @@ export class ZimManager {
     //被邀请者响应超时后,“被邀请者”收到的回调通知, 超时时间单位：秒 （被邀请者）
     this._zim!.on("callInvitationTimeout", (zim, { callID }) => {
       console.warn("callInvitationTimeout", { callID });
+      if (!this.callInfo.callID) return;
       this.clearIncomingTimer();
       callInvitationControl.callInvitationDialogHide();
       this.endCall(CallInvitationEndReason.Timeout);
@@ -279,6 +285,8 @@ export class ZimManager {
     data: string,
     notificationConfig?: ZegoSignalingPluginNotificationConfig
   ): Promise<{ errorInvitees: ZegoUser[] }> {
+    if (this.callInfo.callID)
+      return Promise.reject("You already have a call invitation!");
     if (!this.isServiceActivated)
       return Promise.reject(
         "The call invitation service has not been activated."

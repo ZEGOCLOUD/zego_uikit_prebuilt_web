@@ -556,16 +556,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         const res = this.props.core.publishLocalStream(localStream);
         if (res !== false) {
           this.localStreamID = res as string;
-          this.props.core.setStreamExtraInfo(
-            res as string,
-            JSON.stringify({
-              isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
-              isMicrophoneOn:
-                this.props.core._config.turnOnMicrophoneWhenJoining,
-              hasVideo: !this.props.core.status.videoRefuse,
-              hasAudio: !this.props.core.status.audioRefuse,
-            })
-          );
+          this.isCDNLive &&
+            (await this.props.core.setStreamExtraInfo(
+              res as string,
+              JSON.stringify({
+                isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
+                isMicrophoneOn:
+                  this.props.core._config.turnOnMicrophoneWhenJoining,
+                hasVideo: !this.props.core.status.videoRefuse,
+                hasAudio: !this.props.core.status.audioRefuse,
+              })
+            ));
         }
         return true;
       } catch (error: any) {
@@ -611,15 +612,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       this.state.localStream.getAudioTracks().length > 0
     ) {
       result = await this.props.core.muteMicrophone(this.state.micOpen);
-      await this.props.core.setStreamExtraInfo(
-        this.localStreamID as string,
-        JSON.stringify({
-          isCameraOn: this.state.cameraOpen,
-          isMicrophoneOn: !this.state.micOpen,
-          hasVideo: !this.props.core.status.videoRefuse,
-          hasAudio: !this.props.core.status.audioRefuse,
-        })
-      );
+      this.isCDNLive &&
+        (await this.props.core.setStreamExtraInfo(
+          this.localStreamID as string,
+          JSON.stringify({
+            isCameraOn: this.state.cameraOpen,
+            isMicrophoneOn: !this.state.micOpen,
+            hasVideo: !this.props.core.status.videoRefuse,
+            hasAudio: !this.props.core.status.audioRefuse,
+          })
+        ));
     }
 
     this.micStatus = !this.state.micOpen ? 1 : 0;
@@ -664,15 +666,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         this.state.localStream,
         !this.state.cameraOpen
       );
-      await this.props.core.setStreamExtraInfo(
-        this.localStreamID as string,
-        JSON.stringify({
-          isCameraOn: !this.state.cameraOpen,
-          isMicrophoneOn: this.state.micOpen,
-          hasVideo: !this.props.core.status.videoRefuse,
-          hasAudio: !this.props.core.status.audioRefuse,
-        })
-      );
+      this.isCDNLive &&
+        (await this.props.core.setStreamExtraInfo(
+          this.localStreamID as string,
+          JSON.stringify({
+            isCameraOn: !this.state.cameraOpen,
+            isMicrophoneOn: this.state.micOpen,
+            hasVideo: !this.props.core.status.videoRefuse,
+            hasAudio: !this.props.core.status.audioRefuse,
+          })
+        ));
     }
     this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
     if (result) {
@@ -724,15 +727,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         "screensharing"
       );
       streamID && (this.screenSharingStreamID = streamID as string);
-      this.props.core.setStreamExtraInfo(
-        streamID as string,
-        JSON.stringify({
-          isCameraOn: true,
-          isMicrophoneOn: true,
-          hasVideo: screenSharingStream.getVideoTracks().length > 0,
-          hasAudio: screenSharingStream.getAudioTracks()[0].enabled,
-        })
-      );
+      this.isCDNLive &&
+        (await this.props.core.setStreamExtraInfo(
+          streamID as string,
+          JSON.stringify({
+            isCameraOn: true,
+            isMicrophoneOn: true,
+            hasVideo: screenSharingStream.getVideoTracks().length > 0,
+            hasAudio: screenSharingStream.getAudioTracks()[0].enabled,
+          })
+        ));
       this.setState({
         isScreenSharingBySelf: true,
         screenSharingStream: screenSharingStream,
