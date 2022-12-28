@@ -26,7 +26,10 @@ export class ZimManager {
     token: string;
   };
   callInfo = {} as CallInvitationInfo;
-  inOperation = false; //防止重复点击
+  inSendOperation = false; //防止重复点击
+  inRefuseOperation = false; //防止重复点击
+  inAcceptOperation = false; //防止重复点击
+  inCancelOperation = false; //防止重复点击
   config: ZegoCallInvitationConfig = {
     enableCustomCallInvitationWaitingPage: false,
     enableCustomCallInvitationDialog: false,
@@ -78,6 +81,7 @@ export class ZimManager {
           timeout,
           extendedData,
         });
+
         if (this.callInfo.callID) {
           // 如果已被邀请，就拒绝其他的
           callID !== this.callInfo.callID &&
@@ -120,7 +124,7 @@ export class ZimManager {
               { userID: inviter, userName: inviter_name },
               () => {
                 this.clearIncomingTimer();
-                this.refuseInvitation();
+                this.refuseInvitation("decline");
                 callInvitationControl.callInvitationDialogHide();
                 this.endCall(CallInvitationEndReason.Declined);
               },
@@ -136,7 +140,7 @@ export class ZimManager {
           // 对外再包一层，不暴露内部逻辑
           const refuse = (data?: string) => {
             this.clearIncomingTimer();
-            this.refuseInvitation("", "", data);
+            this.refuseInvitation("decline", "", data);
             callInvitationControl.callInvitationDialogHide();
             this.endCall(CallInvitationEndReason.Declined);
           };
@@ -291,8 +295,9 @@ export class ZimManager {
       return Promise.reject(
         "The call invitation service has not been activated."
       );
-    if (this.inOperation) return Promise.reject("send invitation repeat !!");
-    this.inOperation = true;
+    if (this.inSendOperation)
+      return Promise.reject("send invitation repeat !!");
+    this.inSendOperation = true;
     const inviteesID = invitees.map((i) => i.userID);
     const roomID = `call_${this.expressConfig.userID}_${new Date().getTime()}`;
 
@@ -328,19 +333,18 @@ export class ZimManager {
       };
       config.pushConfig = pushConfig;
     }
-
     try {
+      this.callInfo.callID = new Date().getTime().toString(); //临时生成个id，防止同时呼叫情况
       const res: ZIMCallInvitationSentResult = await this._zim!.callInvite(
         inviteesID,
         config
       );
-      console.warn("callInvite", res);
       const errorInvitees = res.errorInvitees.map((i) => {
         return invitees.find((u) => u.userID === i.userID) as ZegoUser;
       });
       if (res.errorInvitees.length >= invitees.length) {
         // 全部邀请失败，中断流程
-        this.inOperation = false;
+        this.inSendOperation = false;
         return Promise.resolve({ errorInvitees });
       }
       // 过滤掉不在线的用户
@@ -391,17 +395,18 @@ export class ZimManager {
           cancel();
         });
       }
-      this.inOperation = false;
+      this.inSendOperation = false;
       return Promise.resolve({ errorInvitees });
     } catch (error) {
-      this.inOperation = false;
+      this.clearCallInfo();
+      this.inSendOperation = false;
       return Promise.reject(JSON.stringify(error));
     }
   }
   async cancelInvitation(data?: string) {
-    if (this.inOperation) return;
+    if (this.inCancelOperation) return;
     if (!this.callInfo.callID) return;
-    this.inOperation = true;
+    this.inCancelOperation = true;
     this.clearOutgoingTimer();
     const invitees = this.callInfo.invitees.map((i) => i.userID);
     const extendedData: any = {};
@@ -417,12 +422,12 @@ export class ZimManager {
     } catch (error) {
       console.error("【ZEGOCLOUD】cancelInvitation", error);
     }
-    this.inOperation = false;
+    this.inCancelOperation = false;
   }
   async refuseInvitation(reason?: string, callID?: string, data?: string) {
-    if (this.inOperation) return;
+    if (this.inRefuseOperation) return;
     if (!this.callInfo.callID) return;
-    this.inOperation = true;
+    this.inRefuseOperation = true;
     const extendedData: any = {};
     if (data) {
       extendedData.custom_data = data;
@@ -437,12 +442,12 @@ export class ZimManager {
     } catch (error) {
       console.error("【ZEGOCLOUD】refuseInvitation", error);
     }
-    this.inOperation = false;
+    this.inRefuseOperation = false;
   }
   async acceptInvitation(data?: string) {
-    if (this.inOperation) return;
+    if (this.inAcceptOperation) return;
     if (!this.callInfo.callID) return;
-    this.inOperation = true;
+    this.inAcceptOperation = true;
     const extendedData: any = {};
     if (data) {
       extendedData.custom_data = data;
@@ -455,7 +460,7 @@ export class ZimManager {
     } catch (error) {
       console.error("【ZEGOCLOUD】acceptInvitation", error);
     }
-    this.inOperation = false;
+    this.inAcceptOperation = false;
   }
   private clearCallInfo() {
     this.callInfo = {} as CallInvitationInfo;

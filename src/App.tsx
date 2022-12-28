@@ -39,6 +39,7 @@ export default class App extends React.PureComponent {
     toastShow: false,
     toastText: "",
   };
+
   settingsEl = null;
   invitationInput: RefObject<HTMLInputElement> = React.createRef();
   zp: ZegoUIKitPrebuilt;
@@ -47,6 +48,10 @@ export default class App extends React.PureComponent {
   isAndroid = isAndroid();
   isIOS = isIOS();
   inOperation = false;
+  inviter: {
+    userID?: string;
+    userName?: string;
+  } = {} as any;
   constructor(props: any) {
     super(props);
     const userName = getUrlParams().get("UserName");
@@ -239,7 +244,7 @@ export default class App extends React.PureComponent {
     //   roomID,
     //   userID,
     //   "user_" + userID,
-    //   7200
+    //   60 * 60 * 24
     // );
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
@@ -259,6 +264,7 @@ export default class App extends React.PureComponent {
           accept,
           data
         );
+        this.inviter = inviter;
       },
       onCallInvitationWaitingPageShowed: (invitees, cancel) => {
         console.warn(
@@ -286,7 +292,10 @@ export default class App extends React.PureComponent {
         }
         if (this.state.invitees.length === 1) {
           // 单人呼叫提示
-          if (reason === "Busy" || reason === "Timeout") {
+          if (
+            reason === "Busy" ||
+            (reason === "Timeout" && this.inviter?.userID === this.state.userID)
+          ) {
             this.showToast(this.state.invitees[0].userName + " is busy now.");
           }
           if (reason === "Declined") {
@@ -307,6 +316,7 @@ export default class App extends React.PureComponent {
           serviceTips.style.display = "block";
           meetingEl.style.height = "auto";
         }
+        this.inviter = {};
       },
     });
   }
@@ -382,6 +392,10 @@ export default class App extends React.PureComponent {
               this.showToast("The user dose not exist or is offline.");
           }
           console.warn(res);
+          this.inviter = {
+            userID: this.state.userID,
+            userName: this.state.userName,
+          };
         })
         .catch((err) => {
           if (err === "The call invitation service has not been activated.") {
