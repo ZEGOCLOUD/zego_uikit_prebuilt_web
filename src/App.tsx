@@ -161,7 +161,8 @@ export default class App extends React.PureComponent {
         //   7200
         // );
         const zp = ZegoUIKitPrebuilt.create(token);
-        zp.addPlugins({ ZegoSuperBoardManager });
+        process.env.REACT_APP_PATH !== "live_stream" &&
+          zp.addPlugins({ ZegoSuperBoardManager });
         const param: ZegoCloudRoomConfig = {
           // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
           // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
@@ -194,10 +195,6 @@ export default class App extends React.PureComponent {
               liveStreamingMode,
             },
           },
-          whiteboardConfig: {
-            showAddImageButton: true,
-            showCreateAndCloseButton: true,
-          },
           showUserList: true,
           onUserAvatarSetter: (user) => {
             user.forEach((u) => {
@@ -224,6 +221,12 @@ export default class App extends React.PureComponent {
         };
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true";
+        }
+        if (process.env.REACT_APP_PATH !== "live_stream") {
+          param.whiteboardConfig = {
+            showAddImageButton: true,
+            showCreateAndCloseButton: true,
+          };
         }
         zp.joinRoom(param);
       };
