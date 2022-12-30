@@ -39,7 +39,7 @@ export class CallInvitationWaiting extends React.PureComponent<{
         >
           End call
         </div>
-        {this.props.outgoingCallUrl && (
+        {/* {this.props.outgoingCallUrl && (
           <audio
             style={{ width: "1px", height: "1px" }}
             ref={(el) => {
@@ -51,7 +51,7 @@ export class CallInvitationWaiting extends React.PureComponent<{
             autoPlay
             loop
           ></audio>
-        )}
+        )} */}
       </div>
     );
   }

@@ -72,6 +72,8 @@ export default class App extends React.PureComponent {
     let showNonVideoUser = getUrlParams().get("showNonVideoUser") || undefined;
     let liveStreamingMode;
     let mode = ScenarioModel.OneONoneCall;
+    //@ts-ignore // just for debugger
+    window.ZegoUIKitPrebuilt = ZegoUIKitPrebuilt;
     if (process.env.REACT_APP_PATH === "1on1_call") {
       maxUsers = 2;
       sharedLinks.push({
@@ -248,13 +250,9 @@ export default class App extends React.PureComponent {
     // );
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
-    // window.ZegoUIKitPrebuilt = ZegoUIKitPrebuilt;
+
     this.zp.setCallInvitationConfig({
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
-      ringtoneConfig: {
-        incomingCallUrl: require("./assets/zego_incoming.mp3"),
-        outgoingCallUrl: require("./assets/zego_outgoing.mp3"),
-      },
       onCallInvitationDialogShowed: (type, inviter, refuse, accept, data) => {
         console.warn(
           "【demo】onCallInvitationDialogShowed",
@@ -298,7 +296,10 @@ export default class App extends React.PureComponent {
           ) {
             this.showToast(this.state.invitees[0].userName + " is busy now.");
           }
-          if (reason === "Declined") {
+          if (
+            reason === "Declined" &&
+            this.inviter?.userID === this.state.userID
+          ) {
             this.showToast(
               this.state.invitees[0].userName + " declined the call."
             );

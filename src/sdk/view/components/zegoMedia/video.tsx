@@ -165,6 +165,27 @@ export default class ZegoVideo extends React.PureComponent<{
       <>
         <video
           autoPlay
+          controls
+          playsInline={true}
+          className={`${ZegoVideoCss.video}  ${
+            this.context.userInfo.userID === this.props.userInfo.userID &&
+            this.props.userInfo.streamList?.[0]?.streamID?.includes("_main")
+              ? ZegoVideoCss.mirror
+              : ""
+          } ${this.props.classList}`}
+          muted={true}
+          ref={(el) => {
+            if (el) {
+              if (
+                el.srcObject !== this.props.userInfo?.streamList?.[0]?.media
+              ) {
+                el.srcObject = this.props.userInfo?.streamList?.[0]?.media!;
+              }
+            }
+          }}
+        ></video>
+        {/* <video
+          autoPlay
           className={`${ZegoVideoCss.video}  ${
             this.context.userInfo.userID === this.props.userInfo.userID &&
             this.props.userInfo.streamList?.[0]?.streamID?.includes("_main")
@@ -220,7 +241,7 @@ export default class ZegoVideo extends React.PureComponent<{
               });
             }}
           ></div>
-        )}
+        )} */}
       </>
     );
   }

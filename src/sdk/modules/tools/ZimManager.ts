@@ -132,8 +132,8 @@ export class ZimManager {
                 this.clearIncomingTimer();
                 this.acceptInvitation();
                 this.notifyJoinRoomCallback();
-              },
-              this.config?.ringtoneConfig?.incomingCallUrl
+              }
+              //   this.config?.ringtoneConfig?.incomingCallUrl
             );
           }
 
@@ -383,8 +383,8 @@ export class ZimManager {
             type,
             () => {
               this.cancelInvitation();
-            },
-            this.config?.ringtoneConfig?.outgoingCallUrl
+            }
+            // this.config?.ringtoneConfig?.outgoingCallUrl
           );
         }
 
