@@ -196,7 +196,7 @@ export default class App extends React.PureComponent {
           },
           whiteboardConfig: {
             showAddImageButton: true,
-            showCreateAndCloseButton: false,
+            showCreateAndCloseButton: true,
           },
           showUserList: true,
           onUserAvatarSetter: (user) => {
