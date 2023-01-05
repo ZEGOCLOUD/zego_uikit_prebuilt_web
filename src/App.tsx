@@ -3,7 +3,13 @@ import React, { ChangeEvent, Ref, RefObject } from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
 import { ZegoUIKitPrebuilt } from "./sdk/index";
-import { LiveRole, ScenarioModel, ZegoCloudRoomConfig } from "./sdk/model";
+import {
+  LiveRole,
+  ScenarioModel,
+  ZegoCloudRoomConfig,
+  ZegoInvitationType,
+  ZegoUser,
+} from "./sdk/model";
 import {
   generateToken,
   getRandomName,
@@ -256,26 +262,33 @@ export default class App extends React.PureComponent {
 
     this.zp.setCallInvitationConfig({
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
-      onCallInvitationDialogShowed: (type, inviter, refuse, accept, data) => {
+      onConfirmDialogWhenReceiving: (
+        callType,
+        caller,
+        refuse,
+        accept,
+        data
+      ) => {
         console.warn(
           "【demo】onCallInvitationDialogShowed",
-          type,
-          inviter,
+          callType,
+          caller,
           refuse,
           accept,
           data
         );
-        this.inviter = inviter;
+        this.inviter = caller;
       },
-      onCallInvitationWaitingPageShowed: (invitees, cancel) => {
+      onWaitingPageWhenSending: (callType, callees, cancel) => {
         console.warn(
           "【demo】onCallInvitationWaitingPageShowed",
-          invitees,
+          callType,
+          callees,
           cancel
         );
       },
-      onSetRoomConfigBeforeJoining: (type) => {
-        console.warn("【demo】onSetRoomConfigBeforeJoining", type);
+      onSetRoomConfigBeforeJoining: (callType) => {
+        console.warn("【demo】onSetRoomConfigBeforeJoining", callType);
         if (this.state.invitees.length > 1) {
           this.showToast("Waiting for others to join the call.");
         }
@@ -321,6 +334,45 @@ export default class App extends React.PureComponent {
           meetingEl.style.height = "auto";
         }
         this.inviter = {};
+      },
+      // Prebuilt内部收到呼叫邀请后，将内部数据转成对应数据后抛出
+      onIncomingCallReceived: (
+        callID: string,
+        caller: ZegoUser,
+        callType: ZegoInvitationType,
+        callees: ZegoUser[]
+      ) => {
+        console.warn(
+          "onIncomingCallReceived",
+          callID,
+          caller,
+          callType,
+          callees
+        );
+      },
+      // 当呼叫者取消呼叫后，将内部数据转成对应数据后抛出。
+      onIncomingCallCanceled: (callID: string, caller: ZegoUser) => {
+        console.warn("onIncomingCallCanceled", callID, caller);
+      },
+      // 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+      onOutgoingCallAccepted: (callID: string, callee: ZegoUser) => {
+        console.warn("onOutgoingCallAccepted", callID, callee);
+      },
+      // 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+      onOutgoingCallRejected: (callID: string, callee: ZegoUser) => {
+        console.warn("onOutgoingCallRejected", callID, callee);
+      },
+      // 当被叫者主动拒绝通话时，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+      onOutgoingCallDeclined: (callID: string, callee: ZegoUser) => {
+        console.warn("onOutgoingCallDeclined", callID, callee);
+      },
+      //当被叫者超时没回应邀请时，被叫者会收到该回调，将内部数据转成对应数据后抛出。
+      onIncomingCallTimeout: (callID: string, caller: ZegoUser) => {
+        console.warn("onIncomingCallTimeout", callID, caller);
+      },
+      //当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+      onOutgoingCallTimeout: (callID: string, callees: ZegoUser[]) => {
+        console.warn("onOutgoingCallTimeout", callID, callees);
       },
     });
   }
@@ -386,8 +438,8 @@ export default class App extends React.PureComponent {
       });
       this.zp
         .sendCallInvitation({
-          invitees,
-          type,
+          callees: invitees,
+          callType: type,
           timeout: 60,
         })
         .then((res) => {
@@ -508,7 +560,7 @@ export default class App extends React.PureComponent {
                 </div>
                 <div className={APP.invitationUserInfo}>
                   <p>{this.state.userName}</p>
-                  <span>ID: {this.state.userID}</span>
+                  <span>userID: {this.state.userID}</span>
                 </div>
               </div>
               <p className={APP.invitationTitle}>Make a direct call</p>

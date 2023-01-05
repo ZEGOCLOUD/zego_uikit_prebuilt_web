@@ -111,6 +111,7 @@ export class ZegoUIKitPrebuilt {
           let roomConfig = Object.assign(config, {
             showPreJoinView: false,
             showLeavingView: false,
+            sharedLinks: [],
             scenario: {
               mode: mode,
             },
@@ -193,8 +194,8 @@ export class ZegoUIKitPrebuilt {
   }
   // 发起邀请
   async sendCallInvitation(params: {
-    invitees: ZegoUser[];
-    type: ZegoInvitationType;
+    callees: ZegoUser[];
+    callType: ZegoInvitationType;
     timeout?: number;
     data?: string;
     notificationConfig?: ZegoSignalingPluginNotificationConfig;
@@ -204,35 +205,31 @@ export class ZegoUIKitPrebuilt {
       return Promise.reject("ZEGOCLOUD】Please add ZIM plugin first");
     }
     const {
-      invitees,
-      type,
+      callees,
+      callType,
       timeout = 60,
       data = "",
       notificationConfig,
     } = params;
-    if (!Array.isArray(invitees) || invitees.length < 1) {
-      console.error(
-        "【ZEGOCLOUD】sendCallInvitation params error: invitees !!"
-      );
+    if (!Array.isArray(callees) || callees.length < 1) {
       return Promise.reject(
-        "【ZEGOCLOUD】sendCallInvitation params error: invitees !!"
+        "【ZEGOCLOUD】sendCallInvitation params error: callees !!"
       );
-    } else if (invitees.length > 9) {
+    } else if (callees.length > 9) {
       return Promise.reject("【ZEGOCLOUD】Maximum number of users exceeded");
     }
     if (
-      type !== ZegoInvitationType.VideoCall &&
-      type !== ZegoInvitationType.VoiceCall
+      callType !== ZegoInvitationType.VideoCall &&
+      callType !== ZegoInvitationType.VoiceCall
     ) {
-      console.error("【ZEGOCLOUD】sendCallInvitation params error: type !!");
       return Promise.reject(
-        "【ZEGOCLOUD】sendCallInvitation params error: type !!"
+        "【ZEGOCLOUD】sendCallInvitation params error: callType !!"
       );
     }
 
     return ZegoUIKitPrebuilt.core._zimManager.sendInvitation(
-      invitees,
-      type,
+      callees,
+      callType,
       timeout,
       data,
       notificationConfig

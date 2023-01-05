@@ -111,6 +111,11 @@ export class ZimManager {
           } else {
             this.incomingTimer = setTimeout(() => {
               if (this.callInfo.callID) {
+                this.config.onIncomingCallTimeout &&
+                  this.config.onIncomingCallTimeout(
+                    this.callInfo.roomID,
+                    this.callInfo.inviter
+                  );
                 callInvitationControl.callInvitationDialogHide();
                 this.endCall(CallInvitationEndReason.Timeout);
               }
@@ -132,8 +137,17 @@ export class ZimManager {
                 this.clearIncomingTimer();
                 this.acceptInvitation();
                 this.notifyJoinRoomCallback();
-              }
-              //   this.config?.ringtoneConfig?.incomingCallUrl
+              },
+              this.config?.ringtoneConfig?.incomingCallUrl
+            );
+          }
+          // 透传接收到邀请回调
+          if (this.config.onIncomingCallReceived) {
+            this.config.onIncomingCallReceived(
+              this.callInfo.roomID,
+              this.callInfo.inviter,
+              this.callInfo.type,
+              this.callInfo.invitees
             );
           }
 
@@ -148,7 +162,7 @@ export class ZimManager {
             this.clearIncomingTimer();
             this.acceptInvitation(data);
           };
-          this.config?.onCallInvitationDialogShowed?.(
+          this.config?.onConfirmDialogWhenReceiving?.(
             type,
             { userID: inviter, userName: inviter_name },
             (data?: string) => {
@@ -172,7 +186,13 @@ export class ZimManager {
           extendedData,
         });
         if (!this.callInfo.callID) return;
-
+        // 透传取消呼叫事件
+        if (this.config.onIncomingCallCanceled) {
+          this.config.onIncomingCallCanceled(
+            this.callInfo.roomID,
+            this.callInfo.inviter
+          );
+        }
         this.clearIncomingTimer();
         callInvitationControl.callInvitationDialogHide();
         this.endCall(CallInvitationEndReason.Canceled);
@@ -194,9 +214,17 @@ export class ZimManager {
           userID: invitee,
           userName: "",
         });
+
         if (!this.callInfo.isGroupCall) {
           callInvitationControl.callInvitationWaitingPageHide();
           this.notifyJoinRoomCallback();
+        }
+        // 透传接受邀请事件
+        if (this.config.onOutgoingCallAccepted) {
+          const callee = this.callInfo.invitees.find(
+            (i) => i.userID === invitee
+          ) || { userID: invitee };
+          this.config.onOutgoingCallAccepted(this.callInfo.roomID, callee);
         }
       }
     );
@@ -214,6 +242,17 @@ export class ZimManager {
         if (extendedData.length) {
           const data = JSON.parse(extendedData);
           reason = data.reason;
+        }
+        // 透传拒绝事件
+        const callee = this.callInfo.invitees.find(
+          (i) => i.userID === invitee
+        ) || { userID: invitee };
+        if (reason === "busy") {
+          this.config.onOutgoingCallRejected &&
+            this.config.onOutgoingCallRejected(this.callInfo.roomID, callee);
+        } else {
+          this.config.onOutgoingCallDeclined &&
+            this.config.onOutgoingCallDeclined(this.callInfo.roomID, callee);
         }
         if (!this.callInfo.isGroupCall) {
           // 单人邀请，隐藏waitingPage,清除callInfo
@@ -245,6 +284,17 @@ export class ZimManager {
         console.warn("callInviteesAnsweredTimeout", { callID, invitees });
         if (!this.callInfo.callID) return;
         this.clearOutgoingTimer();
+        // 透传超时事件
+        if (this.config.onOutgoingCallTimeout) {
+          const callees = invitees.map((i) => {
+            return (
+              this.callInfo.invitees.find((u) => u.userID === i) || {
+                userID: i,
+              }
+            );
+          });
+          this.config.onOutgoingCallTimeout(this.callInfo.roomID, callees);
+        }
         this.answeredTimeoutCallback(invitees);
       }
     );
@@ -253,6 +303,13 @@ export class ZimManager {
     this._zim!.on("callInvitationTimeout", (zim, { callID }) => {
       console.warn("callInvitationTimeout", { callID });
       if (!this.callInfo.callID) return;
+      // 透传超时事件
+      if (this.config.onIncomingCallTimeout) {
+        this.config.onIncomingCallTimeout(
+          this.callInfo.roomID,
+          this.callInfo.inviter
+        );
+      }
       this.clearIncomingTimer();
       callInvitationControl.callInvitationDialogHide();
       this.endCall(CallInvitationEndReason.Timeout);
@@ -367,8 +424,16 @@ export class ZimManager {
       this.onUpdateRoomIDCallback();
       // 添加定时器，断网等情况导致收不到消息时，当超时处理
       this.outgoingTimer = setTimeout(() => {
-        if (this.callInfo.callID && !this.callInfo.acceptedInvitees.length) {
-          this.answeredTimeoutCallback(onlineInvitee.map((u) => u.userID));
+        if (this.callInfo.callID) {
+          // 透传超时事件
+          this.config.onOutgoingCallTimeout &&
+            this.config.onOutgoingCallTimeout(
+              this.callInfo.roomID,
+              this.callInfo.invitees
+            );
+          // 当超时后，没有一个人接受邀请，则主动退出房间
+          !this.callInfo.acceptedInvitees.length &&
+            this.answeredTimeoutCallback(onlineInvitee.map((u) => u.userID));
         }
         this.clearOutgoingTimer();
       }, (timeout + 1) * 1000);
@@ -383,17 +448,21 @@ export class ZimManager {
             type,
             () => {
               this.cancelInvitation();
-            }
-            // this.config?.ringtoneConfig?.outgoingCallUrl
+            },
+            this.config?.ringtoneConfig?.outgoingCallUrl
           );
         }
 
         const cancel = () => {
           this.cancelInvitation();
         };
-        this.config?.onCallInvitationWaitingPageShowed?.(invitees, () => {
-          cancel();
-        });
+        this.config?.onWaitingPageWhenSending?.(
+          this.callInfo.type,
+          invitees,
+          () => {
+            cancel();
+          }
+        );
       }
       this.inSendOperation = false;
       return Promise.resolve({ errorInvitees });

@@ -7,7 +7,7 @@ export class CallInvitationDialog extends React.Component<{
   isPc: boolean;
   refuse: Function;
   accept: Function;
-//   incomingCallUrl?: string;
+  incomingCallUrl?: string;
 }> {
   audioRef: HTMLAudioElement | null = null;
   componentWillUnmount(): void {
@@ -48,7 +48,7 @@ export class CallInvitationDialog extends React.Component<{
             </div>
           </div>
         </div>
-        {/* {this.props.incomingCallUrl && (
+        {this.props.isPc && this.props.incomingCallUrl && (
           <audio
             style={{ width: "1px", height: "1px" }}
             src={this.props.incomingCallUrl}
@@ -64,7 +64,7 @@ export class CallInvitationDialog extends React.Component<{
             autoPlay
             loop
           ></audio>
-        )} */}
+        )}
       </div>
     );
   }

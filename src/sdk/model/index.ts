@@ -265,20 +265,21 @@ export interface ZegoCallInvitationConfig {
   enableCustomCallInvitationWaitingPage?: boolean; // 是否自定义呼叫邀请等待页面，默认false
   enableCustomCallInvitationDialog?: boolean; // 是否自定义呼叫邀请弹窗,默认false
   enableNotifyWhenAppRunningInBackgroundOrQuit?: boolean; // Notify users when the app is running in the background or the app is killed, 默认false
-//   ringtoneConfig?: {
-//     incomingCallUrl?: string; // 接收时的铃声
-//     outgoingCallUrl?: string; // 呼出去的铃声
-//   };
+  ringtoneConfig?: {
+    incomingCallUrl?: string; // 接收时的铃声
+    outgoingCallUrl?: string; // 呼出去的铃声
+  };
   // 进入呼叫等待页面时的回调，返回cancel方法，调用的话可以取消邀请
-  onCallInvitationWaitingPageShowed?: (
-    invitees: ZegoUser[],
+  onWaitingPageWhenSending?: (
+    callType: ZegoInvitationType,
+    callees: ZegoUser[],
     cancel: CancelCallInvitationFunc
   ) => void;
 
   // 被呼叫者收到邀请时，邀请弹窗展示回调，返回accept、refuse方法给用户绑定UI
-  onCallInvitationDialogShowed?: (
-    type: ZegoInvitationType,
-    inviter: ZegoUser,
+  onConfirmDialogWhenReceiving?: (
+    callType: ZegoInvitationType,
+    caller: ZegoUser,
     refuse: RefuseCallInvitationFunc,
     accept: AcceptCallInvitationFunc,
     data: string
@@ -286,7 +287,7 @@ export interface ZegoCallInvitationConfig {
 
   // 接受邀请后进房前的回调，用于设置房间配置，由内部自动加入房间，房间配置根据ZegoInvitationType默认的来
   onSetRoomConfigBeforeJoining?: (
-    type: ZegoInvitationType
+    callType: ZegoInvitationType
   ) => ZegoCloudRoomConfig;
 
   // 呼叫邀请结束回调（呼叫拒绝、超时、占线，用户退出呼叫邀请的房间等情况触发）
@@ -294,6 +295,26 @@ export interface ZegoCallInvitationConfig {
     reason: CallInvitationEndReason,
     data: string
   ) => void;
+
+  // Prebuilt内部收到呼叫邀请后，将内部数据转成对应数据后抛出
+  onIncomingCallReceived?: (
+    callID: string,
+    caller: ZegoUser,
+    callType: ZegoInvitationType,
+    callees: ZegoUser[]
+  ) => void;
+  // 当呼叫者取消呼叫后，将内部数据转成对应数据后抛出。
+  onIncomingCallCanceled?: (callID: string, caller: ZegoUser) => void;
+  // 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+  onOutgoingCallAccepted?: (callID: string, callee: ZegoUser) => void;
+  // 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+  onOutgoingCallRejected?: (callID: string, callee: ZegoUser) => void;
+  // 当被叫者主动拒绝通话时，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+  onOutgoingCallDeclined?: (callID: string, callee: ZegoUser) => void;
+  //当被叫者超时没回应邀请时，被叫者会收到该回调，将内部数据转成对应数据后抛出。
+  onIncomingCallTimeout?: (callID: string, caller: ZegoUser) => void;
+  //当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+  onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void;
 }
 export type CancelCallInvitationFunc = (data?: string) => void; // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void; // 接受邀请
