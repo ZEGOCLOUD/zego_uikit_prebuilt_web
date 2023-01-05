@@ -1,8 +1,8 @@
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { LiveRole, LiveStreamingMode, ScenarioModel, ZegoCloudRemoteMedia } from "../../model";
-export declare type ZegoCloudUserList = ZegoCloudUser[];
-export declare type ZegoCloudUser = ZegoUser & {
+export type ZegoCloudUserList = ZegoCloudUser[];
+export type ZegoCloudUser = ZegoUser & {
     pin: boolean;
     overScreenMuteVideo?: boolean;
     streamList: ZegoCloudRemoteMedia[];

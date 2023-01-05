@@ -2,6 +2,7 @@ import React from "react";
 import { ZegoCloudRTCCore } from "../modules";
 export declare class ZegoCloudRTCKitComponent extends React.Component<{
     core: ZegoCloudRTCCore;
+    unmount: () => void;
 }> {
     state: {
         step: number;
@@ -9,5 +10,6 @@ export declare class ZegoCloudRTCKitComponent extends React.Component<{
     };
     componentDidMount(): Promise<void>;
     nextPage(): void;
+    destroyNodeWhenNoView(): void;
     render(): React.ReactNode;
 }

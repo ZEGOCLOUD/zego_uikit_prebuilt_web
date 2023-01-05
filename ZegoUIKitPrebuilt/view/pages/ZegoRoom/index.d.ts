@@ -51,6 +51,7 @@ export declare class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> 
     fullScreen: boolean;
     showNotSupported: number;
     notSupportMultipleVideoNotice: number;
+    get showHeader(): boolean;
     get isCDNLive(): boolean;
     userUpdateCallBack: () => void;
     componentDidMount(): void;

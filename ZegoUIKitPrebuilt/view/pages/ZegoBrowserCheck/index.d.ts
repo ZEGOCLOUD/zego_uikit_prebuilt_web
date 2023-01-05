@@ -29,8 +29,8 @@ export declare class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckPr
     };
     videoRef: RefObject<HTMLVideoElement>;
     inviteRef: RefObject<HTMLInputElement>;
-    audioRefuse: boolean;
-    videoRefuse: boolean;
+    audioRefuse: boolean | undefined;
+    videoRefuse: boolean | undefined;
     constructor(props: ZegoBrowserCheckProp);
     componentDidMount(): Promise<void>;
     componentWillUnmount(): void;

@@ -396,12 +396,14 @@ export class ZimManager {
         inviteesID,
         config
       );
+
       const errorInvitees = res.errorInvitees.map((i) => {
         return invitees.find((u) => u.userID === i.userID) as ZegoUser;
       });
       if (res.errorInvitees.length >= invitees.length) {
         // 全部邀请失败，中断流程
         this.inSendOperation = false;
+        this.clearCallInfo();
         return Promise.resolve({ errorInvitees });
       }
       // 过滤掉不在线的用户

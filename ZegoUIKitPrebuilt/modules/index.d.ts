@@ -5,9 +5,12 @@ import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh
 import { ZegoCloudRemoteMedia, ZegoCloudRoomConfig, ZegoUser } from "../model";
 import { ZegoCloudUserList, ZegoCloudUserListManager } from "./tools/UserListManager";
 import { ZegoSuperBoardManager, ZegoSuperBoardView } from "zego-superboard-web";
+import ZIM from "zego-zim-web";
+import { ZimManager } from "./tools/ZimManager";
 export declare class ZegoCloudRTCCore {
     static _instance: ZegoCloudRTCCore;
     static _zg: ZegoExpressEngine;
+    _zimManager: ZimManager | null;
     zum: ZegoCloudUserListManager;
     _expressConfig: {
         appID: number;
@@ -22,8 +25,8 @@ export declare class ZegoCloudRTCCore {
     static getInstance(kitToken: string): ZegoCloudRTCCore;
     status: {
         loginRsp: boolean;
-        videoRefuse: boolean;
-        audioRefuse: boolean;
+        videoRefuse?: boolean;
+        audioRefuse?: boolean;
         micDeviceID?: string;
         cameraDeviceID?: string;
         speakerDeviceID?: string;
@@ -50,8 +53,10 @@ export declare class ZegoCloudRTCCore {
     get isCDNLive(): boolean;
     addPlugins(plugins: {
         ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+        ZIM?: ZIM;
     }): void;
     setConfig(config: ZegoCloudRoomConfig): boolean;
+    private getLiveStreamingMode;
     checkWebRTC(): Promise<boolean>;
     setPin(userID?: string, pined?: boolean, stopUpdateUser?: boolean): void;
     setMaxScreenNum(num: number, stopUpdateUser?: boolean): Promise<void>;
@@ -102,7 +107,7 @@ export declare class ZegoCloudRTCCore {
     private onNetworkStatusQualityCallBack;
     onNetworkStatusQuality(func: (roomID: string, level: number) => void): void;
     private onRemoteUserUpdateCallBack;
-    onRemoteUserUpdate(func: (roomID: string, updateType: "DELETE" | "ADD", user: ZegoUser[]) => void): void;
+    onRemoteUserUpdate(func: (roomID: string, updateType: "DELETE" | "ADD", user: ZegoUser[], allUser: ZegoUser[]) => void): void;
     private onSoundLevelUpdateCallBack;
     onSoundLevelUpdate(func: (soundLevelList: ZegoSoundLevelInfo[]) => void): void;
     private onRoomLiveStateUpdateCallBack;
@@ -119,4 +124,5 @@ export declare class ZegoCloudRTCCore {
     onCoreError(func: (errCode: number, errMsg: string) => void): void;
     leaveRoom(): void;
     setStreamExtraInfo(streamID: string, extraInfo: string): Promise<ZegoServerResponse>;
+    private initZIM;
 }

@@ -20,8 +20,8 @@ export declare class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserC
     videoRef: RefObject<HTMLVideoElement>;
     inviteRef: RefObject<HTMLInputElement>;
     nameInputRef: RefObject<HTMLInputElement>;
-    audioRefuse: boolean;
-    videoRefuse: boolean;
+    audioRefuse: boolean | undefined;
+    videoRefuse: boolean | undefined;
     isAndroid: boolean;
     isIOS: boolean;
     clientHeight: number;

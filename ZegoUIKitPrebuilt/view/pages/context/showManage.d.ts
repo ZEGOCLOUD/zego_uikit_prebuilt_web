@@ -1,6 +1,6 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../modules/tools/UserListManager";
-export declare type ShowManageType = {
+export type ShowManageType = {
     show?: (user: ZegoCloudUser) => void;
     showPinButton: boolean;
     userInfo: {

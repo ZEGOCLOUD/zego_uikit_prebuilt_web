@@ -68,6 +68,7 @@ export declare class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheck
     }) => void;
     openMore(): void;
     leaveRoom(): void;
+    private confirmLeaveRoom;
     getAllUser(): ZegoCloudUserList;
     getAllMemberList(): ZegoCloudUserList;
     getShownUser(): ZegoCloudUserList;

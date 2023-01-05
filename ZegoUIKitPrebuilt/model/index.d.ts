@@ -47,8 +47,16 @@ export interface ScenarioConfig {
     };
 }
 export declare enum LiveStreamingMode {
-    StandardLive = "StandardLive",
-    PremiumLive = "PremiumLive",
+    /**
+     * @Deprecated  StanderLive will be removed, please use LiveStreaming instead
+     */
+    StanderLive = "LiveStreaming",
+    /**
+     * @Deprecated  PremiumLive will be removed, please use InteractiveLiveStreaming instead
+     */
+    PremiumLive = "InteractiveLiveStreaming",
+    LiveStreaming = "LiveStreaming",
+    InteractiveLiveStreaming = "InteractiveLiveStreaming",
     RealTimeLive = "RealTimeLive"
 }
 export interface ZegoCloudRoomConfig {
@@ -98,15 +106,31 @@ export interface ZegoCloudRoomConfig {
     videoResolutionDefault?: VideoResolution;
     onLiveStart?: (user: ZegoUser) => void;
     onLiveEnd?: (user: ZegoUser) => void;
+    /**
+     * @deprecated facingMode will be removed
+     * */
     facingMode?: "user" | "environment";
+    /**
+     * @deprecated joinRoomCallback will be removed
+     * */
     joinRoomCallback?: () => void;
+    /**
+     * @deprecated leaveRoomCallback will be removed
+     * */
     leaveRoomCallback?: () => void;
+    /**
+     * @deprecated userUpdateCallback will be removed
+     * */
     userUpdateCallback?: (updateType: "DELETE" | "ADD", userList: ZegoUser[]) => void;
+    /**
+     * @deprecated roomTimerDisplayed will be removed
+     * */
     roomTimerDisplayed?: boolean;
     whiteboardConfig?: {
         showAddImageButton?: boolean;
         showCreateAndCloseButton?: boolean;
     };
+    autoLeaveRoomWhenOnlySelfInRoom?: boolean;
 }
 export interface ZegoBrowserCheckProp {
     core: ZegoCloudRTCCore;
@@ -207,4 +231,53 @@ export interface ZegoUser {
 export declare enum CoreError {
     notSupportCDNLive = 10001,
     notSupportStandardLive = 10002
+}
+export declare enum ZegoInvitationType {
+    VoiceCall = 0,
+    VideoCall = 1
+}
+export interface ZegoCallInvitationConfig {
+    enableCustomCallInvitationWaitingPage?: boolean;
+    enableCustomCallInvitationDialog?: boolean;
+    enableNotifyWhenAppRunningInBackgroundOrQuit?: boolean;
+    ringtoneConfig?: {
+        incomingCallUrl?: string;
+        outgoingCallUrl?: string;
+    };
+    onWaitingPageWhenSending?: (callType: ZegoInvitationType, callees: ZegoUser[], cancel: CancelCallInvitationFunc) => void;
+    onConfirmDialogWhenReceiving?: (callType: ZegoInvitationType, caller: ZegoUser, refuse: RefuseCallInvitationFunc, accept: AcceptCallInvitationFunc, data: string) => void;
+    onSetRoomConfigBeforeJoining?: (callType: ZegoInvitationType) => ZegoCloudRoomConfig;
+    onCallInvitationEnded?: (reason: CallInvitationEndReason, data: string) => void;
+    onIncomingCallReceived?: (callID: string, caller: ZegoUser, callType: ZegoInvitationType, callees: ZegoUser[]) => void;
+    onIncomingCallCanceled?: (callID: string, caller: ZegoUser) => void;
+    onOutgoingCallAccepted?: (callID: string, callee: ZegoUser) => void;
+    onOutgoingCallRejected?: (callID: string, callee: ZegoUser) => void;
+    onOutgoingCallDeclined?: (callID: string, callee: ZegoUser) => void;
+    onIncomingCallTimeout?: (callID: string, caller: ZegoUser) => void;
+    onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void;
+}
+export type CancelCallInvitationFunc = (data?: string) => void;
+export type AcceptCallInvitationFunc = (data?: string) => void;
+export type RefuseCallInvitationFunc = (data?: string) => void;
+export interface CallInvitationInfo {
+    callID: string;
+    roomID: string;
+    inviter: ZegoUser;
+    invitees: ZegoUser[];
+    /** 已接受邀请的用户 */
+    acceptedInvitees: ZegoUser[];
+    type: ZegoInvitationType;
+    isGroupCall: boolean;
+}
+export declare enum CallInvitationEndReason {
+    Declined = "Declined",
+    Timeout = "Timeout",
+    Canceled = "Canceled",
+    Busy = "Busy",
+    LeaveRoom = "LeaveRoom"
+}
+export interface ZegoSignalingPluginNotificationConfig {
+    resourcesID?: string;
+    title?: string;
+    message?: string;
 }
