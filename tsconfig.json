@@ -9,7 +9,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "declaration": true,
+    "declaration": false,
     "outDir": "ZegoUIKitPrebuilt",
     "allowSyntheticDefaultImports": true,
     "strict": true,

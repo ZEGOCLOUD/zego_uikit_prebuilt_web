@@ -129,6 +129,10 @@ const config: webpack.Configuration = {
               source: "./public/package.json",
               destination: "./ZegoUIKitPrebuilt/package.json",
             },
+            {
+              source: "./public/index.d.ts",
+              destination: "./ZegoUIKitPrebuilt/index.d.ts",
+            },
           ],
           delete: ["ZegoUIKitPrebuilt/util.d.ts"],
         },
@@ -136,7 +140,8 @@ const config: webpack.Configuration = {
     }),
   ],
   externals: {
-    zegoSuperboardWeb: "zego-superboard-web",
+    "zego-superboard-web": "zego-superboard-web",
+    "zego-zim-web": "zego-zim-web",
   },
 };
 export default config;
