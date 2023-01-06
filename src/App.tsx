@@ -29,7 +29,7 @@ export default class App extends React.PureComponent {
     live_stream: "https://docs.zegocloud.com/article/14885",
     "1on1_call": "https://docs.zegocloud.com/article/14728",
     video_conference: "https://docs.zegocloud.com/article/14922",
-    call_invitation: "",
+    call_invitation: "https://docs.zegocloud.com/article/15385",
   };
   state: any = {
     showPreviewHeader: getUrlParams().get("preHeader") || "show",
