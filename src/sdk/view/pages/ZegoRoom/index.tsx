@@ -553,20 +553,19 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         this.setState({
           localStream,
         });
-        const res = this.props.core.publishLocalStream(localStream);
+        const extraInfo = JSON.stringify({
+          isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
+          isMicrophoneOn: this.props.core._config.turnOnMicrophoneWhenJoining,
+          hasVideo: !this.props.core.status.videoRefuse,
+          hasAudio: !this.props.core.status.audioRefuse,
+        });
+        const res = this.props.core.publishLocalStream(
+          localStream,
+          "main",
+          extraInfo
+        );
         if (res !== false) {
           this.localStreamID = res as string;
-
-          await this.props.core.setStreamExtraInfo(
-            res as string,
-            JSON.stringify({
-              isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
-              isMicrophoneOn:
-                this.props.core._config.turnOnMicrophoneWhenJoining,
-              hasVideo: !this.props.core.status.videoRefuse,
-              hasAudio: !this.props.core.status.audioRefuse,
-            })
-          );
         }
         return true;
       } catch (error: any) {
@@ -721,13 +720,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           audio: !isFireFox(),
         },
       });
+
       const streamID = this.props.core.publishLocalStream(
         screenSharingStream,
-        "screensharing"
-      );
-      streamID && (this.screenSharingStreamID = streamID as string);
-      await this.props.core.setStreamExtraInfo(
-        streamID as string,
+        "screensharing",
         JSON.stringify({
           isCameraOn: true,
           isMicrophoneOn: true,
@@ -735,6 +731,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           hasAudio: screenSharingStream.getAudioTracks()[0].enabled,
         })
       );
+      streamID && (this.screenSharingStreamID = streamID as string);
       this.setState({
         isScreenSharingBySelf: true,
         screenSharingStream: screenSharingStream,

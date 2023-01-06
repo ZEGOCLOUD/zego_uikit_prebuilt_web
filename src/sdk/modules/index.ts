@@ -1095,7 +1095,8 @@ export class ZegoCloudRTCCore {
 
   publishLocalStream(
     media: MediaStream,
-    streamType?: "main" | "media" | "screensharing"
+    streamType?: "main" | "media" | "screensharing",
+    extraInfo?: string
   ): boolean | string {
     if (!media) return false;
     const streamID = generateStreamID(
@@ -1103,7 +1104,17 @@ export class ZegoCloudRTCCore {
       this._expressConfig.roomID,
       streamType
     );
-    const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media);
+    let publishOption;
+    if (extraInfo) {
+      publishOption = {
+        extraInfo,
+      };
+    }
+    const res = ZegoCloudRTCCore._zg.startPublishingStream(
+      streamID,
+      media,
+      publishOption
+    );
     return res && streamID;
   }
 

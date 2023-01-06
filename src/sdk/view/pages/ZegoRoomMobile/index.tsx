@@ -575,19 +575,19 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.setState({
           localStream,
         });
-        const res = this.props.core.publishLocalStream(localStream);
+        const extraInfo = JSON.stringify({
+          isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
+          isMicrophoneOn: this.props.core._config.turnOnMicrophoneWhenJoining,
+          hasVideo: !this.props.core.status.videoRefuse,
+          hasAudio: !this.props.core.status.audioRefuse,
+        });
+        const res = this.props.core.publishLocalStream(
+          localStream,
+          "main",
+          extraInfo
+        );
         if (res !== false) {
           this.localStreamID = res as string;
-          await this.props.core.setStreamExtraInfo(
-            res as string,
-            JSON.stringify({
-              isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
-              isMicrophoneOn:
-                this.props.core._config.turnOnMicrophoneWhenJoining,
-              hasVideo: !this.props.core.status.videoRefuse,
-              hasAudio: !this.props.core.status.audioRefuse,
-            })
-          );
         }
         return true;
       } catch (error: any) {
