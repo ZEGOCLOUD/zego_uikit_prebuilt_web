@@ -95,7 +95,7 @@ export declare class ZegoCloudRTCCore {
         add: ZegoStreamList[];
         delete: ZegoStreamList[];
     }): Promise<void>;
-    publishLocalStream(media: MediaStream, streamType?: "main" | "media" | "screensharing"): boolean | string;
+    publishLocalStream(media: MediaStream, streamType?: "main" | "media" | "screensharing", extraInfo?: string): boolean | string;
     replaceTrack(media: MediaStream, mediaStreamTrack: MediaStreamTrack): Promise<ZegoServerResponse>;
     private subscribeUserListCallBack;
     subscribeUserList(callback: (userList: ZegoCloudUserList) => void): void;
