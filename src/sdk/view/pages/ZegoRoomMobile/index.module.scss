@@ -361,35 +361,28 @@
   .screenTopBar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
     width: 100%;
-    height: vw(68px);
+    height: vw(58px);
+    padding: vw(10px) vw(24px);
     background: #353847;
+    &.center {
+      justify-content: center;
+    }
     p {
+      display: flex;
+      align-items: center;
       color: rgba(255, 255, 255, 0.9);
       font-weight: 400;
       font-size: vw(28px);
       line-height: vw(40px);
-    }
-    span {
-      position: relative;
-      width: vw(42px);
-      height: vw(42px);
-      margin-right: vw(16px);
-      margin-left: vw(24px);
-      font-weight: 600;
-      font-size: vw(20px);
-      line-height: vw(42px);
-      text-align: center;
-      background: rgba($color: #fff, $alpha: 0.1);
-      border-radius: 50%;
-      img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: vw(42px);
-        height: vw(42px);
-        object-fit: cover;
-        border-radius: 50%;
+      span {
+        display: block;
+        max-width: vw(360px);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }

@@ -1,33 +1,39 @@
 import React from "react";
+import ZegoTimerCss from "./zegoTimer.module.scss";
 import { formatTime } from "../../../../modules/tools/util";
 export class ZegoTimer extends React.PureComponent {
   state: {
-    time: number;
+    time: string;
   } = {
-    time: 0,
+    time: "00:00:00",
   };
-
+  timer: NodeJS.Timer | null = null;
+  num = 0;
   startTimer() {
-    setTimeout(() => {
-      this.setState(
-        (state: { time: number }) => {
-          return {
-            time: ++state.time,
-          };
-        },
-        () => {
-          this.startTimer();
-        }
-      );
+    if (this.timer) return;
+    this.timer = setInterval(() => {
+      this.setState({ time: formatTime(++this.num) });
     }, 1000);
   }
-
-  componentDidMount() {
-    this.startTimer();
+  componentWillUnmount(): void {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
   }
-
   render(): React.ReactNode {
-    // @ts-ignore
-    return <div>{formatTime(this.state.time)}</div>;
+    return (
+      <div
+        className={ZegoTimerCss.timer}
+        ref={(el: HTMLDivElement) => {
+          if (el) {
+            this.startTimer();
+          }
+        }}
+      >
+        <i></i>
+        <span>{this.state.time}</span>
+      </div>
+    );
   }
 }

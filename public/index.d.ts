@@ -100,28 +100,26 @@ declare interface ZegoCloudRoomConfig {
   onLiveStart?: (user: ZegoUser) => void; //Live start callback
   onLiveEnd?: (user: ZegoUser) => void; //Callback for live broadcast end
   /**
-   * @deprecated facingMode will be removed
+   * @deprecated facingMode will be removed,please use useFrontFacingCamera
    * */
   facingMode?: "user" | "environment"; // front camera mode
   /**
-   * @deprecated joinRoomCallback will be removed
+   * @deprecated joinRoomCallback will be removed, please use onJoinRoom
    * */
   joinRoomCallback?: () => void; // join room success callback
   /**
-   * @deprecated leaveRoomCallback will be removed
+   * @deprecated leaveRoomCallback will be removed, please use onLeaveRoom
    * */
   leaveRoomCallback?: () => void; // exit room callback
   /**
-   * @deprecated userUpdateCallback will be removed
+   * @deprecated userUpdateCallback will be removed, please use onUserJoin and onUserLeave
    * */
   userUpdateCallback?: (
     updateType: "DELETE" | "ADD",
     userList: ZegoUser[]
   ) => void; // user add/exit callback
-  /**
-   * @deprecated roomTimerDisplayed will be removed
-   * */
-  roomTimerDisplayed?: boolean; // Whether to display the countdown
+
+  showRoomTimer?: boolean; // Whether to display the timer
 
   whiteboardConfig?: {
     showAddImageButton?: boolean; // The default is false, the file sharing function is enabled and the plug-in is introduced before it will take effect; otherwise, an error message will appear: "Failed to add image, this feature is not supported."

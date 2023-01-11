@@ -135,7 +135,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   get showHeader(): boolean {
     return !!(
       this.props.core._config.branding?.logoURL ||
-      this.props.core._config.roomTimerDisplayed ||
+      this.props.core._config.showRoomTimer ||
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
     );
   }
@@ -1523,7 +1523,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                     alt="logo"
                   />
                 )}
-
+                {this.props.core._config.showRoomTimer && this.props.core._config?.scenario?.mode !== ScenarioModel.LiveStreaming && (
+                  <ZegoTimer></ZegoTimer>
+                )}
                 {this.props.core._config.scenario?.mode ===
                   ScenarioModel.LiveStreaming &&
                   (this.state.liveCountdown === 0 ||
@@ -1554,10 +1556,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                       : "Start stream..."}
                   </button>
                 )}
-
-              {this.props.core._config.roomTimerDisplayed && (
-                <ZegoTimer></ZegoTimer>
-              )}
             </div>
           )}
           <div

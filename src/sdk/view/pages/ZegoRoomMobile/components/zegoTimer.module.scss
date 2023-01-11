@@ -1,0 +1,20 @@
+@import "../../../../var.scss";
+.timer {
+  display: flex;
+  align-items: center;
+  i {
+    width: vw(28px);
+    height: vw(28px);
+    margin-right: vw(10px);
+    background: url("../../../../sdkAssets/icon_timer.png") no-repeat
+      center/cover;
+  }
+  span {
+    position: relative;
+    top: 0.1em;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+    font-size: vw(26px);
+    line-height: vw(26px);
+  }
+}

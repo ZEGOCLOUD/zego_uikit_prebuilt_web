@@ -224,6 +224,7 @@ export default class App extends React.PureComponent {
           onLiveEnd: (user) => {
             console.warn("onLiveEnd", user);
           },
+          showRoomTimer: true,
         };
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true";

@@ -155,6 +155,7 @@ export class ZegoCloudRTCCore {
     videoResolutionList: [], //视频分辨率可选列表
     plugins: {},
     autoLeaveRoomWhenOnlySelfInRoom: false, // 当房间内只剩一个人的时候，自动退出房间
+    showRoomTimer: false, // 是否显示房间计时器
   };
   _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
   extraInfoKey = "extra_info";
