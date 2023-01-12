@@ -153,42 +153,52 @@ export default class App extends React.PureComponent {
         );
       }
       this.myMeeting = async (element: HTMLDivElement) => {
-        let { token } = await generateToken(
-          randomID(5),
-          roomID,
-          userName || getRandomName()
-        );
-        // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        //   1484647939,
-        //   "22076fd0a8388f31dc1f6e344171****",
+        // let { token } = await generateToken(
+        //   randomID(5),
         //   roomID,
-        //   randomNumID(8),
-        //   userName || getRandomName(),
-        //   7200
+        //   userName || getRandomName()
         // );
+        let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+          252984006,
+          "16435f3bdb307f3020b3f9e4259a29f0",
+          roomID,
+          randomNumID(8),
+          userName || getRandomName(),
+          7200
+        );
         const zp = ZegoUIKitPrebuilt.create(token);
         process.env.REACT_APP_PATH !== "live_stream" &&
           zp.addPlugins({ ZegoSuperBoardManager });
         const param: ZegoCloudRoomConfig = {
-          // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
-          // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
-          // showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
-          // showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
-          // showAudioVideoSettingsButton: false, // 是否显示音视频设置按钮,默认显示
-          // showNonVideoUser: false,
+          turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+          turnOnCameraWhenJoining: true, // 是否开启自己的摄像头 ,默认开启
+          showMyCameraToggleButton: true, // 是否显示控制自己的麦克风按钮,默认显示
+          showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
+          showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
+          showNonVideoUser: true,
           // @ts-ignore
           container: element, // 挂载容器
+          showPreJoinView: true,
           preJoinViewConfig: {
             title: "Join Room",
           },
+          showTextChat: true,
+          showUserList: true,
+          showLeavingView: true,
           maxUsers,
-          leaveRoomCallback: () => {
+          layout: "Auto",
+          onJoinRoom: () => {
             console.log("test:leaveRoomCallback");
             window?.parent?.postMessage("leaveRoom", "*");
           }, // 退出房间回调
-          joinRoomCallback: () => {
+          onLeaveRoom: () => {
             window?.parent?.postMessage("joinRoom", "*");
           },
+          showScreenSharingButton: true,
+          lowerLeftNotification: {
+            showTextChat: true,
+          },
+          showOnlyAudioUser: true,
           branding: {
             logoURL:
               "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
@@ -201,7 +211,6 @@ export default class App extends React.PureComponent {
               liveStreamingMode,
             },
           },
-          showUserList: true,
           onUserAvatarSetter: (user) => {
             user.forEach((u) => {
               u.setUserAvatar &&
@@ -217,7 +226,7 @@ export default class App extends React.PureComponent {
             ZegoUIKitPrebuilt.VideoResolution_480P,
             ZegoUIKitPrebuilt.VideoResolution_720P,
           ],
-          videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
+          videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_480P,
           onLiveStart: (user) => {
             console.warn("onLiveStart", user);
           },

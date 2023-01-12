@@ -3,6 +3,7 @@ import ReactDOM, { Root } from "react-dom/client";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
 import ZIM from "zego-zim-web";
 import {
+  ConsoleLevel,
   LiveRole,
   LiveStreamingMode,
   ScenarioModel,
@@ -36,6 +37,11 @@ export class ZegoUIKitPrebuilt {
   static LiveStreamingMode = LiveStreamingMode;
   static InvitationTypeVoiceCall = ZegoInvitationType.VoiceCall;
   static InvitationTypeVideoCall = ZegoInvitationType.VideoCall;
+  static Console_Debug = ConsoleLevel.Debug;
+  static Console_Info = ConsoleLevel.Info;
+  static Console_Warning = ConsoleLevel.Warning;
+  static Console_Error = ConsoleLevel.Error;
+  static Console_None = ConsoleLevel.None;
   private hasJoinedRoom = false;
   root: Root | undefined;
 

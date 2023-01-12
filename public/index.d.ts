@@ -50,84 +50,69 @@ declare enum LiveStreamingMode {
   InteractiveLiveStreaming = "InteractiveLiveStreaming", // L3
   RealTimeLive = "RealTimeLive", //RTC
 }
-declare interface ZegoCloudRoomConfig {
-  container?: HTMLElement | undefined | null; // mount container
-  preJoinViewConfig?: {
-    title?: string; // Title setting, default enter Room
-    invitationLink?: string;
-  };
-  showPreJoinView?: boolean; // Whether to display the preview detection page, the default display
-  turnOnMicrophoneWhenJoining?: boolean; // Whether to turn on your own microphone, by default
-  turnOnCameraWhenJoining?: boolean; // Whether to turn on your own camera or not, it is turned on by default
-  showMyCameraToggleButton?: boolean; // Whether to display the button to control your own microphone, the default display
-  showMyMicrophoneToggleButton?: boolean; // Whether to display the button to control your own camera, the default display
-  showAudioVideoSettingsButton?: boolean; // Whether to display the audio and video settings button, the default display
 
-  showTextChat?: boolean; // Whether to enable chat, default enabled
-  showUserList?: boolean; //Whether to display the member list or not by default
+declare enum ConsoleLevel {
+  Debug = "Debug",
+  Info = "Info",
+  Warning = "Warning",
+  Error = "Error",
+  None = "None",
+}
+declare interface ZegoCloudRoomConfig {
+  // 1 UI controls
+  // 1.1 Global
+  container?: HTMLElement | undefined | null; // Component container.
+  maxUsers?: number; // In-call participants range from [2 - 20]. The default value is unlimited.
+  scenario?: {
+    mode?: ScenarioModel; // Scenario selection.
+    config?: ScenarioConfig[ScenarioModel]; // Specific configurations in the corresponding scenario.
+  };
+  console?: ConsoleLevel;
+  // 1.2 Prejoin view
+  showPreJoinView?: boolean; // Whether to display the prejoin view. Displayed by default.
+  preJoinViewConfig?: {
+    title?: string; // The title of the prejoin view. Uses "enter Room" by default.
+  };
+  turnOnMicrophoneWhenJoining?: boolean; // Whether to enable the microphone when joining the call. Enabled by default.
+  turnOnCameraWhenJoining?: boolean; // Whether to enable the camera when joining the call. Enabled by default.
+  useFrontFacingCamera?: boolean; // Whether to use the front-facing camera when joining the room. Uses a front-facing camera by default.
+  videoResolutionDefault?: VideoResolution; // The default video resolution.
+
+  // 1.3 Room view
+  showMyCameraToggleButton?: boolean; // Whether to display the button for toggling my camera. Displayed by default.
+  showMyMicrophoneToggleButton?: boolean; // Whether to display the button for toggling my microphone. Displayed by default.
+  showAudioVideoSettingsButton?: boolean; // Whether to display the button for audio and video settings. Displayed by default.
+  showTextChat?: boolean; // Whether to display the text chat interface on the right side. Displayed by default.
+  showUserList?: boolean; // Whether to display the participant list. Displayed by default.
   lowerLeftNotification?: {
-    showUserJoinAndLeave?: boolean; //Whether to display members entering and leaving, default is not displayed
-    showTextChat?: boolean; // Whether to display unread messages or not by default
+    showUserJoinAndLeave?: boolean; // Whether to display notifications on the lower left area when participants join and leave the room. Displayed by default.
+    showTextChat?: boolean; // Whether to display the latest messages on the lower left area. Displayed by default.
   };
   branding?: {
-    logoURL?: string; // call page logo
+    logoURL?: string; // The branding LOGO URL.
   };
-  showLeavingView?: boolean; // The page after leaving the room, by default
-
-  maxUsers?: number; // The number of people in the room is 2 to 20, the default is 2
-  layout?: "Sidebar" | "Grid" | "Auto"; // Default Default
-
-  showNonVideoUser?: boolean; // whether to display users without video, default display
-  showOnlyAudioUser?: boolean; // Whether to display audio-only users, the default display
-
-  useFrontFacingCamera?: boolean;
-  onJoinRoom?: () => void; // User enters call page callback
-  onLeaveRoom?: () => void; // User exit call page callback
-  onUserJoin?: (user: ZegoUser[]) => void; // other users enter the callback
-  onUserLeave?: (user: ZegoUser[]) => void; // Other users leave the callback
-  sharedLinks?: { name?: string; url?: string }[]; // product link description
-  showScreenSharingButton?: boolean; // Whether to display the screen sharing button
-  scenario?: {
-    mode?: ScenarioModel; // Scenario selection
-    config?: ScenarioConfig[ScenarioModel]; // Corresponding scenario-specific configuration
-  };
-
-  showLayoutButton?: boolean; // Whether to display the layout switch button
-  showPinButton?: boolean; // Whether to display the pin button
-  onUserAvatarSetter?: (user: ZegoUser[]) => void; //Is it possible to set the user avatar callback
-  videoResolutionList?: VideoResolution[]; // video resolution list (the first one is used by default)
-  videoResolutionDefault?: VideoResolution; // Default video resolution
-  onLiveStart?: (user: ZegoUser) => void; //Live start callback
-  onLiveEnd?: (user: ZegoUser) => void; //Callback for live broadcast end
-  /**
-   * @deprecated facingMode will be removed
-   * */
-  facingMode?: "user" | "environment"; // front camera mode
-  /**
-   * @deprecated joinRoomCallback will be removed
-   * */
-  joinRoomCallback?: () => void; // join room success callback
-  /**
-   * @deprecated leaveRoomCallback will be removed
-   * */
-  leaveRoomCallback?: () => void; // exit room callback
-  /**
-   * @deprecated userUpdateCallback will be removed
-   * */
-  userUpdateCallback?: (
-    updateType: "DELETE" | "ADD",
-    userList: ZegoUser[]
-  ) => void; // user add/exit callback
-  /**
-   * @deprecated roomTimerDisplayed will be removed
-   * */
-  roomTimerDisplayed?: boolean; // Whether to display the countdown
-
+  layout?: "Sidebar" | "Grid" | "Auto"; // The layout modes. Uses the Auto mode by default.
+  showLayoutButton?: boolean; // Whether to display the button for switching layouts. Displayed by default.
+  showNonVideoUser?: boolean; // Whether to display the non-video participants. Displayed by default.
+  showOnlyAudioUser?: boolean; // Whether to display audio-only participants. Displayed by default.
+  sharedLinks?: { name?: string; url?: string }[]; // Description of the generated shared links.
+  showScreenSharingButton?: boolean; // Whether to display the Screen Sharing button. Displayed by default.
+  showPinButton?: boolean; // Whether to display the Pin button. Displayed by default.
   whiteboardConfig?: {
-    showAddImageButton?: boolean; // The default is false, the file sharing function is enabled and the plug-in is introduced before it will take effect; otherwise, an error message will appear: "Failed to add image, this feature is not supported."
-    showCreateAndCloseButton?: boolean;
+    showAddImageButton?: boolean; // It's set to false by default. To use this feature, activate the File Sharing feature, and then import the plugin. Otherwise, this prompt will occur: "Failed to add image, this feature is not supported."
+    showCreateAndCloseButton?: boolean; // Whether to display the button that is used to create/turn off the whiteboard. Displayed by default.
   };
-  autoLeaveRoomWhenOnlySelfInRoom?: boolean; // When there is only one person left in the room, automatically exit the room
+  // 1.4 Leaving view
+  showLeavingView?: boolean; // Whether to display the leaving view. Displayed by default.
+
+  // 2 Related event callbacks
+  onJoinRoom?: (users: ZegoUser[]) => void; // Callback for participants join the room.
+  onLeaveRoom?: (users: ZegoUser[]) => void; // Callback for participants exits the room.
+  onUserJoin?: (user: ZegoUser[]) => void; // Callback for other participants join the call.
+  onUserLeave?: (user: ZegoUser[]) => void; // Callback for other participants leave the call.
+  onUserAvatarSetter?: (user: ZegoUser[]) => void; // Callback for the user avatar can be set.
+  onLiveStart?: (user: ZegoUser) => void; //  Callback for livestream starts.
+  onLiveEnd?: (user: ZegoUser) => void; // Callback for livestream ends.
 }
 
 declare enum ZegoInvitationType {
@@ -224,6 +209,11 @@ export declare class ZegoUIKitPrebuilt {
   static LiveStreamingMode: typeof LiveStreamingMode;
   static InvitationTypeVoiceCall: ZegoInvitationType;
   static InvitationTypeVideoCall: ZegoInvitationType;
+  static Console_Debug: ConsoleLevel;
+  static Console_Info: ConsoleLevel;
+  static Console_Warning: ConsoleLevel;
+  static Console_Error: ConsoleLevel;
+  static Console_None: ConsoleLevel;
   private hasJoinedRoom;
   static generateKitTokenForTest(
     appID: number,

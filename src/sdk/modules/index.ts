@@ -66,6 +66,7 @@ export class ZegoCloudRTCCore {
           ZegoCloudRTCCore._instance._expressConfig.appID +
           "-api.zegocloud.com/ws"
       );
+
       ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(
         ZegoCloudRTCCore._zg
       );
@@ -82,10 +83,12 @@ export class ZegoCloudRTCCore {
     cameraDeviceID?: string;
     speakerDeviceID?: string;
     videoResolution?: string;
+    codec: "H264" | "VP8";
   } = {
     loginRsp: false,
     videoRefuse: undefined,
     audioRefuse: undefined,
+    codec: "VP8",
   };
   remoteStreamMap: { [index: string]: ZegoCloudRemoteMedia } = {};
   waitingHandlerStreams: {
@@ -94,7 +97,10 @@ export class ZegoCloudRTCCore {
   } = { add: [], delete: [] };
 
   _config: ZegoCloudRoomConfig & {
-    plugins: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager };
+    plugins: {
+      ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
+      ZIM?: ZIM;
+    };
   } = {
     // @ts-ignore
     container: undefined, // 挂载容器
@@ -184,7 +190,92 @@ export class ZegoCloudRTCCore {
       this.initZIM(plugins.ZIM);
     }
   }
+
+  _originConfig: { [index: string]: any } = {};
+  set originConfig(config: ZegoCloudRoomConfig) {
+    if (config.container) {
+      this._originConfig["cw"] =
+        config.container.clientWidth / document.body.clientWidth;
+      this._originConfig["ch"] =
+        config.container.clientHeight / document.body.clientHeight;
+    }
+    if (config.showPreJoinView !== undefined) {
+      this._originConfig["spj"] = config.showPreJoinView ? 1 : 0;
+    }
+    if (config.turnOnMicrophoneWhenJoining !== undefined) {
+      this._originConfig["tmwj"] = config.turnOnMicrophoneWhenJoining ? 1 : 0;
+    }
+    if (config.turnOnCameraWhenJoining !== undefined) {
+      this._originConfig["tcwj"] = config.turnOnCameraWhenJoining ? 1 : 0;
+    }
+    if (config.showMyMicrophoneToggleButton !== undefined) {
+      this._originConfig["smtb"] = config.showMyMicrophoneToggleButton ? 1 : 0;
+    }
+    if (config.showMyCameraToggleButton !== undefined) {
+      this._originConfig["sctb"] = config.showMyCameraToggleButton ? 1 : 0;
+    }
+    if (config.showAudioVideoSettingsButton !== undefined) {
+      this._originConfig["savsb"] = config.showAudioVideoSettingsButton ? 1 : 0;
+    }
+    if (config.showTextChat !== undefined) {
+      this._originConfig["stc"] = config.showTextChat ? 1 : 0;
+    }
+    if (config.showUserList !== undefined) {
+      this._originConfig["sul"] = config.showUserList ? 1 : 0;
+    }
+    if (config.showLeavingView !== undefined) {
+      this._originConfig["slv"] = config.showLeavingView ? 1 : 0;
+    }
+    if (config.maxUsers !== undefined) {
+      this._originConfig["mu"] = config.maxUsers ? 1 : 0;
+    }
+    if (config.layout !== undefined) {
+      this._originConfig["lo"] = config.layout;
+    }
+    if (config.showScreenSharingButton !== undefined) {
+      this._originConfig["sssb"] = config.showScreenSharingButton ? 1 : 0;
+    }
+    if (this._config.plugins.ZegoSuperBoardManager !== undefined) {
+      this._originConfig["swbb"] = 1;
+    }
+    if (this._config.plugins.ZIM !== undefined) {
+      this._originConfig["uc"] = 1;
+    }
+    if (config.scenario?.mode !== undefined) {
+      this._originConfig["sm"] = config.scenario.mode;
+    }
+    if (config.lowerLeftNotification !== undefined) {
+      this._originConfig["lln"] = config.lowerLeftNotification ? 1 : 0;
+    }
+    if (config.showNonVideoUser !== undefined) {
+      this._originConfig["snvu"] = config.showNonVideoUser ? 1 : 0;
+    }
+    if (config.showOnlyAudioUser !== undefined) {
+      this._originConfig["snau"] = config.showOnlyAudioUser ? 1 : 0;
+    }
+    if (config.onJoinRoom !== undefined) {
+      this._originConfig["ojr"] = 1;
+    }
+    if (config.onLeaveRoom !== undefined) {
+      this._originConfig["olr"] = 1;
+    }
+    if (config.onLiveStart !== undefined) {
+      this._originConfig["ols"] = 1;
+    }
+    if (config.onLiveEnd !== undefined) {
+      this._originConfig["ole"] = 1;
+    }
+    if (config.onLiveEnd !== undefined) {
+      this._originConfig["ole"] = 1;
+    }
+    this._originConfig["url"] =
+      window.location.origin + window.location.pathname;
+  }
+  get originConfig() {
+    return this._originConfig;
+  }
   setConfig(config: ZegoCloudRoomConfig): boolean {
+    this.originConfig = { ...config };
     if (
       config.scenario &&
       config.scenario.mode === ScenarioModel.LiveStreaming
@@ -349,6 +440,23 @@ export class ZegoCloudRTCCore {
     this.zum.showOnlyAudioUser = !!this._config.showOnlyAudioUser;
     this.zum.setShowNonVideo(!!this._config.showNonVideoUser);
 
+    if (config.console) {
+      let logLevel: "debug" | "info" | "warn" | "error" | "report" | "disable" =
+        "debug";
+      if (config.console === "Info") {
+        logLevel = "warn";
+      } else if (config.console === "Warning") {
+        logLevel = "warn";
+      } else if (config.console === "Error") {
+        logLevel = "warn";
+      } else if (config.console === "None") {
+        logLevel = "disable";
+      }
+      ZegoCloudRTCCore._zg.setLogConfig({
+        logLevel,
+      });
+    }
+
     return true;
   }
   // 兼容处理LiveStreamingMode
@@ -364,8 +472,15 @@ export class ZegoCloudRTCCore {
       const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements(
         "webRTC"
       );
+      const VP8 = await ZegoCloudRTCCore._zg.checkSystemRequirements("VP8");
       const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264");
-      return !!webRTC.result && !!H264.result;
+      if (VP8.result) {
+        this.status.codec = "VP8";
+      }
+      if (!VP8.result && H264.result) {
+        this.status.codec = "H264";
+      }
+      return !!webRTC.result && (!!H264.result || !!VP8.result);
     }
     return true;
   }
@@ -945,6 +1060,11 @@ export class ZegoCloudRTCCore {
       };
       this._config.onUserAvatarSetter &&
         this._config.onUserAvatarSetter([user]);
+
+      // @ts-ignore
+      ZegoCloudRTCCore._zg.logger.error(
+        "zu.jr " + JSON.stringify(this.originConfig)
+      );
     });
     ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300);
     this.streamUpdateTimer(this.waitingHandlerStreams);
@@ -1110,11 +1230,10 @@ export class ZegoCloudRTCCore {
         extraInfo,
       };
     }
-    const res = ZegoCloudRTCCore._zg.startPublishingStream(
-      streamID,
-      media,
-      publishOption
-    );
+    const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media, {
+      ...publishOption,
+      ...{ videoCodec: this.status.codec },
+    });
     return res && streamID;
   }
 
