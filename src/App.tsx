@@ -153,19 +153,19 @@ export default class App extends React.PureComponent {
         );
       }
       this.myMeeting = async (element: HTMLDivElement) => {
-        let { token } = await generateToken(
-          randomID(5),
-          roomID,
-          userName || getRandomName()
-        );
-        // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        //   1484647939,
-        //   "22076fd0a8388f31dc1f6e344171****",
+        // let { token } = await generateToken(
+        //   randomID(5),
         //   roomID,
-        //   randomNumID(8),
-        //   userName || getRandomName(),
-        //   7200
+        //   userName || getRandomName()
         // );
+        let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+          1484647939,
+          "22076fd0a8388f31dc1f6e344171b2b1",
+          roomID,
+          randomNumID(8),
+          userName || getRandomName(),
+          7200
+        );
         const zp = ZegoUIKitPrebuilt.create(token);
         process.env.REACT_APP_PATH !== "live_stream" &&
           zp.addPlugins({ ZegoSuperBoardManager });
@@ -224,7 +224,15 @@ export default class App extends React.PureComponent {
           onLiveEnd: (user) => {
             console.warn("onLiveEnd", user);
           },
+          onYouRemovedFromRoom: () => {
+            console.warn("【demo】onYouRemovedFromRoom");
+            this.showToast(`You've been removed by the host.`);
+          },
           showRoomTimer: true,
+          showTurnOffRemoteCameraButton: true,
+          showTurnOffRemoteMicrophoneButton: true,
+          showRemoveUserButton: true,
+          showPinButton: true,
         };
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true";

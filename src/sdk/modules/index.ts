@@ -279,7 +279,18 @@ export class ZegoCloudRTCCore {
         config.maxUsers = 0;
       }
     }
-
+    if (
+      config.scenario &&
+      config.scenario?.config?.role === LiveRole.Audience
+    ) {
+      config.showPinButton = false;
+      config.showTurnOffRemoteCameraButton = false;
+      config.showTurnOffRemoteMicrophoneButton = false;
+      config.showRemoveUserButton = false;
+    }
+    if (config?.scenario?.config?.role === LiveRole.Cohost) {
+      config.showRemoveUserButton = false;
+    }
     config.facingMode &&
       (config.useFrontFacingCamera = config.facingMode === "user");
     config.joinRoomCallback && (config.onJoinRoom = config.joinRoomCallback);
@@ -646,6 +657,7 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.off("publisherStateUpdate");
     ZegoCloudRTCCore._zg.off("publishQualityUpdate");
     ZegoCloudRTCCore._zg.off("soundLevelUpdate");
+    ZegoCloudRTCCore._zg.off("IMRecvCustomCommand");
 
     if (this.zegoSuperBoard) {
       // 监听远端新增白板
@@ -798,6 +810,42 @@ export class ZegoCloudRTCCore {
       (roomID: string, chatData: ZegoBroadcastMessageInfo[]) => {
         this.onRoomMessageUpdateCallBack &&
           this.onRoomMessageUpdateCallBack(roomID, chatData);
+      }
+    );
+    // 房间内自定义消息
+    ZegoCloudRTCCore._zg.on(
+      "IMRecvCustomCommand",
+      (roomID: string, fromUser: ZegoUser, command: string) => {
+        const commandData = JSON.parse(command);
+        console.warn("IMRecvCustomCommand", commandData);
+        if (
+          Object.keys(commandData).includes("zego_remove_user") &&
+          commandData["zego_remove_user"].includes(this._expressConfig.userID)
+        ) {
+          // 被移除房间的通知
+          // 通知UI层leaveRoom
+          this.onKickedOutRoomCallback && this.onKickedOutRoomCallback();
+        }
+        if (
+          Object.keys(commandData).includes("zego_turn_camera_off") &&
+          commandData["zego_turn_camera_off"] === this._expressConfig.userID
+        ) {
+          // 通知UI层关闭摄像头
+          this.onChangeYourDeviceStatusCallback &&
+            this.onChangeYourDeviceStatusCallback("Camera", "CLOSE", fromUser);
+        }
+        if (
+          Object.keys(commandData).includes("zego_turn_microphone_off") &&
+          commandData["zego_turn_microphone_off"] === this._expressConfig.userID
+        ) {
+          // 通知UI层关闭麦克风
+          this.onChangeYourDeviceStatusCallback &&
+            this.onChangeYourDeviceStatusCallback(
+              "Microphone",
+              "CLOSE",
+              fromUser
+            );
+        }
       }
     );
 
@@ -1352,6 +1400,7 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.off("publishQualityUpdate");
     ZegoCloudRTCCore._zg.off("soundLevelUpdate");
     ZegoCloudRTCCore._zg.off("screenSharingEnded");
+    ZegoCloudRTCCore._zg.off("IMRecvCustomCommand");
 
     ZegoCloudRTCCore._zg.setSoundLevelDelegate(false);
     this.onNetworkStatusCallBack = () => {};
@@ -1396,5 +1445,62 @@ export class ZegoCloudRTCCore {
     this._zimManager.onUpdateRoomID((roomID: string) => {
       this._expressConfig.roomID = roomID;
     });
+  }
+  //   发送房间自定义消息
+  private async sendInRoomCommand(
+    message: string,
+    userID: string
+  ): Promise<boolean> {
+    const res = await ZegoCloudRTCCore._zg.sendCustomCommand(
+      this._expressConfig.roomID,
+      message,
+      this.zum.remoteUserList.length > 500 ? [] : [userID]
+    );
+    if (res.errorCode === 0) {
+      return true;
+    } else {
+      console.error("【ZEGOCLOUD】sendInRoomCommand error:", res.errorCode);
+      return false;
+    }
+  }
+  // 踢人
+  removeMember(userID: string) {
+    this.sendInRoomCommand(
+      JSON.stringify({ zego_remove_user: [userID] }),
+      userID
+    );
+  }
+  //关闭摄像头麦克风
+  async turnRemoteCameraOff(userID: string): Promise<boolean> {
+    return await this.sendInRoomCommand(
+      JSON.stringify({ zego_turn_camera_off: userID }),
+      userID
+    );
+  }
+  async turnRemoteMicrophoneOff(userID: string): Promise<boolean> {
+    return await this.sendInRoomCommand(
+      JSON.stringify({ zego_turn_microphone_off: userID }),
+      userID
+    );
+  }
+  // 被移出房间hui
+  private onKickedOutRoomCallback!: () => void;
+  onKickedOutRoom(func: () => void) {
+    func && (this.onKickedOutRoomCallback = func);
+  }
+  // 控制设备开关状态
+  private onChangeYourDeviceStatusCallback!: (
+    type: "Camera" | "Microphone",
+    status: "OPEN" | "CLOSE",
+    fromUser: ZegoUser
+  ) => void;
+  onChangeYourDeviceStatus(
+    func: (
+      type: "Camera" | "Microphone",
+      status: "OPEN" | "CLOSE",
+      fromUser: ZegoUser
+    ) => void
+  ) {
+    func && (this.onChangeYourDeviceStatusCallback = func);
   }
 }

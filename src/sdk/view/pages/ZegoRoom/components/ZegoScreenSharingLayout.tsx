@@ -57,8 +57,8 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
             key={"screen_" + this.props.screenSharingUser.userID}
             myClass={ZegoSidebarCss.screenVideo}
             userInfo={this.props.screenSharingUser}
-            handlePin={() => {
-              this.props.handleSetPin!(this.props.screenSharingUser.userID);
+            handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+              this.props.handleMenuItem!(type, this.props.screenSharingUser);
             }}
             muted={
               this.props.screenSharingUser.userID === this.props.selfInfo.userID
@@ -138,8 +138,8 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                 key={user.userID}
                 userInfo={user}
                 muted={user.userID === this.props.selfInfo.userID}
-                handlePin={() => {
-                  this.props.handleSetPin!(user.userID);
+                handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+                  this.props.handleMenuItem!(type, user);
                 }}
                 volume={this.props.soundLevel![user.userID] || {}}
               ></VideoPlayer>

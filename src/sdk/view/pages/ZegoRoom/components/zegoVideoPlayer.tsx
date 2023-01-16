@@ -10,7 +10,7 @@ export class VideoPlayer extends React.PureComponent<{
   volume?: {
     [streamID: string]: number;
   };
-  handlePin?: Function;
+  handleMenuItem?: (type: "Pin" | "Mic" | "Camera" | "Remove") => void;
   onPause?: Function;
   onCanPlay?: Function;
   myClass?: string;
@@ -26,7 +26,12 @@ export class VideoPlayer extends React.PureComponent<{
     const volume =
       this.props.volume?.[this.props.userInfo?.streamList?.[0]?.streamID];
     const height = volume === undefined ? 5 : Math.ceil((volume * 7) / 100);
-    let { showPinButton } = this.context;
+    let {
+      showRemoveButton,
+      showTurnOffCameraButton,
+      showTurnOffMicrophoneButton,
+      isShownPin,
+    } = this.context;
     return (
       <div
         className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
@@ -107,25 +112,76 @@ export class VideoPlayer extends React.PureComponent<{
             )}
           </div>
         )}
-        {!this.props.hiddenMore && showPinButton && this.state.hovered && (
-          <div className={ZegoVideoPlayerCss.moreWrapperMask}>
-            <div className={ZegoVideoPlayerCss.moreWrapper}>
-              <span className={ZegoVideoPlayerCss.moreIcon}></span>
-              <div className={ZegoVideoPlayerCss.moreMenu}>
-                <div
-                  className={ZegoVideoPlayerCss.moreMenuItem}
-                  onClick={() => {
-                    this.props.handlePin &&
-                      this.props.handlePin(this.props.userInfo.userID);
-                  }}
-                >
-                  <span className={ZegoVideoPlayerCss.moreMenuPinIcon}></span>
-                  <p>{this.props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
+        {!this.props.hiddenMore &&
+          (showTurnOffMicrophoneButton!(this.props.userInfo) ||
+            showTurnOffCameraButton!(this.props.userInfo) ||
+            isShownPin!(this.props.userInfo) ||
+            showRemoveButton!(this.props.userInfo)) &&
+          this.state.hovered && (
+            <div className={ZegoVideoPlayerCss.moreWrapperMask}>
+              <div className={ZegoVideoPlayerCss.moreWrapper}>
+                <span className={ZegoVideoPlayerCss.moreIcon}></span>
+                <div className={ZegoVideoPlayerCss.moreMenu}>
+                  {showTurnOffMicrophoneButton!(this.props.userInfo) && (
+                    <div
+                      className={ZegoVideoPlayerCss.moreMenuItem}
+                      onClick={() => {
+                        this.props.handleMenuItem &&
+                          this.props.handleMenuItem("Mic");
+                      }}
+                    >
+                      <span
+                        className={ZegoVideoPlayerCss.moreMenuMicIcon}
+                      ></span>
+                      <p>Mute</p>
+                    </div>
+                  )}
+                  {showTurnOffCameraButton!(this.props.userInfo) && (
+                    <div
+                      className={ZegoVideoPlayerCss.moreMenuItem}
+                      onClick={() => {
+                        this.props.handleMenuItem &&
+                          this.props.handleMenuItem("Camera");
+                      }}
+                    >
+                      <span
+                        className={ZegoVideoPlayerCss.moreMenuCameraIcon}
+                      ></span>
+                      <p>Turn off camera</p>
+                    </div>
+                  )}
+                  {isShownPin!(this.props.userInfo) && (
+                    <div
+                      className={ZegoVideoPlayerCss.moreMenuItem}
+                      onClick={() => {
+                        this.props.handleMenuItem &&
+                          this.props.handleMenuItem("Pin");
+                      }}
+                    >
+                      <span
+                        className={ZegoVideoPlayerCss.moreMenuPinIcon}
+                      ></span>
+                      <p>{this.props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
+                    </div>
+                  )}
+                  {showRemoveButton!(this.props.userInfo) && (
+                    <div
+                      className={ZegoVideoPlayerCss.moreMenuItem}
+                      onClick={() => {
+                        this.props.handleMenuItem &&
+                          this.props.handleMenuItem("Remove");
+                      }}
+                    >
+                      <span
+                        className={ZegoVideoPlayerCss.moreMenuRemoveIcon}
+                      ></span>
+                      <p>Remove participant</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
     );
   }

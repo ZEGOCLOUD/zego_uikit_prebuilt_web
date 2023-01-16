@@ -14,6 +14,10 @@ export type ShowManageType = {
   whiteboard_isFontItalic?: boolean;
   whiteboard_showAddImage?: boolean;
   whiteboard_showCreateClose?: boolean;
+  showTurnOffMicrophoneButton?: (user: ZegoCloudUser) => boolean;
+  showTurnOffCameraButton?: (user: ZegoCloudUser) => boolean;
+  showRemoveButton?: (user: ZegoCloudUser) => boolean;
+  isShownPin?: (user: ZegoCloudUser) => boolean;
 };
 
 const ShowManageContext = React.createContext<ShowManageType>({

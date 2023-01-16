@@ -122,7 +122,7 @@ export class ZegoCloudUserListManager {
   }
 
   async openVideo(user: ZegoCloudUser) {
-    if (user.streamList.length) {
+    if (user?.streamList?.length) {
       for (let s_index = 0; s_index < user.streamList.length; s_index++) {
         if (user.overScreenMuteVideo) {
           try {

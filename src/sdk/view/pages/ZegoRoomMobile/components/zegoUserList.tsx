@@ -6,7 +6,7 @@ import {
   ZegoCloudUser,
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
-import { ScenarioModel } from "../../../../model";
+import { LiveRole, ScenarioModel } from "../../../../model";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export class ZegoUserList extends React.PureComponent<{
   userList: ZegoCloudUserList;
@@ -21,13 +21,12 @@ export class ZegoUserList extends React.PureComponent<{
 
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
-
-  messageInput(event: ChangeEvent<HTMLInputElement>) {
-    this.setState({
-      message: event.target.value,
-    });
+  get hostAndCohostList() {
+    return this.props.userList.filter((u) => u.streamList.length > 0);
   }
-
+  get audienceList() {
+    return this.props.userList.filter((u) => u.streamList.length === 0);
+  }
   isShownPin(user: ZegoCloudUser): boolean {
     if (this.props.core._config.scenario?.mode === ScenarioModel.OneONoneCall) {
       return false;
@@ -45,7 +44,6 @@ export class ZegoUserList extends React.PureComponent<{
           !!this.props.core._config.showOnlyAudioUser))
     );
   }
-
   render(): React.ReactNode {
     return (
       <div className={zegoUserListCss.memberList}>
@@ -60,14 +58,14 @@ export class ZegoUserList extends React.PureComponent<{
           Member
         </div>
         <div className={zegoUserListCss.memberListContent}>
-          {this.props.userList.map((user) => {
+          {this.hostAndCohostList.map((user) => {
             return (
               <div
                 key={user.userID}
                 className={zegoUserListCss.member}
                 onClick={(ev) => {
                   ev.stopPropagation();
-                  this.isShownPin(user) && this.props.closeCallBack(user);
+                  this.props.closeCallBack(user);
                 }}
               >
                 <div className={zegoUserListCss.memberName}>
@@ -95,10 +93,13 @@ export class ZegoUserList extends React.PureComponent<{
                     {user.userName}
                   </a>
                   {this.props.core._expressConfig.userID === user.userID && (
-                    <a key={user.userID + "_me"}>（You）</a>
+                    <a key={user.userID + "_me"}> (You) </a>
                   )}
                 </div>
                 <div className={zegoUserListCss.memberHandlers}>
+                  {this.isShownPin(user) && user.pin && (
+                    <i className={zegoUserListCss.memberUnPin}></i>
+                  )}
                   <i
                     className={
                       user.streamList &&
@@ -117,14 +118,46 @@ export class ZegoUserList extends React.PureComponent<{
                         : zegoUserListCss.memberCameraMute
                     }
                   ></i>
-                  {this.isShownPin(user) && (
-                    <i
-                      className={
-                        user.pin
-                          ? zegoUserListCss.memberPined
-                          : zegoUserListCss.memberUnPin
-                      }
-                    ></i>
+                </div>
+              </div>
+            );
+          })}
+          {this.audienceList.map((user) => {
+            return (
+              <div
+                key={user.userID}
+                className={zegoUserListCss.member}
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                  this.props.closeCallBack(user);
+                }}
+              >
+                <div className={zegoUserListCss.memberName}>
+                  <i style={{ color: userNameColor(user.userName!) }}>
+                    {getNameFirstLetter(user.userName || "")}
+                    {user.avatar && (
+                      <img
+                        src={user.avatar}
+                        onError={(e: any) => {
+                          e.target.style.display = "none";
+                        }}
+                        alt=""
+                      />
+                    )}
+                  </i>
+                  <a
+                    key={user.userID}
+                    style={{
+                      maxWidth:
+                        this.props.core._expressConfig.userID === user.userID
+                          ? "30vw"
+                          : "45vw",
+                    }}
+                  >
+                    {user.userName}
+                  </a>
+                  {this.props.core._expressConfig.userID === user.userID && (
+                    <a key={user.userID + "_me"}> (You) </a>
                   )}
                 </div>
               </div>

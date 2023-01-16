@@ -1,3 +1,3 @@
 @function vw($px) {
-  @return ($px * 100vw) / 750px;
+  @return ($px * 100vmin) / 750px;
 }

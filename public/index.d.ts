@@ -126,6 +126,10 @@ declare interface ZegoCloudRoomConfig {
     showCreateAndCloseButton?: boolean;
   };
   autoLeaveRoomWhenOnlySelfInRoom?: boolean; // When there is only one person left in the room, automatically exit the room
+  showTurnOffRemoteCameraButton: Boolean; // Whether to show the button to turn off the remote camera, the default is false
+  showTurnOffRemoteMicrophoneButton: Boolean; // Whether to display the turn off remote microphone button, default false
+  showRemoveUserButton: Boolean; // Whether to display the remove member button, default false
+  onYouRemovedFromRoom: () => void; // Callback when you are removed from the room
 }
 
 declare enum ZegoInvitationType {

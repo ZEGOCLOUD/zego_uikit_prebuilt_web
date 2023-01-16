@@ -300,8 +300,10 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                   key={user.userID}
                   userInfo={user}
                   muted={user.userID === this.props.selfInfo.userID}
-                  handlePin={() => {
-                    this.props.handleSetPin!(user.userID);
+                  handleMenuItem={(
+                    type: "Pin" | "Mic" | "Camera" | "Remove"
+                  ) => {
+                    this.props.handleMenuItem!(type, user);
                   }}
                   volume={this.props.soundLevel![user.userID] || {}}
                 ></VideoPlayer>

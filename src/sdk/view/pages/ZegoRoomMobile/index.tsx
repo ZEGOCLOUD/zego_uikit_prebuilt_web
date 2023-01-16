@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-has-content */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
 import {
   CoreError,
@@ -488,6 +490,30 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.props.core.leaveRoom();
         this.props.leaveRoom && this.props.leaveRoom();
       });
+    // 监听远端控制摄像头麦克风
+    this.props.core.onChangeYourDeviceStatus(
+      async (
+        type: "Camera" | "Microphone",
+        status: "OPEN" | "CLOSE",
+        fromUser: ZegoUser
+      ) => {
+        if (type === "Camera" && status === "CLOSE" && this.state.cameraOpen) {
+          await this.toggleCamera();
+          ZegoToast({
+            content: `${fromUser.userName} has turned your camera off`,
+          });
+        }
+        if (type === "Microphone" && status === "CLOSE" && this.state.micOpen) {
+          await this.toggleMic();
+          ZegoToast({
+            content: `${fromUser.userName} has turned your camera off`,
+          });
+        }
+      }
+    );
+    this.props.core.onKickedOutRoom(() => {
+      this.confirmLeaveRoom(true);
+    });
     const logInRsp = await this.props.core.enterRoom();
     let massage = "";
     if (logInRsp === 0) {
@@ -671,6 +697,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           }
         );
     }
+    return !!result;
   }
 
   async toggleCamera() {
@@ -720,6 +747,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           }
         );
     }
+    return !!result;
   }
 
   async switchCamera() {
@@ -889,14 +917,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     });
   }
 
-  private confirmLeaveRoom() {
+  private confirmLeaveRoom(isKickedOut = false) {
     this.props.core._config.turnOnCameraWhenJoining = this.state.cameraOpen;
     this.props.core._config.turnOnMicrophoneWhenJoining = this.state.micOpen;
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
 
     this.props.core.leaveRoom();
-    this.props.leaveRoom && this.props.leaveRoom();
+    this.props.leaveRoom && this.props.leaveRoom(isKickedOut);
   }
 
   getAllUser(): ZegoCloudUserList {
@@ -977,15 +1005,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     });
 
-    if (
-      this._selectedUser &&
-      !shownUser.some((su) => su.userID === this._selectedUser.userID) &&
-      this.state.layOutStatus === "MANAGE"
-    ) {
-      this.setState({
-        layOutStatus: "ONE_VIDEO",
-      });
-    }
+    // if (
+    //   this._selectedUser &&
+    //   !shownUser.some((su) => su.userID === this._selectedUser.userID) &&
+    //   this.state.layOutStatus === "MANAGE"
+    // ) {
+    //   this.setState({
+    //     layOutStatus: "ONE_VIDEO",
+    //   });
+    // }
 
     return shownUser as ZegoCloudUserList;
   }
@@ -1023,7 +1051,80 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       </>
     );
   }
-
+  async manageSelectCallback(
+    type?: "Pin" | "Mic" | "Camera" | "Remove",
+    value?: boolean
+  ) {
+    if (type === "Pin" && typeof value != "undefined") {
+      if (this._selectedUser.userID !== this.props.core._expressConfig.userID) {
+        this.props.core.setPin(this._selectedUser.userID, value);
+        this.localUserPin = false;
+      } else {
+        this.localUserPin = value;
+        this._selectedUser.pin = value;
+        this.props.core.setPin();
+      }
+      this.setState(
+        {
+          userLayoutStatus: "Sidebar",
+        },
+        () => {
+          this.handleLayoutChange("Sidebar");
+        }
+      );
+      this.props.core.setSidebarLayOut(
+        this.state.screenSharingUserList.length > 0 ? false : !this.localUserPin
+      );
+    }
+    if (type === "Mic") {
+      if (this._selectedUser.streamList?.[0]?.micStatus === "OPEN") {
+        let res;
+        if (
+          this._selectedUser.userID === this.props.core._expressConfig.userID
+        ) {
+          res = await this.toggleMic();
+        } else {
+          res = await this.props.core.turnRemoteMicrophoneOff(
+            this._selectedUser.userID
+          );
+        }
+        res &&
+          ZegoToast({
+            content: "Turned off the microphone successfully.",
+          });
+      }
+    }
+    if (type === "Camera") {
+      if (this._selectedUser.streamList?.[0]?.cameraStatus === "OPEN") {
+        let res;
+        if (
+          this._selectedUser.userID === this.props.core._expressConfig.userID
+        ) {
+          res = await this.toggleCamera();
+        } else {
+          res = await this.props.core.turnRemoteCameraOff(
+            this._selectedUser.userID
+          );
+        }
+        res &&
+          ZegoToast({
+            content: "Turned off the camera successfully.",
+          });
+      }
+    }
+    if (type === "Remove") {
+      ZegoModelShow({
+        header: "Remove participant",
+        contentText:
+          "Are you sure to remove " + this._selectedUser.userName + " ?",
+        okText: "Confirm",
+        cancelText: "Cancel",
+        onOk: () => {
+          this.props.core.removeMember(this._selectedUser.userID);
+        },
+      });
+    }
+  }
   private _selectedUser!: ZegoCloudUser;
   get showSelf() {
     if (this.props.core._config.showNonVideoUser) {
@@ -1078,6 +1179,56 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       );
     });
   }
+  get showTurnOffMicrophoneButton() {
+    if (!this.props.core._config.showTurnOffRemoteMicrophoneButton)
+      return false;
+    if (this._selectedUser.streamList?.length === 0) return false;
+    return (
+      this.props.core._config.scenario?.config?.role === LiveRole.Host ||
+      (this._selectedUser.userID === this.props.core._expressConfig.userID &&
+        this.props.core._config.scenario?.config?.role === LiveRole.Cohost)
+    );
+  }
+  get showTurnOffCameraButton() {
+    if (!this.props.core._config.showTurnOffRemoteCameraButton) return false;
+    if (this._selectedUser.streamList?.length === 0) return false;
+    return (
+      this.props.core._config.scenario?.config?.role === LiveRole.Host ||
+      (this._selectedUser.userID === this.props.core._expressConfig.userID &&
+        this.props.core._config.scenario?.config?.role === LiveRole.Cohost)
+    );
+  }
+  get showRemoveButton() {
+    if (!this.props.core._config.showRemoveUserButton) return false;
+    return (
+      this.props.core._config?.scenario?.config?.role === LiveRole.Host &&
+      (this._selectedUser.userID !== this.props.core._expressConfig.userID ||
+        this._selectedUser?.streamList?.length === 0)
+    );
+  }
+  get isShownPin(): boolean {
+    if (this.props.core._config.scenario?.mode === ScenarioModel.OneONoneCall) {
+      return false;
+    }
+    let showPinButton = !!this.props.core._config.showPinButton;
+    return (
+      showPinButton &&
+      (this.props.core._config.showNonVideoUser ||
+        this._selectedUser?.streamList?.[0]?.cameraStatus === "OPEN" ||
+        (this._selectedUser?.streamList?.[0]?.micStatus === "OPEN" &&
+          !!this.props.core._config.showOnlyAudioUser))
+    );
+  }
+  showManager(user?: ZegoCloudUser): boolean {
+    if (!user) return false;
+    return (
+      this.showTurnOffMicrophoneButton ||
+      this.showTurnOffCameraButton ||
+      this.showRemoveButton ||
+      this.isShownPin
+    );
+  }
+
   getListScreen() {
     let pages;
     if (this.state.layOutStatus === "INVITE") {
@@ -1098,8 +1249,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           userList={this.getAllMemberList()}
           closeCallBack={(_user?: ZegoCloudUser) => {
             _user && (this._selectedUser = _user);
+            console.warn(this.showManager(_user));
             this.setState({
-              layOutStatus: _user ? "MANAGE" : "ONE_VIDEO",
+              layOutStatus: this.showManager(_user) ? "MANAGE" : "ONE_VIDEO",
             });
           }}
         ></ZegoUserList>
@@ -1140,40 +1292,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     } else if (this.state.layOutStatus === "MANAGE") {
       pages = (
         <ZegoManage
-          closeCallBac={() => {
+          closeCallback={() => {
             this.setState({
               layOutStatus: "ONE_VIDEO",
             });
           }}
-          selectCallBac={(type?: "Pin", value?: boolean) => {
-            if (type === "Pin" && typeof value != "undefined") {
-              if (
-                this._selectedUser.userID !==
-                this.props.core._expressConfig.userID
-              ) {
-                this.props.core.setPin(this._selectedUser.userID, value);
-                this.localUserPin = false;
-              } else {
-                this.localUserPin = value;
-                this._selectedUser.pin = value;
-                this.props.core.setPin();
-              }
-              this.setState(
-                {
-                  userLayoutStatus: "Sidebar",
-                },
-                () => {
-                  this.handleLayoutChange("Sidebar");
-                }
-              );
-              this.props.core.setSidebarLayOut(
-                this.state.screenSharingUserList.length > 0
-                  ? false
-                  : !this.localUserPin
-              );
-            }
-          }}
+          selectCallback={this.manageSelectCallback.bind(this)}
           selectedUser={this._selectedUser}
+          showPinButton={this.isShownPin}
+          showMicButton={this.showTurnOffMicrophoneButton}
+          showCameraButton={this.showTurnOffCameraButton}
+          showRemoveButton={this.showRemoveButton}
         ></ZegoManage>
       );
     }
@@ -1589,11 +1718,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           show: (_user: ZegoCloudUser) => {
             _user && (this._selectedUser = _user);
             this.setState({
-              layOutStatus: _user ? "MANAGE" : "ONE_VIDEO",
+              layOutStatus: this.showManager(_user) ? "MANAGE" : "ONE_VIDEO",
             });
           },
           showPinButton:
-            !!this.props.core._config.showPinButton &&
+            (!!this.props.core._config.showPinButton ||
+              !!this.props.core._config.showTurnOffRemoteCameraButton ||
+              !!this.props.core._config.showTurnOffRemoteMicrophoneButton ||
+              !!this.props.core._config.showRemoveUserButton) &&
             this.getShownUser().length > 1,
           whiteboard_page:
             this.state.zegoSuperBoardView

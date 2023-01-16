@@ -12,14 +12,23 @@
     padding: 8px 8px 8px 12px;
     border-radius: 8px;
 
-    &:hover {
+    &.haveMenu:hover {
       background: rgba($color: #303341, $alpha: 0.7);
+      .memberMenuWrapper {
+        display: block;
+      }
+      .memberStatusWrapper {
+        display: none;
+      }
+      .selfStatusWrapper {
+        display: flex;
+      }
     }
     &:not(:last-of-type) {
       margin-bottom: 6px;
     }
     &.memberMenuShow {
-      background: #36394b;
+      background: rgba($color: #303341, $alpha: 0.8);
       .memberMenuWrapper {
         display: block;
       }
@@ -70,7 +79,7 @@
     }
   }
   .selfStatusWrapper {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     width: 27px;
@@ -135,7 +144,9 @@
     z-index: 10;
     display: none;
     box-sizing: border-box;
-    width: 133px;
+    width: max-content;
+    min-width: 133px;
+    max-width: 200px;
     padding: 8px 6px;
     background: #2c2f3e;
     border: 1px solid #3d4054;

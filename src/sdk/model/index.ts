@@ -137,19 +137,23 @@ export interface ZegoCloudRoomConfig {
     userList: ZegoUser[]
   ) => void; // 用户新增/退出 回调
 
-  showRoomTimer?: boolean; // 是否显示倒计时
-
   whiteboardConfig?: {
     showAddImageButton?: boolean; //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
     showCreateAndCloseButton?: boolean;
   };
   autoLeaveRoomWhenOnlySelfInRoom?: boolean; // 当房间内只剩一个人的时候，自动退出房间
+  //  1.7.0版本新增
+  showRoomTimer?: Boolean; // 是否展示计时器，默认false，
+  showTurnOffRemoteCameraButton?: Boolean; // 是否显示关闭远端摄像头按钮，默认false
+  showTurnOffRemoteMicrophoneButton?: Boolean; // 是否显示关闭远端麦克风按钮，默认false
+  showRemoveUserButton?: Boolean; // 是否显示移出成员按钮， 默认false
+  onYouRemovedFromRoom?: () => void; // 自己被移出房间回调
 }
 
 export interface ZegoBrowserCheckProp {
   core: ZegoCloudRTCCore;
   joinRoom?: () => void;
-  leaveRoom?: () => void;
+  leaveRoom?: (isKickedOut?: boolean) => void;
   returnHome?: () => void;
 }
 
@@ -189,12 +193,20 @@ export interface ZegoGridLayoutProps {
   selfInfo?: {
     userID: string;
   };
-  handleSetPin?: Function;
+  handleMenuItem?: (
+    type: "Pin" | "Mic" | "Camera" | "Remove",
+    user: ZegoCloudUser
+  ) => void;
+
   soundLevel?: SoundLevelMap;
 }
 
 export interface ZegoSidebarLayoutProps {
-  handleSetPin?: Function;
+  handleMenuItem?: (
+    type: "Pin" | "Mic" | "Camera" | "Remove",
+    user: ZegoCloudUser
+  ) => void;
+
   userList: ZegoCloudUserList;
   videoShowNumber: number;
   selfInfo: {
@@ -203,7 +215,11 @@ export interface ZegoSidebarLayoutProps {
   soundLevel?: SoundLevelMap;
 }
 export interface ZegoScreenSharingLayoutProps {
-  handleSetPin?: Function;
+  handleMenuItem?: (
+    type: "Pin" | "Mic" | "Camera" | "Remove",
+    user: ZegoCloudUser
+  ) => void;
+
   userList: ZegoCloudUserList;
   videoShowNumber: number;
   selfInfo: {
@@ -215,7 +231,11 @@ export interface ZegoScreenSharingLayoutProps {
   handleFullScreen?: (fullScreen: boolean) => void;
 }
 export interface ZegoWhiteboardSharingLayoutProps {
-  handleSetPin?: Function;
+  handleMenuItem?: (
+    type: "Pin" | "Mic" | "Camera" | "Remove",
+    user: ZegoCloudUser
+  ) => void;
+  handleSetPin?: (userID: string) => void;
   userList: ZegoCloudUserList;
   videoShowNumber: number;
   selfInfo: {

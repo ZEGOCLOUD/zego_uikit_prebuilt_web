@@ -39,7 +39,10 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
   }
   destroyNodeWhenNoView() {
     //退出房间后，如果没有预览页面，就销毁渲染节点
-    if (!this.props.core._config.showLeavingView) {
+    if (
+      !this.props.core._config.showLeavingView &&
+      !this.props.core._config.showPreJoinView
+    ) {
       this.props.unmount();
     }
   }
@@ -110,13 +113,24 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         page = isPc() ? (
           <ZegoRoom
             core={this.props.core}
-            leaveRoom={() => {
-              this.props.core._config.showLeavingView && this.nextPage();
+            leaveRoom={(isKickedOut = false) => {
+              if (isKickedOut) {
+                // 被踢出房间回到预览页
+                if (this.props.core._config.showPreJoinView) {
+                  this.setState({ step: 0 });
+                }
+              } else {
+                this.props.core._config.showLeavingView && this.nextPage();
+              }
               setTimeout(() => {
-                this.props.core._config.leaveRoomCallback &&
-                  this.props.core._config.leaveRoomCallback();
-                this.props.core._config.onLeaveRoom &&
-                  this.props.core._config.onLeaveRoom();
+                if (!isKickedOut) {
+                  this.props.core._config.leaveRoomCallback &&
+                    this.props.core._config.leaveRoomCallback();
+                  this.props.core._config.onLeaveRoom &&
+                    this.props.core._config.onLeaveRoom();
+                } else {
+                  this.props.core._config?.onYouRemovedFromRoom?.();
+                }
                 this.destroyNodeWhenNoView();
                 this.props.core._zimManager?.callInfo?.callID &&
                   this.props.core._zimManager.endCall(

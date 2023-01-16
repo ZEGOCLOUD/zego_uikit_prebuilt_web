@@ -55,8 +55,8 @@
           height: vw(44px);
           margin-right: vw(28px);
           color: #557bff;
-          background-image: url(../../../../sdkMobileAssets/Room_pin@2x.png);
-          background-size: contain;
+          //   background-image: url(../../../../sdkMobileAssets/Room_pin@2x.png);
+          //   background-size: contain;
         }
         span {
           color: #ffffff;
@@ -64,9 +64,33 @@
           font-size: vw(32px);
           line-height: vw(45px);
         }
+        &.muteItem {
+          & > i {
+            background: url("../../../../sdkMobileAssets/Room_mic_open@2x.png")
+              no-repeat center/cover;
+          }
+        }
+        &.cameraItem {
+          & > i {
+            background: url("../../../../sdkMobileAssets/Room_camera_open@2x.png")
+              no-repeat center/cover;
+          }
+        }
+        &.pinItem {
+          & > i {
+            background: url("../../../../sdkMobileAssets/Room_pin@2x.png")
+              no-repeat center/cover;
+          }
+        }
+        &.removeItem {
+          & > i {
+            background: url("../../../../sdkMobileAssets/Room_member_remove@2x.png")
+              no-repeat center/cover;
+          }
+        }
       }
 
-      a {
+      .selectIcon {
         width: vw(44px);
         height: vw(44px);
       }

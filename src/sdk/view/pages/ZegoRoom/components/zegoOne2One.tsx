@@ -6,7 +6,7 @@ import { SoundLevelMap } from "../../../../model";
 export class ZegoOne2One extends React.PureComponent<{
   selfInfo: { userID: string };
   onLocalStreamPaused: () => void;
-  handleSetPin?: Function;
+  handleMenuItem?: Function;
   soundLevel?: SoundLevelMap;
   userList: ZegoCloudUser[];
 }> {
@@ -18,8 +18,8 @@ export class ZegoOne2One extends React.PureComponent<{
             myClass={zegoOne2OneCss.bigVideo}
             userInfo={this.props.userList[1]}
             muted={false}
-            handlePin={() => {
-              this.props.handleSetPin!(this.props.userList[1].userID);
+            handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+              this.props.handleMenuItem!(type, this.props.userList[1]);
             }}
             volume={this.props.soundLevel![this.props.userList[1].userID] || {}}
           ></VideoPlayer>
@@ -34,8 +34,8 @@ export class ZegoOne2One extends React.PureComponent<{
             myClass={zegoOne2OneCss.smallVideo}
             userInfo={this.props.userList[0]}
             muted={this.props.selfInfo.userID === this.props.userList[0].userID}
-            handlePin={() => {
-              this.props.handleSetPin!(this.props.userList[0].userID);
+            handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+              this.props.handleMenuItem!(type, this.props.userList[0]);
             }}
             volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
           ></VideoPlayer>
@@ -51,8 +51,8 @@ export class ZegoOne2One extends React.PureComponent<{
             }
           }}
           userInfo={this.props.userList[0]}
-          handlePin={() =>
-            this.props.handleSetPin!(this.props.userList[0].userID)
+          handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") =>
+            this.props.handleMenuItem!(type, this.props.userList[0])
           }
           muted={this.props.selfInfo.userID === this.props.userList[0].userID}
           volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
