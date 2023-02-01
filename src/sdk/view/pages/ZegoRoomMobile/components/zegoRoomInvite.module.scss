@@ -97,3 +97,16 @@
     }
   }
 }
+@media screen and (orientation: landscape) {
+  .roomDetails {
+    .inviteLinkWrapper {
+      box-sizing: border-box;
+      width: 100%;
+      padding-right: vw(30px);
+      padding-left: vw(30px);
+      .inviteLink {
+        width: 100%;
+      }
+    }
+  }
+}

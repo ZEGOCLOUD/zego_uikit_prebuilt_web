@@ -13,7 +13,7 @@
   .bottomWrapper {
     position: relative;
     width: 100%;
-    height: calc(100% - 24.66vw);
+    height: calc(100% - 24.66vmin);
     .noVideoWrapper .nameWrapper .nameCircle {
       width: vw(160px);
       height: vw(160px);
@@ -76,6 +76,8 @@
     }
   }
 }
+.landscape {
+}
 .videoCommon {
   display: block;
   width: 100%;
@@ -87,4 +89,26 @@
 audio {
   width: 1px !important;
   height: 1px !important;
+}
+@media screen and (orientation: landscape) {
+  .sidebarWrapper {
+    .upWrapper {
+      & > div {
+        width: calc((100% - 15px) / 4);
+        &:not(:first-of-type) {
+          margin-left: 5px;
+        }
+      }
+    }
+    &.landscape {
+      .upWrapper {
+        height: 0;
+        margin: 0;
+        padding: 0;
+      }
+      .bottomWrapper {
+        height: 100%;
+      }
+    }
+  }
 }

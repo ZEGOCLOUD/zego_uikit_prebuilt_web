@@ -17,8 +17,10 @@ export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps
     return (
       <div
         className={`${ZegoSidebarCss.sidebarWrapper} ${
+          ZegoSidebarCss.landscape
+        } ${
           this.props.userList.length === 0 ? ZegoSidebarCss.fullScreen : ""
-        }`}
+        } `}
       >
         <div className={ZegoSidebarCss.upWrapper}>
           {this.props.userList.map((value, index, arr) => {

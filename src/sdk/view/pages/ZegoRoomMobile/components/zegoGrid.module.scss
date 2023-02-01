@@ -46,3 +46,38 @@
     height: calc((100% - 2.12vw) / 3);
   }
 }
+@media screen and (orientation: landscape) {
+  .gridWrapper {
+    & > div {
+      &:nth-of-type(2n) {
+        margin-left: 5px;
+      }
+    }
+  }
+  .double {
+    & > div {
+      width: calc(50% - 2.5px);
+      height: 100%;
+      &:nth-of-type(2) {
+        margin-left: 5px;
+      }
+    }
+  }
+  // 3*3
+  .three {
+    & > div {
+      width: calc(50% - 2.5px);
+      height: calc(50% - 2.5px);
+    }
+  }
+  .six {
+    & > div {
+      width: calc((100% - 10px) / 3);
+      height: calc(50% - 2.5px);
+      margin-left: 5px;
+      &:nth-of-type(3n + 1) {
+        margin-left: 0;
+      }
+    }
+  }
+}

@@ -219,3 +219,21 @@
     }
   }
 }
+@media screen and (orientation: landscape) {
+  .ZegoBrowserCheckSupport {
+    .joinScreen {
+      .joinRoom {
+        input {
+          width: vw(604px);
+        }
+      }
+      .inviteLink {
+        .inviteLinkWrapperLeft {
+          input {
+            width: vw(604px);
+          }
+        }
+      }
+    }
+  }
+}

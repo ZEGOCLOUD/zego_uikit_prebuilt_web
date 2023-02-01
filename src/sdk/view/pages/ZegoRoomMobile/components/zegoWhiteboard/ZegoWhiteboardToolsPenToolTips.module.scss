@@ -102,3 +102,9 @@
     }
   }
 }
+@media screen and (orientation: landscape) {
+  .penTools {
+    top: vw(-316px);
+    right: vw(-170px);
+  }
+}

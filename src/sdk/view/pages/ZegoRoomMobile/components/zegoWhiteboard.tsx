@@ -37,6 +37,8 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
     return (
       <div
         className={`${ZegoSidebarCss.sidebarWrapper} ${
+          ZegoSidebarCss.landscape
+        }  ${
           this.props.userList.length === 0 ? ZegoSidebarCss.fullScreen : ""
         }`}
         style={{ padding: 0 }}

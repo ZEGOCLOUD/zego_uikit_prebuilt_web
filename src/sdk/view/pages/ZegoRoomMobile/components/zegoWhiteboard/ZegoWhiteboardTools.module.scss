@@ -124,3 +124,53 @@
     }
   }
 }
+@media screen and (orientation: landscape) {
+  .tools {
+    right: vw(20px);
+    bottom: vw(20px);
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    height: vw(96px);
+    padding: 0;
+    padding-left: vw(16px);
+    background: #ffffff;
+    border: vw(2px) solid #f2f2f2;
+    border-radius: vw(20px);
+    p {
+      width: 1px;
+      height: 100%;
+      margin-top: 0;
+      margin-right: vw(8px);
+      margin-left: vw(8px);
+    }
+
+    .tool_select,
+    .tool_drag,
+    .tool_pen,
+    .tool_text,
+    .tool_react,
+    .tool_image,
+    .tool_eraser,
+    .tool_delete,
+    .tool_snapshot,
+    .tool_hide,
+    .tool_show {
+      margin: vw(14px) vw(8px) vw(14px) 0;
+      background-size: vw(40px);
+    }
+    .tool_show {
+      width: vw(40px);
+      height: vw(40px);
+      background-image: url("../../../../../sdkMobileAssets/icon_packup@2x.png");
+    }
+    .tool_hide {
+      width: vw(40px);
+      height: vw(40px);
+      transform: rotate(90deg);
+      &:hover {
+        background-color: #ffffff;
+      }
+    }
+  }
+}

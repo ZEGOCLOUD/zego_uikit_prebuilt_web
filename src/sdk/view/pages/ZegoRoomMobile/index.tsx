@@ -83,6 +83,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     zegoSuperBoardView: ZegoSuperBoardView | null; // 本地白板共享
     isZegoWhiteboardSharing: boolean; // 是否开启白板共享
     roomTime: string;
+    isScreenPortrait: boolean; // 是否竖屏
   } = {
     micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
     cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
@@ -106,6 +107,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     zegoSuperBoardView: null, // 本地白板共享
     isZegoWhiteboardSharing: false, // 是否开启白板共享
     roomTime: "00:00:00",
+    isScreenPortrait: true, // 是否竖屏
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
@@ -127,6 +129,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   roomTimer: NodeJS.Timer | null = null;
   roomTimeNum = 0;
+
   get isCDNLive(): boolean {
     return (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
@@ -142,6 +145,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     );
   }
   componentDidMount() {
+    window.addEventListener(
+      "orientationchange",
+      this.onOrientationChange.bind(this),
+      false
+    );
+    this.onOrientationChange();
     this.initSDK();
     this.props.core._config.showRoomTimer && this.startRoomTimer();
     this.footerTimer = setTimeout(() => {
@@ -151,6 +160,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }, 5000);
   }
   componentWillUnmount() {
+    window.removeEventListener(
+      "orientationchange",
+      this.onOrientationChange.bind(this),
+      false
+    );
     if (this.roomTimer) {
       clearInterval(this.roomTimer);
       this.roomTimer = null;
@@ -1152,7 +1166,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     });
     return new Promise(async (resolve, reject) => {
       if (this.state.screenSharingUserList.length) {
-        await this.props.core.setMaxScreenNum(this.showSelf ? 3 : 4, true);
+        if (!this.state.isScreenPortrait) {
+          // 横屏下隐藏顶部视频
+          await this.props.core.setMaxScreenNum(0, true);
+        } else {
+          await this.props.core.setMaxScreenNum(this.showSelf ? 3 : 4, true);
+        }
       } else if (selectLayout !== "Sidebar") {
         await this.props.core.setMaxScreenNum(this.showSelf ? 5 : 6, true);
       } else {
@@ -1361,15 +1380,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (this.state.screenSharingUserList.length > 0) {
       return (
         <>
-          <div className={ZegoRoomCss.screenTopBar}>
-            <p>
-              <span>{this.state.screenSharingUserList[0].userName}</span> is
-              presenting.
-            </p>
-            {this.showRoomTimerUI && (
-              <ZegoTimer time={this.state.roomTime}></ZegoTimer>
-            )}
-          </div>
+          {this.state.isScreenPortrait && (
+            <div className={ZegoRoomCss.screenTopBar}>
+              <p>
+                <span>{this.state.screenSharingUserList[0].userName}</span> is
+                presenting.
+              </p>
+              {this.showRoomTimerUI && (
+                <ZegoTimer time={this.state.roomTime}></ZegoTimer>
+              )}
+            </div>
+          )}
           <ZegoScreen
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
@@ -1386,15 +1407,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (this.state.isZegoWhiteboardSharing) {
       return (
         <>
-          <div className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}>
-            {this.showRoomTimerUI && (
+          {this.state.isScreenPortrait && this.showRoomTimerUI && (
+            <div
+              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}
+            >
               <ZegoTimer time={this.state.roomTime}></ZegoTimer>
-            )}
-          </div>
+            </div>
+          )}
           <ZegoWhiteboard
-            handleSetPin={(userID: string) => {
-              // this.handleSetPin(userID);
-            }}
             userList={this.getShownUser()}
             videoShowNumber={5}
             selfInfo={{
@@ -1445,15 +1465,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             }}
             onResize={(el: HTMLDivElement) => {
               // 主动渲染
-              if (this.state.isZegoWhiteboardSharing && el) {
-                try {
-                  // this.state.zegoSuperBoardView
-                  //   ?.getCurrentSuperBoardSubView()
-                  //   ?.reloadView();
-                } catch (error) {
-                  console.warn("【ZEGOCLOUD】:reloadView", error);
-                }
-              }
             }}
             onclose={() => {
               this.toggleWhiteboardSharing();
@@ -1489,12 +1500,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     ) {
       return (
         <>
-          <div className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}>
-            {this.showRoomTimerUI && (
+          {this.showRoomTimerUI && (
+            <div
+              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}
+            >
               <ZegoTimer time={this.state.roomTime}></ZegoTimer>
-            )}
-          </div>
-
+            </div>
+          )}
           <ZegoOne2One
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
@@ -1521,11 +1533,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     ) {
       return (
         <>
-          <div className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}>
-            {this.showRoomTimerUI && (
+          {this.showRoomTimerUI && (
+            <div
+              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}
+            >
               <ZegoTimer time={this.state.roomTime}></ZegoTimer>
-            )}
-          </div>
+            </div>
+          )}
           <ZegoGrid
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
@@ -1542,11 +1556,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     ) {
       return (
         <>
-          <div className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}>
-            {this.showRoomTimerUI && (
+          {this.showRoomTimerUI && (
+            <div
+              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}
+            >
               <ZegoTimer time={this.state.roomTime}></ZegoTimer>
-            )}
-          </div>
+            </div>
+          )}
           <ZegoSidebar
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
@@ -1705,6 +1721,27 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.roomTimer = setInterval(() => {
       this.setState({ roomTime: formatTime(++this.roomTimeNum) });
     }, 1000);
+  }
+  onOrientationChange() {
+    let isScreenPortrait;
+    if (window.orientation === 180 || window.orientation === 0) {
+      // 竖屏
+      isScreenPortrait = true;
+    }
+    if (window.orientation === 90 || window.orientation === -90) {
+      // 横屏
+      isScreenPortrait = false;
+    }
+    this.setState(
+      {
+        isScreenPortrait: isScreenPortrait,
+      },
+      () => {
+        this.state.zegoSuperBoardView
+          ?.getCurrentSuperBoardSubView()
+          ?.reloadView();
+      }
+    );
   }
   render(): React.ReactNode {
     const startIndex =
