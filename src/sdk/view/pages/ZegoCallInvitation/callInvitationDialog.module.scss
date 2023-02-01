@@ -157,3 +157,13 @@
     }
   }
 }
+@media screen and (orientation: landscape) {
+  .mobileWrapper {
+    .infoWrapper {
+      margin-top: vw(86px);
+    }
+    .btnWrapper {
+      margin-bottom: vw(60px);
+    }
+  }
+}

@@ -108,7 +108,6 @@
   .endBtn {
     width: vw(130px);
     height: vw(130px);
-    margin: 0 auto;
     margin: vw(83px) auto vw(90px);
     color: #ffffff;
     font-weight: 600;
@@ -120,5 +119,13 @@
     border-radius: 50%;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+  }
+}
+@media screen and (orientation: landscape) {
+  .mobileWrapper {
+    .endBtn {
+      margin-top: vw(60px);
+      margin-bottom: vw(14px);
+    }
   }
 }

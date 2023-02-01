@@ -1598,7 +1598,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       className.includes("zegoUserVideo_click")
     ) {
       if (!this.state.showFooter) {
-        this.setState({ showFooter: true });
+        // 横屏白板不展示底部工具栏
+        if (
+          !this.state.isZegoWhiteboardSharing ||
+          this.state.isScreenPortrait
+        ) {
+          this.setState({ showFooter: true });
+        }
       } else {
         if (this.state.layOutStatus != "ONE_VIDEO") {
           this.setState({
@@ -1699,7 +1705,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
     if (this.isCreatingWhiteboardSharing) return;
     this.isCreatingWhiteboardSharing = true;
-    this.setState({ isZegoWhiteboardSharing: true });
+    this.setState({
+      isZegoWhiteboardSharing: true,
+      showFooter: this.state.isScreenPortrait ? this.state.showFooter : false,
+    });
   }
 
   closeWhiteboardSharing() {
@@ -1731,6 +1740,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (window.orientation === 90 || window.orientation === -90) {
       // 横屏
       isScreenPortrait = false;
+    }
+    if (!isScreenPortrait) {
+      this.setState({ showFooter: false });
     }
     this.setState(
       {

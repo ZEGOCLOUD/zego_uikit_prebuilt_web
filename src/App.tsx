@@ -252,20 +252,20 @@ export default class App extends React.PureComponent {
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
     this.state.showPreviewHeader = isPc() ? "show" : "hide";
-    let { token } = await generateTokenForCallInvitation(
-      userID,
-      roomID,
-      "user_" + userID
-    );
-    // console.warn(token);
-    // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-    //   252984006,
-    //   "16435f3bdb307f****b3f9e4259a29f0",
-    //   roomID,
+    // let { token } = await generateTokenForCallInvitation(
     //   userID,
-    //   "user_" + userID,
-    //   60 * 60 * 24
+    //   roomID,
+    //   "user_" + userID
     // );
+    // console.warn(token);
+    let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+      252984006,
+      "16435f3bdb307f3020b3f9e4259a29f0",
+      roomID,
+      userID,
+      "user_" + userID,
+      60 * 60 * 24
+    );
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
 

@@ -640,3 +640,40 @@
     }
   }
 }
+@media screen and (orientation: landscape) {
+  .mobileApp {
+    &.callInvitation {
+      .callInvitationWrapper {
+        height: auto;
+        .invitationUserHeader {
+          margin-bottom: vw(18px);
+        }
+        .invitationTitle,
+        .inputPlaceholder {
+          width: vw(570px);
+          margin: 0 auto;
+          padding: 0;
+        }
+        .invitationInput {
+          display: block;
+          margin: vw(64px) auto;
+        }
+        .invitationVideoCallBtn {
+          margin: 0 auto;
+        }
+        .invitationVoiceCallBtn {
+          margin: vw(32px) auto 0;
+        }
+      }
+      .mobileServiceTips {
+        position: relative;
+        bottom: 0;
+        left: 0;
+        margin-top: vw(100px);
+        margin-bottom: vw(12px);
+        padding: 0;
+        font-size: vw(24px);
+      }
+    }
+  }
+}
