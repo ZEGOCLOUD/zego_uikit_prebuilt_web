@@ -35,6 +35,7 @@
       align-items: center;
       justify-content: center;
       .nameCircle {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -52,6 +53,7 @@
         img {
           position: absolute;
           top: 0;
+          left: 0;
           width: vw(160px);
           height: vw(160px);
           object-fit: cover;
@@ -170,5 +172,17 @@
         }
       }
     }
+  }
+  .fullScreenBtn {
+    position: absolute;
+    top: vw(24px);
+    left: vw(24px);
+    z-index: 11;
+    width: vw(60px);
+    height: vw(60px);
+    background-image: url("../../../../sdkMobileAssets/icon_full_screen@2x.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
   }
 }

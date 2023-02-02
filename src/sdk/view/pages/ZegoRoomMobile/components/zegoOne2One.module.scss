@@ -68,6 +68,9 @@
 .bigVideo {
   width: 100%;
   height: 100%;
+  &.hasTimer {
+    height: calc(100% - 7.733333vmin);
+  }
   i {
     position: fixed;
     top: vw(730px);

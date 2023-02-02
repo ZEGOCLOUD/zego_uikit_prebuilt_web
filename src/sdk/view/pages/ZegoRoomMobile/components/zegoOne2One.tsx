@@ -10,12 +10,17 @@ export class ZegoOne2One extends React.PureComponent<{
   selfInfo?: {
     userID: string;
   };
+  showTimerUI?: boolean;
 }> {
   getVideoScreen() {
     if (this.props.userList.length > 1) {
       return (
         <>
-          <div className={zegoOne2OneCss.bigVideo}>
+          <div
+            className={`${zegoOne2OneCss.bigVideo} ${
+              this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
+            }`}
+          >
             <ZegoUserVideo
               muted={
                 this.props?.selfInfo?.userID === this.props.userList[1].userID

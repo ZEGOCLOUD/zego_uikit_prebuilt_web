@@ -75,6 +75,7 @@ export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps
             }}
             hiddenMore={true}
             hiddenName={true}
+            showFullScreen={true}
           ></ZegoUserVideo>
           {this.state.loading && (
             <div className={ZegoSidebarCss.screenLoadingWrapper}>

@@ -13,6 +13,7 @@ export default class ZegoVideo extends React.PureComponent<{
   userInfo: ZegoCloudUser;
   onPause?: Function;
   onCanPlay?: Function;
+  videoRefs?: (el: HTMLVideoElement) => void;
 }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
@@ -173,6 +174,7 @@ export default class ZegoVideo extends React.PureComponent<{
           } ${this.props.classList}`}
           playsInline={true}
           ref={(el: HTMLVideoElement) => {
+            el && this.props.videoRefs?.(el);
             !this.videoRef && (this.videoRef = el);
           }}
           onPause={() => {

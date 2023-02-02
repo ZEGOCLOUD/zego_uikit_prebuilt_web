@@ -18,9 +18,30 @@ export class ZegoUserVideo extends React.PureComponent<{
   hiddenName?: boolean;
   hiddenMore?: boolean;
   bigVideo?: boolean;
+  showFullScreen?: boolean;
 }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
+  videoEl: HTMLVideoElement | null = null;
+  state: {
+    isFullScreen: boolean;
+  } = {
+    isFullScreen: false,
+  };
+  enterFullScreen() {
+    if (!this.videoEl) return;
+    // 进入全屏
+    if (this.videoEl.requestFullscreen) {
+      // 最新标准
+      this.videoEl.requestFullscreen();
+    } else if ((this.videoEl as any).webkitRequestFullscreen) {
+      (this.videoEl as any).webkitRequestFullscreen();
+    } else {
+      // iOS进入全屏
+      //@ts-ignore
+      this.videoEl?.webkitEnterFullscreen?.();
+    }
+  }
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.user?.streamList?.[0]?.streamID];
@@ -45,6 +66,9 @@ export class ZegoUserVideo extends React.PureComponent<{
               }`}
               onCanPlay={() => {
                 this.props.onCanPlay && this.props.onCanPlay();
+              }}
+              videoRefs={(el: HTMLVideoElement) => {
+                this.videoEl = el;
               }}
             ></ZegoVideo>
           )}
@@ -123,6 +147,12 @@ export class ZegoUserVideo extends React.PureComponent<{
           </div>
         )}
         {!this.props.hiddenMore && <ZegoMore user={this.props.user} />}
+        {this.props.showFullScreen && (
+          <div
+            className={`${zegoUserVideoCss.fullScreenBtn}`}
+            onClick={this.enterFullScreen.bind(this)}
+          ></div>
+        )}
       </div>
     );
   }

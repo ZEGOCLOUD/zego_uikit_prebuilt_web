@@ -51,6 +51,7 @@ import ZegoAudio from "../../components/zegoMedia/audio";
 import { ZegoWhiteboard } from "./components/zegoWhiteboard";
 import { formatTime } from "../../../modules/tools/util";
 import { ZegoTimer } from "./components/zegoTimer";
+import styles from "./index.module.scss";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
@@ -1523,6 +1524,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 this.state.cameraOpen
               );
             }}
+            showTimerUI={this.showRoomTimerUI}
           ></ZegoOne2One>
         </>
       );
