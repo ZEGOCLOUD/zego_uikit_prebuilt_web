@@ -20,7 +20,7 @@
     "eject": "react-scripts eject",
     "publish": "cd ZegoUIKitPrebuilt && npm publish --access public",
     "publish:beta": "cd ZegoUIKitPrebuilt && npm publish --tag beta",
-    "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='live_stream' react-scripts start",
+    "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='video_conference' react-scripts start",
     "start:m": "REACT_APP_MOBILE='yes'   npm run start"
   },
   "browserslist": {

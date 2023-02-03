@@ -3,6 +3,7 @@ import ReactDOM, { Root } from "react-dom/client";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
 import ZIM from "zego-zim-web";
 import {
+  ConsoleLevel,
   LiveRole,
   LiveStreamingMode,
   ScenarioModel,
@@ -36,6 +37,11 @@ export class ZegoUIKitPrebuilt {
   static LiveStreamingMode = LiveStreamingMode;
   static InvitationTypeVoiceCall = ZegoInvitationType.VoiceCall;
   static InvitationTypeVideoCall = ZegoInvitationType.VideoCall;
+  static Console_Debug = ConsoleLevel.Debug;
+  static Console_Info = ConsoleLevel.Info;
+  static Console_Warning = ConsoleLevel.Warning;
+  static Console_Error = ConsoleLevel.Error;
+  static Console_None = ConsoleLevel.None;
   private hasJoinedRoom = false;
   root: Root | undefined;
 
@@ -118,6 +124,9 @@ export class ZegoUIKitPrebuilt {
           }) as ZegoCloudRoomConfig;
           ZegoUIKitPrebuilt!.core!.status = {
             loginRsp: false,
+            videoRefuse: undefined,
+            audioRefuse: undefined,
+            codec: "VP8",
           };
           this.joinRoom(roomConfig);
         }
@@ -172,6 +181,8 @@ export class ZegoUIKitPrebuilt {
         ></ZegoCloudRTCKitComponent>
       );
       this.hasJoinedRoom = true;
+    } else {
+      console.error("【ZEGOCLOUD】joinRoom parameter error !!");
     }
   }
 

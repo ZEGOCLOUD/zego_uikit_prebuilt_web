@@ -68,6 +68,14 @@ export enum LiveStreamingMode {
   InteractiveLiveStreaming = "InteractiveLiveStreaming", // L3
   RealTimeLive = "RealTimeLive", //RTC
 }
+
+export enum ConsoleLevel {
+  Debug = "Debug",
+  Info = "Info",
+  Warning = "Warning",
+  Error = "Error",
+  None = "None",
+}
 export interface ZegoCloudRoomConfig {
   container?: HTMLElement | undefined | null; // 挂载容器
   preJoinViewConfig?: {
@@ -142,6 +150,7 @@ export interface ZegoCloudRoomConfig {
     showCreateAndCloseButton?: boolean;
   };
   autoLeaveRoomWhenOnlySelfInRoom?: boolean; // 当房间内只剩一个人的时候，自动退出房间
+  console?: ConsoleLevel;
   //  1.7.0版本新增
   showRoomTimer?: Boolean; // 是否展示计时器，默认false，
   showTurnOffRemoteCameraButton?: Boolean; // 是否显示关闭远端摄像头按钮，默认false

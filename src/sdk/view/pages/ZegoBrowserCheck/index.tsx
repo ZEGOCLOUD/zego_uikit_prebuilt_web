@@ -107,8 +107,12 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   throttleResize = throttle(this.onResize.bind(this), 300);
   async getDevices() {
     const micDevices = await this.props.core.getMicrophones();
+    // 防止设备移出后，再次使用缓存设备ID
+    const mic = micDevices.filter(
+      (device) => device.deviceID === sessionStorage.getItem("selectMic")
+    );
+
     let speakerDevices = await this.props.core.getSpeakers();
-    const cameraDevices = await this.props.core.getCameras();
     if (!speakerDevices.length) {
       if (
         (/Safari/.test(navigator.userAgent) &&
@@ -121,21 +125,29 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         });
       }
     }
-    // 防止设备移出后，再次使用缓存设备ID
-    const mic = micDevices.filter(
-      (device) => device.deviceID === sessionStorage.getItem("selectMic")
-    );
-    const cam = cameraDevices.filter(
-      (device) => device.deviceID === sessionStorage.getItem("selectCamera")
-    );
     const speaker = speakerDevices.filter(
       (device) => device.deviceID === sessionStorage.getItem("selectSpeaker")
     );
+
+    let cam, cameraDevices;
+    if (
+      !!this.props.core._config.turnOnCameraWhenJoining ||
+      !!this.props.core._config.showMyCameraToggleButton
+    ) {
+      cameraDevices = await this.props.core.getCameras();
+      cam = cameraDevices.filter(
+        (device) => device.deviceID === sessionStorage.getItem("selectCamera")
+      );
+    }
+
     return {
       selectMic: mic[0]?.deviceID || micDevices[0]?.deviceID || undefined,
       selectSpeaker:
         speaker[0]?.deviceID || speakerDevices[0]?.deviceID || undefined,
-      selectCamera: cam[0]?.deviceID || cameraDevices[0]?.deviceID || undefined,
+      selectCamera:
+        (cam && cam[0]?.deviceID) ||
+        (cameraDevices && cameraDevices[0]?.deviceID) ||
+        undefined,
       selectVideoResolution:
         sessionStorage.getItem("selectVideoResolution") ||
         this.props.core._config.videoResolutionList![0],
@@ -171,6 +183,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           localVideoStream,
           isVideoOpening: false,
         });
+      } else {
+        this.videoRefuse = true;
       }
     } catch (error) {
       this.videoRefuse = true;
