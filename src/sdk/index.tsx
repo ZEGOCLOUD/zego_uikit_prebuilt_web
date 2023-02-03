@@ -124,6 +124,9 @@ export class ZegoUIKitPrebuilt {
           }) as ZegoCloudRoomConfig;
           ZegoUIKitPrebuilt!.core!.status = {
             loginRsp: false,
+            videoRefuse: undefined,
+            audioRefuse: undefined,
+            codec: "VP8",
           };
           this.joinRoom(roomConfig);
         }
@@ -178,6 +181,8 @@ export class ZegoUIKitPrebuilt {
         ></ZegoCloudRTCKitComponent>
       );
       this.hasJoinedRoom = true;
+    } else {
+      console.error("【ZEGOCLOUD】joinRoom parameter error !!");
     }
   }
 

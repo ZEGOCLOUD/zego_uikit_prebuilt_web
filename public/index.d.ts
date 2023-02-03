@@ -67,7 +67,7 @@ declare interface ZegoCloudRoomConfig {
     mode?: ScenarioModel; // Scenario selection.
     config?: ScenarioConfig[ScenarioModel]; // Specific configurations in the corresponding scenario.
   };
-  console?: ConsoleLevel;
+  console?: ConsoleLevel; // 浏览器console日志打印级别，用于问题丁文，没有特殊需求建议不要设置
   // 1.2 Prejoin view
   showPreJoinView?: boolean; // Whether to display the prejoin view. Displayed by default.
   preJoinViewConfig?: {
@@ -79,11 +79,15 @@ declare interface ZegoCloudRoomConfig {
   videoResolutionDefault?: VideoResolution; // The default video resolution.
 
   // 1.3 Room view
+  showRoomTimer: boolean; // 是否展示计时器，默认false，
   showMyCameraToggleButton?: boolean; // Whether to display the button for toggling my camera. Displayed by default.
   showMyMicrophoneToggleButton?: boolean; // Whether to display the button for toggling my microphone. Displayed by default.
   showAudioVideoSettingsButton?: boolean; // Whether to display the button for audio and video settings. Displayed by default.
+  showTurnOffRemoteCameraButton: Boolean; // 是否显示关闭远端摄像头按钮，默认false
+  showTurnOffRemoteMicrophoneButton: Boolean; // 是否显示关闭远端麦克风按钮，默认false
   showTextChat?: boolean; // Whether to display the text chat interface on the right side. Displayed by default.
   showUserList?: boolean; // Whether to display the participant list. Displayed by default.
+  showRemoveUserButton: Boolean; // 是否显示移出成员按钮， 默认false
   lowerLeftNotification?: {
     showUserJoinAndLeave?: boolean; // Whether to display notifications on the lower left area when participants join and leave the room. Displayed by default.
     showTextChat?: boolean; // Whether to display the latest messages on the lower left area. Displayed by default.
@@ -113,6 +117,7 @@ declare interface ZegoCloudRoomConfig {
   onUserAvatarSetter?: (user: ZegoUser[]) => void; // Callback for the user avatar can be set.
   onLiveStart?: (user: ZegoUser) => void; //  Callback for livestream starts.
   onLiveEnd?: (user: ZegoUser) => void; // Callback for livestream ends.
+  onYouRemovedFromRoom: () => void; // 自己被移出房间回调
 }
 
 declare enum ZegoInvitationType {

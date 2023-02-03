@@ -83,7 +83,7 @@ export class ZegoCloudRTCCore {
     cameraDeviceID?: string;
     speakerDeviceID?: string;
     videoResolution?: string;
-    codec: "H264" | "VP8";
+    codec?: "H264" | "VP8";
   } = {
     loginRsp: false,
     videoRefuse: undefined,

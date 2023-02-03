@@ -170,15 +170,16 @@ export default class App extends React.PureComponent {
         process.env.REACT_APP_PATH !== "live_stream" &&
           zp.addPlugins({ ZegoSuperBoardManager });
         const param: ZegoCloudRoomConfig = {
+          console: ZegoUIKitPrebuilt.Console_None,
           turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
-          turnOnCameraWhenJoining: true, // 是否开启自己的摄像头 ,默认开启
-          showMyCameraToggleButton: true, // 是否显示控制自己的麦克风按钮,默认显示
+          turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
+          showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
           showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
           showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
           showNonVideoUser: true,
           // @ts-ignore
           container: element, // 挂载容器
-          showPreJoinView: true,
+          showPreJoinView: false,
           preJoinViewConfig: {
             title: "Join Room",
           },
