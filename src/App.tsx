@@ -44,6 +44,7 @@ export default class App extends React.PureComponent {
     invitees: [],
     toastShow: false,
     toastText: "",
+    isScreenPortrait: false,
   };
 
   settingsEl = null;
@@ -140,6 +141,12 @@ export default class App extends React.PureComponent {
             userID
         );
       }
+      window.addEventListener(
+        "orientationchange",
+        this.onOrientationChange.bind(this),
+        false
+      );
+      this.onOrientationChange();
       this.initCallInvitation(userID, roomID);
     } else {
       if (!getUrlParams().get("roomID")) {
@@ -155,33 +162,33 @@ export default class App extends React.PureComponent {
         );
       }
       this.myMeeting = async (element: HTMLDivElement) => {
-        // let { token } = await generateToken(
-        //   randomID(5),
-        //   roomID,
-        //   userName || getRandomName()
-        // );
-        let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-          252984006,
-          "16435f3bdb307f3020b3f9e4259a29f0",
+        let { token } = await generateToken(
+          randomID(5),
           roomID,
-          randomNumID(8),
-          userName || getRandomName(),
-          7200
+          userName || getRandomName()
         );
+        // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+        //   252984006,
+        //   "16435f3bdb307f****b3f9e4259a29f0",
+        //   roomID,
+        //   randomNumID(8),
+        //   userName || getRandomName(),
+        //   7200
+        // );
         const zp = ZegoUIKitPrebuilt.create(token);
         process.env.REACT_APP_PATH !== "live_stream" &&
           zp.addPlugins({ ZegoSuperBoardManager });
         const param: ZegoCloudRoomConfig = {
-          console: ZegoUIKitPrebuilt.Console_None,
-          turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
-          turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
-          showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
-          showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
-          showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
-          showNonVideoUser: true,
+          console: ZegoUIKitPrebuilt.ConsoleNone,
+          //   turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+          //   turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
+          //   showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
+          //   showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
+          //   showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
+          //   showNonVideoUser: true,
           // @ts-ignore
           container: element, // 挂载容器
-          showPreJoinView: false,
+          //   showPreJoinView: false,
           preJoinViewConfig: {
             title: "Join Room",
           },
@@ -413,6 +420,11 @@ export default class App extends React.PureComponent {
   }
   componentWillUnmount(): void {
     window.removeEventListener("resize", this.onResize);
+    window.removeEventListener(
+      "orientationchange",
+      this.onOrientationChange.bind(this),
+      false
+    );
   }
   handleSelectMode(mode: string) {
     this.setState(
@@ -511,6 +523,56 @@ export default class App extends React.PureComponent {
       }, 20);
     }
   };
+  onOrientationChange() {
+    let isScreenPortrait = this.state.isScreenPortrait;
+    document
+      .querySelector(`.${APP.app}`)
+      ?.querySelectorAll("input")
+      .forEach((el) => el.blur());
+    if (window.orientation === 180 || window.orientation === 0) {
+      // 竖屏
+      isScreenPortrait = true;
+    }
+    if (window.orientation === 90 || window.orientation === -90) {
+      // 横屏
+      isScreenPortrait = false;
+    }
+    if (!isScreenPortrait) {
+      this.setState({ showFooter: false });
+    }
+    this.setState(
+      {
+        isScreenPortrait: isScreenPortrait,
+      },
+      () => {
+        if (!isScreenPortrait && !isIOS()) {
+          setTimeout(() => {
+            this.setViewportMeta();
+          }, 300);
+        }
+      }
+    );
+  }
+  // 解决横屏时键盘弹起导致视窗高度变小，页面缩小的问题
+  setViewportMeta() {
+    let metaEl: HTMLMetaElement | null = document.querySelector(
+      "meta[name=viewport]"
+    );
+    let content = "";
+    const height = "height=" + window.outerHeight;
+    if (metaEl) {
+      let contentArr = metaEl.content
+        .split(",")
+        .filter((attr) => !attr.includes("height="));
+      contentArr.push(height);
+      content = contentArr.join(",");
+    } else {
+      metaEl = document.createElement("meta");
+      metaEl.name = "viewport";
+      document.querySelector("header")?.appendChild(metaEl);
+    }
+    metaEl.content = content;
+  }
   render(): React.ReactNode {
     return (
       <div

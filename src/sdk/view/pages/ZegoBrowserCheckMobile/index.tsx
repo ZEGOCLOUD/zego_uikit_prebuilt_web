@@ -25,6 +25,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
         copied: false,
       };
     }),
+    isScreenPortrait: false,
   };
   videoRef: RefObject<HTMLVideoElement> = React.createRef();
   inviteRef: RefObject<HTMLInputElement> = React.createRef();
@@ -36,6 +37,12 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
   clientHeight = 0;
 
   async componentDidMount() {
+    window.addEventListener(
+      "orientationchange",
+      this.onOrientationChange.bind(this),
+      false
+    );
+    this.onOrientationChange();
     this.setState({
       userName: this.props.core._expressConfig.userName,
     });
@@ -56,6 +63,11 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       window.addEventListener("resize", this.onResize, { passive: false });
   }
   componentWillUnmount() {
+    window.removeEventListener(
+      "orientationchange",
+      this.onOrientationChange.bind(this),
+      false
+    );
     this.state.localVideoStream &&
       this.props.core.destroyStream(this.state.localVideoStream);
     this.state.localAudioStream &&
@@ -305,6 +317,55 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       }, 20);
     }
   };
+  onOrientationChange() {
+    let isScreenPortrait = this.state.isScreenPortrait;
+    this.props.core._config.container
+      ?.querySelectorAll("input")
+      .forEach((el) => el.blur());
+    if (window.orientation === 180 || window.orientation === 0) {
+      // 竖屏
+      isScreenPortrait = true;
+    }
+    if (window.orientation === 90 || window.orientation === -90) {
+      // 横屏
+      isScreenPortrait = false;
+    }
+    if (!isScreenPortrait) {
+      this.setState({ showFooter: false });
+    }
+    this.setState(
+      {
+        isScreenPortrait: isScreenPortrait,
+      },
+      () => {
+        if (!isScreenPortrait && !isIOS()) {
+          setTimeout(() => {
+            this.setViewportMeta();
+          }, 300);
+        }
+      }
+    );
+  }
+  // 解决横屏时键盘弹起导致视窗高度变小，页面缩小的问题
+  setViewportMeta() {
+    let metaEl: HTMLMetaElement | null = document.querySelector(
+      "meta[name=viewport]"
+    );
+    let content = "";
+    const height = "height=" + window.outerHeight;
+    if (metaEl) {
+      let contentArr = metaEl.content
+        .split(",")
+        .filter((attr) => !attr.includes("height="));
+      contentArr.push(height);
+      content = contentArr.join(",");
+    } else {
+      metaEl = document.createElement("meta");
+      metaEl.name = "viewport";
+      document.querySelector("header")?.appendChild(metaEl);
+    }
+    metaEl.content = content;
+  }
   render(): React.ReactNode {
     return (
       <div className={ZegoBrowserCheckCss.ZegoBrowserCheckSupport}>

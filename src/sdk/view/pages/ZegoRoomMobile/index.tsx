@@ -1734,7 +1734,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }, 1000);
   }
   onOrientationChange() {
-    let isScreenPortrait;
+    let isScreenPortrait = this.state.isScreenPortrait;
+    this.props.core._config.container
+      ?.querySelectorAll("input")
+      .forEach((el) => el.blur());
     if (window.orientation === 180 || window.orientation === 0) {
       // 竖屏
       isScreenPortrait = true;
@@ -1751,11 +1754,38 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         isScreenPortrait: isScreenPortrait,
       },
       () => {
-        this.state.zegoSuperBoardView
-          ?.getCurrentSuperBoardSubView()
-          ?.reloadView();
+        if (!isScreenPortrait && !isIOS()) {
+          setTimeout(() => {
+            this.setViewportMeta();
+          }, 300);
+        }
+        setTimeout(() => {
+          this.state.zegoSuperBoardView
+            ?.getCurrentSuperBoardSubView()
+            ?.reloadView();
+        }, 300);
       }
     );
+  }
+  // 解决横屏时键盘弹起导致视窗高度变小，页面缩小的问题
+  setViewportMeta() {
+    let metaEl: HTMLMetaElement | null = document.querySelector(
+      "meta[name=viewport]"
+    );
+    let content = "";
+    const height = "height=" + window.outerHeight;
+    if (metaEl) {
+      let contentArr = metaEl.content
+        .split(",")
+        .filter((attr) => !attr.includes("height="));
+      contentArr.push(height);
+      content = contentArr.join(",");
+    } else {
+      metaEl = document.createElement("meta");
+      metaEl.name = "viewport";
+      document.querySelector("header")?.appendChild(metaEl);
+    }
+    metaEl.content = content;
   }
   render(): React.ReactNode {
     const startIndex =

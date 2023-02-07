@@ -266,9 +266,6 @@ export class ZegoCloudRTCCore {
     if (config.onLiveEnd !== undefined) {
       this._originConfig["ole"] = 1;
     }
-    if (config.onLiveEnd !== undefined) {
-      this._originConfig["ole"] = 1;
-    }
     this._originConfig["url"] =
       window.location.origin + window.location.pathname;
   }
@@ -363,6 +360,9 @@ export class ZegoCloudRTCCore {
       }
       config.showLayoutButton = false;
       config.showPinButton = false;
+      config.showTurnOffRemoteCameraButton = false;
+      config.showTurnOffRemoteMicrophoneButton = false;
+      config.showRemoveUserButton = false;
     }
 
     if (config.scenario && config.scenario.mode === ScenarioModel.GroupCall) {
@@ -1110,7 +1110,7 @@ export class ZegoCloudRTCCore {
       this._config.onUserAvatarSetter &&
         this._config.onUserAvatarSetter([user]);
 
-      // @ts-ignore
+      // @ts-ignore 日志上报
       ZegoCloudRTCCore._zg.logger.error(
         "zu.jr " + JSON.stringify(this.originConfig)
       );
