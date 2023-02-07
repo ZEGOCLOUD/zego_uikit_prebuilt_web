@@ -161,6 +161,7 @@ export class ZimManager {
           const accept = (data?: string) => {
             this.clearIncomingTimer();
             this.acceptInvitation(data);
+            this.notifyJoinRoomCallback();
           };
           this.config?.onConfirmDialogWhenReceiving?.(
             type,
@@ -450,6 +451,10 @@ export class ZimManager {
             type,
             () => {
               this.cancelInvitation();
+              this.config?.onCallInvitationEnded?.(
+                CallInvitationEndReason.Canceled,
+                ""
+              );
             },
             this.config?.ringtoneConfig?.outgoingCallUrl
           );
@@ -457,6 +462,10 @@ export class ZimManager {
 
         const cancel = () => {
           this.cancelInvitation();
+          this.config?.onCallInvitationEnded?.(
+            CallInvitationEndReason.Canceled,
+            ""
+          );
         };
         this.config?.onWaitingPageWhenSending?.(
           this.callInfo.type,
