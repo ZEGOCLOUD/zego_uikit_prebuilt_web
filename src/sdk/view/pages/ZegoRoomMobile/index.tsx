@@ -51,7 +51,6 @@ import ZegoAudio from "../../components/zegoMedia/audio";
 import { ZegoWhiteboard } from "./components/zegoWhiteboard";
 import { formatTime } from "../../../modules/tools/util";
 import { ZegoTimer } from "./components/zegoTimer";
-import styles from "./index.module.scss";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
@@ -130,7 +129,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   roomTimer: NodeJS.Timer | null = null;
   roomTimeNum = 0;
-
+  setViewportMetaTimer: NodeJS.Timer | null = null;
+  viewportHeight = 0;
   get isCDNLive(): boolean {
     return (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
@@ -475,7 +475,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           };
         },
         () => {
-          console.error("【ZEGOCLOUD】 liveStatus", this.state.liveStatus);
+          //   console.error("【ZEGOCLOUD】 liveStatus", this.state.liveStatus);
         }
       );
     });
@@ -1090,42 +1090,47 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.props.core.setSidebarLayOut(
         this.state.screenSharingUserList.length > 0 ? false : !this.localUserPin
       );
+      return;
     }
     if (type === "Mic") {
-      if (this._selectedUser.streamList?.[0]?.micStatus === "OPEN") {
-        let res;
-        if (
-          this._selectedUser.userID === this.props.core._expressConfig.userID
-        ) {
-          res = await this.toggleMic();
-        } else {
-          res = await this.props.core.turnRemoteMicrophoneOff(
-            this._selectedUser.userID
-          );
-        }
-        res &&
-          ZegoToast({
-            content: "Turned off the microphone successfully.",
-          });
+      let res;
+      if (
+        this._selectedUser.userID === this.props.core._expressConfig.userID &&
+        this.state.micOpen
+      ) {
+        res = await this.toggleMic();
+        res && (this._selectedUser.streamList[0].micStatus = "MUTE");
+      } else if (this._selectedUser.streamList?.[0]?.micStatus === "OPEN") {
+        res = await this.props.core.turnRemoteMicrophoneOff(
+          this._selectedUser.userID
+        );
       }
+      res &&
+        ZegoToast({
+          content: "Turned off the microphone successfully.",
+        });
+      return;
     }
     if (type === "Camera") {
-      if (this._selectedUser.streamList?.[0]?.cameraStatus === "OPEN") {
-        let res;
-        if (
-          this._selectedUser.userID === this.props.core._expressConfig.userID
-        ) {
-          res = await this.toggleCamera();
-        } else {
-          res = await this.props.core.turnRemoteCameraOff(
-            this._selectedUser.userID
-          );
-        }
-        res &&
-          ZegoToast({
-            content: "Turned off the camera successfully.",
-          });
+      let res;
+      if (
+        this._selectedUser.userID === this.props.core._expressConfig.userID &&
+        this.state.cameraOpen
+      ) {
+        res = await this.toggleCamera();
+
+        res && (this._selectedUser.streamList[0].cameraStatus = "MUTE");
+        console.warn(this._selectedUser);
+      } else if (this._selectedUser.streamList?.[0]?.cameraStatus === "OPEN") {
+        res = await this.props.core.turnRemoteCameraOff(
+          this._selectedUser.userID
+        );
       }
+      res &&
+        ZegoToast({
+          content: "Turned off the camera successfully.",
+        });
+      return;
     }
     if (type === "Remove") {
       ZegoModelShow({
@@ -1136,8 +1141,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         cancelText: "Cancel",
         onOk: () => {
           this.props.core.removeMember(this._selectedUser.userID);
+          this.setState({
+            layOutStatus: "ONE_VIDEO",
+          });
         },
       });
+      return;
     }
   }
   private _selectedUser!: ZegoCloudUser;
@@ -1236,7 +1245,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       (this.props.core._config.showNonVideoUser ||
         this._selectedUser?.streamList?.[0]?.cameraStatus === "OPEN" ||
         (this._selectedUser?.streamList?.[0]?.micStatus === "OPEN" &&
-          !!this.props.core._config.showOnlyAudioUser))
+          !!this.props.core._config.showOnlyAudioUser)) &&
+      this.getShownUser().length > 1
     );
   }
   showManager(user?: ZegoCloudUser): boolean {
@@ -1755,9 +1765,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       },
       () => {
         if (!isScreenPortrait && !isIOS()) {
-          setTimeout(() => {
-            this.setViewportMeta();
-          }, 300);
+          this.setViewportMeta();
+        } else {
+          if (this.setViewportMetaTimer) {
+            clearTimeout(this.setViewportMetaTimer);
+            this.setViewportMetaTimer = null;
+          }
         }
         setTimeout(() => {
           this.state.zegoSuperBoardView
@@ -1769,11 +1782,21 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
   // 解决横屏时键盘弹起导致视窗高度变小，页面缩小的问题
   setViewportMeta() {
+    if (this.viewportHeight) return;
     let metaEl: HTMLMetaElement | null = document.querySelector(
       "meta[name=viewport]"
     );
     let content = "";
-    const height = "height=" + window.outerHeight;
+    if (window.outerHeight > window.outerWidth) {
+      this.setViewportMetaTimer = setTimeout(() => {
+        this.setViewportMeta();
+        this.setViewportMetaTimer = null;
+      }, 100);
+      return;
+    } else {
+      this.viewportHeight = window.outerHeight;
+    }
+    const height = "height=" + this.viewportHeight;
     if (metaEl) {
       let contentArr = metaEl.content
         .split(",")

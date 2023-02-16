@@ -602,24 +602,7 @@
         opacity: 0.3;
       }
     }
-    .toast {
-      position: absolute;
-      top: vw(24px);
-      left: 50%;
-      z-index: 10001;
-      max-width: 90vw;
-      padding: vw(14px) vw(30px);
-      overflow: hidden;
-      color: #ffffff;
-      font-size: vw(24px);
-      font-family: PingFang SC;
-      line-height: vw(33px);
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      background: rgba($color: #2a2a2a, $alpha: 0.7);
-      border-radius: vw(12px);
-      transform: translateX(-50%);
-    }
+
     .mobileServiceTips {
       position: inherit;
       bottom: 0;
@@ -638,6 +621,24 @@
       background-color: #ffffff;
       transform: none;
     }
+  }
+  .toast {
+    position: absolute;
+    top: vw(24px);
+    left: 50%;
+    z-index: 10001;
+    max-width: 90vw;
+    padding: vw(14px) vw(30px);
+    overflow: hidden;
+    color: #ffffff;
+    font-size: vw(24px);
+    font-family: PingFang SC;
+    line-height: vw(33px);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background: rgba($color: #2a2a2a, $alpha: 0.7);
+    border-radius: vw(12px);
+    transform: translateX(-50%);
   }
 }
 @media screen and (orientation: landscape) {
@@ -672,8 +673,12 @@
         margin-top: vw(100px);
         margin-bottom: vw(12px);
         padding: 0;
-        font-size: vw(24px);
+        font-size: vw(20px);
       }
+    }
+    .mobileServiceTips {
+      font-size: vw(18px);
+      line-height: vw(24px);
     }
   }
 }

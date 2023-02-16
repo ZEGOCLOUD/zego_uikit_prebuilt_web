@@ -3,13 +3,14 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  border-radius: vw(14px);
   .videoCommon {
     display: block;
     width: 100%;
     height: 100%;
     // object-fit: cover;
     background: #242736;
-    // border-radius: vw(12px);
+    border-radius: vw(14px);
   }
   .hideVideo {
     width: 1px;
@@ -28,7 +29,7 @@
     height: 100%;
     // background: #171821;
     background: #242736;
-    // border-radius: vw(14px);
+    border-radius: vw(14px);
     .nameWrapper {
       position: relative;
       display: flex;

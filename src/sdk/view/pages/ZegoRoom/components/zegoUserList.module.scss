@@ -1,9 +1,9 @@
 .memberListWrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   padding: 20px 4px;
-
   .member {
     position: relative;
     display: flex;
@@ -14,14 +14,30 @@
 
     &.haveMenu:hover {
       background: rgba($color: #303341, $alpha: 0.7);
-      .memberMenuWrapper {
-        display: block;
-      }
+      //   .memberMenuWrapper {
+      //     display: block;
+      //   }
       .memberStatusWrapper {
         display: none;
       }
       .selfStatusWrapper {
         display: flex;
+      }
+    }
+    &.haveMenu {
+      &.showMenu {
+        .memberMenuWrapper {
+          top: 40px;
+          right: 5px;
+          bottom: unset;
+          visibility: visible;
+        }
+      }
+      &.bottomMenu {
+        .memberMenuWrapper {
+          top: unset !important;
+          bottom: 40px !important;
+        }
       }
     }
     &:not(:last-of-type) {
@@ -139,10 +155,9 @@
   }
   .memberMenuWrapper {
     position: absolute;
-    top: 40px;
-    right: 5px;
+    right: -400px;
+    bottom: 40px;
     z-index: 10;
-    display: none;
     box-sizing: border-box;
     width: max-content;
     min-width: 133px;
@@ -152,12 +167,14 @@
     border: 1px solid #3d4054;
     border-radius: 8px;
     box-shadow: 0px 3px 6px 0px rgba(23, 24, 33, 0.75);
+    visibility: hidden;
     .memberMenuItem {
       padding: 7px 8px;
       color: #ffffff;
       font-weight: 400;
       font-size: 14px;
       line-height: 20px;
+      border-radius: 4px;
       cursor: pointer;
       &:hover {
         background: #36394b;

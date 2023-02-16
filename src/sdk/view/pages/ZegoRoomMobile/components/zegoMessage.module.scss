@@ -41,7 +41,7 @@
     flex-direction: column;
     align-items: flex-start;
     box-sizing: border-box;
-    width: 102vw;
+    width: 100%;
     padding-bottom: 14px;
     overflow-y: scroll;
 
@@ -79,10 +79,10 @@
 
       .msgContentRight {
         display: flex;
+        flex: 1;
         flex-direction: column;
         align-items: flex-start;
         color: #a4a4a4;
-
         .msgContentRightHeader {
           display: flex;
           font-weight: 400;
@@ -141,7 +141,7 @@
     .self {
       flex-direction: row-reverse;
       align-self: flex-end;
-      width: 100vw;
+      width: 100%;
 
       i {
         margin-right: vw(35px);
@@ -161,7 +161,9 @@
 
       .msgContentRight {
         align-items: flex-end;
-
+        .msgContentRightBody {
+          justify-content: flex-end;
+        }
         p {
           background: #0055ff !important;
         }
@@ -171,9 +173,10 @@
 
   .msgFooter {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
-    width: 100vw;
+    width: 100%;
     height: vw(110px);
     padding: vw(16px) vw(30px);
     background: #242736;
@@ -183,19 +186,14 @@
       box-sizing: border-box;
       margin-right: vw(18px);
       padding: vw(19px) vw(24px);
-      color: #a4a4a4;
-
-      // &:focus {
       color: #ffffff;
       font-weight: 500;
       font-size: vw(28px);
-      //   font-family: PingFangSC-Medium, PingFang SC;
       line-height: vw(40px);
       background: #303341;
       border: 0px;
       border-radius: vw(16px);
       outline: none;
-      // }
     }
 
     button {
@@ -203,6 +201,7 @@
       height: vw(68px);
       background-color: #242736;
       background-image: url(../../../../sdkMobileAssets/Room_msg_send2x.png);
+      background-repeat: no-repeat;
       background-size: contain;
       border: 0px;
     }
@@ -211,6 +210,24 @@
       background-image: url(../../../../sdkMobileAssets/Room_msg_send_light2x.png.png);
       background-size: contain;
       border: 0px;
+    }
+  }
+}
+@media screen and (orientation: landscape) {
+  .msgList {
+    &.msgListExpend {
+      height: 70vh;
+    }
+    .msgListContent {
+      .msgContent {
+        .msgContentRight {
+          .msgContentRightBody {
+            p {
+              max-width: 80%;
+            }
+          }
+        }
+      }
     }
   }
 }

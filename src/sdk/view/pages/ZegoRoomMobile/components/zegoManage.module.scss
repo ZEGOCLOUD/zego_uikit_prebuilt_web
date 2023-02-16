@@ -38,7 +38,7 @@
     flex-direction: column;
     align-items: flex-start;
     box-sizing: border-box;
-    width: 100vw;
+    width: 100%;
     padding: vw(36px) 0 vw(36px) 0;
 
     .manageContent {
@@ -46,7 +46,7 @@
       align-items: flex-start;
       justify-content: space-between;
       box-sizing: border-box;
-      width: 100vw;
+      width: 100%;
       padding: vw(14px) vw(40px) vw(14px) vw(40px);
       .manageContentLeft {
         display: flex;

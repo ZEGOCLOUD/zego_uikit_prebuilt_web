@@ -38,7 +38,7 @@
     flex-direction: column;
     align-items: flex-start;
     box-sizing: border-box;
-    width: 100vw;
+    width: 100%;
     padding: vw(10px) 0 vw(36px) 0;
 
     .layoutContent {
@@ -46,7 +46,7 @@
       align-items: flex-start;
       justify-content: space-between;
       box-sizing: border-box;
-      width: 100vw;
+      width: 100%;
       margin-top: vw(26px);
       padding: vw(8px) vw(36px) vw(8px) vw(35px);
       .layoutContentLeft {

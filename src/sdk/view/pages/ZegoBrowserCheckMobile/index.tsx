@@ -35,7 +35,8 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
   isAndroid = isAndroid();
   isIOS = isIOS();
   clientHeight = 0;
-
+  setViewportMetaTimer: NodeJS.Timer | null = null;
+  viewportHeight = 0;
   async componentDidMount() {
     window.addEventListener(
       "orientationchange",
@@ -91,7 +92,9 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
           camera: {
             video: true,
             audio: true,
-            facingMode: this.props.core._config.facingMode,
+            facingMode: this.props.core._config.useFrontFacingCamera
+              ? "user"
+              : "environment",
           },
         });
       }
@@ -105,7 +108,9 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
             camera: {
               video: true,
               audio: false,
-              facingMode: this.props.core._config.facingMode,
+              facingMode: this.props.core._config.useFrontFacingCamera
+                ? "user"
+                : "environment",
               // videoQuality: 4,
               // width: 640,
               // height: 360,
@@ -339,20 +344,33 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
       },
       () => {
         if (!isScreenPortrait && !isIOS()) {
-          setTimeout(() => {
-            this.setViewportMeta();
-          }, 300);
+          this.setViewportMeta();
+        } else {
+          if (this.setViewportMetaTimer) {
+            clearTimeout(this.setViewportMetaTimer);
+            this.setViewportMetaTimer = null;
+          }
         }
       }
     );
   }
   // 解决横屏时键盘弹起导致视窗高度变小，页面缩小的问题
   setViewportMeta() {
+    if (this.viewportHeight) return;
     let metaEl: HTMLMetaElement | null = document.querySelector(
       "meta[name=viewport]"
     );
     let content = "";
-    const height = "height=" + window.outerHeight;
+    if (window.outerHeight > window.outerWidth) {
+      this.setViewportMetaTimer = setTimeout(() => {
+        this.setViewportMeta();
+        this.setViewportMetaTimer = null;
+      }, 100);
+      return;
+    } else {
+      this.viewportHeight = window.outerHeight;
+    }
+    const height = "height=" + this.viewportHeight;
     if (metaEl) {
       let contentArr = metaEl.content
         .split(",")

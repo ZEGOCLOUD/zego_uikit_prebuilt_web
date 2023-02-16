@@ -14,7 +14,6 @@
   background: #ffffff;
   border: vw(2px) solid #f2f2f2;
   border-radius: vw(20px);
-  box-shadow: 0px vw(4px) vw(16px) 0px rgba(0, 0, 0, 0.08);
   .tool_select,
   .tool_drag,
   .tool_pen,
@@ -137,6 +136,10 @@
     background: #ffffff;
     border: vw(2px) solid #f2f2f2;
     border-radius: vw(20px);
+    &.showTools {
+      right: 50%;
+      transform: translateX(50%);
+    }
     p {
       width: 1px;
       height: 100%;

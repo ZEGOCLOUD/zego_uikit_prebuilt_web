@@ -8,8 +8,6 @@ import {
 } from "../../../../modules/tools/UserListManager";
 import { LiveRole, ScenarioModel, SoundLevelMap } from "../../../../model";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
-import { ZegoToast } from "../../../components/zegoToast";
-import { ZegoModelShow } from "../../../components/zegoModel";
 export class ZegoUserList extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   userList: ZegoCloudUserList;
@@ -24,6 +22,7 @@ export class ZegoUserList extends React.PureComponent<{
   context!: React.ContextType<typeof ShowManageContext>;
   micInOption = false;
   cameraInOption = false;
+  hoverEl: HTMLDivElement | null = null;
   get hostAndCohostList() {
     return this.props.userList.filter((u) => u.streamList.length > 0);
   }
@@ -86,6 +85,47 @@ export class ZegoUserList extends React.PureComponent<{
     const volume = this.props.soundLevel![userID]?.[streamID];
     return volume === undefined ? 5 : Math.ceil((volume * 9) / 100);
   }
+  onMouseEnter(e: React.MouseEvent) {
+    const el = e.target as HTMLDivElement;
+    this.hoverEl = el;
+
+    if (!el.className?.includes(`${ZegoUserListCss.haveMenu}`)) return;
+    const menu = document.querySelector(
+      `.${ZegoUserListCss.memberMenuWrapper}`
+    );
+    if (!menu) return;
+    const menuHeight = menu.clientHeight;
+    const offsetTop = el.offsetTop;
+    const wrapperHeight =
+      document.querySelector(`.${ZegoUserListCss.memberListWrapper}`)
+        ?.parentElement?.clientHeight || 0;
+    if (!this.hoverEl) return;
+    const top = offsetTop - menuHeight + 12; //
+    const bottom = wrapperHeight - menuHeight - offsetTop - 40;
+
+    let className = null;
+    if (bottom >= 0) {
+      className = null;
+    } else if (top >= 0) {
+      className = `${ZegoUserListCss.bottomMenu}`;
+    } else {
+      if (Math.abs(top) >= Math.abs(bottom)) {
+        className = null;
+      } else {
+        className = `${ZegoUserListCss.bottomMenu}`;
+      }
+    }
+
+    el.classList.add(`${ZegoUserListCss.showMenu}`, `${className}`);
+  }
+  onMouseLeave(e: React.MouseEvent) {
+    const el = this.hoverEl || (e.target as HTMLDivElement);
+    el.classList.remove(
+      `${ZegoUserListCss.showMenu}`,
+      `${ZegoUserListCss.bottomMenu}`
+    );
+    this.hoverEl = null;
+  }
   render(): React.ReactNode {
     return (
       <div className={ZegoUserListCss.memberListWrapper}>
@@ -97,6 +137,16 @@ export class ZegoUserList extends React.PureComponent<{
               }`}
               key={user.userID}
               data-id={user.userID}
+              onMouseEnter={(e: React.MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.onMouseEnter(e);
+              }}
+              onMouseLeave={(e: React.MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.onMouseLeave(e);
+              }}
             >
               <div
                 className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper}`}
@@ -118,8 +168,7 @@ export class ZegoUserList extends React.PureComponent<{
                 {user.userID === this.props.selfUserID && "(You)"}
               </div>
 
-              {this.props.core._config?.scenario?.config?.role !==
-                "Audience" && (
+              {user.streamList[0].media && (
                 <>
                   <div className={ZegoUserListCss.memberStatusWrapper}>
                     {this.isShownPin(user) && user.pin && (

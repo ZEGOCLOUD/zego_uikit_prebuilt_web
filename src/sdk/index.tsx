@@ -16,7 +16,6 @@ import {
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
 import { generatePrebuiltToken, isPc } from "./util";
-import { ZegoToast } from "./view/components/zegoToast";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 
 export class ZegoUIKitPrebuilt {
@@ -126,7 +125,7 @@ export class ZegoUIKitPrebuilt {
             loginRsp: false,
             videoRefuse: undefined,
             audioRefuse: undefined,
-            codec: "VP8",
+            codec: "H264",
           };
           this.joinRoom(roomConfig);
         }
@@ -148,7 +147,7 @@ export class ZegoUIKitPrebuilt {
       console.warn("【ZEGOCLOUD】joinRoom/roomConfig/container required !!");
       div = document.createElement("div");
       div.style.position = "fixed";
-      div.style.width = "100vw";
+      div.style.width = "100%";
       div.style.height = isPc() ? "100vh" : "100%";
       div.style.minWidth = "345px";
       div.style.top = "0px";

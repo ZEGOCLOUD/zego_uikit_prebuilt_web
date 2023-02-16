@@ -40,7 +40,11 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
 
   render(): React.ReactNode {
     return (
-      <div className={ZegoWhiteboardToolsCss.tools}>
+      <div
+        className={`${ZegoWhiteboardToolsCss.tools} ${
+          this.state.hideTools ? "" : ZegoWhiteboardToolsCss.showTools
+        }`}
+      >
         {this.showTool(1) && (
           <div
             className={`${ZegoWhiteboardToolsCss.tool_select} ${

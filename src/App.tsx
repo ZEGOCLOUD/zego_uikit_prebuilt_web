@@ -59,6 +59,8 @@ export default class App extends React.PureComponent {
     userID?: string;
     userName?: string;
   } = {} as any;
+  setViewportMetaTimer: NodeJS.Timer | null = null;
+  viewportHeight = 0;
   constructor(props: any) {
     super(props);
     const userName = getUrlParams().get("UserName");
@@ -84,7 +86,7 @@ export default class App extends React.PureComponent {
     if (process.env.REACT_APP_PATH === "1on1_call") {
       maxUsers = 2;
       sharedLinks.push({
-        name: "Join as co-host",
+        name: "Personal link",
         url:
           window.location.origin +
           window.location.pathname +
@@ -121,7 +123,7 @@ export default class App extends React.PureComponent {
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       mode = ScenarioModel.VideoConference;
       sharedLinks.push({
-        name: "Join as co-host",
+        name: "Personal link",
         url:
           window.location.origin +
           window.location.pathname +
@@ -168,8 +170,8 @@ export default class App extends React.PureComponent {
           userName || getRandomName()
         );
         // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        //   252984006,
-        //   "16435f3bdb307f****b3f9e4259a29f0",
+        //   1484647939,
+        //   "22076fd0a8388f31dc1f6e344171****",
         //   roomID,
         //   randomNumID(8),
         //   userName || getRandomName(),
@@ -196,7 +198,7 @@ export default class App extends React.PureComponent {
           showUserList: true,
           showLeavingView: true,
           maxUsers,
-          layout: "Auto",
+          //   layout: "Auto",
           onJoinRoom: () => {
             console.log("test:leaveRoomCallback");
             window?.parent?.postMessage("leaveRoom", "*");
@@ -204,14 +206,13 @@ export default class App extends React.PureComponent {
           onLeaveRoom: () => {
             window?.parent?.postMessage("joinRoom", "*");
           },
-          showScreenSharingButton: true,
+          //   showScreenSharingButton: true,
           lowerLeftNotification: {
             showTextChat: true,
           },
           showOnlyAudioUser: true,
           branding: {
-            logoURL:
-              "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
+            logoURL: require("./assets/zegocloud_logo.png"),
           },
           sharedLinks,
           scenario: {
@@ -236,7 +237,7 @@ export default class App extends React.PureComponent {
             ZegoUIKitPrebuilt.VideoResolution_480P,
             ZegoUIKitPrebuilt.VideoResolution_720P,
           ],
-          videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_480P,
+          videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
           onLiveStart: (user) => {
             console.warn("onLiveStart", user);
           },
@@ -321,10 +322,17 @@ export default class App extends React.PureComponent {
           this.showToast("Waiting for others to join the call.");
         }
         return {
-          //   branding: {
-          //     logoURL:
-          //       "https://www.zegocloud.com/_nuxt/img/zegocloud_logo_white.ddbab9f.png",
-          //   },
+          branding: {
+            logoURL: require("./assets/zegocloud_logo.png"),
+          },
+          onYouRemovedFromRoom: () => {
+            console.warn("【demo】onYouRemovedFromRoom");
+            this.showToast(`You've been removed by the host.`);
+          },
+          showRoomTimer: true,
+          showTurnOffRemoteCameraButton: true,
+          showTurnOffRemoteMicrophoneButton: true,
+          showRemoveUserButton: true,
         };
       },
       onCallInvitationEnded: (reason, data) => {
@@ -362,6 +370,10 @@ export default class App extends React.PureComponent {
           meetingEl.style.height = "auto";
         }
         this.inviter = {};
+        // @ts-ignore
+        document.querySelector(".preView_services") &&
+          (document.querySelector(".preView_services")!.style.display =
+            "block");
       },
       // Prebuilt内部收到呼叫邀请后，将内部数据转成对应数据后抛出
       onIncomingCallReceived: (
@@ -415,8 +427,8 @@ export default class App extends React.PureComponent {
   componentDidMount(): void {
     this.clientHeight =
       document.documentElement.clientHeight || document.body.clientHeight;
-    this.isAndroid &&
-      window.addEventListener("resize", this.onResize, { passive: false });
+
+    window.addEventListener("resize", this.onResize, { passive: false });
   }
   componentWillUnmount(): void {
     window.removeEventListener("resize", this.onResize);
@@ -513,14 +525,16 @@ export default class App extends React.PureComponent {
     }, 2000);
   }
   onResize = () => {
-    const clientHeight =
-      document.documentElement.clientHeight || document.body.clientHeight;
-    if (this.clientHeight <= clientHeight) {
-      setTimeout(() => {
-        this.invitationInput?.current?.scrollIntoView({
-          block: "start",
-        });
-      }, 20);
+    if (this.isAndroid) {
+      const clientHeight =
+        document.documentElement.clientHeight || document.body.clientHeight;
+      if (this.clientHeight <= clientHeight) {
+        setTimeout(() => {
+          this.invitationInput?.current?.scrollIntoView({
+            block: "start",
+          });
+        }, 20);
+      }
     }
   };
   onOrientationChange() {
@@ -546,20 +560,33 @@ export default class App extends React.PureComponent {
       },
       () => {
         if (!isScreenPortrait && !isIOS()) {
-          setTimeout(() => {
-            this.setViewportMeta();
-          }, 300);
+          this.setViewportMeta();
+        } else {
+          if (this.setViewportMetaTimer) {
+            clearTimeout(this.setViewportMetaTimer);
+            this.setViewportMetaTimer = null;
+          }
         }
       }
     );
   }
   // 解决横屏时键盘弹起导致视窗高度变小，页面缩小的问题
   setViewportMeta() {
+    if (this.viewportHeight) return;
     let metaEl: HTMLMetaElement | null = document.querySelector(
       "meta[name=viewport]"
     );
     let content = "";
-    const height = "height=" + window.outerHeight;
+    if (window.outerHeight > window.outerWidth) {
+      this.setViewportMetaTimer = setTimeout(() => {
+        this.setViewportMeta();
+        this.setViewportMetaTimer = null;
+      }, 100);
+      return;
+    } else {
+      this.viewportHeight = window.outerHeight;
+    }
+    const height = "height=" + this.viewportHeight;
     if (metaEl) {
       let contentArr = metaEl.content
         .split(",")
@@ -799,7 +826,7 @@ export default class App extends React.PureComponent {
           </div>
         )}
         {this.state.toastShow && (
-          <div className={APP.toast}>{this.state.toastText}</div>
+          <div className={`${APP.toast}`}>{this.state.toastText}</div>
         )}
       </div>
     );

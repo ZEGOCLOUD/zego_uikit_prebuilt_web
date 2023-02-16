@@ -171,13 +171,24 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         ) : (
           <ZegoRoomMobile
             core={this.props.core}
-            leaveRoom={() => {
-              this.props.core._config.showLeavingView && this.nextPage();
+            leaveRoom={(isKickedOut = false) => {
+              if (isKickedOut) {
+                // 被踢出房间回到预览页
+                if (this.props.core._config.showPreJoinView) {
+                  this.setState({ step: 0 });
+                }
+              } else {
+                this.props.core._config.showLeavingView && this.nextPage();
+              }
               setTimeout(() => {
-                this.props.core._config.leaveRoomCallback &&
-                  this.props.core._config.leaveRoomCallback();
-                this.props.core._config.onLeaveRoom &&
-                  this.props.core._config.onLeaveRoom();
+                if (!isKickedOut) {
+                  this.props.core._config.leaveRoomCallback &&
+                    this.props.core._config.leaveRoomCallback();
+                  this.props.core._config.onLeaveRoom &&
+                    this.props.core._config.onLeaveRoom();
+                } else {
+                  this.props.core._config?.onYouRemovedFromRoom?.();
+                }
                 this.destroyNodeWhenNoView();
                 // 主动退出房间，呼叫邀请结束
                 this.props.core._zimManager?.callInfo?.callID &&

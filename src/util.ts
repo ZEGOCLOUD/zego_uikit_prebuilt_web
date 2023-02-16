@@ -1,5 +1,3 @@
-import { stringify } from "querystring";
-
 declare function generatePrebuiltToken(
   appID: Number,
   serverSecret: string,
