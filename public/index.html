@@ -99,4 +99,34 @@
     var vConsole = new VConsole();
     console.log("Hello world");
   </script>
+  <script>
+    // Solve the problem that the version below ios Safari 15 will automatically full screen after horizontal screen, resulting in a blank area at the bottom
+    var isMobile =
+      navigator.platform.indexOf("Win") !== 0 &&
+      navigator.platform.indexOf("Mac") !== 0;
+    var isIOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+    var isSafari =
+      /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+    var safariVersion = 0;
+    var m1 = navigator.userAgent.match(/iPhone OS .*?(?= )/);
+    if (m1 && m1.length > 0) {
+      var versionWith_ = m1[0].split(" ")[m1[0].split(" ").length - 1];
+      var mainVersion = versionWith_.split("_")[0];
+      safariVersion = parseInt(mainVersion);
+    }
+    if (
+      isMobile &&
+      isIOS &&
+      isSafari &&
+      safariVersion < 15 &&
+      safariVersion > 12
+    ) {
+      window.addEventListener("orientationchange", function () {
+        document.body.style.height = "100vh";
+        setTimeout(() => {
+          document.body.style.height = "100%";
+        }, 400);
+      });
+    }
+  </script>
 </html>

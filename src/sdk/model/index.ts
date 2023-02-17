@@ -157,6 +157,7 @@ export interface ZegoCloudRoomConfig {
   showTurnOffRemoteMicrophoneButton?: Boolean; // 是否显示关闭远端麦克风按钮，默认false
   showRemoveUserButton?: Boolean; // 是否显示移出成员按钮， 默认false
   onYouRemovedFromRoom?: () => void; // 自己被移出房间回调
+  videoCodec?: "H264" | "VP8"; // 视频编解码器
 }
 
 export interface ZegoBrowserCheckProp {

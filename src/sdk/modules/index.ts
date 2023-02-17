@@ -83,12 +83,10 @@ export class ZegoCloudRTCCore {
     cameraDeviceID?: string;
     speakerDeviceID?: string;
     videoResolution?: string;
-    codec?: "H264" | "VP8";
   } = {
     loginRsp: false,
     videoRefuse: undefined,
     audioRefuse: undefined,
-    codec: "H264",
   };
   remoteStreamMap: { [index: string]: ZegoCloudRemoteMedia } = {};
   waitingHandlerStreams: {
@@ -162,6 +160,7 @@ export class ZegoCloudRTCCore {
     plugins: {},
     autoLeaveRoomWhenOnlySelfInRoom: false, // 当房间内只剩一个人的时候，自动退出房间
     showRoomTimer: false, // 是否显示房间计时器
+    videoCodec: "H264", //视频编解码器
   };
   _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
   extraInfoKey = "extra_info";
@@ -284,6 +283,7 @@ export class ZegoCloudRTCCore {
         );
         return false;
       }
+      config.videoCodec = "H264";
       config.showNonVideoUser = false;
       config.showOnlyAudioUser = true;
       config.autoLeaveRoomWhenOnlySelfInRoom = false;
@@ -485,21 +485,17 @@ export class ZegoCloudRTCCore {
       const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements(
         "webRTC"
       );
-      //   const VP8 = await ZegoCloudRTCCore._zg.checkSystemRequirements("VP8");
-      const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264");
-      //   if (VP8.result) {
-      //     this.status.codec = "VP8";
-      //   }
-      //   if (!VP8.result && H264.result) {
-      //     this.status.codec = "H264";
-      //   }
-      //   return !!webRTC.result && (!!H264.result || !!VP8.result);
-      return !!webRTC.result && !!H264.result;
+      if (this._config.videoCodec === "H264") {
+        const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264");
+        return !!webRTC.result && !!H264.result;
+      }
+
+      if (this._config.videoCodec === "VP8") {
+        const VP8 = await ZegoCloudRTCCore._zg.checkSystemRequirements("VP8");
+        return !!webRTC.result && !!VP8.result;
+      }
+      return !!webRTC.result;
     }
-    // // 直播如果用VP8转推到CDN，需要服务端额外转码，所以直播就还用h264
-    // if (this._config.scenario?.mode === ScenarioModel.LiveStreaming) {
-    //   this.status.codec = "H264";
-    // }
     return true;
   }
   setPin(userID?: string, pined?: boolean, stopUpdateUser?: boolean): void {
@@ -1287,7 +1283,7 @@ export class ZegoCloudRTCCore {
     }
     const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media, {
       ...publishOption,
-      ...{ videoCodec: this.status.codec },
+      ...{ videoCodec: this._config.videoCodec },
     });
     return res && streamID;
   }

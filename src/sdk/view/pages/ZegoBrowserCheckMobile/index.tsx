@@ -391,8 +391,8 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
           <video
             playsInline={true}
             className={`${ZegoBrowserCheckCss.video} ${
-              this.state.videoOpen ? "" : ZegoBrowserCheckCss.hideVideo
-            }`}
+              this.isIOS ? ZegoBrowserCheckCss.fill : ""
+            } ${this.state.videoOpen ? "" : ZegoBrowserCheckCss.hideVideo}`}
             autoPlay
             muted
             ref={this.videoRef}

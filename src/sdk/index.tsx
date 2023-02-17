@@ -125,7 +125,6 @@ export class ZegoUIKitPrebuilt {
             loginRsp: false,
             videoRefuse: undefined,
             audioRefuse: undefined,
-            codec: "H264",
           };
           this.joinRoom(roomConfig);
         }
