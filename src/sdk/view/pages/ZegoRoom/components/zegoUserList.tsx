@@ -168,7 +168,8 @@ export class ZegoUserList extends React.PureComponent<{
                 {user.userID === this.props.selfUserID && "(You)"}
               </div>
 
-              {user.streamList[0].media && (
+              {(user.streamList[0].media ||
+                user.streamList[0].urlsHttpsFLV) && (
                 <>
                   <div className={ZegoUserListCss.memberStatusWrapper}>
                     {this.isShownPin(user) && user.pin && (

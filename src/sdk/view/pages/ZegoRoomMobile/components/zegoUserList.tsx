@@ -96,29 +96,32 @@ export class ZegoUserList extends React.PureComponent<{
                     <a key={user.userID + "_me"}> (You) </a>
                   )}
                 </div>
-                <div className={zegoUserListCss.memberHandlers}>
-                  {this.isShownPin(user) && user.pin && (
-                    <i className={zegoUserListCss.memberUnPin}></i>
-                  )}
-                  <i
-                    className={
-                      user.streamList &&
-                      user.streamList[0] &&
-                      user.streamList[0].micStatus === "OPEN"
-                        ? zegoUserListCss.memberMicOpen
-                        : zegoUserListCss.memberMicMute
-                    }
-                  ></i>
-                  <i
-                    className={
-                      user.streamList &&
-                      user.streamList[0] &&
-                      user.streamList[0].cameraStatus === "OPEN"
-                        ? zegoUserListCss.memberCameraOpen
-                        : zegoUserListCss.memberCameraMute
-                    }
-                  ></i>
-                </div>
+                {(user.streamList[0].media ||
+                  user.streamList[0].urlsHttpsFLV) && (
+                  <div className={zegoUserListCss.memberHandlers}>
+                    {this.isShownPin(user) && user.pin && (
+                      <i className={zegoUserListCss.memberUnPin}></i>
+                    )}
+                    <i
+                      className={
+                        user.streamList &&
+                        user.streamList[0] &&
+                        user.streamList[0].micStatus === "OPEN"
+                          ? zegoUserListCss.memberMicOpen
+                          : zegoUserListCss.memberMicMute
+                      }
+                    ></i>
+                    <i
+                      className={
+                        user.streamList &&
+                        user.streamList[0] &&
+                        user.streamList[0].cameraStatus === "OPEN"
+                          ? zegoUserListCss.memberCameraOpen
+                          : zegoUserListCss.memberCameraMute
+                      }
+                    ></i>
+                  </div>
+                )}
               </div>
             );
           })}
