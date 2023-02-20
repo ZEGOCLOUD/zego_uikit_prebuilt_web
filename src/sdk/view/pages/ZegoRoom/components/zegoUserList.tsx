@@ -22,7 +22,7 @@ export class ZegoUserList extends React.PureComponent<{
   context!: React.ContextType<typeof ShowManageContext>;
   micInOption = false;
   cameraInOption = false;
-  hoverEl: HTMLDivElement | null = null;
+  hoverEl: Element | null = null;
   get hostAndCohostList() {
     return this.props.userList.filter((u) => u.streamList.length > 0);
   }
@@ -85,16 +85,22 @@ export class ZegoUserList extends React.PureComponent<{
     const volume = this.props.soundLevel![userID]?.[streamID];
     return volume === undefined ? 5 : Math.ceil((volume * 9) / 100);
   }
-  onMouseEnter(e: React.MouseEvent) {
-    const el = e.target as HTMLDivElement;
+  onMouseEnter(e: React.MouseEvent, userID: string) {
+    const el = document.querySelector(
+      `.${ZegoUserListCss.member}[data-id="${userID}"]`
+    ) as HTMLDivElement;
+    if (!el) return;
     this.hoverEl = el;
 
     if (!el.className?.includes(`${ZegoUserListCss.haveMenu}`)) return;
+
     const menu = document.querySelector(
       `.${ZegoUserListCss.memberMenuWrapper}`
     );
     if (!menu) return;
+
     if (!this.hoverEl) return;
+
     const menuHeight = menu.clientHeight;
     const offsetTop = el.offsetTop;
     const wrapperHeight =
@@ -119,7 +125,7 @@ export class ZegoUserList extends React.PureComponent<{
 
     el.classList.add(`${ZegoUserListCss.showMenu}`, `${className}`);
   }
-  onMouseLeave(e: React.MouseEvent) {
+  onMouseLeave(e: React.MouseEvent, userID: string) {
     const el = this.hoverEl || (e.target as HTMLDivElement);
     this.hoverEl = null;
     el.classList.remove(
@@ -139,14 +145,10 @@ export class ZegoUserList extends React.PureComponent<{
               key={user.userID}
               data-id={user.userID}
               onMouseEnter={(e: React.MouseEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.onMouseEnter(e);
+                this.onMouseEnter(e, user.userID);
               }}
               onMouseLeave={(e: React.MouseEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.onMouseLeave(e);
+                this.onMouseLeave(e, user.userID);
               }}
             >
               <div
@@ -263,14 +265,10 @@ export class ZegoUserList extends React.PureComponent<{
               key={user.userID}
               data-id={user.userID}
               onMouseEnter={(e: React.MouseEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.onMouseEnter(e);
+                this.onMouseEnter(e, user.userID);
               }}
               onMouseLeave={(e: React.MouseEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.onMouseLeave(e);
+                this.onMouseLeave(e, user.userID);
               }}
             >
               <div
