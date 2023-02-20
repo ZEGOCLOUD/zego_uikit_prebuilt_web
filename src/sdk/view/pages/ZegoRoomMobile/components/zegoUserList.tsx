@@ -97,7 +97,8 @@ export class ZegoUserList extends React.PureComponent<{
                   )}
                 </div>
                 {(user.streamList[0].media ||
-                  user.streamList[0].urlsHttpsFLV) && (
+                  (this.context.liveStatus === "1" &&
+                    user.streamList[0].urlsHttpsFLV)) && (
                   <div className={zegoUserListCss.memberHandlers}>
                     {this.isShownPin(user) && user.pin && (
                       <i className={zegoUserListCss.memberUnPin}></i>

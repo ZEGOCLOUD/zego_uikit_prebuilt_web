@@ -1618,6 +1618,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           showPinButton:
             !!this.props.core._config.showPinButton &&
             this.getShownUser().length > 1,
+          liveStatus: this.state.liveStatus,
           showTurnOffMicrophoneButton:
             this.showTurnOffMicrophoneButton.bind(this),
           showTurnOffCameraButton: this.showTurnOffCameraButton.bind(this),

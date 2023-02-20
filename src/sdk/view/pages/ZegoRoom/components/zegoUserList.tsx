@@ -94,12 +94,13 @@ export class ZegoUserList extends React.PureComponent<{
       `.${ZegoUserListCss.memberMenuWrapper}`
     );
     if (!menu) return;
+    if (!this.hoverEl) return;
     const menuHeight = menu.clientHeight;
     const offsetTop = el.offsetTop;
     const wrapperHeight =
       document.querySelector(`.${ZegoUserListCss.memberListWrapper}`)
         ?.parentElement?.clientHeight || 0;
-    if (!this.hoverEl) return;
+
     const top = offsetTop - menuHeight + 12; //
     const bottom = wrapperHeight - menuHeight - offsetTop - 40;
 
@@ -120,11 +121,11 @@ export class ZegoUserList extends React.PureComponent<{
   }
   onMouseLeave(e: React.MouseEvent) {
     const el = this.hoverEl || (e.target as HTMLDivElement);
+    this.hoverEl = null;
     el.classList.remove(
       `${ZegoUserListCss.showMenu}`,
       `${ZegoUserListCss.bottomMenu}`
     );
-    this.hoverEl = null;
   }
   render(): React.ReactNode {
     return (
@@ -169,7 +170,8 @@ export class ZegoUserList extends React.PureComponent<{
               </div>
 
               {(user.streamList[0].media ||
-                user.streamList[0].urlsHttpsFLV) && (
+                (this.context.liveStatus === "1" &&
+                  user.streamList[0].urlsHttpsFLV)) && (
                 <>
                   <div className={ZegoUserListCss.memberStatusWrapper}>
                     {this.isShownPin(user) && user.pin && (
@@ -260,6 +262,16 @@ export class ZegoUserList extends React.PureComponent<{
               }`}
               key={user.userID}
               data-id={user.userID}
+              onMouseEnter={(e: React.MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.onMouseEnter(e);
+              }}
+              onMouseLeave={(e: React.MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.onMouseLeave(e);
+              }}
             >
               <div
                 className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper}`}

@@ -1825,6 +1825,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               layOutStatus: this.showManager(_user) ? "MANAGE" : "ONE_VIDEO",
             });
           },
+          liveStatus: this.state.liveStatus,
           showPinButton:
             (!!this.props.core._config.showPinButton ||
               !!this.props.core._config.showTurnOffRemoteCameraButton ||
