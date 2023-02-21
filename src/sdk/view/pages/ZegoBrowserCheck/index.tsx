@@ -1,12 +1,8 @@
 import React, { ChangeEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/tools/util";
-import {
-  ScenarioModel,
-  VideoResolution,
-  ZegoBrowserCheckProp,
-} from "../../../model";
-import { ZegoSettings, ZegoSettingsAlert } from "../../components/zegoSetting";
+import { ZegoBrowserCheckProp } from "../../../model";
+import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
 import { getVideoResolution, throttle } from "../../../util";
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
@@ -175,7 +171,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             ...solution,
           },
         });
-        localVideoStream?.getVideoTracks().map((track) => {
+        localVideoStream?.getVideoTracks().forEach((track) => {
           localStream.addTrack(track);
         });
 
@@ -206,7 +202,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             audioInput: this.state.selectMic,
           },
         });
-        localAudioStream?.getAudioTracks().map((track) => {
+        localAudioStream?.getAudioTracks().forEach((track) => {
           localStream.addTrack(track);
         });
         this.setState({
@@ -263,6 +259,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           this.videoRef.current &&
           this.state.localStream
         ) {
+          // eslint-disable-next-line no-self-assign
           this.videoRef.current.srcObject = this.videoRef.current.srcObject;
         }
       }

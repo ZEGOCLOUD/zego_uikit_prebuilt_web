@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 
 import ZegoConfirmCss from "./index.module.scss";

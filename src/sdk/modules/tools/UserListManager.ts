@@ -213,7 +213,7 @@ export class ZegoCloudUserListManager {
         if (s && s.streamID && s.streamID.includes("_main")) {
           return true;
         } else {
-          console.error("【ZEGOCLOUD】mainStreamUpdate stream empty", s);
+          return false;
         }
       })
       .forEach((stream) => {
@@ -235,7 +235,7 @@ export class ZegoCloudUserListManager {
             this.remoteUserList[u_index].streamList.splice(s_index, 1);
             // 如果流全部删除了，且流对应用户不在用户变更数组中，则代表该用户也已经下线
             if (
-              this.remoteUserList[u_index].streamList.length == 0 &&
+              this.remoteUserList[u_index].streamList.length === 0 &&
               !this.userOrderList.some(
                 (uid) => uid === this.remoteUserList[u_index].userID
               )
@@ -269,6 +269,7 @@ export class ZegoCloudUserListManager {
         if (s && s.streamID && s.streamID.includes("_screensharing")) {
           return true;
         } else {
+          return false;
           // console.warn("【ZEGOCLOUD】screenStreamUpdate stream empty", s);
         }
       })

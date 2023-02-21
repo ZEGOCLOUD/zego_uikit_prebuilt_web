@@ -126,7 +126,7 @@ export function getRandomName() {
     "Thomas",
   ];
   let index = Math.round(Math.random() * names.length);
-  index = index == names.length ? index - 1 : index;
+  index = index === names.length ? index - 1 : index;
   return names[index];
 }
 export function isAndroid(): boolean {

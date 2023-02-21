@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 
 import ZegoReconnectCss from "./ZegoReconnect.module.scss";
 export class ZegoReconnect extends React.PureComponent<{

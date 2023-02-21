@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { copy } from "../../../../modules/tools/util";
 import { ZegoToast } from "../../../components/zegoToast";

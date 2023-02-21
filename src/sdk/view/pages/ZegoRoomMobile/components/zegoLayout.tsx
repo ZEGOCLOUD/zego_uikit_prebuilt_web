@@ -17,7 +17,7 @@ export class ZegoLayout extends React.PureComponent<{
     if (this.props.selectCallBack && !this.checking) {
       this.checking = true;
       this.setState({ selectLayout });
-      const res = await this.props.selectCallBack(selectLayout);
+      await this.props.selectCallBack(selectLayout);
       this.checking = false;
     }
   }
@@ -46,13 +46,13 @@ export class ZegoLayout extends React.PureComponent<{
               <i className={zegoLayoutCss.default}></i>
               <span>Auto</span>
             </div>
-            <a
+            <i
               className={
                 this.state.selectLayout === "Auto" ? zegoLayoutCss.selected : ""
               }
             >
               {" "}
-            </a>
+            </i>
           </div>
           <div
             className={zegoLayoutCss.layoutContent}
@@ -64,13 +64,13 @@ export class ZegoLayout extends React.PureComponent<{
               <i className={zegoLayoutCss.grid}></i>
               <span>Grid</span>
             </div>
-            <a
+            <i
               className={
                 this.state.selectLayout === "Grid" ? zegoLayoutCss.selected : ""
               }
             >
               {" "}
-            </a>
+            </i>
           </div>
           <div
             className={zegoLayoutCss.layoutContent}
@@ -82,7 +82,7 @@ export class ZegoLayout extends React.PureComponent<{
               <i className={zegoLayoutCss.sidebar}></i>
               <span>Sidebar</span>
             </div>
-            <a
+            <i
               className={
                 this.state.selectLayout === "Sidebar"
                   ? zegoLayoutCss.selected
@@ -90,7 +90,7 @@ export class ZegoLayout extends React.PureComponent<{
               }
             >
               {" "}
-            </a>
+            </i>
           </div>
         </div>
       </div>

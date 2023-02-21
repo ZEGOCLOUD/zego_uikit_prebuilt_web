@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React from "react";
 import { ZegoUser } from "zego-express-engine-webrtc/sdk/src/common/zego.entity";
 import { getNameFirstLetter } from "../../../util";
 import DialogCss from "./callInvitationDialog.module.scss";

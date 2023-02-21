@@ -1,3 +1,4 @@
+/* eslint-disable no-cond-assign */
 import CryptoJS from "crypto-js";
 
 export function randomNumber(len: number): number {
@@ -77,7 +78,7 @@ export function DateFormat(date: number, fmt: string) {
     if (new RegExp("(" + k + ")").test(fmt)) {
       fmt = fmt.replace(
         RegExp.$1,
-        RegExp.$1.length == 1 ? v : ("00" + v).substr(("" + v).length)
+        RegExp.$1.length === 1 ? v : ("00" + v).substr(("" + v).length)
       );
     }
   });

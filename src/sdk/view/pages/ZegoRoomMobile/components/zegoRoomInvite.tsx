@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 import zegoRoomInviteCss from "./zegoRoomInvite.module.scss";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { copy } from "../../../../modules/tools/util";

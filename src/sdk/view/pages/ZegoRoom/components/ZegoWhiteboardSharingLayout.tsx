@@ -68,7 +68,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                 }}
               ></div>
               <div className={zegoWhiteboardSharingLayout.zoom}>
-                <a
+                <i
                   className={zegoWhiteboardSharingLayout.zoom_sub}
                   onClick={() => {
                     this.setState(
@@ -92,11 +92,11 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                       }
                     );
                   }}
-                ></a>
+                ></i>
                 <span className={zegoWhiteboardSharingLayout.zoom_value}>
                   {`${this.state.currentZoom}%`}
                 </span>
-                <a
+                <i
                   className={zegoWhiteboardSharingLayout.zoom_add}
                   onClick={() => {
                     this.setState(
@@ -120,31 +120,31 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                       }
                     );
                   }}
-                ></a>
+                ></i>
               </div>
               <div className={zegoWhiteboardSharingLayout.page}>
-                <a
+                <i
                   className={zegoWhiteboardSharingLayout.page_sub}
                   onClick={() => {
                     this.props.zegoSuperBoardView
                       ?.getCurrentSuperBoardSubView()
                       ?.flipToPrePage();
                   }}
-                ></a>
+                ></i>
                 <span className={zegoWhiteboardSharingLayout.page_value}>
                   {this.context.whiteboard_page}
                 </span>
                 <span className={zegoWhiteboardSharingLayout.page_value_total}>
                   /5
                 </span>
-                <a
+                <i
                   className={zegoWhiteboardSharingLayout.page_add}
                   onClick={() => {
                     this.props.zegoSuperBoardView
                       ?.getCurrentSuperBoardSubView()
                       ?.flipToNextPage();
                   }}
-                ></a>
+                ></i>
               </div>
             </div>
             {this.context.whiteboard_showCreateClose && (
@@ -179,7 +179,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                 ZegoLoadingShow({
                   contentText: "The picture is being uploaded",
                 });
-                const result = await this.props.zegoSuperBoardView
+                await this.props.zegoSuperBoardView
                   ?.getCurrentSuperBoardSubView()
                   ?.addImage(0, 10, 10, file, (res: string) => {
                     ZegoLoadingHide();
@@ -188,12 +188,12 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                   .catch((error: any) => {
                     ZegoLoadingHide();
                     console.error("onAddImage:", error);
-                    if (error.code == 60022) {
+                    if (error.code === 60022) {
                       ZegoToast({
                         content:
                           "Failed to add image, this feature is not supported.",
                       });
-                    } else if (error.code == 3130009) {
+                    } else if (error.code === 3130009) {
                       ZegoToast({
                         content: "Failed to add image, Unsupported image type.",
                       });
@@ -215,7 +215,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                   .then(function (data: { image: string; userData?: string }) {
                     const link = document.createElement("a");
                     link.href = data.image;
-                    link.download = "snapshot" + ".png";
+                    link.download = "snapshot.png";
                     link.click();
                   });
               }}
@@ -237,8 +237,8 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                   } else if (
                     el.clientWidth &&
                     el.clientHeight &&
-                    (el.clientWidth != this.containerWidth ||
-                      el.clientHeight != this.containerHeight)
+                    (el.clientWidth !== this.containerWidth ||
+                      el.clientHeight !== this.containerHeight)
                   ) {
                     this.containerWidth = el.clientWidth;
                     this.containerHeight = el.clientHeight;

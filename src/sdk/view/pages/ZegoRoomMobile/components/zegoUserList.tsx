@@ -1,4 +1,4 @@
-import React, { ChangeEvent, RefObject } from "react";
+import React from "react";
 import zegoUserListCss from "./zegoUserList.module.scss";
 import { getNameFirstLetter, userNameColor } from "../../../../util";
 import { ZegoCloudRTCCore } from "../../../../modules";
@@ -6,7 +6,7 @@ import {
   ZegoCloudUser,
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
-import { LiveRole, ScenarioModel } from "../../../../model";
+import { ScenarioModel } from "../../../../model";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export class ZegoUserList extends React.PureComponent<{
   userList: ZegoCloudUserList;
@@ -81,7 +81,7 @@ export class ZegoUserList extends React.PureComponent<{
                       />
                     )}
                   </i>
-                  <a
+                  <span
                     key={user.userID}
                     style={{
                       maxWidth:
@@ -91,9 +91,9 @@ export class ZegoUserList extends React.PureComponent<{
                     }}
                   >
                     {user.userName}
-                  </a>
+                  </span>
                   {this.props.core._expressConfig.userID === user.userID && (
-                    <a key={user.userID + "_me"}> (You) </a>
+                    <span key={user.userID + "_me"}> (You) </span>
                   )}
                 </div>
                 {(user.streamList[0].media ||
@@ -149,7 +149,7 @@ export class ZegoUserList extends React.PureComponent<{
                       />
                     )}
                   </i>
-                  <a
+                  <span
                     key={user.userID}
                     style={{
                       maxWidth:
@@ -159,9 +159,9 @@ export class ZegoUserList extends React.PureComponent<{
                     }}
                   >
                     {user.userName}
-                  </a>
+                  </span>
                   {this.props.core._expressConfig.userID === user.userID && (
-                    <a key={user.userID + "_me"}> (You) </a>
+                    <span key={user.userID + "_me"}> (You) </span>
                   )}
                 </div>
               </div>

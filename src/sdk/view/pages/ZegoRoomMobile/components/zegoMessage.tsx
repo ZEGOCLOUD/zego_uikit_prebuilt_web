@@ -162,7 +162,7 @@ export class ZegoMessage extends React.PureComponent<{
                   <div className={zegoMessageCss.msgContentRightHeader}>
                     <span>{msg.fromUser.userName}</span>
                     {this.props.userID === msg.fromUser.userID && (
-                      <a>（You）</a>
+                      <i>（You）</i>
                     )}
                     <span>
                       {`${

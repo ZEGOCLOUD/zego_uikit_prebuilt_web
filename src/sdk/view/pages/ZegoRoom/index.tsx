@@ -319,7 +319,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             return {
               messageList: [...state.messageList, ...messageList],
               notificationList: lowerLeftNotification,
-              haveUnReadMsg: this.state.layOutStatus != "MESSAGE",
+              haveUnReadMsg: this.state.layOutStatus !== "MESSAGE",
             };
           }
         );
@@ -388,7 +388,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         return {
           liveStatus: res,
           liveCountdown:
-            preState.liveCountdown === -1 || preState.liveCountdown == 0
+            preState.liveCountdown === -1 || preState.liveCountdown === 0
               ? res === "1"
                 ? 0
                 : -1
@@ -1504,7 +1504,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           cancelText: "Cancel",
           onOk: async () => {
             // stop live
-            const res = await this.props.core.setLive("stop");
+            await this.props.core.setLive("stop");
             this.setState({
               liveCountdown: -1,
             });
@@ -1534,7 +1534,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       },
       async () => {
         if (this.state.liveCountdown === 0) {
-          const res = await this.props.core.setLive("live");
+          await this.props.core.setLive("live");
         } else {
           setTimeout(() => {
             this.liveCountdownTimer();
@@ -1664,7 +1664,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                 {this.props.core._config.scenario?.mode ===
                   ScenarioModel.LiveStreaming &&
                   (this.state.liveCountdown === 0 ||
-                    this.state.liveStatus == "1") && (
+                    this.state.liveStatus === "1") && (
                     <div className={ZegoRoomCss.liveState}>Live</div>
                   )}
               </div>

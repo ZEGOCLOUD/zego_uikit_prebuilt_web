@@ -24,7 +24,6 @@ import {
   IsLowVersionSafari,
   randomNumber,
   getVideoResolution,
-  isFireFox,
 } from "../../../util";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoUserList } from "./components/zegoUserList";
@@ -255,7 +254,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         if (
           this.props.core._config.lowerLeftNotification?.showUserJoinAndLeave
         ) {
-          userList.map((u) => {
+          userList.forEach((u) => {
             notificationList.push({
               content:
                 u.userName +
@@ -467,8 +466,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           return {
             liveStatus: res,
             liveCountdown:
-              preState.liveCountdown === -1 || preState.liveCountdown == 0
-                ? res == "1"
+              preState.liveCountdown === -1 || preState.liveCountdown === 0
+                ? res === "1"
                   ? 0
                   : -1
                 : preState.liveCountdown,
@@ -1361,7 +1360,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
-      this.state.liveStatus != "1"
+      this.state.liveStatus !== "1"
     ) {
       return (
         <div className={`${ZegoRoomCss.liveNotStart} zegoUserVideo_click`}>
@@ -1490,14 +1489,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             ) => {
               this.props.core.setWhiteboardFont(font, fontSize, color);
             }}
-            onImageAdd={async () => {
-              // if (isFireFox()) {
-              //   await this.switchCamera();
-              //   setTimeout(() => {
-              //     this.switchCamera();
-              //   }, 1000);
-              // }
-            }}
+            onImageAdd={async () => {}}
             zegoSuperBoardView={this.state.zegoSuperBoardView}
           ></ZegoWhiteboard>
         </>
@@ -1618,7 +1610,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           this.setState({ showFooter: true });
         }
       } else {
-        if (this.state.layOutStatus != "ONE_VIDEO") {
+        if (this.state.layOutStatus !== "ONE_VIDEO") {
           this.setState({
             layOutStatus: "ONE_VIDEO",
           });
@@ -1649,7 +1641,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         cancelText: "Cancel",
         onOk: async () => {
           // stop live
-          const res = await this.props.core.setLive("stop");
+          await this.props.core.setLive("stop");
           this.setState({
             liveCountdown: -1,
           });
@@ -1678,7 +1670,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       },
       async () => {
         if (this.state.liveCountdown === 0) {
-          const res = await this.props.core.setLive("live");
+          await this.props.core.setLive("live");
         } else {
           setTimeout(() => {
             this.liveCountdownTimer();
@@ -2112,7 +2104,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           {this.props.core._config.scenario?.mode ===
             ScenarioModel.LiveStreaming &&
             (this.state.liveCountdown === 0 ||
-              this.state.liveStatus == "1") && (
+              this.state.liveStatus === "1") && (
               <button
                 className={`${ZegoRoomCss.LiveStateButton}  ${
                   this.state.showFooter

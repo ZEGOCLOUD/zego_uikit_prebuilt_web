@@ -1,8 +1,7 @@
-import React, { ChangeEvent, FocusEvent, RefObject } from "react";
+import React, { ChangeEvent, RefObject } from "react";
 import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/tools/util";
 import { ZegoBrowserCheckProp } from "../../../model";
-import { ZegoModel } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoLoading } from "./components/ZegoLoading";
@@ -118,7 +117,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               // frameRate: 15,
             },
           });
-          localVideoStream?.getVideoTracks().map((track) => {
+          localVideoStream?.getVideoTracks().forEach((track) => {
             localStream.addTrack(track);
           });
           this.setState({
@@ -144,7 +143,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               audio: true,
             },
           });
-          localAudioStream?.getAudioTracks().map((track) => {
+          localAudioStream?.getAudioTracks().forEach((track) => {
             localStream.addTrack(track);
           });
           this.setState({
@@ -223,14 +222,14 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
     if (type === "video" && this.state.localStream) {
       const videoOpen = !this.state.videoOpen;
       const videoStream: MediaStream = this.state.localStream;
-      videoStream.getVideoTracks().map((track) => {
+      videoStream.getVideoTracks().forEach((track) => {
         track.enabled = videoOpen;
       });
       this.setState({ videoOpen });
     } else if (type === "audio" && this.state.localStream) {
       const audioOpen = !this.state.audioOpen;
       const audioStream: MediaStream = this.state.localStream;
-      audioStream.getAudioTracks().map((track) => {
+      audioStream.getAudioTracks().forEach((track) => {
         track.enabled = audioOpen;
       });
 
@@ -419,7 +418,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
           )}
           <div className={ZegoBrowserCheckCss.handler}>
             {this.props.core._config.showMyMicrophoneToggleButton && (
-              <a
+              <i
                 className={
                   this.state.audioOpen
                     ? ZegoBrowserCheckCss.micOpen
@@ -428,10 +427,10 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
                 onClick={() => {
                   this.toggleStream("audio");
                 }}
-              ></a>
+              ></i>
             )}
             {this.props.core._config.showMyCameraToggleButton && (
-              <a
+              <i
                 className={
                   this.state.videoOpen
                     ? ZegoBrowserCheckCss.cameraOpen
@@ -440,7 +439,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
                 onClick={() => {
                   this.toggleStream("video");
                 }}
-              ></a>
+              ></i>
             )}
           </div>
         </div>
@@ -454,7 +453,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
               ref={this.nameInputRef}
               value={this.state.userName}
               className={
-                this.state.userName != this.props.core._expressConfig.userName
+                this.state.userName !== this.props.core._expressConfig.userName
                   ? ZegoBrowserCheckCss.focus
                   : ""
               }

@@ -6,7 +6,7 @@ import ShowPCManageContext, {
   ShowManageType,
 } from "../../../context/showManage";
 import { ZegoWhiteboardToolsTextTooTips } from "./ZegoWhiteboardToolsTextToolTips";
-import { chooseFile, isIOS, isSafari } from "../../../../../util";
+import { chooseFile } from "../../../../../util";
 
 export class ZegoWhiteboardTools extends React.PureComponent<{
   onToolChange: (type: number, fontSize?: number, color?: string) => void;

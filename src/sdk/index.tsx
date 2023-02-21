@@ -1,4 +1,3 @@
-import { type } from "os";
 import ReactDOM, { Root } from "react-dom/client";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
 import ZIM from "zego-zim-web";

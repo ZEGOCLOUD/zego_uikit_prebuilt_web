@@ -703,14 +703,14 @@ export class ZegoCloudRTCCore {
     if (this._currentPage === "Room") {
       this._roomExtraInfo = value;
       this.zum.setLiveStates(this._roomExtraInfo.live_status);
-      if (this._config.onLiveStart && this._roomExtraInfo.live_status == "1") {
+      if (this._config.onLiveStart && this._roomExtraInfo.live_status === "1") {
         this._config.onLiveStart({
           userID: this._expressConfig.userID,
           userName: this._expressConfig.userID,
         });
       } else if (
         this._config.onLiveEnd &&
-        this._roomExtraInfo.live_status == "0"
+        this._roomExtraInfo.live_status === "0"
       ) {
         this._config.onLiveEnd({
           userID: this._expressConfig.userID,
@@ -835,7 +835,7 @@ export class ZegoCloudRTCCore {
 
           // 删除流中，去除上次要新增的
           streamList = streamList.filter((s) => {
-            if (willDelete.some((wd) => wd == s.streamID)) {
+            if (willDelete.some((wd) => wd === s.streamID)) {
               return false;
             } else {
               return true;

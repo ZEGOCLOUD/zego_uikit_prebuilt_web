@@ -80,7 +80,6 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
     if (this.state.isSupportWebRTC) {
       if (this.state.step === 0 && this.props.core) {
         if (typeof SDK_ENV === "undefined") {
-          const root = document.getElementById("root");
           const nav = document.querySelector(
             "#root .preView_nav"
           ) as HTMLDivElement;
@@ -115,7 +114,6 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         this.props.core.setCurrentPage("BrowserCheckPage");
       } else if (this.state.step === 1 && this.props.core) {
         if (typeof SDK_ENV === "undefined") {
-          const root = document.getElementById("root");
           const nav = document.querySelector(
             "#root .preView_nav"
           ) as HTMLDivElement;

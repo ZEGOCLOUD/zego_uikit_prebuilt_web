@@ -1,5 +1,5 @@
 import "polyfill-object.fromentries";
-import React, { ChangeEvent, Ref, RefObject } from "react";
+import React, { ChangeEvent, RefObject } from "react";
 // @ts-ignore
 import APP from "./App.module.scss";
 import { ZegoUIKitPrebuilt } from "./sdk/index";
@@ -619,7 +619,7 @@ export default class App extends React.PureComponent {
             ></div>
             <div className={`${APP.link} ${isPc() ? "" : APP.mobileLink}`}>
               {this.state.showSettingsBtn && (
-                <a
+                <div
                   className={APP.link_item}
                   onClick={() => {
                     this.setState({
@@ -632,7 +632,7 @@ export default class App extends React.PureComponent {
                 >
                   <span className={APP.icon_settings}></span>{" "}
                   {isPc() && "Settings"}
-                </a>
+                </div>
               )}
               <a
                 href={this.state.docs}

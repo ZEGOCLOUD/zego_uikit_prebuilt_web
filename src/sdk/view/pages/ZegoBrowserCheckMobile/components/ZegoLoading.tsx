@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React from "react";
 
 import ZegoLoadingCss from "./ZegoLoading.module.scss";
 export class ZegoLoading extends React.Component<{

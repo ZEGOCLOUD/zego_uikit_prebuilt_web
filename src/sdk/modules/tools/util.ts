@@ -1,5 +1,3 @@
-import { ZegoStreamType } from "../../model";
-
 export function generateVideoView(
   isVideo: boolean,
   userID: string
