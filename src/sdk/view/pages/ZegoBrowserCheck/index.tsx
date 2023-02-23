@@ -117,7 +117,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       ) {
         speakerDevices.push({
           deviceID: "default",
-          deviceName: "efault speaker",
+          deviceName: "default speaker",
         });
       }
     }
@@ -180,7 +180,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           isVideoOpening: false,
         });
       } else {
-        this.videoRefuse = true;
+        // this.videoRefuse = true;
       }
     } catch (error) {
       this.videoRefuse = true;

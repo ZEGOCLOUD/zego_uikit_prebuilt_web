@@ -43,7 +43,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           this.props.core.status.videoRefuse = true;
         }
       } else {
-        this.props.core.status.videoRefuse = true;
+        // this.props.core.status.videoRefuse = true;
       }
       // 检查麦克风
       if (this.props.core._config.turnOnMicrophoneWhenJoining) {
@@ -54,7 +54,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           this.props.core.status.audioRefuse = true;
         }
       } else {
-        this.props.core.status.audioRefuse = true;
+        // this.props.core.status.audioRefuse = true;
       }
     }
   }
