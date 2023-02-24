@@ -25,7 +25,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
     // const notSupportPhone =
     //   !isPc() && isIOS() && IsSafari();
     const res = await this.props.core.checkWebRTC();
-    await this.deviceCheck();
+    // await this.deviceCheck();
     this.setState({
       isSupportWebRTC: res,
     });

@@ -452,7 +452,12 @@ export class ZegoCloudRTCCore {
     );
     this.zum.showOnlyAudioUser = !!this._config.showOnlyAudioUser;
     this.zum.setShowNonVideo(!!this._config.showNonVideoUser);
-
+    if (
+      !this._config.turnOnCameraWhenJoining &&
+      !this._config.showMyCameraToggleButton
+    ) {
+      this.status.videoRefuse = true;
+    }
     if (config.console) {
       let logLevel: "debug" | "info" | "warn" | "error" | "report" | "disable" =
         "debug";
