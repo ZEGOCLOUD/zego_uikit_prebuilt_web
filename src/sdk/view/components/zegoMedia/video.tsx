@@ -24,6 +24,7 @@ export default class ZegoVideo extends React.PureComponent<{
   lastDecodedFrame = 0;
   retryTime = 0;
   retryTimer: NodeJS.Timer | null = null;
+  reloadTimer: NodeJS.Timer | null = null;
   state: {
     isPaused: boolean;
   } = {
@@ -50,6 +51,13 @@ export default class ZegoVideo extends React.PureComponent<{
       if (this.props.userInfo?.streamList?.[0]?.media) {
         if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
           el.srcObject = this.props.userInfo?.streamList?.[0]?.media!;
+          el.setAttribute(
+            "cameraOpen",
+            this.props.userInfo?.streamList?.[0]?.cameraStatus
+          );
+          this.safariAutoPlayTimer();
+        } else {
+          this.safariVideoMutedInvalidWhenOpenCamera(el);
         }
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
         if (isSafari()) {
@@ -63,11 +71,13 @@ export default class ZegoVideo extends React.PureComponent<{
                 .catch((error) => {
                   // Auto-play was prevented
                   // Show a UI element to let the user manually start playback
+                  console.error("play", error);
                   this.setState({
                     isPaused: true,
                   });
                 })
                 .then(() => {
+                  console.error("play");
                   // Auto-play started
                   this.setState({
                     isPaused: false,
@@ -160,6 +170,33 @@ export default class ZegoVideo extends React.PureComponent<{
       clearTimeout(this.loadTimer);
       this.loadTimer = null;
     }
+    this.reloadTimer && clearTimeout(this.reloadTimer);
+  }
+  safariAutoPlayTimer() {
+    // 修复Safari15.3浏览器听不到拉流声音的问题
+    if (isSafari() && !this.videoRef?.muted) {
+      const currentTime = this.videoRef?.currentTime;
+      this.reloadTimer = setTimeout(() => {
+        if (currentTime === this.videoRef?.currentTime) {
+          this.videoRef?.load();
+          this.safariAutoPlayTimer();
+        }
+      }, 1000);
+    }
+  }
+  //修复Safari15.3，关闭摄像头进房后，再打开摄像头，会听到自己的声音
+  safariVideoMutedInvalidWhenOpenCamera(el: HTMLVideoElement) {
+    if (!isSafari()) return;
+    if (
+      el.getAttribute("cameraOpen") !==
+      this.props.userInfo?.streamList?.[0]?.cameraStatus
+    ) {
+      el.setAttribute(
+        "cameraOpen",
+        this.props.userInfo?.streamList?.[0]?.cameraStatus
+      );
+      el.load();
+    }
   }
   render(): React.ReactNode {
     return (
@@ -197,6 +234,7 @@ export default class ZegoVideo extends React.PureComponent<{
                 });
               })
               .catch((error) => {
+                console.error("onCanPlay", error);
                 this.setState({
                   isPaused: true,
                 });
@@ -204,6 +242,7 @@ export default class ZegoVideo extends React.PureComponent<{
             this.props.onCanPlay && this.props.onCanPlay();
           }}
           onPlaying={() => {
+            this.safariAutoPlayTimer();
             this.setState({
               isPaused: false,
             });
