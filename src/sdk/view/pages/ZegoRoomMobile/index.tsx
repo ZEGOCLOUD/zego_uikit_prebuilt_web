@@ -2046,6 +2046,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                         ? ZegoRoomCss.goLiveEnabled
                         : ""
                     }`}
+                    id="ZegoLiveButton"
                     onClick={() => {
                       this.setLive();
                     }}

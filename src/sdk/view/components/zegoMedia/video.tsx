@@ -71,13 +71,11 @@ export default class ZegoVideo extends React.PureComponent<{
                 .catch((error) => {
                   // Auto-play was prevented
                   // Show a UI element to let the user manually start playback
-                  console.error("play", error);
                   this.setState({
                     isPaused: true,
                   });
                 })
                 .then(() => {
-                  console.error("play");
                   // Auto-play started
                   this.setState({
                     isPaused: false,
@@ -173,8 +171,8 @@ export default class ZegoVideo extends React.PureComponent<{
     this.reloadTimer && clearTimeout(this.reloadTimer);
   }
   safariAutoPlayTimer() {
-    // 修复Safari15.3浏览器听不到拉流声音的问题
-    if (isSafari() && !this.videoRef?.muted) {
+    // 修复浏览器听不到拉流声音的问题 Safari15.3，chrome拒绝权限的时候
+    if (!this.videoRef?.muted) {
       const currentTime = this.videoRef?.currentTime;
       this.reloadTimer = setTimeout(() => {
         if (currentTime === this.videoRef?.currentTime) {
@@ -234,7 +232,6 @@ export default class ZegoVideo extends React.PureComponent<{
                 });
               })
               .catch((error) => {
-                console.error("onCanPlay", error);
                 this.setState({
                   isPaused: true,
                 });
@@ -242,7 +239,6 @@ export default class ZegoVideo extends React.PureComponent<{
             this.props.onCanPlay && this.props.onCanPlay();
           }}
           onPlaying={() => {
-            this.safariAutoPlayTimer();
             this.setState({
               isPaused: false,
             });
