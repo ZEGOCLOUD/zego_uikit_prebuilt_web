@@ -165,13 +165,10 @@ export class ZegoCloudRTCCore {
   _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
   extraInfoKey = "extra_info";
   _roomExtraInfo: { [index: string]: any } = {
-    live_status: {
-      v: 0,
-      u: "xxx",
-      r: 0,
-    },
+    live_status: "0",
   };
   NetworkStatusTimer: NodeJS.Timer | null = null;
+  hostSetterTimer: NodeJS.Timer | null = null;
   get isCDNLive(): boolean {
     return (
       this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
@@ -725,6 +722,29 @@ export class ZegoCloudRTCCore {
 
       this.onRoomLiveStateUpdateCallBack &&
         this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status);
+      // 直播时设置房间属性host
+      if (this.hostSetterTimer) {
+        clearTimeout(this.hostSetterTimer);
+        this.hostSetterTimer = null;
+      }
+      if (
+        this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+        this._config.scenario.config?.role === LiveRole.Host &&
+        !this._roomExtraInfo.host
+      ) {
+        const setRoomExtraInfo = {
+          ...this._roomExtraInfo,
+          ...{
+            host: this._expressConfig.userID,
+          },
+        };
+        ZegoCloudRTCCore._zg.setRoomExtraInfo(
+          ZegoCloudRTCCore._instance._expressConfig.roomID,
+          "extra_info",
+          JSON.stringify(setRoomExtraInfo)
+        );
+        this._roomExtraInfo = setRoomExtraInfo;
+      }
     } else if (
       this._currentPage === "BrowserCheckPage" ||
       this._currentPage === "RejoinRoom"
@@ -861,6 +881,7 @@ export class ZegoCloudRTCCore {
         roomExtraInfoList.forEach((info) => {
           if (info.key === this.extraInfoKey) {
             this.roomExtraInfo = JSON.parse(info.value);
+            console.warn("roomExtraInfo", this.roomExtraInfo);
           }
         });
       }
@@ -911,12 +932,7 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.on(
       "roomUserUpdate",
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
-        console.warn(
-          "【ZEGOCLOUD】roomUserUpdate",
-          updateType,
-          userList,
-          this.onRemoteUserUpdateCallBack
-        );
+        console.warn("【ZEGOCLOUD】roomUserUpdate", updateType, userList);
         if (this.onRemoteUserUpdateCallBack) {
           this.onRemoteUserUpdateCallBack(roomID, updateType, userList);
         } else {
@@ -1078,6 +1094,7 @@ export class ZegoCloudRTCCore {
             this.status.loginRsp = errorCode === 0;
             res(errorCode);
           }
+          console.warn("extendedData", extendedData);
         }
       );
 
@@ -1093,6 +1110,28 @@ export class ZegoCloudRTCCore {
           maxMemberCount: ZegoCloudRTCCore._instance._config.maxUsers,
         }
       );
+      if (
+        this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+        this._config.scenario.config?.role === LiveRole.Host &&
+        this.roomExtraInfo.host === undefined
+      ) {
+        this.hostSetterTimer = setTimeout(() => {
+          if (!this.roomExtraInfo.host) {
+            const setRoomExtraInfo = {
+              ...this.roomExtraInfo,
+              ...{
+                host: this._expressConfig.userID,
+              },
+            };
+            ZegoCloudRTCCore._zg.setRoomExtraInfo(
+              ZegoCloudRTCCore._instance._expressConfig.roomID,
+              "extra_info",
+              JSON.stringify(setRoomExtraInfo)
+            );
+            this._roomExtraInfo = setRoomExtraInfo;
+          }
+        }, 1000);
+      }
       if (this.zegoSuperBoard) {
         this.zegoSuperBoard.setToolType(1);
         this.zegoSuperBoard.setBrushColor("#333333");
@@ -1554,7 +1593,21 @@ export class ZegoCloudRTCCore {
     }
     this.remoteStreamMap = {};
     this.waitingHandlerStreams = { add: [], delete: [] };
-
+    if (this.roomExtraInfo?.host === this._expressConfig.userID) {
+      // host离开房间，清除房间属性host
+      const setRoomExtraInfo = {
+        ...this._roomExtraInfo,
+        ...{
+          host: "",
+        },
+      };
+      ZegoCloudRTCCore._zg.setRoomExtraInfo(
+        ZegoCloudRTCCore._instance._expressConfig.roomID,
+        "extra_info",
+        JSON.stringify(setRoomExtraInfo)
+      );
+      this._roomExtraInfo = setRoomExtraInfo;
+    }
     ZegoCloudRTCCore._zg.logoutRoom();
     this.status.loginRsp = false;
   }
