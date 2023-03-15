@@ -20,9 +20,11 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
   state: {
     currentZoom: number;
     rows: 1 | 2;
+    fullScreen: boolean;
   } = {
     currentZoom: 100,
     rows: 1,
+    fullScreen: false,
   };
   static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
@@ -35,6 +37,9 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
       currentZoom: currentZoom ? currentZoom * 100 : 100,
     });
   }
+  componentWillUnmount(): void {
+    this.props?.handleFullScreen?.(false);
+  }
   render(): React.ReactNode {
     let wrapClassName = clsx({
       [ZegoSidebarCss.rightWrapper]: true,
@@ -43,6 +48,9 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
       [ZegoSidebarCss.threeRow]: this.props.videoShowNumber === 3,
       [ZegoSidebarCss.twoRow]: this.props.videoShowNumber === 2,
       [ZegoSidebarCss.oneRow]: this.props.videoShowNumber === 1,
+      [ZegoSidebarCss.fullScreen]:
+        (this.state.fullScreen && this.props.userList.length > 0) ||
+        this.props.userList.length === 0,
     });
     return (
       <div className={ZegoSidebarCss.sidebarWrapper}>
@@ -247,6 +255,22 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                 }
               }}
             ></div>
+            <div
+              className={`${ZegoSidebarCss.fullScreenBtn} ${
+                this.state.fullScreen ? ZegoSidebarCss.expend : ""
+              } ${ZegoSidebarCss.whiteboardFull}`}
+              onClick={() => {
+                this.props.handleFullScreen &&
+                  this.props.handleFullScreen(!this.state.fullScreen);
+                this.setState({
+                  fullScreen: !this.state.fullScreen,
+                });
+              }}
+            >
+              <p>
+                {this.state.fullScreen ? "Exit full screen" : "Full screen"}
+              </p>
+            </div>
           </div>
         </div>
         {this.props.userList.length > 0 && (

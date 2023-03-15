@@ -1954,8 +1954,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                             </div>
                           )}
 
-                        {this.props.core._config.preJoinViewConfig
-                          ?.invitationLink && (
+                        {this.props.core._config.showRoomDetailsButton && (
                           <div
                             className={ZegoRoomCss.roomDetail}
                             onClick={(ev) => {
@@ -2063,7 +2062,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           )}
           {this.getListScreen()}
           <>{this.getHiddenUser()}</>
-          <div className={ZegoRoomCss.notify}>
+          <div className={ZegoRoomCss.notify} id="zego_left_notify_wrapper">
             {this.state.notificationList.slice(startIndex).map((notify) => {
               if (notify.type === "MSG") {
                 return (

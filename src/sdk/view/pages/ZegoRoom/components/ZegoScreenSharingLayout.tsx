@@ -24,6 +24,9 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
       });
     }
   }
+  componentWillUnmount(): void {
+    this.props?.handleFullScreen?.(false);
+  }
   onCanPlay() {
     this.setState({
       loadingMask: false,

@@ -158,6 +158,27 @@ export interface ZegoCloudRoomConfig {
   showRemoveUserButton?: Boolean; // 是否显示移出成员按钮， 默认false
   onYouRemovedFromRoom?: () => void; // 自己被移出房间回调
   videoCodec?: "H264" | "VP8"; // 视频编解码器
+  //   1.7.3
+  showRoomDetailsButton?: boolean; // 是否显示RoomDetail
+  onInRoomMessageReceived?: (messageInfo: InRoomMessageInfo) => void;
+  onInRoomCommandReceived?: (fromUser: ZegoUser, command: string) => void; // 房间自定义消息回调
+  onInRoomTextMessageReceived?: (
+    messages: ZegoSignalingInRoomTextMessage[]
+  ) => void; // zim房间文本消息回调
+}
+
+export interface ZegoSignalingInRoomTextMessage {
+  messageID: string;
+  timestamp: number;
+  orderKey: number;
+  senderUserID: string;
+  text: string;
+}
+export interface InRoomMessageInfo {
+  fromUser: ZegoUser;
+  message: string;
+  sendTime: number;
+  messageID: number;
 }
 
 export interface ZegoBrowserCheckProp {

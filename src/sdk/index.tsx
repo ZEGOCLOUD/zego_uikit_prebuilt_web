@@ -243,4 +243,11 @@ export class ZegoUIKitPrebuilt {
       notificationConfig
     );
   }
+
+  async sendInRoomCommand(
+    command: string,
+    toUserIDs: string[]
+  ): Promise<boolean> {
+    return await ZegoUIKitPrebuilt.core!.sendInRoomCommand(command, toUserIDs);
+  }
 }

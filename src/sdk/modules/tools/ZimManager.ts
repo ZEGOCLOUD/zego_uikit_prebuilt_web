@@ -2,6 +2,7 @@ import ZIM, {
   ZIMCallInvitationSentResult,
   ZIMCallInviteConfig,
   ZIMEventOfConnectionStateChangedResult,
+  ZIMEventOfReceiveConversationMessageResult,
 } from "zego-zim-web";
 import {
   CallInvitationEndReason,
@@ -10,6 +11,7 @@ import {
   ZegoCallInvitationConfig,
   ZegoCloudRoomConfig,
   ZegoInvitationType,
+  ZegoSignalingInRoomTextMessage,
   ZegoSignalingPluginNotificationConfig,
   ZegoUser,
 } from "../../model";
@@ -321,6 +323,23 @@ export class ZimManager {
         console.warn("【zim】connectionStateChanged", data);
       }
     );
+    this._zim?.on(
+      "receiveRoomMessage",
+      (zim: ZIM, data: ZIMEventOfReceiveConversationMessageResult) => {
+        console.warn("receiveRoomMessage", data);
+        const textMsgs = data.messageList
+          .filter((msg) => msg.type === 1)
+          .map((msg) => ({
+            messageID: msg.messageID,
+            timestamp: msg.timestamp,
+            orderKey: msg.orderKey,
+            senderUserID: msg.senderUserID,
+            text: msg.message as string,
+          }));
+        this.onRoomTextMessageCallback &&
+          this.onRoomTextMessageCallback(textMsgs);
+      }
+    );
   }
 
   private answeredTimeoutCallback(invitees: string[]) {
@@ -616,5 +635,36 @@ export class ZimManager {
       clearTimeout(this.incomingTimer);
       this.incomingTimer = null;
     }
+  }
+  private onRoomTextMessageCallback = (
+    msgs: ZegoSignalingInRoomTextMessage[]
+  ) => {};
+  onRoomTextMessage(func: (msgs: ZegoSignalingInRoomTextMessage[]) => void) {
+    this.onRoomTextMessageCallback = func;
+  }
+  enterRoom() {
+    if (this.isLogin) {
+      this._zim
+        ?.enterRoom({
+          roomID: this.callInfo.callID || this.expressConfig.roomID,
+          roomName: this.callInfo.callID || this.expressConfig.roomID,
+        })
+        .then((res) => {
+          console.warn("【zim enterRoom】success");
+        })
+        .catch((error) => {
+          console.error("【zim enterRoom】failed", error);
+        });
+    }
+  }
+  leaveRoom() {
+    this._zim
+      ?.leaveRoom(this.callInfo.callID || this.expressConfig.roomID)
+      .then((res) => {
+        console.warn("【zim leaveRoom】success");
+      })
+      .catch((error) => {
+        console.error("【zim leaveRoom】failed", error);
+      });
   }
 }

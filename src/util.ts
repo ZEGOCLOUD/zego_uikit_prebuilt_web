@@ -135,11 +135,15 @@ export function isAndroid(): boolean {
 }
 export function isPc(): boolean {
   const p = navigator.platform;
-  let system = { win: p.indexOf("Win") === 0, mac: p.indexOf("Mac") === 0 };
+  let system = {
+    win: p.indexOf("Win") === 0,
+    mac: p.indexOf("Mac") === 0,
+    linux: p.indexOf("Linux") === 0,
+  };
   if (process.env.REACT_APP_MOBILE === "yes") {
     return false;
   }
-  return system.win || system.mac;
+  return system.win || system.mac || system.linux;
 }
 export function isIOS() {
   let u = navigator.userAgent;

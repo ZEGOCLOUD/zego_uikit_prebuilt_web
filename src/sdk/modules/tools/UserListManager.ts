@@ -184,7 +184,7 @@ export class ZegoCloudUserListManager {
               this.userOrderList.findIndex((uid) => uid === a.userID)
             );
           });
-          console.error("【ZEGOCLOUD】 repeat u ser add!!");
+          //   console.error("【ZEGOCLOUD】 repeat u ser add!!");
         }
       });
     } else if (updateType === "DELETE") {

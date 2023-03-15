@@ -1701,7 +1701,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             <div className={ZegoRoomCss.contentLeft}>
               {this.getLayoutScreen()}
               {this.getHiddenUser()}
-              <div className={ZegoRoomCss.notify}>
+              <div className={ZegoRoomCss.notify} id="zego_left_notify_wrapper">
                 {this.state.notificationList
                   .slice(startIndex)
                   .map((notify, index) => {
@@ -1886,7 +1886,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
               ></div>
             </div>
             <div className={ZegoRoomCss.handlerRight}>
-              {this.props.core._config.preJoinViewConfig?.invitationLink && (
+              {this.props.core._config.showRoomDetailsButton && (
                 <div
                   className={ZegoRoomCss.inviteButton}
                   onClick={() => {

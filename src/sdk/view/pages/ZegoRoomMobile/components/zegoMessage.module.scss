@@ -150,13 +150,7 @@
       }
 
       .msgContentRightHeader {
-        span {
-          max-width: vw(220px);
-          margin-right: 0 !important;
-        }
-        i {
-          margin-right: vw(14px);
-        }
+        flex-direction: row-reverse;
       }
 
       .msgContentRight {
