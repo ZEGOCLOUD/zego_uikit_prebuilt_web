@@ -170,16 +170,18 @@ export default class App extends React.PureComponent {
           userName || getRandomName()
         );
         // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        //   1484647939,
-        //   "22076fd0a8388f31dc1f6e344171****",
+        //     1484647939,
+        //     "22076fd0a8388f31dc1f6e344171****",
         //   roomID,
         //   randomNumID(8),
         //   userName || getRandomName(),
         //   7200
         // );
         const zp = ZegoUIKitPrebuilt.create(token);
+        //@ts-ignore // just for debugger
+        window.zp = zp;
         process.env.REACT_APP_PATH !== "live_stream" &&
-          zp.addPlugins({ ZegoSuperBoardManager });
+          zp.addPlugins({ ZegoSuperBoardManager, ZIM });
         const param: ZegoCloudRoomConfig = {
           console: ZegoUIKitPrebuilt.ConsoleNone,
           //   turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
@@ -194,6 +196,7 @@ export default class App extends React.PureComponent {
           preJoinViewConfig: {
             title: "Join Room",
           },
+          //   showRoomDetailsButton: false,
           showTextChat: true,
           showUserList: true,
           showLeavingView: true,
@@ -205,6 +208,19 @@ export default class App extends React.PureComponent {
           }, // 退出房间回调
           onLeaveRoom: () => {
             window?.parent?.postMessage("joinRoom", "*");
+          },
+          onInRoomMessageReceived: (messageInfo) => {
+            console.warn("onInRoomMessageReceived", messageInfo);
+          },
+          onInRoomCommandReceived: (fromUser, command) => {
+            console.warn(
+              "onInRoomCommandReceived",
+              fromUser,
+              JSON.parse(command)
+            );
+          },
+          onInRoomTextMessageReceived(messages) {
+            console.warn("onInRoomTextMessageReceived", messages);
           },
           //   showScreenSharingButton: true,
           lowerLeftNotification: {
@@ -370,8 +386,9 @@ export default class App extends React.PureComponent {
           meetingEl.style.height = "auto";
         }
         this.inviter = {};
-        // @ts-ignore
+
         document.querySelector(".preView_services") &&
+          // @ts-ignore
           (document.querySelector(".preView_services")!.style.display =
             "block");
       },

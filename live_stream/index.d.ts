@@ -58,6 +58,12 @@ declare enum ConsoleLevel {
   Error = "Error",
   None = "None",
 }
+declare interface InRoomMessageInfo {
+  fromUser: ZegoUser;
+  message: string;
+  sendTime: number;
+  messageID: number;
+}
 declare interface ZegoCloudRoomConfig {
   // 1 UI controls
   // 1.1 Global
@@ -79,7 +85,8 @@ declare interface ZegoCloudRoomConfig {
   videoResolutionDefault?: VideoResolution; // The default video resolution.
 
   // 1.3 Room view
-  showRoomTimer: boolean; //  Whether to display the timer. Not displayed by default.
+  showRoomDetailButton?: boolean; // Whether to display room detail。Displayed by default
+  showRoomTimer?: boolean; //  Whether to display the timer. Not displayed by default.
   showMyCameraToggleButton?: boolean; // Whether to display the button for toggling my camera. Displayed by default.
   showMyMicrophoneToggleButton?: boolean; // Whether to display the button for toggling my microphone. Displayed by default.
   showAudioVideoSettingsButton?: boolean; // Whether to display the button for audio and video settings. Displayed by default.
@@ -117,9 +124,20 @@ declare interface ZegoCloudRoomConfig {
   onUserAvatarSetter?: (user: ZegoUser[]) => void; // Callback for the user avatar can be set.
   onLiveStart?: (user: ZegoUser) => void; //  Callback for livestream starts.
   onLiveEnd?: (user: ZegoUser) => void; // Callback for livestream ends.
-  onYouRemovedFromRoom: () => void; // Callback for me removed from the room.
+  onYouRemovedFromRoom?: () => void; // Callback for me removed from the room.
+  onInRoomMessageReceived?: (messageInfo: InRoomMessageInfo) => void; // Callback for room chat message
+  onInRoomCommandReceived?: (fromUser: ZegoUser, command: string) => void; // Callback for room command message
+  onInRoomTextMessageReceived?: (
+    messages: ZegoSignalingInRoomTextMessage[]
+  ) => void; // Callback for room signaling text message
 }
-
+declare interface ZegoSignalingInRoomTextMessage {
+  messageID: string;
+  timestamp: number;
+  orderKey: number;
+  senderUserID: string;
+  text: string;
+}
 declare enum ZegoInvitationType {
   VoiceCall = 0,
   VideoCall,
