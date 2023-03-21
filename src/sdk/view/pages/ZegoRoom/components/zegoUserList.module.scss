@@ -181,4 +181,24 @@
       }
     }
   }
+  .requestCohostWrapper {
+    display: flex;
+    & > div {
+      padding: 4px 11px;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .disagreeBtn {
+      margin-right: 10px;
+      color: rgba($color: #ffffff, $alpha: 0.9);
+      background-color: rgba($color: #fff, $alpha: 0.1);
+    }
+    .agreeBtn {
+      color: #fff;
+      background-color: #0055ff;
+    }
+  }
 }

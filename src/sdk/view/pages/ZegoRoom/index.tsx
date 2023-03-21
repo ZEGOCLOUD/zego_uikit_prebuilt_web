@@ -5,6 +5,7 @@ import {
   LiveStreamingMode,
   ScenarioModel,
   SoundLevelMap,
+  UserListMenuItemType,
   ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
   ZegoNotification,
@@ -1475,20 +1476,103 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       document.querySelector(".zego_model_parent")
     );
   }
-  handleMenuItem(
-    type: "Pin" | "Mic" | "Camera" | "Remove",
-    user: ZegoCloudUser
-  ) {
-    if (type === "Pin") {
-      this.handleMenuPin(user.userID);
-    } else if (type === "Mic") {
-      this.handleMenuMuteMic(user);
-    } else if (type === "Camera") {
-      this.handleMenuMuteCamera(user);
-    } else if (type === "Remove") {
-      this.handleMenuRemoveUser(user);
-    }
+  handleMenuItem(type: UserListMenuItemType, user: ZegoCloudUser) {
+    this.menuOptions[type](user);
+    // switch (type) {
+    //   case UserListMenuItemType.ChangePin: {
+    //     this.handleMenuPin(user.userID);
+    //   }
+    // }
+    // if (type === "Pin") {
+    // } else if (type === "Mic") {
+    //   this.handleMenuMuteMic(user);
+    // } else if (type === "Camera") {
+    //   this.handleMenuMuteCamera(user);
+    // } else if (type === "Remove") {
+    //   this.handleMenuRemoveUser(user);
+    // }
   }
+  menuOptions: { [key in UserListMenuItemType]: Function } = {
+    [UserListMenuItemType.ChangePin]: (userID: string) => {
+      if (userID === this.props.core._expressConfig.userID) {
+        this.localUserPin = !this.localUserPin;
+        this.props.core.setPin();
+      } else {
+        this.localUserPin = false;
+        this.props.core.setPin(userID);
+      }
+      this.props.core.setSidebarLayOut(
+        this.getScreenSharingUser.length > 0
+          ? false
+          : this.localUserPin === false
+      );
+      this.setState({ layout: "Sidebar" });
+    },
+    [UserListMenuItemType.MuteMic]: async (user: ZegoCloudUser) => {
+      if (user.streamList?.[0]?.micStatus === "MUTE") return;
+      let res;
+      try {
+        if (user.userID === this.props.core._expressConfig.userID) {
+          res = await this.toggleMic();
+        } else {
+          res = await this.props.core.turnRemoteMicrophoneOff(user.userID);
+        }
+        if (res) {
+          ZegoToast({
+            content: "Turned off the microphone successfully.",
+          });
+        }
+      } catch (error) {}
+    },
+    [UserListMenuItemType.MuteCamera]: async (user: ZegoCloudUser) => {
+      if (user.streamList?.[0]?.cameraStatus === "MUTE") return;
+      let res;
+      try {
+        if (user.userID === this.props.core._expressConfig.userID) {
+          res = await this.toggleCamera();
+        } else {
+          res = await this.props.core.turnRemoteCameraOff(user.userID);
+        }
+        if (res) {
+          ZegoToast({
+            content: "Turned off the camera successfully.",
+          });
+        }
+      } catch (error) {}
+    },
+    [UserListMenuItemType.RemoveUser]: (user: ZegoCloudUser) => {
+      ZegoModelShow(
+        {
+          header: "Remove participant",
+          contentText: "Are you sure to remove " + user.userName + " ?",
+          okText: "Confirm",
+          cancelText: "Cancel",
+          onOk: () => {
+            this.props.core.removeMember(user.userID);
+          },
+        },
+        document.querySelector(".zego_model_parent")
+      );
+    },
+    [UserListMenuItemType.InviteCohost]: (user: ZegoCloudUser) => {},
+    [UserListMenuItemType.RemoveCohost]: (user: ZegoCloudUser) => {
+      ZegoModelShow(
+        {
+          header: "Invitation",
+          contentText: "The host invites you to have a connection.",
+          okText: "Confirm",
+          cancelText: "Disagree",
+          //   onOk: () => {
+          //     this.props.core.removeMember(user.userID);
+          //   },
+          countdown: 10,
+        },
+        document.querySelector(".zego_model_parent")
+      );
+    },
+    [UserListMenuItemType.DisagreeRequestCohost]: (user: ZegoCloudUser) => {},
+    [UserListMenuItemType.AgreeRequestCohost]: (user: ZegoCloudUser) => {},
+  };
   handleFullScreen(fullScreen: boolean) {
     this.fullScreen = fullScreen;
     this.computeByResize();
@@ -1872,6 +1956,15 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                     )}
                   </div>
                 </div>
+              )}
+              {this.props.core._config.showRequestCoHostButton && (
+                <div
+                  className={`${ZegoRoomCss.requestCohostButton}`}
+                  onClick={() => {
+                    // TODO
+                    // this.handleLeave();
+                  }}
+                ></div>
               )}
               <div
                 className={

@@ -1,4 +1,5 @@
 import React from "react";
+import { UserListMenuItemType } from "../../../../model";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import zegoManageCss from "./zegoManage.module.scss";
 export class ZegoManage extends React.PureComponent<{
@@ -8,12 +9,9 @@ export class ZegoManage extends React.PureComponent<{
   showRemoveButton: boolean;
   selectedUser: ZegoCloudUser;
   closeCallback: () => void;
-  selectCallback: (
-    type?: "Pin" | "Mic" | "Camera" | "Remove",
-    value?: boolean
-  ) => void;
+  selectCallback: (type?: UserListMenuItemType, value?: boolean) => void;
 }> {
-  async select(type?: "Pin" | "Mic" | "Camera" | "Remove", value?: boolean) {
+  async select(type?: UserListMenuItemType, value?: boolean) {
     this.props.selectCallback && this.props.selectCallback(type, value);
   }
   render(): React.ReactNode {
@@ -35,7 +33,7 @@ export class ZegoManage extends React.PureComponent<{
             <div
               className={zegoManageCss.manageContent}
               onClick={() => {
-                this.select("Mic");
+                this.select(UserListMenuItemType.MuteMic);
               }}
             >
               <div
@@ -50,7 +48,7 @@ export class ZegoManage extends React.PureComponent<{
             <div
               className={zegoManageCss.manageContent}
               onClick={() => {
-                this.select("Camera");
+                this.select(UserListMenuItemType.MuteCamera);
               }}
             >
               <div
@@ -65,7 +63,10 @@ export class ZegoManage extends React.PureComponent<{
             <div
               className={zegoManageCss.manageContent}
               onClick={() => {
-                this.select("Pin", !this.props.selectedUser.pin);
+                this.select(
+                  UserListMenuItemType.RemoveUser,
+                  !this.props.selectedUser.pin
+                );
               }}
             >
               <div
@@ -85,7 +86,7 @@ export class ZegoManage extends React.PureComponent<{
             <div
               className={zegoManageCss.manageContent}
               onClick={() => {
-                this.select("Remove");
+                this.select(UserListMenuItemType.RemoveUser);
               }}
             >
               <div

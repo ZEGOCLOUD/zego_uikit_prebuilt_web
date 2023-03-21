@@ -4,13 +4,14 @@ import { getNameFirstLetter, userNameColor } from "../../../../util";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
 import ZegoVideo from "../../../components/zegoMedia/video";
+import { UserListMenuItemType } from "../../../../model";
 export class VideoPlayer extends React.PureComponent<{
   userInfo: ZegoCloudUser;
   muted: boolean;
   volume?: {
     [streamID: string]: number;
   };
-  handleMenuItem?: (type: "Pin" | "Mic" | "Camera" | "Remove") => void;
+  handleMenuItem?: (type: UserListMenuItemType) => void;
   onPause?: Function;
   onCanPlay?: Function;
   myClass?: string;
@@ -127,7 +128,9 @@ export class VideoPlayer extends React.PureComponent<{
                       className={ZegoVideoPlayerCss.moreMenuItem}
                       onClick={() => {
                         this.props.handleMenuItem &&
-                          this.props.handleMenuItem("Mic");
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.MuteMic
+                          );
                       }}
                     >
                       <span
@@ -141,7 +144,9 @@ export class VideoPlayer extends React.PureComponent<{
                       className={ZegoVideoPlayerCss.moreMenuItem}
                       onClick={() => {
                         this.props.handleMenuItem &&
-                          this.props.handleMenuItem("Camera");
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.MuteCamera
+                          );
                       }}
                     >
                       <span
@@ -155,7 +160,9 @@ export class VideoPlayer extends React.PureComponent<{
                       className={ZegoVideoPlayerCss.moreMenuItem}
                       onClick={() => {
                         this.props.handleMenuItem &&
-                          this.props.handleMenuItem("Pin");
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.ChangePin
+                          );
                       }}
                     >
                       <span
@@ -169,7 +176,9 @@ export class VideoPlayer extends React.PureComponent<{
                       className={ZegoVideoPlayerCss.moreMenuItem}
                       onClick={() => {
                         this.props.handleMenuItem &&
-                          this.props.handleMenuItem("Remove");
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.RemoveUser
+                          );
                       }}
                     >
                       <span

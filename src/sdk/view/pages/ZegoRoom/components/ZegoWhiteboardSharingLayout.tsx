@@ -1,6 +1,9 @@
 import React from "react";
 import clsx from "clsx";
-import { ZegoWhiteboardSharingLayoutProps } from "../../../../model";
+import {
+  UserListMenuItemType,
+  ZegoWhiteboardSharingLayoutProps,
+} from "../../../../model";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import zegoWhiteboardSharingLayout from "./zegoWhiteboardSharingLayout.module.scss";
 import ShowPCManageContext, { ShowManageType } from "../../context/showManage";
@@ -324,9 +327,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                   key={user.userID}
                   userInfo={user}
                   muted={user.userID === this.props.selfInfo.userID}
-                  handleMenuItem={(
-                    type: "Pin" | "Mic" | "Camera" | "Remove"
-                  ) => {
+                  handleMenuItem={(type: UserListMenuItemType) => {
                     this.props.handleMenuItem!(type, user);
                   }}
                   volume={this.props.soundLevel![user.userID] || {}}

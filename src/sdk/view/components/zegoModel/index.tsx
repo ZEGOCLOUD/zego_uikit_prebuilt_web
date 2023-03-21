@@ -10,8 +10,33 @@ export interface ZegoModelProps {
   cancelText?: string;
   onOk?: Function;
   onCancel?: Function;
+  countdown?: number;
 }
 export class ZegoModel extends React.Component<ZegoModelProps> {
+  countdownTimer: NodeJS.Timer | null = null;
+  state = {
+    countdownNum: this.props.countdown,
+  };
+  componentDidMount() {
+    if (this.props.countdown && this.props.countdown > 0) {
+      this.countdownTimer = setInterval(() => {
+        const num = (this.state.countdownNum as number) - 1;
+        if (num <= 0) {
+          this.countdownTimer && clearInterval(this.countdownTimer);
+          this.countdownTimer = null;
+          this.props.onCancel?.();
+        } else {
+          this.setState({
+            countdownNum: num,
+          });
+        }
+      }, 1000);
+    }
+  }
+  componentWillUnmount(): void {
+    this.countdownTimer && clearInterval(this.countdownTimer);
+    this.countdownTimer = null;
+  }
   render(): React.ReactNode {
     const { header, contentText, okText, cancelText, onOk, onCancel } =
       this.props;
@@ -29,6 +54,7 @@ export class ZegoModel extends React.Component<ZegoModelProps> {
                 }}
               >
                 {cancelText}
+                {this.props.countdown && `(${this.state.countdownNum}s)`}
               </button>
             )}
             {okText && (
