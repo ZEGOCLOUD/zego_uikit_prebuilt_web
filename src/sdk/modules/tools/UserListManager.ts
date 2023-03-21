@@ -14,6 +14,7 @@ export type ZegoCloudUser = ZegoUser & {
   overScreenMuteVideo?: boolean;
   streamList: ZegoCloudRemoteMedia[];
   avatar?: string;
+  requestCohost?: boolean;
 };
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}

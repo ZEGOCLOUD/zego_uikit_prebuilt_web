@@ -2,7 +2,7 @@ import React from "react";
 import zegoOne2OneCss from "./zegoOne2One.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
-import { SoundLevelMap } from "../../../../model";
+import { SoundLevelMap, UserListMenuItemType } from "../../../../model";
 export class ZegoOne2One extends React.PureComponent<{
   selfInfo: { userID: string };
   onLocalStreamPaused: () => void;
@@ -18,7 +18,7 @@ export class ZegoOne2One extends React.PureComponent<{
             myClass={zegoOne2OneCss.bigVideo}
             userInfo={this.props.userList[1]}
             muted={false}
-            handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+            handleMenuItem={(type: UserListMenuItemType) => {
               this.props.handleMenuItem!(type, this.props.userList[1]);
             }}
             volume={this.props.soundLevel![this.props.userList[1].userID] || {}}
@@ -34,7 +34,7 @@ export class ZegoOne2One extends React.PureComponent<{
             myClass={zegoOne2OneCss.smallVideo}
             userInfo={this.props.userList[0]}
             muted={this.props.selfInfo.userID === this.props.userList[0].userID}
-            handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+            handleMenuItem={(type: UserListMenuItemType) => {
               this.props.handleMenuItem!(type, this.props.userList[0]);
             }}
             volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
@@ -51,7 +51,7 @@ export class ZegoOne2One extends React.PureComponent<{
             }
           }}
           userInfo={this.props.userList[0]}
-          handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") =>
+          handleMenuItem={(type: UserListMenuItemType) =>
             this.props.handleMenuItem!(type, this.props.userList[0])
           }
           muted={this.props.selfInfo.userID === this.props.userList[0].userID}

@@ -162,6 +162,9 @@ export class ZegoCloudRTCCore {
     showRoomTimer: false, // 是否显示房间计时器
     videoCodec: "H264", //视频编解码器
     showRoomDetailsButton: true,
+    showInviteJoinCohostButton: false, // 主播是否展示邀请观众连麦按钮
+    showRemoveCohostButton: false, // 主播是否展示移下麦按钮
+    showRequestCoHostButton: false, // 观众是否展示申请连麦按钮
   };
   _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
   extraInfoKey = "extra_info";
@@ -178,7 +181,9 @@ export class ZegoCloudRTCCore {
         LiveStreamingMode.LiveStreaming
     );
   }
-
+  isHost(userID: string): boolean {
+    return userID === this.roomExtraInfo?.host;
+  }
   addPlugins(plugins: {
     ZegoSuperBoardManager?: typeof ZegoSuperBoardManager;
     ZIM?: ZIM;
@@ -347,6 +352,10 @@ export class ZegoCloudRTCCore {
           showUserJoinAndLeave: false,
         };
       }
+    } else {
+      config.showInviteJoinCohostButton = false;
+      config.showRemoveCohostButton = false;
+      config.showRequestCoHostButton = false;
     }
 
     if (

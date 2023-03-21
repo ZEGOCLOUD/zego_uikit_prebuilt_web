@@ -284,6 +284,12 @@
       background-color: #3d4154;
     }
   }
+  .requestCohostButton {
+    background-image: url("../../../sdkAssets/icon_tab_connect@2x.png");
+    &.active {
+      background-color: #404352;
+    }
+  }
 }
 .handlerRight {
   display: flex;

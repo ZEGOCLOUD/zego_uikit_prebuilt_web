@@ -1,5 +1,5 @@
 import React from "react";
-import { ZegoGridLayoutProps } from "../../../../model";
+import { UserListMenuItemType, ZegoGridLayoutProps } from "../../../../model";
 import ZegoGridCss from "./zegoGridLayout.module.scss";
 import clsx from "clsx";
 import { OthersVideo } from "./zegoOthersVideo";
@@ -68,7 +68,7 @@ export class ZegoGridLayout extends React.PureComponent<ZegoGridLayoutProps> {
                 key={user.userID}
                 userInfo={user}
                 muted={user.userID === this.props.selfInfo!.userID}
-                handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+                handleMenuItem={(type: UserListMenuItemType) => {
                   this.props.handleMenuItem!(type, user);
                 }}
                 volume={this.props.soundLevel![user.userID] || {}}

@@ -7,6 +7,7 @@ import {
   LiveStreamingMode,
   ScenarioModel,
   SoundLevelMap,
+  UserListMenuItemType,
   ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
   ZegoNotification,
@@ -1065,11 +1066,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       </>
     );
   }
-  async manageSelectCallback(
-    type?: "Pin" | "Mic" | "Camera" | "Remove",
-    value?: boolean
-  ) {
-    if (type === "Pin" && typeof value != "undefined") {
+  async manageSelectCallback(type?: UserListMenuItemType, value?: boolean) {
+    if (
+      type === UserListMenuItemType.ChangePin &&
+      typeof value != "undefined"
+    ) {
       if (this._selectedUser.userID !== this.props.core._expressConfig.userID) {
         this.props.core.setPin(this._selectedUser.userID, value);
         this.localUserPin = false;
@@ -1091,7 +1092,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       );
       return;
     }
-    if (type === "Mic") {
+    if (type === UserListMenuItemType.MuteMic) {
       let res;
       if (
         this._selectedUser.userID === this.props.core._expressConfig.userID &&
@@ -1110,7 +1111,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         });
       return;
     }
-    if (type === "Camera") {
+    if (type === UserListMenuItemType.MuteCamera) {
       let res;
       if (
         this._selectedUser.userID === this.props.core._expressConfig.userID &&
@@ -1131,7 +1132,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         });
       return;
     }
-    if (type === "Remove") {
+    if (type === UserListMenuItemType.RemoveUser) {
       ZegoModelShow({
         header: "Remove participant",
         contentText:

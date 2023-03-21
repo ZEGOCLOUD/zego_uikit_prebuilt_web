@@ -1,6 +1,9 @@
 import React from "react";
 import clsx from "clsx";
-import { ZegoSidebarLayoutProps } from "../../../../model";
+import {
+  UserListMenuItemType,
+  ZegoSidebarLayoutProps,
+} from "../../../../model";
 import { OthersVideo } from "./zegoOthersVideo";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
@@ -28,7 +31,7 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
           key={this.pinUser.userID}
           myClass={ZegoSidebarCss.bigVideo}
           userInfo={this.pinUser}
-          handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+          handleMenuItem={(type: UserListMenuItemType) => {
             this.props.handleMenuItem!(type, this.pinUser);
           }}
           muted={this.pinUser.userID === this.props.selfInfo.userID}
@@ -68,9 +71,7 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
                   key={user.userID}
                   userInfo={user}
                   muted={user.userID === this.props.selfInfo.userID}
-                  handleMenuItem={(
-                    type: "Pin" | "Mic" | "Camera" | "Remove"
-                  ) => {
+                  handleMenuItem={(type: UserListMenuItemType) => {
                     this.props.handleMenuItem!(type, user);
                   }}
                   volume={this.props.soundLevel![user.userID] || {}}

@@ -6,16 +6,18 @@ import {
   ZegoCloudUser,
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
-import { LiveRole, ScenarioModel, SoundLevelMap } from "../../../../model";
+import {
+  LiveRole,
+  ScenarioModel,
+  SoundLevelMap,
+  UserListMenuItemType,
+} from "../../../../model";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export class ZegoUserList extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   userList: ZegoCloudUserList;
   selfUserID: string;
-  handleMenuItem: (
-    type: "Pin" | "Mic" | "Camera" | "Remove",
-    user: ZegoCloudUser
-  ) => void;
+  handleMenuItem: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
   soundLevel?: SoundLevelMap;
 }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
@@ -49,6 +51,7 @@ export class ZegoUserList extends React.PureComponent<{
   }
   showRemoveButton(user: ZegoCloudUser) {
     if (!this.props.core._config.showRemoveUserButton) return false;
+
     return (
       this.props.core._config.scenario?.config?.role === LiveRole.Host &&
       (user.userID !== this.props.selfUserID || user.streamList.length === 0)
@@ -73,6 +76,19 @@ export class ZegoUserList extends React.PureComponent<{
       )
     );
   }
+  showRemoveCohostButton(user: ZegoCloudUser): boolean {
+    if (!this.props.core._config.showRemoveCohostButton) return false;
+    if (this.context.liveStatus === "0") return false;
+    return (
+      this.props.core.isHost(this.props.selfUserID) &&
+      user.userID !== this.props.selfUserID
+    );
+  }
+  showInviteCohostButton(user: ZegoCloudUser): boolean {
+    if (!this.props.core._config.showInviteJoinCohostButton) return false;
+    if (this.context.liveStatus === "0") return false;
+    return this.props.core.isHost(this.props.selfUserID);
+  }
   showMenu(user: ZegoCloudUser) {
     return (
       this.isShownPin(user) ||
@@ -85,9 +101,10 @@ export class ZegoUserList extends React.PureComponent<{
     const volume = this.props.soundLevel![userID]?.[streamID];
     return volume === undefined ? 5 : Math.ceil((volume * 9) / 100);
   }
-  onMouseEnter(e: React.MouseEvent, userID: string) {
+  onMouseEnter(e: React.MouseEvent, user: ZegoCloudUser) {
+    if (user.requestCohost) return;
     const el = document.querySelector(
-      `.${ZegoUserListCss.member}[data-id="${userID}"]`
+      `.${ZegoUserListCss.member}[data-id="${user.userID}"]`
     ) as HTMLDivElement;
     if (!el) return;
     this.hoverEl = el;
@@ -125,7 +142,7 @@ export class ZegoUserList extends React.PureComponent<{
 
     el.classList.add(`${ZegoUserListCss.showMenu}`, `${className}`);
   }
-  onMouseLeave(e: React.MouseEvent, userID: string) {
+  onMouseLeave(e: React.MouseEvent) {
     const el = this.hoverEl || (e.target as HTMLDivElement);
     this.hoverEl = null;
     el.classList.remove(
@@ -145,10 +162,10 @@ export class ZegoUserList extends React.PureComponent<{
               key={user.userID}
               data-id={user.userID}
               onMouseEnter={(e: React.MouseEvent) => {
-                this.onMouseEnter(e, user.userID);
+                this.onMouseEnter(e, user);
               }}
               onMouseLeave={(e: React.MouseEvent) => {
-                this.onMouseLeave(e, user.userID);
+                this.onMouseLeave(e);
               }}
             >
               <div
@@ -216,7 +233,12 @@ export class ZegoUserList extends React.PureComponent<{
                     {this.showTurnOffMicrophoneButton(user) && (
                       <div
                         className={ZegoUserListCss.memberMenuItem}
-                        onClick={() => this.props.handleMenuItem("Mic", user)}
+                        onClick={() =>
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.MuteMic,
+                            user
+                          )
+                        }
                       >
                         Mute
                       </div>
@@ -225,7 +247,10 @@ export class ZegoUserList extends React.PureComponent<{
                       <div
                         className={ZegoUserListCss.memberMenuItem}
                         onClick={() =>
-                          this.props.handleMenuItem("Camera", user)
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.MuteCamera,
+                            user
+                          )
                         }
                       >
                         Turn off camera
@@ -235,16 +260,37 @@ export class ZegoUserList extends React.PureComponent<{
                     {this.isShownPin(user) && (
                       <div
                         className={ZegoUserListCss.memberMenuItem}
-                        onClick={() => this.props.handleMenuItem("Pin", user)}
+                        onClick={() =>
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.ChangePin,
+                            user
+                          )
+                        }
                       >
                         {user.pin ? "Remove Pin" : "Pin"}
+                      </div>
+                    )}
+                    {this.showRemoveCohostButton(user) && (
+                      <div
+                        className={ZegoUserListCss.memberMenuItem}
+                        onClick={() =>
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.RemoveCohost,
+                            user
+                          )
+                        }
+                      >
+                        End the connection
                       </div>
                     )}
                     {this.showRemoveButton(user) && (
                       <div
                         className={ZegoUserListCss.memberMenuItem}
                         onClick={() =>
-                          this.props.handleMenuItem("Remove", user)
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.RemoveUser,
+                            user
+                          )
                         }
                       >
                         Remove participant
@@ -260,15 +306,17 @@ export class ZegoUserList extends React.PureComponent<{
           return (
             <div
               className={`${ZegoUserListCss.member} ${
-                this.showRemoveButton(user) ? ZegoUserListCss.haveMenu : ""
+                this.showRemoveButton(user) || this.showInviteCohostButton(user)
+                  ? ZegoUserListCss.haveMenu
+                  : ""
               }`}
               key={user.userID}
               data-id={user.userID}
               onMouseEnter={(e: React.MouseEvent) => {
-                this.onMouseEnter(e, user.userID);
+                this.onMouseEnter(e, user);
               }}
               onMouseLeave={(e: React.MouseEvent) => {
-                this.onMouseLeave(e, user.userID);
+                this.onMouseLeave(e);
               }}
             >
               <div
@@ -290,20 +338,68 @@ export class ZegoUserList extends React.PureComponent<{
                 <p>{user.userName}</p>
                 {user.userID === this.props.selfUserID && "(You)"}
               </div>
-              <div className={ZegoUserListCss.selfStatusWrapper}>
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
 
-              {this.showRemoveButton(user) && (
-                <div className={ZegoUserListCss.memberMenuWrapper}>
+              {user.requestCohost ? (
+                <div className={ZegoUserListCss.requestCohostWrapper}>
                   <div
-                    className={ZegoUserListCss.memberMenuItem}
-                    onClick={() => this.props.handleMenuItem("Remove", user)}
+                    className={ZegoUserListCss.disagreeBtn}
+                    onClick={() =>
+                      this.props.handleMenuItem(
+                        UserListMenuItemType.DisagreeRequestCohost,
+                        user
+                      )
+                    }
                   >
-                    Remove participant
+                    Disagree
                   </div>
+                  <div
+                    className={ZegoUserListCss.agreeBtn}
+                    onClick={() =>
+                      this.props.handleMenuItem(
+                        UserListMenuItemType.AgreeRequestCohost,
+                        user
+                      )
+                    }
+                  >
+                    Agree
+                  </div>
+                </div>
+              ) : (
+                <div className={ZegoUserListCss.selfStatusWrapper}>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              )}
+              {(this.showRemoveButton(user) ||
+                this.showInviteCohostButton(user)) && (
+                <div className={ZegoUserListCss.memberMenuWrapper}>
+                  {this.showInviteCohostButton(user) && (
+                    <div
+                      className={ZegoUserListCss.memberMenuItem}
+                      onClick={() =>
+                        this.props.handleMenuItem(
+                          UserListMenuItemType.InviteCohost,
+                          user
+                        )
+                      }
+                    >
+                      Invite to connect
+                    </div>
+                  )}
+                  {this.showRemoveButton(user) && (
+                    <div
+                      className={ZegoUserListCss.memberMenuItem}
+                      onClick={() =>
+                        this.props.handleMenuItem(
+                          UserListMenuItemType.RemoveUser,
+                          user
+                        )
+                      }
+                    >
+                      Remove participant
+                    </div>
+                  )}
                 </div>
               )}
             </div>

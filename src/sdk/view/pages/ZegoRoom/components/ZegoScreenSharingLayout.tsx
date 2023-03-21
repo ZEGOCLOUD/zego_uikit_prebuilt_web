@@ -1,6 +1,9 @@
 import React from "react";
 import clsx from "clsx";
-import { ZegoScreenSharingLayoutProps } from "../../../../model";
+import {
+  UserListMenuItemType,
+  ZegoScreenSharingLayoutProps,
+} from "../../../../model";
 import { OthersVideo } from "./zegoOthersVideo";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
@@ -60,7 +63,7 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
             key={"screen_" + this.props.screenSharingUser.userID}
             myClass={ZegoSidebarCss.screenVideo}
             userInfo={this.props.screenSharingUser}
-            handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+            handleMenuItem={(type: UserListMenuItemType) => {
               this.props.handleMenuItem!(type, this.props.screenSharingUser);
             }}
             muted={
@@ -141,7 +144,7 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
                 key={user.userID}
                 userInfo={user}
                 muted={user.userID === this.props.selfInfo.userID}
-                handleMenuItem={(type: "Pin" | "Mic" | "Camera" | "Remove") => {
+                handleMenuItem={(type: UserListMenuItemType) => {
                   this.props.handleMenuItem!(type, user);
                 }}
                 volume={this.props.soundLevel![user.userID] || {}}

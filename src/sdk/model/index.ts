@@ -165,6 +165,10 @@ export interface ZegoCloudRoomConfig {
   onInRoomTextMessageReceived?: (
     messages: ZegoSignalingInRoomTextMessage[]
   ) => void; // zim房间文本消息回调
+  //   1.8.0
+  showInviteJoinCohostButton?: boolean; // 主播是否展示邀请观众连麦按钮
+  showRemoveCohostButton?: boolean; // 主播是否展示移下麦按钮
+  showRequestCoHostButton?: boolean; // 观众是否展示申请连麦按钮
 }
 
 export interface ZegoSignalingInRoomTextMessage {
@@ -224,19 +228,13 @@ export interface ZegoGridLayoutProps {
   selfInfo?: {
     userID: string;
   };
-  handleMenuItem?: (
-    type: "Pin" | "Mic" | "Camera" | "Remove",
-    user: ZegoCloudUser
-  ) => void;
+  handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
 
   soundLevel?: SoundLevelMap;
 }
 
 export interface ZegoSidebarLayoutProps {
-  handleMenuItem?: (
-    type: "Pin" | "Mic" | "Camera" | "Remove",
-    user: ZegoCloudUser
-  ) => void;
+  handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
 
   userList: ZegoCloudUserList;
   videoShowNumber: number;
@@ -246,10 +244,7 @@ export interface ZegoSidebarLayoutProps {
   soundLevel?: SoundLevelMap;
 }
 export interface ZegoScreenSharingLayoutProps {
-  handleMenuItem?: (
-    type: "Pin" | "Mic" | "Camera" | "Remove",
-    user: ZegoCloudUser
-  ) => void;
+  handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
 
   userList: ZegoCloudUserList;
   videoShowNumber: number;
@@ -262,10 +257,7 @@ export interface ZegoScreenSharingLayoutProps {
   handleFullScreen?: (fullScreen: boolean) => void;
 }
 export interface ZegoWhiteboardSharingLayoutProps {
-  handleMenuItem?: (
-    type: "Pin" | "Mic" | "Camera" | "Remove",
-    user: ZegoCloudUser
-  ) => void;
+  handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
   handleSetPin?: (userID: string) => void;
   userList: ZegoCloudUserList;
   videoShowNumber: number;
@@ -389,4 +381,14 @@ export interface ZegoSignalingPluginNotificationConfig {
   resourcesID?: string;
   title?: string;
   message?: string;
+}
+export enum UserListMenuItemType {
+  ChangePin = "ChangePin",
+  MuteMic = "MuteMic",
+  MuteCamera = "MuteCamera",
+  RemoveUser = "RemoveUser",
+  RemoveCohost = "RemoveCohost",
+  InviteCohost = "InviteCohost",
+  DisagreeRequestCohost = "disagreeRequestCohost",
+  AgreeRequestCohost = "agreeRequestCohost",
 }
