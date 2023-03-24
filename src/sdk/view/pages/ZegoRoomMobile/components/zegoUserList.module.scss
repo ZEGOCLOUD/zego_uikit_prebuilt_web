@@ -113,6 +113,32 @@
           background-image: url(../../../../sdkMobileAssets/Room_pin@2x.png);
         }
       }
+      .invitedState {
+        color: #7f818a;
+        font-weight: 500;
+        font-size: vw(32px);
+        line-height: vw(44px);
+      }
+      .requestCohostWrapper {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        & > div {
+          padding: vw(12px) vw(26px);
+          color: #fff;
+          font-weight: 500;
+          font-size: vw(26px);
+          line-height: vw(37px);
+          border-radius: vw(28px);
+        }
+        .disagreeBtn {
+          margin-right: vw(20px);
+          background-color: rgba($color: #fff, $alpha: 0.1);
+        }
+        .agreeBtn {
+          background-color: #0055ff;
+        }
+      }
     }
   }
 }

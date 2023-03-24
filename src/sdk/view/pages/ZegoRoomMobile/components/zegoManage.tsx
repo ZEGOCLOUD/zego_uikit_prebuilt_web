@@ -7,11 +7,13 @@ export class ZegoManage extends React.PureComponent<{
   showMicButton: boolean;
   showCameraButton: boolean;
   showRemoveButton: boolean;
+  showRemoveCohostButton: boolean;
+  showInviteToCohostButton: boolean;
   selectedUser: ZegoCloudUser;
   closeCallback: () => void;
-  selectCallback: (type?: UserListMenuItemType, value?: boolean) => void;
+  selectCallback: (type: UserListMenuItemType, value?: boolean) => void;
 }> {
-  async select(type?: UserListMenuItemType, value?: boolean) {
+  async select(type: UserListMenuItemType, value?: boolean) {
     this.props.selectCallback && this.props.selectCallback(type, value);
   }
   render(): React.ReactNode {
@@ -64,7 +66,7 @@ export class ZegoManage extends React.PureComponent<{
               className={zegoManageCss.manageContent}
               onClick={() => {
                 this.select(
-                  UserListMenuItemType.RemoveUser,
+                  UserListMenuItemType.ChangePin,
                   !this.props.selectedUser.pin
                 );
               }}
@@ -82,6 +84,37 @@ export class ZegoManage extends React.PureComponent<{
               ></div>
             </div>
           )}
+          {this.props.showInviteToCohostButton && (
+            <div
+              className={zegoManageCss.manageContent}
+              onClick={() => {
+                this.select(UserListMenuItemType.InviteCohost);
+              }}
+            >
+              <div
+                className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.inviteItem}`}
+              >
+                <i></i>
+                <span>Invite to connect</span>
+              </div>
+            </div>
+          )}
+          {this.props.showRemoveCohostButton && (
+            <div
+              className={zegoManageCss.manageContent}
+              onClick={() => {
+                this.select(UserListMenuItemType.RemoveCohost);
+              }}
+            >
+              <div
+                className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.inviteItem}`}
+              >
+                <i></i>
+                <span>End the connect</span>
+              </div>
+            </div>
+          )}
+
           {this.props.showRemoveButton && (
             <div
               className={zegoManageCss.manageContent}

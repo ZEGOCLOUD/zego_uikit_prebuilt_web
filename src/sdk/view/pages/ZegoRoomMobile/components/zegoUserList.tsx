@@ -6,12 +6,13 @@ import {
   ZegoCloudUser,
   ZegoCloudUserList,
 } from "../../../../modules/tools/UserListManager";
-import { ScenarioModel } from "../../../../model";
+import { ScenarioModel, UserListMenuItemType } from "../../../../model";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
 export class ZegoUserList extends React.PureComponent<{
   userList: ZegoCloudUserList;
   core: ZegoCloudRTCCore;
   closeCallBack: (user?: ZegoCloudUser) => void;
+  handleMenuItem: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
 }> {
   state: {
     message: string;
@@ -153,7 +154,8 @@ export class ZegoUserList extends React.PureComponent<{
                     key={user.userID}
                     style={{
                       maxWidth:
-                        this.props.core._expressConfig.userID === user.userID
+                        this.props.core._expressConfig.userID === user.userID ||
+                        user.requestCohost
                           ? "30vw"
                           : "45vw",
                     }}
@@ -164,6 +166,37 @@ export class ZegoUserList extends React.PureComponent<{
                     <span key={user.userID + "_me"}> (You) </span>
                   )}
                 </div>
+                {user.invited && !user.requestCohost && (
+                  <div className={zegoUserListCss.invitedState}>Invited</div>
+                )}
+                {user.requestCohost && (
+                  <div className={zegoUserListCss.requestCohostWrapper}>
+                    <div
+                      className={zegoUserListCss.disagreeBtn}
+                      onClick={(ev) => {
+                        this.props.handleMenuItem(
+                          UserListMenuItemType.DisagreeRequestCohost,
+                          user
+                        );
+                        ev.stopPropagation();
+                      }}
+                    >
+                      Disagree
+                    </div>
+                    <div
+                      className={zegoUserListCss.agreeBtn}
+                      onClick={(ev) => {
+                        this.props.handleMenuItem(
+                          UserListMenuItemType.AgreeRequestCohost,
+                          user
+                        );
+                        ev.stopPropagation();
+                      }}
+                    >
+                      Agree
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}

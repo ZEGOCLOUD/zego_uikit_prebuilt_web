@@ -32,6 +32,7 @@ export class VideoPlayer extends React.PureComponent<{
       showTurnOffCameraButton,
       showTurnOffMicrophoneButton,
       isShownPin,
+      showRemoveCohostButton,
     } = this.context;
     return (
       <div
@@ -117,7 +118,8 @@ export class VideoPlayer extends React.PureComponent<{
           (showTurnOffMicrophoneButton!(this.props.userInfo) ||
             showTurnOffCameraButton!(this.props.userInfo) ||
             isShownPin!(this.props.userInfo) ||
-            showRemoveButton!(this.props.userInfo)) &&
+            showRemoveButton!(this.props.userInfo) ||
+            showRemoveCohostButton!(this.props.userInfo)) &&
           this.state.hovered && (
             <div className={ZegoVideoPlayerCss.moreWrapperMask}>
               <div className={ZegoVideoPlayerCss.moreWrapper}>
@@ -169,6 +171,22 @@ export class VideoPlayer extends React.PureComponent<{
                         className={ZegoVideoPlayerCss.moreMenuPinIcon}
                       ></span>
                       <p>{this.props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
+                    </div>
+                  )}
+                  {showRemoveCohostButton!(this.props.userInfo) && (
+                    <div
+                      className={ZegoVideoPlayerCss.moreMenuItem}
+                      onClick={() => {
+                        this.props.handleMenuItem &&
+                          this.props.handleMenuItem(
+                            UserListMenuItemType.RemoveCohost
+                          );
+                      }}
+                    >
+                      <span
+                        className={ZegoVideoPlayerCss.moreMenuRemoveIcon}
+                      ></span>
+                      <p>End the connect</p>
                     </div>
                   )}
                   {showRemoveButton!(this.props.userInfo) && (
