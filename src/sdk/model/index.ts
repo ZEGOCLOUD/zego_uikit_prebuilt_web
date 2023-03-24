@@ -193,7 +193,7 @@ export interface ZegoBrowserCheckProp {
 }
 
 export interface ZegoNotification {
-  type: "USER" | "MSG";
+  type: "USER" | "MSG" | "INVITE";
   content: string;
   userName: undefined | string;
   messageID: number;
@@ -301,6 +301,9 @@ export enum CoreError {
 export enum ZegoInvitationType {
   VoiceCall = 0,
   VideoCall,
+  RequestCoHost,
+  InviteToCoHost,
+  RemoveCoHost,
 }
 export interface ZegoCallInvitationConfig {
   enableCustomCallInvitationWaitingPage?: boolean; // 是否自定义呼叫邀请等待页面，默认false
@@ -360,6 +363,18 @@ export interface ZegoCallInvitationConfig {
 export type CancelCallInvitationFunc = (data?: string) => void; // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void; // 接受邀请
 export type RefuseCallInvitationFunc = (data?: string) => void; // 拒绝邀请
+
+export interface InRoomInvitationInfo {
+  callID: string;
+  inviter: ZegoUser;
+  invitee: ZegoUser;
+  type: ZegoInvitationType;
+}
+export type InRoomInvitationReceivedInfo = Omit<
+  InRoomInvitationInfo,
+  "invitee"
+>;
+
 export interface CallInvitationInfo {
   callID: string;
   roomID: string;

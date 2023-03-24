@@ -8,7 +8,32 @@ export class ZegoConfirmComponents extends React.Component<{
   content?: string;
   cancel?: string;
   confirm?: string;
+  countdown?: number;
 }> {
+  countdownTimer: NodeJS.Timer | null = null;
+  state = {
+    countdownNum: this.props.countdown,
+  };
+  componentDidMount() {
+    if (this.props.countdown && this.props.countdown > 0) {
+      this.countdownTimer = setInterval(() => {
+        const num = (this.state.countdownNum as number) - 1;
+        if (num <= 0) {
+          this.countdownTimer && clearInterval(this.countdownTimer);
+          this.countdownTimer = null;
+          this.props.closeCallBack(false);
+        } else {
+          this.setState({
+            countdownNum: num,
+          });
+        }
+      }, 1000);
+    }
+  }
+  componentWillUnmount(): void {
+    this.countdownTimer && clearInterval(this.countdownTimer);
+    this.countdownTimer = null;
+  }
   render(): React.ReactNode {
     return (
       <div className={ZegoConfirmCss.ZegoConfirm}>
@@ -23,6 +48,7 @@ export class ZegoConfirmComponents extends React.Component<{
                 }}
               >
                 {this.props.cancel}
+                {this.props.countdown && `(${this.state.countdownNum})`}
               </button>
             )}
             {this.props.confirm && (
@@ -47,6 +73,7 @@ export const ZegoConfirm = (config?: {
   content?: string;
   cancel?: string;
   confirm?: string;
+  countdown?: number;
 }) => {
   const div = document.createElement("div");
   document.body.appendChild(div);
@@ -61,6 +88,7 @@ export const ZegoConfirm = (config?: {
       content={config?.content || ""}
       confirm={config?.confirm || ""}
       cancel={config?.cancel || ""}
+      countdown={config?.countdown || 0}
     ></ZegoConfirmComponents>
   );
 };

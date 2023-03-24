@@ -1,4 +1,16 @@
 @import "../../../var.scss";
+@mixin redPoint {
+  position: absolute;
+  top: vw(-8px);
+  right: vw(-8px);
+  box-sizing: border-box;
+  width: vw(22px);
+  height: vw(22px);
+  background: url("../../../sdkMobileAssets/icon_hint@2x.png") no-repeat
+    center/cover;
+  border-radius: 50%;
+  content: "";
+}
 .ZegoRoom {
   position: relative;
   display: flex;
@@ -103,7 +115,12 @@
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
-
+      &.moreRedPoint,
+      .unread {
+        &::after {
+          @include redPoint;
+        }
+      }
       .popMore {
         position: fixed;
         right: vw(67px);
@@ -151,14 +168,18 @@
               background-image: url(../../../sdkMobileAssets/Room_more_members@2x.png);
               background-repeat: no-repeat;
               background-position: center;
-              background-size: contain;
               background-size: vw(56px) vw(56px);
             }
             .chat {
               background-image: url(../../../sdkMobileAssets/Room_more_chat@2x.png);
               background-repeat: no-repeat;
               background-position: center;
-              background-size: contain;
+              background-size: vw(56px) vw(56px);
+            }
+            .connect {
+              background-image: url(../../../sdkMobileAssets/icon_tab_connect_light@2x.png);
+              background-repeat: no-repeat;
+              background-position: center;
               background-size: vw(56px) vw(56px);
             }
             .layout {

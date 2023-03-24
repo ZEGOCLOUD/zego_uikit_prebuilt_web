@@ -341,7 +341,6 @@ export class ZegoCloudRTCCore {
         config.showAudioVideoSettingsButton = false;
         config.showScreenSharingButton = false;
         config.useFrontFacingCamera = false;
-        config.useFrontFacingCamera = false;
         config.showUserList =
           config.showUserList === undefined ? false : config.showUserList;
         config.showPinButton = false;
@@ -484,6 +483,49 @@ export class ZegoCloudRTCCore {
     }
 
     return true;
+  }
+  // Audience变成Cohost
+  changeAudienceToCohostInLiveStream() {
+    const config = this._config;
+    config.scenario!.config!.role = LiveRole.Cohost;
+
+    config.turnOnMicrophoneWhenJoining = true;
+    config.turnOnCameraWhenJoining = true;
+    config.showMyCameraToggleButton = true;
+    config.showMyMicrophoneToggleButton = true;
+    config.showAudioVideoSettingsButton = true;
+    config.showScreenSharingButton = true;
+    config.useFrontFacingCamera = true;
+    config.showUserList = true;
+    config.showPinButton = true;
+    config.showLayoutButton = true;
+    config.layout = "Auto";
+    config.lowerLeftNotification = {
+      showTextChat: true,
+      showUserJoinAndLeave: true,
+    };
+    this.status.videoRefuse = undefined;
+  }
+  // Cohost 变成 Audience
+  changeCohostToAudienceInLiveStream() {
+    const config = this._config;
+    config.scenario!.config!.role = LiveRole.Audience;
+
+    config.turnOnMicrophoneWhenJoining = false;
+    config.turnOnCameraWhenJoining = false;
+    config.showMyCameraToggleButton = false;
+    config.showMyMicrophoneToggleButton = false;
+    config.showAudioVideoSettingsButton = false;
+    config.showScreenSharingButton = false;
+    config.useFrontFacingCamera = false;
+    // config.showUserList = true;
+    config.showPinButton = false;
+    config.showLayoutButton = false;
+    config.layout = "Grid";
+    config.lowerLeftNotification = {
+      showTextChat: false,
+      showUserJoinAndLeave: false,
+    };
   }
   // 兼容处理LiveStreamingMode
   private getLiveStreamingMode(mode: string | undefined): LiveStreamingMode {
@@ -764,6 +806,7 @@ export class ZegoCloudRTCCore {
         this.roomExtraInfo = value;
       }, 1000);
     }
+    this._zimManager?._inRoomInviteMg.updateRoomExtraInfo(this._roomExtraInfo);
   }
   get roomExtraInfo() {
     return this._roomExtraInfo;

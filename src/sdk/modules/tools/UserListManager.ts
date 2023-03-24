@@ -14,7 +14,8 @@ export type ZegoCloudUser = ZegoUser & {
   overScreenMuteVideo?: boolean;
   streamList: ZegoCloudRemoteMedia[];
   avatar?: string;
-  requestCohost?: boolean;
+  requestCohost?: undefined | number;
+  invited?: boolean;
 };
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}
@@ -211,7 +212,7 @@ export class ZegoCloudUserListManager {
   ): Promise<boolean> {
     streamList
       .filter((s) => {
-        if (s && s.streamID && s.streamID.includes("_main")) {
+        if (s && s.streamID && !s.streamID.includes("_screensharing")) {
           return true;
         } else {
           return false;
@@ -232,6 +233,7 @@ export class ZegoCloudUserListManager {
 
           if (updateType === "ADD") {
             this.remoteUserList[u_index].streamList.push(stream);
+            this.remoteUserList[u_index].requestCohost = undefined;
           } else if (updateType === "DELETE" && s_index > -1) {
             this.remoteUserList[u_index].streamList.splice(s_index, 1);
             // 如果流全部删除了，且流对应用户不在用户变更数组中，则代表该用户也已经下线
@@ -253,6 +255,7 @@ export class ZegoCloudUserListManager {
               userName: stream.fromUser.userName,
               streamList: [stream],
               pin: false,
+              requestCohost: undefined,
             });
           }
         }

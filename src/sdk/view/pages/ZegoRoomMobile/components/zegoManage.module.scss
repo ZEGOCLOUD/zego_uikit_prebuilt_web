@@ -88,6 +88,12 @@
               no-repeat center/cover;
           }
         }
+        &.inviteItem {
+          & > i {
+            background: url("../../../../sdkMobileAssets/icon_tab_connect@2x.png")
+              no-repeat center/cover;
+          }
+        }
       }
 
       .selectIcon {

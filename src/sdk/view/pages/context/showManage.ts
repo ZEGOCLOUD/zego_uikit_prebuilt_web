@@ -18,6 +18,7 @@ export type ShowManageType = {
   showTurnOffCameraButton?: (user: ZegoCloudUser) => boolean;
   showRemoveButton?: (user: ZegoCloudUser) => boolean;
   isShownPin?: (user: ZegoCloudUser) => boolean;
+  showRemoveCohostButton?: (user: ZegoCloudUser) => boolean;
   liveStatus?: "1" | "0";
 };
 

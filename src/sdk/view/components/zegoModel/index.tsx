@@ -62,7 +62,7 @@ export class ZegoModel extends React.Component<ZegoModelProps> {
                 className={ZegoModelCss.okButton}
                 onClick={() => {
                   onOk && onOk();
-                  onCancel && onCancel(false);
+                  onCancel && onCancel(true);
                 }}
               >
                 {okText}

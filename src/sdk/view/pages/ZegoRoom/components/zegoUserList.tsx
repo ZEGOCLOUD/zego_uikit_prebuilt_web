@@ -29,7 +29,9 @@ export class ZegoUserList extends React.PureComponent<{
     return this.props.userList.filter((u) => u.streamList.length > 0);
   }
   get audienceList() {
-    return this.props.userList.filter((u) => u.streamList.length === 0);
+    return this.props.userList
+      .filter((u) => u.streamList.length === 0)
+      .sort((a, b) => (b.requestCohost || 0) - (a.requestCohost || 0));
   }
   showTurnOffMicrophoneButton(user: ZegoCloudUser) {
     if (!this.props.core._config.showTurnOffRemoteMicrophoneButton)
@@ -79,10 +81,11 @@ export class ZegoUserList extends React.PureComponent<{
   showRemoveCohostButton(user: ZegoCloudUser): boolean {
     if (!this.props.core._config.showRemoveCohostButton) return false;
     if (this.context.liveStatus === "0") return false;
-    return (
-      this.props.core.isHost(this.props.selfUserID) &&
-      user.userID !== this.props.selfUserID
-    );
+    if (this.props.core.isHost(this.props.selfUserID)) {
+      return user.userID !== this.props.selfUserID;
+    } else {
+      return user.userID === this.props.selfUserID;
+    }
   }
   showInviteCohostButton(user: ZegoCloudUser): boolean {
     if (!this.props.core._config.showInviteJoinCohostButton) return false;
