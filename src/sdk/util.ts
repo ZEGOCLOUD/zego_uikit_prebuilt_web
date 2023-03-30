@@ -139,10 +139,18 @@ export function getVideoResolution(level: string): {
     width = 640;
     height = 480;
     bitrate = 500;
+  } else if (level === "540p") {
+    width = 960;
+    height = 540;
+    bitrate = 800;
   } else if (level === "720p") {
     width = 1280;
     height = 720;
     bitrate = 1130;
+  } else if (level === "1080p") {
+    width = 1920;
+    height = 1080;
+    bitrate = 1500;
   }
   return {
     width,

@@ -260,6 +260,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             firstLoading: false,
           });
         }
+        if (type === "STREAM" && status === "CONNECTED") {
+          // 推流成功，开始混流
+        }
       }
     );
     this.props.core.onRemoteUserUpdate(

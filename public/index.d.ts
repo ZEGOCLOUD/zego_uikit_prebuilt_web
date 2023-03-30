@@ -21,11 +21,23 @@ declare enum VideoResolution {
   _480P = "480p",
   _720P = "720p",
 }
-
+export enum VideoMixinLayoutType {
+  AutoLayout = 0,
+}
+export enum VideoMixinOutputResolution {
+  _180P = "180p",
+  _360P = "360p",
+  _540P = "540p",
+  _720P = "720p",
+  _1080P = "1080p",
+}
 declare interface ScenarioConfig {
   [ScenarioModel.LiveStreaming]: {
     role: LiveRole;
     liveStreamingMode: LiveStreamingMode;
+    enableVideoMixin?: boolean;
+    videoMixinLayout?: VideoMixinLayoutType;
+    videoMixinOutputResolution: VideoMixinOutputResolution;
   };
   [ScenarioModel.OneONoneCall]: {
     role: LiveRole;

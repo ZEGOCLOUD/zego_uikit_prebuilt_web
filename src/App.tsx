@@ -164,24 +164,27 @@ export default class App extends React.PureComponent {
         );
       }
       this.myMeeting = async (element: HTMLDivElement) => {
-        let { token } = await generateToken(
-          randomID(5),
-          roomID,
-          userName || getRandomName()
-        );
-        // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        //     1484647939,
-        //     "22076fd0a8388f31dc1f6e344171****",
+        // let { token } = await generateToken(
+        //   randomID(5),
         //   roomID,
-        //   randomNumID(8),
-        //   userName || getRandomName(),
-        //   7200
+        //   userName || getRandomName()
         // );
+        let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+          1484647939,
+          "22076fd0a8388f31dc1f6e344171b2b1",
+          roomID,
+          userID,
+          userName || getRandomName(),
+          7200
+        );
         const zp = ZegoUIKitPrebuilt.create(token);
         //@ts-ignore // just for debugger
         window.zp = zp;
-        process.env.REACT_APP_PATH !== "live_stream" &&
-          zp.addPlugins({ ZegoSuperBoardManager, ZIM });
+        if (process.env.REACT_APP_PATH !== "live_stream") {
+          zp.addPlugins({ ZegoSuperBoardManager });
+        } else {
+          zp.addPlugins({ ZIM });
+        }
         const param: ZegoCloudRoomConfig = {
           console: ZegoUIKitPrebuilt.ConsoleNone,
           //   turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
@@ -236,6 +239,7 @@ export default class App extends React.PureComponent {
             config: {
               role,
               liveStreamingMode,
+              enableVideoMixin: true,
             },
           },
           onUserAvatarSetter: (user) => {
@@ -269,6 +273,9 @@ export default class App extends React.PureComponent {
           showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
           showPinButton: true,
+          showInviteJoinCohostButton: true,
+          showRemoveCohostButton: true,
+          showRequestCoHostButton: true,
         };
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true";

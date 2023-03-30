@@ -3,6 +3,9 @@ import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import {
   ZegoDeviceInfo,
   ZegoLocalStreamConfig,
+  ZegoMixStreamAdvance,
+  ZegoMixStreamConfig,
+  ZegoMixStreamInput,
   ZegoPlayerState,
   ZegoPublisherState,
   ZegoPublishStats,
@@ -20,7 +23,10 @@ import {
   CoreError,
   LiveRole,
   LiveStreamingMode,
+  ScenarioConfig,
   ScenarioModel,
+  VideoMixinLayoutType,
+  VideoMixinOutputResolution,
   VideoResolution,
   ZegoCloudRemoteMedia,
   ZegoCloudRoomConfig,
@@ -37,6 +43,7 @@ import {
 } from "zego-superboard-web";
 import ZIM from "zego-zim-web";
 import { ZimManager } from "./tools/ZimManager";
+import { getVideoResolution } from "../util";
 
 export class ZegoCloudRTCCore {
   static _instance: ZegoCloudRTCCore;
@@ -143,7 +150,13 @@ export class ZegoCloudRTCCore {
     showScreenSharingButton: true, // 是否显示屏幕共享按钮
     scenario: {
       mode: ScenarioModel.OneONoneCall, // 场景选择
-      config: { role: LiveRole.Host, liveStreamingMode: undefined }, // 对应场景专有配置
+      config: {
+        role: LiveRole.Host,
+        liveStreamingMode: undefined,
+        enableVideoMixin: false,
+        videoMixinLayout: VideoMixinLayoutType.AutoLayout,
+        videoMixinOutputResolution: VideoMixinOutputResolution._540P,
+      }, // 对应场景专有配置
     },
 
     facingMode: "user",
@@ -173,6 +186,25 @@ export class ZegoCloudRTCCore {
   };
   NetworkStatusTimer: NodeJS.Timer | null = null;
   hostSetterTimer: NodeJS.Timer | null = null;
+  localStreamInfo: {
+    streamID: string;
+    micStatus: "OPEN" | "MUTE";
+    cameraStatus: "OPEN" | "MUTE";
+  } = {
+    streamID: "",
+    micStatus: "OPEN",
+    cameraStatus: "OPEN",
+  };
+  localScreensharingStreamInfo: {
+    streamID: string;
+    micStatus: "OPEN";
+    cameraStatus: "OPEN";
+  } = {
+    streamID: "",
+    micStatus: "OPEN",
+    cameraStatus: "OPEN",
+  };
+  hasPublishedStream = false; // 是否有已经推上去的流
   get isCDNLive(): boolean {
     return (
       this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
@@ -181,7 +213,8 @@ export class ZegoCloudRTCCore {
         LiveStreamingMode.LiveStreaming
     );
   }
-  isHost(userID: string): boolean {
+  isHost(userID?: string): boolean {
+    userID ??= this._expressConfig.userID;
     return userID === this.roomExtraInfo?.host;
   }
   addPlugins(plugins: {
@@ -443,6 +476,10 @@ export class ZegoCloudRTCCore {
       (config.scenario.config = {
         ...this._config.scenario?.config,
         ...(config.scenario.config || {}),
+        enableVideoMixin:
+          config.scenario.mode === ScenarioModel.LiveStreaming
+            ? config.scenario.config?.enableVideoMixin
+            : false,
       });
     config.whiteboardConfig &&
       (config.whiteboardConfig = {
@@ -674,6 +711,14 @@ export class ZegoCloudRTCCore {
     return ZegoCloudRTCCore._zg.setVideoConfig(media, constraints);
   }
   stopPublishingStream(streamID: string): boolean {
+    if (streamID.indexOf("_main") > -1) {
+      this.localStreamInfo = {} as any;
+    }
+    if (streamID.indexOf("_screensharing") > -1) {
+      // 停止屏幕共享，更新混流
+      this.localScreensharingStreamInfo = {} as any;
+      this.startAndUpdateMixinTask();
+    }
     return ZegoCloudRTCCore._zg.stopPublishingStream(streamID);
   }
   destroyStream(stream: MediaStream): void {
@@ -735,6 +780,7 @@ export class ZegoCloudRTCCore {
     localStream: MediaStream,
     enable: boolean
   ): Promise<boolean> {
+    this.localStreamInfo.cameraStatus = !enable ? "MUTE" : "OPEN";
     return ZegoCloudRTCCore._zg.enableVideoCaptureDevice(localStream, enable);
   }
 
@@ -751,11 +797,21 @@ export class ZegoCloudRTCCore {
     return ZegoCloudRTCCore._zg.mutePublishStreamAudio(localStream, enable);
   }
   async muteMicrophone(enable: boolean): Promise<boolean> {
+    this.localStreamInfo.micStatus = enable ? "MUTE" : "OPEN";
     return ZegoCloudRTCCore._zg.muteMicrophone(enable);
   }
 
   set roomExtraInfo(value: { [index: string]: any }) {
     if (this._currentPage === "Room") {
+      if (this.roomExtraInfo.live_status === "1") {
+        if (
+          value.host !== this.roomExtraInfo.host &&
+          this.roomExtraInfo.isMixing === "1"
+        ) {
+          // 主播离开房间，自己变成主播
+          this.startAndUpdateMixinTask();
+        }
+      }
       this._roomExtraInfo = value;
       this.zum.setLiveStates(this._roomExtraInfo.live_status);
       if (this._config.onLiveStart && this._roomExtraInfo.live_status === "1") {
@@ -772,7 +828,6 @@ export class ZegoCloudRTCCore {
           userName: this._expressConfig.userID,
         });
       }
-
       this.onRoomLiveStateUpdateCallBack &&
         this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status);
       // 直播时设置房间属性host
@@ -818,12 +873,20 @@ export class ZegoCloudRTCCore {
         live_status: status === "live" ? "1" : "0",
       },
     };
+
     const res = await ZegoCloudRTCCore._zg.setRoomExtraInfo(
       ZegoCloudRTCCore._instance._expressConfig.roomID,
       "extra_info",
       JSON.stringify(setRoomExtraInfo)
     );
-    res.errorCode === 0 && (this.roomExtraInfo = setRoomExtraInfo);
+    if (res.errorCode === 0) {
+      this.roomExtraInfo = setRoomExtraInfo;
+      if (status === "live") {
+        this.startAndUpdateMixinTask();
+      } else {
+        this.stopMixerTask();
+      }
+    }
     return res.errorCode === 0;
   }
 
@@ -1063,6 +1126,14 @@ export class ZegoCloudRTCCore {
         let state: "DISCONNECTED" | "CONNECTING" | "CONNECTED" = "DISCONNECTED";
         if (streamInfo.state === "PUBLISHING") {
           state = "CONNECTED";
+          // 推流成功后开始混流
+          if (this.roomExtraInfo.live_status === "1") {
+            // 直播后再开始混流
+            this.startAndUpdateMixinTask();
+          } else {
+            // 直播未开始，先标记已经有推流了
+            this.hasPublishedStream = true;
+          }
         } else if (streamInfo.state === "NO_PUBLISH") {
           state = "DISCONNECTED";
         } else if (streamInfo.state === "PUBLISH_REQUESTING") {
@@ -1189,6 +1260,7 @@ export class ZegoCloudRTCCore {
         this._config.scenario.config?.role === LiveRole.Host &&
         this.roomExtraInfo.host === undefined
       ) {
+        // 进房后如果没有host，就将自己设置为host
         this.hostSetterTimer = setTimeout(() => {
           if (!this.roomExtraInfo.host) {
             const setRoomExtraInfo = {
@@ -1204,7 +1276,7 @@ export class ZegoCloudRTCCore {
             );
             this._roomExtraInfo = setRoomExtraInfo;
           }
-        }, 1000);
+        }, 1500);
       }
       if (this.zegoSuperBoard) {
         this.zegoSuperBoard.setToolType(1);
@@ -1394,6 +1466,12 @@ export class ZegoCloudRTCCore {
       this._expressConfig.roomID,
       streamType
     );
+    if (streamType === "main") {
+      this.localStreamInfo.streamID = streamID;
+    }
+    if (streamType === "screensharing") {
+      this.localScreensharingStreamInfo.streamID = streamID;
+    }
     let publishOption;
     if (extraInfo) {
       publishOption = {
@@ -1441,6 +1519,8 @@ export class ZegoCloudRTCCore {
   ) => {
     await this.zum.mainStreamUpdate(updateType, streamList);
     await this.zum.screenStreamUpdate(updateType, streamList);
+    // 拉流有变化时更新混流
+    this.startAndUpdateMixinTask();
     this.subscribeUserListCallBack &&
       this.subscribeUserListCallBack([...this.zum.remoteUserList]);
     this.subscribeScreenStreamCallBack &&
@@ -1650,6 +1730,7 @@ export class ZegoCloudRTCCore {
     ) => {
       await this.zum.mainStreamUpdate(updateType, streamList);
       await this.zum.screenStreamUpdate(updateType, streamList);
+      this.startMixerTask();
       this.subscribeUserListCallBack &&
         this.subscribeUserListCallBack([...this.zum.remoteUserList]);
       this.subscribeScreenStreamCallBack &&
@@ -1668,7 +1749,7 @@ export class ZegoCloudRTCCore {
     }
     this.remoteStreamMap = {};
     this.waitingHandlerStreams = { add: [], delete: [] };
-    if (this.roomExtraInfo?.host === this._expressConfig.userID) {
+    if (this.isHost()) {
       // host离开房间，清除房间属性host
       const setRoomExtraInfo = {
         ...this._roomExtraInfo,
@@ -1683,6 +1764,7 @@ export class ZegoCloudRTCCore {
       );
       this._roomExtraInfo = setRoomExtraInfo;
     }
+    this.hasPublishedStream = false;
     this._zimManager?.leaveRoom();
     ZegoCloudRTCCore._zg.logoutRoom();
     this.status.loginRsp = false;
@@ -1737,7 +1819,7 @@ export class ZegoCloudRTCCore {
       [userID]
     );
   }
-  // 被移出房间hui
+  // 被移出房间回调
   private onKickedOutRoomCallback!: () => void;
   onKickedOutRoom(func: () => void) {
     func && (this.onKickedOutRoomCallback = func);
@@ -1756,5 +1838,298 @@ export class ZegoCloudRTCCore {
     ) => void
   ) {
     func && (this.onChangeYourDeviceStatusCallback = func);
+  }
+  private async startMixerTask(): Promise<ZegoServerResponse> {
+    const { width, height, bitrate, frameRate } = getVideoResolution(
+      this._config.scenario?.config?.videoMixinOutputResolution || "540p"
+    );
+    const config: ZegoMixStreamConfig = {
+      taskID: `${this._expressConfig.roomID}__task`,
+      inputList: this.getMixStreamInput(width, height),
+      outputList: [`${this._expressConfig.roomID}__mix`],
+      outputConfig: {
+        outputBitrate: bitrate,
+        outputFPS: frameRate,
+        outputWidth: width,
+        outputHeight: height,
+      },
+    };
+    return await ZegoCloudRTCCore._zg.startMixerTask(config);
+  }
+  async stopMixerTask(
+    taskID?: string
+  ): Promise<ZegoServerResponse | undefined> {
+    taskID ??= `${this._expressConfig.roomID}__task`;
+    if (this.isHost() && this.roomExtraInfo.isMixing === "1") {
+      // 停止混流，设置房间附加属性isMixing:0|1
+      const setRoomExtraInfo = {
+        ...this.roomExtraInfo,
+        ...{
+          isMixing: "0",
+        },
+      };
+      await ZegoCloudRTCCore._zg.setRoomExtraInfo(
+        ZegoCloudRTCCore._instance._expressConfig.roomID,
+        "extra_info",
+        JSON.stringify(setRoomExtraInfo)
+      );
+      this._roomExtraInfo = setRoomExtraInfo;
+      const res = await ZegoCloudRTCCore._zg.stopMixerTask(taskID);
+      console.warn("stopMixerTask", res);
+      return res;
+    }
+  }
+  async setMixerTaskConfig(
+    config: ZegoMixStreamAdvance
+  ): Promise<ZegoServerResponse> {
+    return await ZegoCloudRTCCore._zg.setMixerTaskConfig(config);
+  }
+  private getMixStreamInput(
+    outWidth: number,
+    outHeight: number
+  ): ZegoMixStreamInput[] {
+    const hasScreensharing =
+      this.zum.remoteScreenStreamList.length > 0 ||
+      this.localScreensharingStreamInfo.streamID;
+    const inputList: ZegoMixStreamInput[] = [];
+    let videoWidth = 0,
+      videoHeight = 0,
+      screensharingWidth: number,
+      screensharingHeight: number;
+    // if((this._config.scenario?.config as ScenarioConfig[ScenarioModel.LiveStreaming])?.videoMixinLayout === VideoMixinLayoutType.AutoLayout) {
+    // 自适应布局
+    const streams = this.zum.remoteUserList
+      .filter((user) => user.streamList[0]?.streamID)
+      .map((u) => ({
+        streamID: u.streamList[0].streamID,
+        cameraStatus: u.streamList[0].cameraStatus,
+        micStatus: u.streamList[0].micStatus,
+        userName: u.userName,
+      }));
+    if (this.localStreamInfo.streamID) {
+      streams.unshift({
+        ...this.localStreamInfo,
+        userName: this._expressConfig.userName,
+      });
+    }
+    if (hasScreensharing) {
+      let maxVideo = 5;
+      videoHeight = Math.floor((outHeight - 16 * 2 - 4 * 10) / 5);
+      videoWidth = Math.floor((videoHeight * 16) / 9);
+      screensharingWidth = outWidth - 16 * 2 - 10 - videoWidth;
+      screensharingHeight = outHeight - 16 * 2;
+      if (streams.length > 0) {
+        inputList.push({
+          streamID:
+            this.localScreensharingStreamInfo.streamID ||
+            this.zum.remoteScreenStreamList[0].streamList[0].streamID,
+          contentType: "VIDEO",
+          layout: {
+            top: 16,
+            left: 16,
+            bottom: screensharingHeight + 16,
+            right: screensharingWidth + 16,
+          },
+          renderMode: 1,
+        });
+        streams.forEach((user) => {
+          if (maxVideo > 0) {
+            inputList.push({
+              streamID: user.streamID,
+              // contentType: "VIDEO",
+              layout: {
+                top: 16 + (5 - maxVideo) * (videoHeight + 10),
+                left: screensharingWidth + 26,
+                bottom: 16 + (5 - maxVideo) * (videoHeight + 10) + videoHeight,
+                right: outWidth - 16,
+              },
+              renderMode: 1,
+            });
+            maxVideo--;
+          } else {
+            inputList.push({
+              streamID: user.streamID,
+              contentType: "AUDIO",
+              layout: {
+                top: 0,
+                left: 0,
+                bottom: 1,
+                right: 1,
+              },
+              renderMode: 1,
+            });
+          }
+        });
+      } else {
+        inputList.push({
+          streamID:
+            this.localScreensharingStreamInfo.streamID ||
+            this.zum.remoteScreenStreamList[0].streamList[0].streamID,
+          contentType: "VIDEO",
+          layout: {
+            top: 16,
+            left: 16,
+            bottom: outHeight - 16,
+            right: outWidth - 16,
+          },
+          renderMode: 1,
+        });
+      }
+    } else {
+      let len = streams.length;
+
+      if (len === 1) {
+        inputList.push({
+          streamID: streams[0].streamID,
+          // contentType: "VIDEO",
+          layout: {
+            top: 16,
+            left: 16,
+            bottom: outHeight - 16,
+            right: outWidth - 16,
+          },
+          renderMode: 1,
+        });
+      } else if (len === 2) {
+        videoWidth = Math.floor((outWidth - 16 * 2 - 10) / 2);
+        streams.forEach((u, i) => {
+          inputList.push({
+            streamID: u.streamID,
+            // contentType: "VIDEO",
+            layout: {
+              top: 16,
+              left: 16 + (videoWidth + 10) * i,
+              bottom: outHeight - 16,
+              right: 16 + (videoWidth + 10) * i + videoWidth,
+            },
+            renderMode: 1,
+          });
+        });
+      } else if (len === 3 || len === 4) {
+        videoWidth = Math.floor((outWidth - 16 * 2 - 10) / 2);
+        videoHeight = Math.floor((outHeight - 16 * 2 - 10) / 2);
+        streams.forEach((u, i) => {
+          inputList.push({
+            streamID: u.streamID,
+            // contentType: "VIDEO",
+            layout: {
+              top: i <= 1 ? 16 : 16 + 10 + videoHeight,
+              left:
+                len === 3
+                  ? i < 2
+                    ? 16 + (videoWidth + 10) * i
+                    : Math.floor((outWidth - videoWidth) / 2)
+                  : i % 2 === 0
+                  ? 16
+                  : 16 + videoWidth + 10,
+              bottom: i <= 1 ? 16 + videoHeight : outHeight - 16,
+              right:
+                len === 3 && i === 2
+                  ? outWidth - Math.floor((outWidth - videoWidth) / 2)
+                  : i % 2 === 0
+                  ? 16 + videoWidth
+                  : outWidth - 16,
+            },
+            renderMode: 1,
+          });
+        });
+      } else if (len === 5 || len === 6) {
+        videoWidth = Math.floor((outWidth - 16 * 2 - 10 * 2) / 3);
+        videoHeight = Math.floor((outHeight - 16 * 2 - 10) / 2);
+        let lastRowPaddingLeft =
+          len === 5 ? Math.floor((videoWidth + 10) / 2) : 0;
+
+        streams.forEach((u, i) => {
+          const left =
+            i <= 2
+              ? 16 + (videoWidth + 10) * i
+              : 16 + lastRowPaddingLeft + (videoWidth + 10) * (i % 3);
+          inputList.push({
+            streamID: u.streamID,
+            // contentType: "VIDEO",
+            layout: {
+              top: i <= 2 ? 16 : 16 + 10 + videoHeight,
+              left: left,
+              bottom: i <= 2 ? 16 + videoHeight : outHeight - 16,
+              right: left + videoWidth,
+            },
+            renderMode: 1,
+          });
+        });
+      } else {
+        videoWidth = Math.floor((outWidth - 16 * 2 - 10 * 2) / 3);
+        videoHeight = Math.floor((outHeight - 16 * 2 - 10 * 2) / 3);
+        let lastRowPaddingLeft = 0;
+        if (len === 7) {
+          lastRowPaddingLeft = videoWidth + 10;
+        }
+        if (len === 8) {
+          lastRowPaddingLeft = Math.floor((videoWidth + 10) / 2);
+        }
+        streams.forEach((u, i) => {
+          if (i < 9) {
+            const left =
+              i < 6
+                ? 16 + (videoWidth + 10) * (i % 3)
+                : 16 + lastRowPaddingLeft + (videoWidth + 10) * (i % 3);
+            inputList.push({
+              streamID: u.streamID,
+              // contentType: "VIDEO",
+              layout: {
+                top: 16 + (videoHeight + 10) * Math.floor(i / 3),
+                left: left,
+                bottom:
+                  16 + (videoHeight + 10) * Math.floor(i / 3) + videoHeight,
+                right: left + videoWidth,
+              },
+              renderMode: 1,
+            });
+          } else {
+            inputList.push({
+              streamID: u.streamID,
+              contentType: "AUDIO",
+              layout: {
+                top: 0,
+                left: 0,
+                bottom: 1,
+                right: 1,
+              },
+              renderMode: 1,
+            });
+          }
+        });
+      }
+    }
+
+    // }
+    return inputList;
+  }
+  async startAndUpdateMixinTask() {
+    if (
+      !(
+        this.isHost() &&
+        this._config.scenario?.config?.enableVideoMixin &&
+        this.roomExtraInfo.live_status === "1"
+      )
+    )
+      return;
+    const res = await this.startMixerTask();
+    console.warn("startMixerTask", res);
+    if (res?.errorCode !== 0) return;
+    if (this.roomExtraInfo.isMixing !== "1") {
+      //第一次混流，需要设置房间附加属性isMixing:0|1
+      const setRoomExtraInfo = {
+        ...this.roomExtraInfo,
+        ...{
+          isMixing: "1",
+        },
+      };
+      ZegoCloudRTCCore._zg.setRoomExtraInfo(
+        ZegoCloudRTCCore._instance._expressConfig.roomID,
+        "extra_info",
+        JSON.stringify(setRoomExtraInfo)
+      );
+      this._roomExtraInfo = setRoomExtraInfo;
+    }
   }
 }

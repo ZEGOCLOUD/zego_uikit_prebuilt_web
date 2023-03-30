@@ -41,19 +41,22 @@ export enum VideoResolution {
   _720P = "720p",
 }
 export interface ScenarioConfig {
-  [ScenarioModel.LiveStreaming]: {
-    role: LiveRole;
-    liveStreamingMode: LiveStreamingMode;
-  };
-  [ScenarioModel.OneONoneCall]: {
-    role: LiveRole;
-  };
-  [ScenarioModel.GroupCall]: {
-    role: LiveRole;
-  };
-  [ScenarioModel.VideoConference]: {
-    role: LiveRole;
-  };
+  //   [ScenarioModel.LiveStreaming]: {
+  role: LiveRole;
+  liveStreamingMode?: LiveStreamingMode;
+  enableVideoMixin?: boolean; // 是否混流
+  videoMixinLayout?: VideoMixinLayoutType; // 混流布局
+  videoMixinOutputResolution?: VideoMixinOutputResolution; // 混流输出分辨率
+  //   };
+  //   [ScenarioModel.OneONoneCall]: {
+  //     role: LiveRole;
+  //   };
+  //   [ScenarioModel.GroupCall]: {
+  //     role: LiveRole;
+  //   };
+  //   [ScenarioModel.VideoConference]: {
+  //     role: LiveRole;
+  //   };
 }
 export enum LiveStreamingMode {
   /**
@@ -68,7 +71,19 @@ export enum LiveStreamingMode {
   InteractiveLiveStreaming = "InteractiveLiveStreaming", // L3
   RealTimeLive = "RealTimeLive", //RTC
 }
-
+export enum VideoMixinLayoutType {
+  AutoLayout = 0, // 自适应布局
+  GridLayout, //平分布局
+  HorizontalLayout, // 水平布局
+  VerticalLayout, // 垂直布局
+}
+export enum VideoMixinOutputResolution {
+  _180P = "180p",
+  _360P = "360p",
+  _540P = "540p",
+  _720P = "720p",
+  _1080P = "1080p",
+}
 export enum ConsoleLevel {
   Debug = "Debug",
   Info = "Info",
@@ -115,7 +130,8 @@ export interface ZegoCloudRoomConfig {
   showScreenSharingButton?: boolean; // 是否显示屏幕共享按钮
   scenario?: {
     mode?: ScenarioModel; // 场景选择
-    config?: ScenarioConfig[ScenarioModel]; // 对应场景专有配置
+    // config?: ScenarioConfig[ScenarioModel]; // 对应场景专有配置
+    config?: ScenarioConfig; // 对应场景专有配置
   };
 
   showLayoutButton?: boolean; // 是否显示布局切换按钮
