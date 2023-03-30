@@ -85,7 +85,7 @@ declare interface ZegoCloudRoomConfig {
   videoResolutionDefault?: VideoResolution; // The default video resolution.
 
   // 1.3 Room view
-  showRoomDetailButton?: boolean; // Whether to display room detail。Displayed by default
+  showRoomDetailsButton?: boolean; // Whether to display room details. Displayed by default
   showRoomTimer?: boolean; //  Whether to display the timer. Not displayed by default.
   showMyCameraToggleButton?: boolean; // Whether to display the button for toggling my camera. Displayed by default.
   showMyMicrophoneToggleButton?: boolean; // Whether to display the button for toggling my microphone. Displayed by default.
@@ -267,4 +267,5 @@ export declare class ZegoUIKitPrebuilt {
   }): Promise<{
     errorInvitees: ZegoUser[];
   }>;
+  sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean>;
 }

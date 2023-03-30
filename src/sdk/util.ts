@@ -12,17 +12,14 @@ export function randomNumber(len: number): number {
   }
   return Number.parseInt(result);
 }
+// 判断是否为移动设备
 export function isPc(): boolean {
-  const p = navigator.platform;
-  let system = {
-    win: p.indexOf("Win") === 0,
-    mac: p.indexOf("Mac") === 0,
-    linux: p.indexOf("Linux") === 0,
-  };
   if (process.env.REACT_APP_MOBILE === "yes") {
     return false;
   }
-  return system.win || system.mac || system.linux;
+  return !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
 }
 export function isIOS() {
   let u = navigator.userAgent;
