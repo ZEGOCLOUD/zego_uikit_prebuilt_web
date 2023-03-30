@@ -1,5 +1,11 @@
 # ZEGOCLOUD Prebuilt Web SDK
 
+
+[![](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/EtNRATttyp)
+
+> If you have any questions regarding bugs and feature requests, visit the [ZEGOCLOUD community](https://discord.gg/EtNRATttyp) .
+
+
 - 2 interfaces to quickly implement 1v1 call , group call，live;
 - pure JS language, support all frameworks (Reat, Angular, Vue,Ionic, etc.)
 - 10,000 minutes free
@@ -41,5 +47,3 @@
 The prebuilt sdk is based on the secondary packaging of the ZEGOCLOUD Express WebRTC SDK, so the upper limit of functions can include all the capabilities of the Express WebRTC SDK, and the same browser compatibility, error codes, weak network heavy chain, etc. are also consistent with it; [click me](https://docs.zegocloud.com/article/12307) to see more capabilities
 
 The source code of this project is all in the src directory, written using react + typescript + scss, you can also extend it based on the source code; or scan the whatsapp QR code below to contact me for more benefits
-
-![config](docs/images/choui_whatsapp.png)
