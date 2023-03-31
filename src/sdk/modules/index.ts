@@ -178,6 +178,9 @@ export class ZegoCloudRTCCore {
     showInviteJoinCohostButton: false, // 主播是否展示邀请观众连麦按钮
     showRemoveCohostButton: false, // 主播是否展示移下麦按钮
     showRequestCoHostButton: false, // 观众是否展示申请连麦按钮
+    showInviteJoinCohostButton: false, // 主播是否展示邀请观众连麦按钮
+    showRemoveCohostButton: false, // 主播是否展示移下麦按钮
+    showRequestCoHostButton: false, // 观众是否展示申请连麦按钮
   };
   _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
   extraInfoKey = "extra_info";
