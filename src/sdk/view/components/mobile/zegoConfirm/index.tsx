@@ -48,7 +48,7 @@ export class ZegoConfirmComponents extends React.Component<{
                 }}
               >
                 {this.props.cancel}
-                {this.props.countdown && `(${this.state.countdownNum})`}
+                {this.props?.countdown && `(${this.state.countdownNum})`}
               </button>
             )}
             {this.props.confirm && (
@@ -88,7 +88,8 @@ export const ZegoConfirm = (config?: {
       content={config?.content || ""}
       confirm={config?.confirm || ""}
       cancel={config?.cancel || ""}
-      countdown={config?.countdown || 0}
+      countdown={config?.countdown}
     ></ZegoConfirmComponents>
   );
+  return root;
 };

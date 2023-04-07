@@ -90,6 +90,7 @@ export default class InRoomInviteManager {
     }
   }
   async requestCohost(): Promise<boolean> {
+    if (!this.roomExtraInfo.host) return false;
     const extendedData = JSON.stringify({
       inviter_name: this.expressConfig.userName,
       type: ZegoInvitationType.RequestCoHost,
@@ -159,6 +160,7 @@ export default class InRoomInviteManager {
     }
   }
   async audienceCancelRequest() {
+    if (!this.requestCohostInfo.callID) return;
     try {
       await this._zim?.callCancel(
         [this.requestCohostInfo.invitee.userID],
@@ -204,19 +206,26 @@ export default class InRoomInviteManager {
       return false;
     }
   }
-  async hostCancelInvitation() {
-    // try {
-    //   await this._zim?.callCancel(
-    //     [this.requestCohostInfo.invitee.userID],
-    //     this.requestCohostInfo.callID,
-    //     {
-    //       extendedData: "",
-    //     }
-    //   );
-    //   this.requestCohostInfo = {} as InRoomInvitationInfo;
-    // } catch (error) {
-    //   console.error("【ZEGOCLOUD】inRoom cancelInvitation", error);
-    // }
+  async hostCancelInvitation(userID: string) {
+    if (!this.inviteToCoHostInfoMap.has(userID)) return;
+    try {
+      await this._zim?.callCancel(
+        [this.inviteToCoHostInfoMap.get(userID)!.invitee.userID],
+        this.inviteToCoHostInfoMap.get(userID)!.callID,
+        {
+          extendedData: "",
+        }
+      );
+      this.inviteToCoHostInfoMap.delete(userID);
+    } catch (error) {
+      console.error("【ZEGOCLOUD】inRoom hostCancelInvitation", error);
+    }
+  }
+  hostCancelAllInvitation() {
+    for (const userID of this.inviteToCoHostInfoMap.keys()) {
+      this.hostCancelInvitation(userID);
+      this.inviteToCoHostInfoMap.delete(userID); // 防止取消请求发送失败
+    }
   }
   onCallInvitationReceived(
     callID: string,
@@ -269,7 +278,7 @@ export default class InRoomInviteManager {
     this.inviteToCoHostInfoMap.delete(invitee);
     // 主播接受观众的连麦申请 （观众收到）
     if (this.requestCohostInfo.callID === callID) {
-      this.notifyHostRespondRequestCohostCallback(true);
+      this.notifyHostRespondRequestCohostCallback(0);
       this.requestCohostInfo = {} as InRoomInvitationInfo;
     }
   }
@@ -288,7 +297,7 @@ export default class InRoomInviteManager {
     }
     // 主播拒绝观众的连麦申请 （观众收到）
     if (this.requestCohostInfo.callID === callID) {
-      this.notifyHostRespondRequestCohostCallback(false);
+      this.notifyHostRespondRequestCohostCallback(1);
       this.requestCohostInfo = {} as InRoomInvitationInfo;
     }
   }
@@ -304,6 +313,11 @@ export default class InRoomInviteManager {
         0
       );
       this.receivedRequestInfo.delete(invitee);
+    }
+    // 观众收到主播取消连麦的回调
+    if (this.receivedInviteInfo.callID === callID) {
+      this.notifyHostRespondRequestCohostCallback(2);
+      this.receivedInviteInfo = {} as InRoomInvitationReceivedInfo;
     }
   }
   // 被邀请者响应超时后,“邀请者”收到的回调通知, 超时时间单位：秒（邀请者）
@@ -368,9 +382,9 @@ export default class InRoomInviteManager {
   notifyRequestCoHost(fn: (inviter: ZegoUser, state: 0 | 1) => void) {
     this.notifyRequestCoHostCallback = fn;
   }
-  // 通知观众UI层，收到主播同意/拒绝连麦申请的消息,true: 同意，false: 拒绝
-  private notifyHostRespondRequestCohostCallback = (respond: boolean) => {};
-  notifyHostRespondRequestCohost(fn: (respond: boolean) => void) {
+  // 通知观众UI层，收到主播同意/拒绝/取消连麦申请的消息,0: 1: 拒绝 2: 取消
+  private notifyHostRespondRequestCohostCallback = (respond: 0 | 1 | 2) => {};
+  notifyHostRespondRequestCohost(fn: (respond: 0 | 1 | 2) => void) {
     this.notifyHostRespondRequestCohostCallback = fn;
   }
   // 通知观众UI层， 观众的连麦申请超时了

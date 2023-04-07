@@ -97,7 +97,7 @@ export class ZimManager {
     // 被邀请者收到邀请后的回调通知（被邀请者）
     this._zim!.on(
       "callInvitationReceived",
-      (zim, { callID, inviter, timeout, extendedData }) => {
+      (zim: any, { callID, inviter, timeout, extendedData }: any) => {
         console.warn("callInvitationReceived", {
           callID,
           inviter,
@@ -212,7 +212,7 @@ export class ZimManager {
     // 被邀请者收到邀请被取消后的回调通知（被邀请者）
     this._zim!.on(
       "callInvitationCancelled",
-      (zim, { callID, inviter, extendedData }) => {
+      (zim: any, { callID, inviter, extendedData }: any) => {
         console.warn("callInvitationCancelled", {
           callID,
           inviter,
@@ -239,7 +239,7 @@ export class ZimManager {
     // 邀请者的邀请被接受后的回调通知（邀请者）
     this._zim!.on(
       "callInvitationAccepted",
-      (zim, { callID, invitee, extendedData }) => {
+      (zim: any, { callID, invitee, extendedData }: any) => {
         console.warn("callInvitationAccepted", {
           callID,
           invitee,
@@ -273,7 +273,7 @@ export class ZimManager {
     // 邀请者的邀请被拒绝后的回调通知（邀请者）
     this._zim!.on(
       "callInvitationRejected",
-      (zim, { callID, invitee, extendedData }) => {
+      (zim: any, { callID, invitee, extendedData }: any) => {
         console.warn("callInvitationRejected", {
           callID,
           invitee,
@@ -327,14 +327,14 @@ export class ZimManager {
     //被邀请者响应超时后,“邀请者”收到的回调通知, 超时时间单位：秒（邀请者）
     this._zim!.on(
       "callInviteesAnsweredTimeout",
-      (zim, { callID, invitees }) => {
+      (zim: any, { callID, invitees }: any) => {
         console.warn("callInviteesAnsweredTimeout", { callID, invitees });
         this._inRoomInviteMg.onCallInviteesAnsweredTimeout(callID, invitees);
         if (!this.callInfo.callID) return;
         this.clearOutgoingTimer();
         // 透传超时事件
         if (this.config.onOutgoingCallTimeout) {
-          const callees = invitees.map((i) => {
+          const callees = invitees.map((i: string) => {
             return (
               this.callInfo.invitees.find((u) => u.userID === i) || {
                 userID: i,
@@ -348,7 +348,7 @@ export class ZimManager {
     );
 
     //被邀请者响应超时后,“被邀请者”收到的回调通知, 超时时间单位：秒 （被邀请者）
-    this._zim!.on("callInvitationTimeout", (zim, { callID }) => {
+    this._zim!.on("callInvitationTimeout", (zim: any, { callID }: any) => {
       console.warn("callInvitationTimeout", { callID });
       this._inRoomInviteMg.onCallInvitationTimeout(callID);
       if (!this.callInfo.callID) return;
@@ -365,7 +365,7 @@ export class ZimManager {
     });
     this._zim?.on(
       "connectionStateChanged",
-      (zim, data: ZIMEventOfConnectionStateChangedResult) => {
+      (zim: any, data: ZIMEventOfConnectionStateChangedResult) => {
         console.warn("【zim】connectionStateChanged", data);
       }
     );
@@ -374,7 +374,7 @@ export class ZimManager {
       (zim: ZIM, data: ZIMEventOfReceiveConversationMessageResult) => {
         console.warn("receiveRoomMessage", data);
         const textMsgs = data.messageList
-          .filter((msg) => msg.type === 1)
+          .filter((msg: { type: number }) => msg.type === 1)
           .map((msg) => ({
             messageID: msg.messageID,
             timestamp: msg.timestamp,
@@ -463,7 +463,7 @@ export class ZimManager {
         config
       );
 
-      const errorInvitees = res.errorInvitees.map((i) => {
+      const errorInvitees = res.errorInvitees.map((i: { userID: string }) => {
         return invitees.find((u) => u.userID === i.userID) as ZegoUser;
       });
       if (res.errorInvitees.length >= invitees.length) {
@@ -474,7 +474,10 @@ export class ZimManager {
       }
       // 过滤掉不在线的用户
       const onlineInvitee = invitees.filter(
-        (i) => !res.errorInvitees.find((e) => e.userID === i.userID)
+        (i) =>
+          !res.errorInvitees.find(
+            (e: { userID: string }) => e.userID === i.userID
+          )
       );
       // 保存邀请信息，进入busy状态
       this.callInfo = {
@@ -695,10 +698,10 @@ export class ZimManager {
           roomID: this.callInfo.callID || this.expressConfig.roomID,
           roomName: this.callInfo.callID || this.expressConfig.roomID,
         })
-        .then((res) => {
+        .then((res: any) => {
           console.warn("【zim enterRoom】success");
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.error("【zim enterRoom】failed", error);
         });
     }
@@ -706,10 +709,10 @@ export class ZimManager {
   leaveRoom() {
     this._zim
       ?.leaveRoom(this.callInfo.callID || this.expressConfig.roomID)
-      .then((res) => {
+      .then((res: any) => {
         console.warn("【zim leaveRoom】success");
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error("【zim leaveRoom】failed", error);
       });
   }

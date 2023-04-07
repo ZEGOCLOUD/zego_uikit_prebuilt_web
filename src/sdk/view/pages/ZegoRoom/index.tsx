@@ -43,6 +43,7 @@ import { ZegoSuperBoardView } from "zego-superboard-web";
 import { ZegoWhiteboardSharingLayout } from "./components/ZegoWhiteboardSharingLayout";
 import ShowManageContext from "../context/showManage";
 import ZegoAudio from "../../components/zegoMedia/audio";
+import { VideoPlayer } from "./components/zegoVideoPlayer";
 export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -136,7 +137,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   fullScreen = false;
   showNotSupported = 0;
   notSupportMultipleVideoNotice = 0;
-
+  inviteModelRoot: any = null;
   get showHeader(): boolean {
     return !!(
       this.props.core._config.branding?.logoURL ||
@@ -561,7 +562,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     // 收到邀请上麦的通知
     this.props.core._zimManager?._inRoomInviteMg.notifyInviteToCoHost(
       (inviterName: string) => {
-        ZegoModelShow(
+        this.inviteModelRoot = ZegoModelShow(
           {
             header: "Invitation",
             contentText: "The host invites you to have a connection.",
@@ -634,14 +635,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core._zimManager?._inRoomInviteMg.notifyHostRespondRequestCohost(
-      (respond: boolean) => {
-        if (respond) {
+      (respond: 0 | 1 | 2) => {
+        if (respond === 0) {
           this.props.core.changeAudienceToCohostInLiveStream();
           this.createStream();
-        } else {
+        } else if (respond === 1) {
           ZegoToast({
             content: "The hos has rejected you request.",
           });
+        } else if (respond === 2) {
+          this.inviteModelRoot?.unmount();
         }
         this.setState({
           isRequestingCohost: false,
@@ -1362,35 +1365,50 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   }
   getLayoutScreen() {
     if (
-      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-      this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
-      this.state.liveStatus !== "1"
+      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
     ) {
-      return (
-        <div className={ZegoRoomCss.liveNotStart}>
-          <i></i>
-          <span>The Live has not started yet</span>
-        </div>
-      );
-    } else if (
-      ![...this.getAllUser(), ...this.getScreenSharingUser].some((u) => {
+      const hasVideo = [
+        ...this.getAllUser(),
+        ...this.getScreenSharingUser,
+      ].some((u) => {
         if (u.streamList) {
           return u.streamList.some((s) => {
             return s.cameraStatus === "OPEN" || s.micStatus === "OPEN";
           });
         }
         return false;
-      }) &&
-      this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
-    ) {
-      return (
-        <div className={ZegoRoomCss.noOneStreaming}>
-          <i></i>
-          <span>No one has turned on the camera or microphone yet.</span>
-        </div>
-      );
+      });
+      if (
+        this.props.core._config.scenario?.config?.role === LiveRole.Audience
+      ) {
+        if (this.state.liveStatus !== "1") {
+          return (
+            <div className={ZegoRoomCss.liveNotStart}>
+              <i></i>
+              <span>The Live has not started yet</span>
+            </div>
+          );
+        } else if (hasVideo && this.props.core.roomExtraInfo.isMixing === "1") {
+          return (
+            <VideoPlayer
+              userInfo={this.props.core.mixUser}
+              muted={false}
+              hiddenName={true}
+              hiddenMore={true}
+              volume={{}}
+            ></VideoPlayer>
+          );
+        }
+      }
+      if (!hasVideo) {
+        return (
+          <div className={ZegoRoomCss.noOneStreaming}>
+            <i></i>
+            <span>No one has turned on the camera or microphone yet.</span>
+          </div>
+        );
+      }
     }
-
     if (this.getScreenSharingUser.length > 0) {
       return (
         <>
@@ -1701,6 +1719,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         });
         this.setState({
           isRequestingCohost: true,
+        });
+      } else {
+        ZegoToast({
+          content: `The host has left the room`,
         });
       }
     }

@@ -26,7 +26,9 @@ export class ZegoUserList extends React.PureComponent<{
     return this.props.userList.filter((u) => u.streamList.length > 0);
   }
   get audienceList() {
-    return this.props.userList.filter((u) => u.streamList.length === 0);
+    return this.props.userList
+      .filter((u) => u.streamList.length === 0)
+      .sort((a, b) => (b.requestCohost || 0) - (a.requestCohost || 0));
   }
   isShownPin(user: ZegoCloudUser): boolean {
     if (this.props.core._config.scenario?.mode === ScenarioModel.OneONoneCall) {

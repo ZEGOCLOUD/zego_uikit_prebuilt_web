@@ -92,4 +92,5 @@ export const ZegoModelShow = (
       }}
     ></ZegoModel>
   );
+  return root;
 };

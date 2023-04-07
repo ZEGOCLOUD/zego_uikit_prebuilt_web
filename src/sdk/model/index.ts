@@ -44,9 +44,9 @@ export interface ScenarioConfig {
   //   [ScenarioModel.LiveStreaming]: {
   role: LiveRole;
   liveStreamingMode?: LiveStreamingMode;
-  enableVideoMixin?: boolean; // 是否混流
-  videoMixinLayout?: VideoMixinLayoutType; // 混流布局
-  videoMixinOutputResolution?: VideoMixinOutputResolution; // 混流输出分辨率
+  enableVideoMixing?: boolean; // 是否混流
+  videoMixingLayout?: VideoMixinLayoutType; // 混流布局
+  videoMixingOutputResolution?: VideoMixinOutputResolution; // 混流输出分辨率
   //   };
   //   [ScenarioModel.OneONoneCall]: {
   //     role: LiveRole;
@@ -182,9 +182,9 @@ export interface ZegoCloudRoomConfig {
     messages: ZegoSignalingInRoomTextMessage[]
   ) => void; // zim房间文本消息回调
   //   1.8.0
-  showInviteJoinCohostButton?: boolean; // 主播是否展示邀请观众连麦按钮
+  showMakeCohostButton?: boolean; // 主播是否展示邀请观众连麦按钮
   showRemoveCohostButton?: boolean; // 主播是否展示移下麦按钮
-  showRequestCoHostButton?: boolean; // 观众是否展示申请连麦按钮
+  showRequestToCohostButton?: boolean; // 观众是否展示申请连麦按钮
 }
 
 export interface ZegoSignalingInRoomTextMessage {

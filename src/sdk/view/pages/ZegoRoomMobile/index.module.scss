@@ -327,6 +327,7 @@
       border-radius: vw(80px);
     }
   }
+
   .LiveStateButton {
     position: fixed;
     right: vw(27px);
@@ -426,6 +427,13 @@
   .footer {
     padding: 0 vw(199px);
   }
+}
+.mixVideoWrapper {
+  //   position: absolute;
+  //   bottom: 40%;
+  //   left: 0;
+  width: 100%;
+  height: auto;
 }
 @media screen and(orientation: landscape) {
   .ZegoRoom {
