@@ -8,6 +8,7 @@ import {
 } from "../../../../modules/tools/UserListManager";
 import {
   LiveRole,
+  LiveStreamingMode,
   ScenarioModel,
   SoundLevelMap,
   UserListMenuItemType,
@@ -98,6 +99,12 @@ export class ZegoUserList extends React.PureComponent<{
       this.showRemoveButton(user) ||
       this.showTurnOffCameraButton(user) ||
       this.showTurnOffMicrophoneButton(user)
+    );
+  }
+  showUserRightIcon(user: ZegoCloudUser): boolean {
+    return !!(
+      user.streamList[0].media ||
+      (this.context.liveStatus === "1" && user.streamList[0].streamID)
     );
   }
   getHeight(userID: string, streamID: string): number {
@@ -191,9 +198,7 @@ export class ZegoUserList extends React.PureComponent<{
                 {user.userID === this.props.selfUserID && "(You)"}
               </div>
 
-              {(user.streamList[0].media ||
-                (this.context.liveStatus === "1" &&
-                  user.streamList[0].urlsHttpsFLV)) && (
+              {this.showUserRightIcon(user) && (
                 <>
                   <div className={ZegoUserListCss.memberStatusWrapper}>
                     {this.isShownPin(user) && user.pin && (

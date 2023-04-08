@@ -59,6 +59,13 @@ export default class ZegoVideo extends React.PureComponent<{
         } else {
           this.safariVideoMutedInvalidWhenOpenCamera(el);
         }
+        if (this.flvPlayer) {
+          this.flvPlayer.pause();
+          this.flvPlayer.unload();
+          this.flvPlayer.detachMediaElement();
+          this.flvPlayer.destroy();
+          this.flvPlayer = null;
+        }
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
         if (isSafari()) {
           if (el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {

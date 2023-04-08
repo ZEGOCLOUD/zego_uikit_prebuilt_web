@@ -31,6 +31,7 @@ export class ZegoCloudUserListManager {
   userOrderList: string[] = [];
   waitingPullStreams: { streamID: string; userID: string }[] = [];
   isLive: "1" | "0" = "0";
+  enableVideoMixing = false;
   get isL3Live(): boolean {
     return (
       this.scenario === ScenarioModel.LiveStreaming &&
@@ -317,6 +318,8 @@ export class ZegoCloudUserListManager {
       this.role === LiveRole.Audience
     ) {
       this.isLive = state;
+      //如果是混流&&观众的话，就不要去拉单流
+      if (this.enableVideoMixing) return;
       if (state === "1") {
         for (let index = 0; index < this.waitingPullStreams.length; index++) {
           try {
@@ -406,6 +409,8 @@ export class ZegoCloudUserListManager {
       this.scenario === ScenarioModel.LiveStreaming &&
       this.role === LiveRole.Audience
     ) {
+      // 混流&&观众 情况下，不拉单流
+      if (this.enableVideoMixing && !streamID.includes("__mix")) return;
       if (this.isLive === "1") {
         const stream = await this.zg.startPlayingStream(streamID, {
           resourceMode: this.isL3Live ? 2 : 0,

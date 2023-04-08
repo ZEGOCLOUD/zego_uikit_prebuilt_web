@@ -618,18 +618,15 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           });
         }
         // 设置红点
-        if (this.state.layOutStatus !== "USER_LIST") {
-          let list;
-          if (state === 1) {
-            list = this.state.unreadInviteList.add(inviter.userID);
-          } else {
-            list = this.state.unreadInviteList;
-            list.delete(inviter.userID);
-          }
-          this.setState({
-            unreadInviteList: list,
-          });
+        if (state === 1) {
+          this.state.unreadInviteList.add(inviter.userID);
+        } else {
+          this.state.unreadInviteList.delete(inviter.userID);
         }
+        this.setState({
+          unreadInviteList: this.state.unreadInviteList,
+        });
+
         // 设置观众状态
         this.updateUserRequestCohostState(inviter.userID, !!state);
       }
@@ -641,7 +638,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           this.createStream();
         } else if (respond === 1) {
           ZegoToast({
-            content: "The hos has rejected you request.",
+            content: "The host has rejected your request.",
           });
         } else if (respond === 2) {
           this.inviteModelRoot?.unmount();
@@ -988,13 +985,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     this.setState(
       (state: {
         layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
-        unreadInviteList: Set<string>;
       }) => {
         return {
           layOutStatus:
             state.layOutStatus === layOutStatus ? "ONE_VIDEO" : layOutStatus,
-          unreadInviteList:
-            layOutStatus === "USER_LIST" ? new Set() : state.unreadInviteList,
         };
       },
       () => {
@@ -1682,7 +1676,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         await this.props.core._zimManager?._inRoomInviteMg.hostRefuseRequest(
           user.userID
         );
-      res && this.updateUserRequestCohostState(user.userID, false);
+      if (res) {
+        this.updateUserRequestCohostState(user.userID, false);
+        this.state.unreadInviteList.delete(user.userID);
+        this.setState({
+          unreadInviteList: this.state.unreadInviteList,
+        });
+      }
+
       console.warn("DisagreeRequestCohost", res);
     },
     [UserListMenuItemType.AgreeRequestCohost]: async (user: ZegoCloudUser) => {
@@ -1690,7 +1691,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         await this.props.core._zimManager?._inRoomInviteMg.hostAcceptRequest(
           user.userID
         );
-      res && this.updateUserRequestCohostState(user.userID, false);
+      if (res) {
+        this.updateUserRequestCohostState(user.userID, false);
+        this.state.unreadInviteList.delete(user.userID);
+        this.setState({
+          unreadInviteList: this.state.unreadInviteList,
+        });
+      }
       console.warn("AgreeRequestCohost", res);
     },
   };

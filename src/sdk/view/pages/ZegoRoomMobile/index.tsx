@@ -648,18 +648,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           });
         }
         // 设置红点
-        if (this.state.layOutStatus !== "USER_LIST") {
-          let list;
-          if (state === 1) {
-            list = this.state.unreadInviteList.add(inviter.userID);
-          } else {
-            list = this.state.unreadInviteList;
-            list.delete(inviter.userID);
-          }
-          this.setState({
-            unreadInviteList: list,
-          });
+
+        if (state === 1) {
+          this.state.unreadInviteList.add(inviter.userID);
+        } else {
+          this.state.unreadInviteList.delete(inviter.userID);
         }
+        this.setState({
+          unreadInviteList: this.state.unreadInviteList,
+        });
+
         // 设置观众状态
         this.updateUserAttr(
           inviter.userID,
@@ -675,7 +673,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           this.createStream();
         } else if (respond === 1) {
           ZegoToast({
-            content: "The hos has rejected you request.",
+            content: "The host has rejected your request.",
           });
         } else if (respond === 2) {
           this.inviteModelRoot?.unmount();
@@ -1388,8 +1386,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         await this.props.core._zimManager?._inRoomInviteMg.hostRefuseRequest(
           this._selectedUser.userID
         );
-      res &&
+      if (res) {
         this.updateUserAttr(this._selectedUser.userID, "requestCohost", "");
+        this.state.unreadInviteList.delete(this._selectedUser.userID);
+        this.setState({
+          unreadInviteList: this.state.unreadInviteList,
+        });
+      }
+
       console.warn("DisagreeRequestCohost", res);
     },
     [UserListMenuItemType.AgreeRequestCohost]: async () => {
@@ -1397,8 +1401,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         await this.props.core._zimManager?._inRoomInviteMg.hostAcceptRequest(
           this._selectedUser.userID
         );
-      res &&
+      if (res) {
         this.updateUserAttr(this._selectedUser.userID, "requestCohost", "");
+        this.state.unreadInviteList.delete(this._selectedUser.userID);
+        this.setState({
+          unreadInviteList: this.state.unreadInviteList,
+        });
+      }
+
       console.warn("AgreeRequestCohost", res);
     },
   };

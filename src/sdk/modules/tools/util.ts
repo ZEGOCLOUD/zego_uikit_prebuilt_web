@@ -82,3 +82,25 @@ export function changeCDNUrlOrigin(url: string) {
   }
   return url;
 }
+type ThrottleFn = (func: Function, delay: number) => Function;
+
+export const throttle: ThrottleFn = (func, delay) => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  let lastExecTime = 0;
+
+  return function (this: any, ...args: any[]) {
+    const now = Date.now();
+
+    if (now - lastExecTime < delay) {
+      if (timeoutId) clearTimeout(timeoutId);
+
+      timeoutId = setTimeout(() => {
+        lastExecTime = now;
+        func.apply(this, args);
+      }, delay - (now - lastExecTime));
+    } else {
+      lastExecTime = now;
+      func.apply(this, args);
+    }
+  };
+};
