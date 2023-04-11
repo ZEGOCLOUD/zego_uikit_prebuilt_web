@@ -1064,6 +1064,7 @@ export class ZegoCloudRTCCore {
     ZegoCloudRTCCore._zg.on(
       "remoteMicStatusUpdate",
       (streamID: string, status: "OPEN" | "MUTE") => {
+        console.warn("remoteMicStatusUpdate", streamID, status);
         if (this.remoteStreamMap[streamID]) {
           this.remoteStreamMap[streamID].micStatus = status;
           this.onRemoteMediaUpdateCallBack &&
@@ -1333,7 +1334,7 @@ export class ZegoCloudRTCCore {
             );
             this._roomExtraInfo = setRoomExtraInfo;
           }
-        }, 1500);
+        }, 2000);
       }
       if (this.zegoSuperBoard) {
         this.zegoSuperBoard.setToolType(1);
@@ -1991,14 +1992,23 @@ export class ZegoCloudRTCCore {
     // if((this._config.scenario?.config as ScenarioConfig[ScenarioModel.LiveStreaming])?.videoMixingLayout === VideoMixinLayoutType.AutoLayout) {
     // 自适应布局
     const streams = this.zum.remoteUserList
-      .filter((user) => user.streamList[0]?.streamID)
+      .filter(
+        (user) =>
+          user.streamList[0]?.streamID &&
+          (user.streamList[0]?.cameraStatus === "OPEN" ||
+            user.streamList[0]?.micStatus === "OPEN")
+      )
       .map((u) => ({
         streamID: u.streamList[0].streamID,
         cameraStatus: u.streamList[0].cameraStatus,
         micStatus: u.streamList[0].micStatus,
         userName: u.userName,
       }));
-    if (this.localStreamInfo.streamID) {
+    if (
+      this.localStreamInfo.streamID &&
+      (this.localStreamInfo.cameraStatus === "OPEN" ||
+        this.localStreamInfo.micStatus === "OPEN")
+    ) {
       streams.unshift({
         ...this.localStreamInfo,
         userName: this._expressConfig.userName,
@@ -2274,7 +2284,7 @@ export class ZegoCloudRTCCore {
     this.mixUser = {
       pin: false,
       userID: this.roomExtraInfo.host,
-      userName: "host",
+      userName: "",
       streamList: [stream],
     };
   }

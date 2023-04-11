@@ -1119,8 +1119,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     });
   }
   private confirmLeaveRoom(isKickedOut = false) {
-    this.props.core._config.turnOnCameraWhenJoining = this.state.cameraOpen;
-    this.props.core._config.turnOnMicrophoneWhenJoining = this.state.micOpen;
+    if (this.props.core._config.scenario?.config?.role !== LiveRole.Audience) {
+      this.props.core._config.turnOnCameraWhenJoining = this.state.cameraOpen;
+      this.props.core._config.turnOnMicrophoneWhenJoining = this.state.micOpen;
+    }
+
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
 
@@ -1667,7 +1670,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               <span>The Live has not started yet</span>
             </div>
           );
-        } else if (hasVideo && this.props.core.roomExtraInfo.isMixing === "1") {
+        } else if (
+          hasVideo &&
+          this.props.core._config.scenario.config.enableVideoMixing &&
+          this.props.core.roomExtraInfo.isMixing === "1"
+        ) {
           return (
             <div className={ZegoRoomCss.mixVideoWrapper}>
               <ZegoUserVideo
@@ -2289,9 +2296,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                             onClick={(ev) => {
                               ev.stopPropagation();
                               this.toggleLayOut("USER_LIST");
-                              this.setState({
-                                unreadInviteList: new Set(),
-                              });
                             }}
                           >
                             <i className={ZegoRoomCss.member}></i>

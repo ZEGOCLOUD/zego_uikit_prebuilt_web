@@ -1067,10 +1067,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         okText: "Confirm",
         cancelText: "Cancel",
         onOk: () => {
-          this.props.core._config.turnOnCameraWhenJoining =
-            this.state.cameraOpen;
-          this.props.core._config.turnOnMicrophoneWhenJoining =
-            this.state.micOpen;
+          if (
+            this.props.core._config.scenario?.config?.role !== LiveRole.Audience
+          ) {
+            this.props.core._config.turnOnCameraWhenJoining =
+              this.state.cameraOpen;
+            this.props.core._config.turnOnMicrophoneWhenJoining =
+              this.state.micOpen;
+          }
           this.props.core.status.micDeviceID = this.state.selectMic;
           this.props.core.status.cameraDeviceID = this.state.selectCamera;
           this.props.core.status.speakerDeviceID = this.state.selectSpeaker;
@@ -1382,7 +1386,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
               <span>The Live has not started yet</span>
             </div>
           );
-        } else if (hasVideo && this.props.core.roomExtraInfo.isMixing === "1") {
+        } else if (
+          hasVideo &&
+          this.props.core._config.scenario.config.enableVideoMixing &&
+          this.props.core.roomExtraInfo.isMixing === "1"
+        ) {
           return (
             <VideoPlayer
               userInfo={this.props.core.mixUser}
@@ -1566,13 +1574,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     this.menuOptions[type](user);
   }
   menuOptions: { [key in UserListMenuItemType]: Function } = {
-    [UserListMenuItemType.ChangePin]: (userID: string) => {
-      if (userID === this.props.core._expressConfig.userID) {
+    [UserListMenuItemType.ChangePin]: (user: ZegoCloudUser) => {
+      if (user.userID === this.props.core._expressConfig.userID) {
         this.localUserPin = !this.localUserPin;
         this.props.core.setPin();
       } else {
         this.localUserPin = false;
-        this.props.core.setPin(userID);
+        this.props.core.setPin(user.userID);
       }
       this.props.core.setSidebarLayOut(
         this.getScreenSharingUser.length > 0
