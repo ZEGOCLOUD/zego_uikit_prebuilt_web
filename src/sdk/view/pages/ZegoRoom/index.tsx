@@ -80,6 +80,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     haveUnReadMsg: boolean;
     isRequestingCohost: boolean; // 是否正在申请连麦
     unreadInviteList: Set<string>; // 是否有未读的连麦申请
+    isMixing: "1" | "0"; // 是否
   } = {
     localStream: undefined,
     layOutStatus: "ONE_VIDEO",
@@ -116,6 +117,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     isZegoWhiteboardSharing: false,
     isRequestingCohost: false,
     unreadInviteList: new Set(),
+    isMixing: "0",
   };
 
   settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -411,6 +413,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
                 : -1
               : preState.liveCountdown,
         };
+      });
+    });
+    this.props.core.onRoomMixingStateUpdate((isMixing: "0" | "1") => {
+      this.setState({
+        isMixing,
       });
     });
     this.props.core.subscribeScreenStream((userList) => {
@@ -1389,7 +1396,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         } else if (
           hasVideo &&
           this.props.core._config.scenario.config.enableVideoMixing &&
-          this.props.core.roomExtraInfo.isMixing === "1"
+          this.props.core._config.scenario.config.role === LiveRole.Audience
         ) {
           return (
             <VideoPlayer
@@ -2159,7 +2166,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
               {this.showRequestCohost && (
                 <div
                   className={`${ZegoRoomCss.requestCohostButton} ${
-                    this.state.isRequestingCohost ? ZegoRoomCss.active : ""
+                    this.state.isRequestingCohost
+                      ? ZegoRoomCss.cancel
+                      : ZegoRoomCss.active
                   }`}
                   onClick={() => {
                     this.handleRequestCohost();

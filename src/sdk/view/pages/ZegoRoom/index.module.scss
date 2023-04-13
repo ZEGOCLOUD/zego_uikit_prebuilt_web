@@ -285,9 +285,12 @@
     }
   }
   .requestCohostButton {
-    background-image: url("../../../sdkAssets/icon_tab_connect@2x.png");
+    background-color: #313443;
     &.active {
-      background-color: #404352;
+      background-image: url("../../../sdkAssets/icon_tab_connect@2x.png");
+    }
+    &.cancel {
+      background-image: url("../../../sdkAssets/icon_tab_connect_nor.png");
     }
   }
 }

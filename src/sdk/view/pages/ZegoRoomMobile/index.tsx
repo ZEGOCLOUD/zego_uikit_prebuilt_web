@@ -87,6 +87,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     isScreenPortrait: boolean; // 是否竖屏
     isRequestingCohost: boolean; // 是否正在申请连麦
     unreadInviteList: Set<string>; // 是否有未读的连麦申请
+    isMixing: "1" | "0"; // 是否开始混流
   } = {
     micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
     cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
@@ -113,6 +114,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     isScreenPortrait: true, // 是否竖屏
     isRequestingCohost: false,
     unreadInviteList: new Set(),
+    isMixing: "0",
   };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
@@ -498,6 +500,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           //   console.error("【ZEGOCLOUD】 liveStatus", this.state.liveStatus);
         }
       );
+    });
+    this.props.core.onRoomMixingStateUpdate((isMixing: "0" | "1") => {
+      this.setState({
+        isMixing,
+      });
     });
     this.props.core.onCoreError((code: CoreError, msg: string) => {
       if (
@@ -1673,7 +1680,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         } else if (
           hasVideo &&
           this.props.core._config.scenario.config.enableVideoMixing &&
-          this.props.core.roomExtraInfo.isMixing === "1"
+          this.state.isMixing === "1"
         ) {
           return (
             <div className={ZegoRoomCss.mixVideoWrapper}>
@@ -2331,7 +2338,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                               this.handleRequestCohost();
                             }}
                           >
-                            <i className={ZegoRoomCss.connect}></i>
+                            <i
+                              className={`${
+                                this.state.isRequestingCohost
+                                  ? ZegoRoomCss.connected
+                                  : ZegoRoomCss.connect
+                              } `}
+                            ></i>
                             <span>Connect</span>
                           </div>
                         )}

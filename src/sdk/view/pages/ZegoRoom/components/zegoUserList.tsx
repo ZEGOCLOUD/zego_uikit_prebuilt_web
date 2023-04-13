@@ -37,7 +37,6 @@ export class ZegoUserList extends React.PureComponent<{
   showTurnOffMicrophoneButton(user: ZegoCloudUser) {
     if (!this.props.core._config.showTurnOffRemoteMicrophoneButton)
       return false;
-
     return (
       this.props.core._config.scenario?.config?.role === LiveRole.Host ||
       (user.userID === this.props.selfUserID &&

@@ -392,4 +392,10 @@ export default class InRoomInviteManager {
   notifyRequestCohostTimeout(fn: () => void) {
     this.notifyRequestCohostTimeoutCallback = fn;
   }
+  clearInviteWhenUserLeave(userList: ZegoUser[]) {
+    userList.forEach(u => {
+        this.inviteToCoHostInfoMap.delete(u.userID);
+    })
+    
+  }
 }

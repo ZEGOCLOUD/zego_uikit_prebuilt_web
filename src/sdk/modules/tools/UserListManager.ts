@@ -313,11 +313,11 @@ export class ZegoCloudUserListManager {
   }
 
   async setLiveStates(state: "1" | "0") {
+    this.isLive = state;
     if (
       this.scenario === ScenarioModel.LiveStreaming &&
       this.role === LiveRole.Audience
     ) {
-      this.isLive = state;
       //如果是混流&&观众的话，就不要去拉单流
       if (this.enableVideoMixing) return;
       if (state === "1") {

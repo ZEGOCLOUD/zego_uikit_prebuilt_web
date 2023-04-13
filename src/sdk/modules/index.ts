@@ -552,6 +552,8 @@ export class ZegoCloudRTCCore {
       showTextChat: true,
       showUserJoinAndLeave: true,
     };
+    config.showTurnOffRemoteCameraButton = true;
+    config.showTurnOffRemoteMicrophoneButton = true;
     this.status.videoRefuse = undefined;
     this.clearMixUser();
     // 拉流需要变成RTC的
@@ -561,16 +563,7 @@ export class ZegoCloudRTCCore {
         streamInfo.fromUser.userID,
         streamInfo.streamID
       );
-      this.remoteStreamMap[streamInfo.streamID] = {
-        fromUser: streamInfo.fromUser,
-        media: stream,
-        micStatus:
-          stream && stream.getAudioTracks().length > 0 ? "OPEN" : "MUTE",
-        cameraStatus:
-          stream && stream.getVideoTracks().length > 0 ? "OPEN" : "MUTE",
-        state: "PLAYING",
-        streamID: streamInfo.streamID,
-      };
+      this.remoteStreamMap[streamInfo.streamID].media = stream;
       _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
     }
     this.onRemoteMediaUpdateCallBack &&
@@ -578,7 +571,7 @@ export class ZegoCloudRTCCore {
       this.onRemoteMediaUpdateCallBack("UPDATE", _streamList);
   }
   // Cohost 变成 Audience
-  changeCohostToAudienceInLiveStream() {
+  async changeCohostToAudienceInLiveStream() {
     const config = this._config;
     config.scenario!.config!.role = LiveRole.Audience;
     this.zum.role = LiveRole.Audience;
@@ -598,7 +591,52 @@ export class ZegoCloudRTCCore {
       showTextChat: false,
       showUserJoinAndLeave: false,
     };
+    config.showTurnOffRemoteCameraButton = false;
+    config.showTurnOffRemoteMicrophoneButton = false;
+
     this.setMixUser();
+    // 如果是设置的RTC拉流则不变，否则需要重新拉流
+    try {
+      if (
+        this._config.scenario?.config?.liveStreamingMode !==
+          LiveStreamingMode.RealTimeLive &&
+        !this._config.scenario?.config?.enableVideoMixing
+      ) {
+        let _streamList = [];
+        for (let key in this.remoteStreamMap) {
+          // 先停止拉流
+          ZegoCloudRTCCore._zg.stopPlayingStream(key);
+          // 重新拉流
+          if (this.isCDNLive) {
+            if (!this.mixStreamDomain) {
+              this.coreErrorCallback(
+                CoreError.notSupportCDNLive,
+                "urlsFLV is empty"
+              );
+            }
+            // CDN拉流
+            this.remoteStreamMap[key].media = undefined;
+            this.remoteStreamMap[
+              key
+            ].urlsHttpsFLV = `${this.mixStreamDomain}${key}.flv`;
+            this.remoteStreamMap[
+              key
+            ].urlsHttpsHLS = `${this.mixStreamDomain}${key}.m3u8`;
+          } else {
+            const stream = await this.zum.startPullStream(
+              this.remoteStreamMap[key].fromUser.userID,
+              key
+            );
+            this.remoteStreamMap[key].media = stream;
+          }
+          _streamList.push(this.remoteStreamMap[key]);
+        }
+        _streamList.length > 0 &&
+          this.onRemoteMediaUpdateCallBack?.("UPDATE", _streamList);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
   // 兼容处理LiveStreamingMode
   private getLiveStreamingMode(mode: string | undefined): LiveStreamingMode {
@@ -866,8 +904,8 @@ export class ZegoCloudRTCCore {
       }
       this._roomExtraInfo = value;
       this.zum.setLiveStates(this._roomExtraInfo.live_status);
-      this.onRoomLiveStateUpdateCallBack &&
-        this.onRoomLiveStateUpdateCallBack(this._roomExtraInfo.live_status);
+      this.onRoomLiveStateUpdateCallBack?.(this._roomExtraInfo.live_status);
+      this.onRoomMixingStateUpdateCallBack?.(this._roomExtraInfo.isMixing);
       // 直播时设置房间属性host
       if (this.hostSetterTimer) {
         clearTimeout(this.hostSetterTimer);
@@ -924,9 +962,13 @@ export class ZegoCloudRTCCore {
     if (res.errorCode === 0) {
       this.roomExtraInfo = setRoomExtraInfo;
       if (status === "live") {
-        this.startAndUpdateMixinTask();
+        this.startAndUpdateMixinTask(
+          this._config.scenario?.config?.role === LiveRole.Host
+        );
       } else {
-        this.stopMixerTask();
+        this.stopMixerTask(
+          this._config.scenario?.config?.role === LiveRole.Host
+        );
       }
     }
     return res.errorCode === 0;
@@ -1107,6 +1149,9 @@ export class ZegoCloudRTCCore {
       "roomUserUpdate",
       (roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
         console.warn("【ZEGOCLOUD】roomUserUpdate", updateType, userList);
+        if (updateType === "DELETE") {
+          this._zimManager?._inRoomInviteMg.clearInviteWhenUserLeave(userList);
+        }
         if (this.onRemoteUserUpdateCallBack) {
           this.onRemoteUserUpdateCallBack(roomID, updateType, userList);
         } else {
@@ -1677,6 +1722,10 @@ export class ZegoCloudRTCCore {
   onRoomLiveStateUpdate(func: (live: "1" | "0") => void) {
     this.onRoomLiveStateUpdateCallBack = func;
   }
+  private onRoomMixingStateUpdateCallBack!: (isMixing: "1" | "0") => void;
+  onRoomMixingStateUpdate(func: (isMixing: "1" | "0") => void) {
+    this.onRoomMixingStateUpdateCallBack = func;
+  }
   sendRoomMessage(message: string) {
     return ZegoCloudRTCCore._zg.sendBroadcastMessage(
       ZegoCloudRTCCore._instance._expressConfig.roomID,
@@ -1949,11 +1998,9 @@ export class ZegoCloudRTCCore {
       return { errorCode: 1 };
     }
   }
-  async stopMixerTask(
-    taskID?: string
-  ): Promise<ZegoServerResponse | undefined> {
-    taskID ??= `${this._expressConfig.roomID}__task`;
-    if (this.isHost() && this.roomExtraInfo.isMixing === "1") {
+  async stopMixerTask(isHost = false): Promise<ZegoServerResponse | undefined> {
+    const taskID = `${this._expressConfig.roomID}__task`;
+    if ((this.isHost() || isHost) && this.roomExtraInfo.isMixing === "1") {
       // 停止混流，设置房间附加属性isMixing:0|1
       const setRoomExtraInfo = {
         ...this.roomExtraInfo,
@@ -2206,15 +2253,23 @@ export class ZegoCloudRTCCore {
     // }
     return inputList;
   }
-  async startAndUpdateMixinTask() {
+  async startAndUpdateMixinTask(isHost = false) {
+    // 多主播情况下，非房间属性主播开启直播，也需要开始混流
+    if (!this.isHost() && !isHost) return;
+    console.warn("-----", this.isHost(), isHost);
+    console.warn(
+      "++++",
+      this._config.scenario?.config?.enableVideoMixing,
+      this.roomExtraInfo.live_status
+    );
     if (
       !(
-        this.isHost() &&
         this._config.scenario?.config?.enableVideoMixing &&
         this.roomExtraInfo.live_status === "1"
       )
     )
       return;
+
     const res = await this.startMixerTask();
     console.warn("startMixerTask", res);
     if (res?.errorCode !== 0) return;
@@ -2276,7 +2331,11 @@ export class ZegoCloudRTCCore {
           this.roomExtraInfo.host,
           stream.streamID
         );
-        stream.media = media;
+        if (media) {
+          stream.media = media;
+        } else {
+          stream = null as any;
+        }
       } catch (error) {
         console.error("startPullStream", error);
       }
@@ -2285,8 +2344,9 @@ export class ZegoCloudRTCCore {
       pin: false,
       userID: this.roomExtraInfo.host,
       userName: "",
-      streamList: [stream],
+      streamList: [],
     };
+    stream && this.mixUser.streamList.push(stream);
   }
   //   停止拉混流，Cohost变成 Audience，或离开房间时
   clearMixUser() {
