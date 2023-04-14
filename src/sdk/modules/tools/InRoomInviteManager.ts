@@ -83,14 +83,21 @@ export default class InRoomInviteManager {
       };
     } catch (error) {
       this.inviteToCoHostInfoMap.delete(inviteeID);
+      console.error("【ZEGOCLOUD】inviteJoinToCohost failed:", error);
       return {
         code: 3,
         msg: JSON.stringify(error),
       };
     }
   }
-  async requestCohost(): Promise<boolean> {
-    if (!this.roomExtraInfo.host) return false;
+  // code 0：正常， 1：用户不在线，2：重复邀请，3：发送失败
+  async requestCohost(): Promise<{ code: number; msg?: string }> {
+    if (!this.roomExtraInfo.host) {
+      return {
+        code: 1,
+        msg: "The host has left the room",
+      };
+    }
     const extendedData = JSON.stringify({
       inviter_name: this.expressConfig.userName,
       type: ZegoInvitationType.RequestCoHost,
@@ -118,9 +125,17 @@ export default class InRoomInviteManager {
       } else {
         this.requestCohostInfo = {} as InRoomInvitationInfo;
       }
-      return res.errorInvitees.length === 0;
-    } catch (error) {
-      return false;
+      return {
+        code: res.errorInvitees.length,
+        msg: res.errorInvitees.length > 0 ? "The host has left the room" : "",
+      };
+    } catch (error: any) {
+      console.error("【ZEGOCLOUD】requestCohost failed:", error);
+      this.requestCohostInfo = {} as InRoomInvitationInfo;
+      return {
+        code: 3,
+        msg: error?.message || JSON.stringify(error),
+      };
     }
   }
   async removeCohost(inviteeID: string) {
@@ -393,9 +408,8 @@ export default class InRoomInviteManager {
     this.notifyRequestCohostTimeoutCallback = fn;
   }
   clearInviteWhenUserLeave(userList: ZegoUser[]) {
-    userList.forEach(u => {
-        this.inviteToCoHostInfoMap.delete(u.userID);
-    })
-    
+    userList.forEach((u) => {
+      this.inviteToCoHostInfoMap.delete(u.userID);
+    });
   }
 }

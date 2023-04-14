@@ -127,8 +127,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   notifyTimer: NodeJS.Timeout | null = null;
   footerTimer!: NodeJS.Timeout;
   cameraDevices: ZegoDeviceInfo[] = [];
-
-  userUpdateCallBack = () => {};
   localStreamID = "";
   safariLimitationNoticed: -1 | 0 | 1 = -1;
   iosLimitationNoticed = 0;
@@ -340,7 +338,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core.subscribeUserList((userList) => {
-      this.userUpdateCallBack();
+      // ios手机 && 低于 14版本的Safari不支持多条流同时播放
       const notSupportPhone =
         !isPc() &&
         isIOS() &&
@@ -350,21 +348,26 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             u.streamList.length > 0 && u.streamList[0].micStatus === "OPEN"
           );
         }).length > (this.state.screenSharingUserList.length > 0 ? 0 : 1);
-
       if (this.isCDNLive) {
+        // 拷贝一下userList
         let userListCopy: ZegoCloudUserList = JSON.parse(
           JSON.stringify(userList)
         );
+        // 有流且有一个设备是打开状态的用户数
         const userNum = userListCopy.filter(
           (user) =>
             user.streamList.length > 0 &&
             (user.streamList[0].cameraStatus === "OPEN" ||
               user.streamList[0].micStatus === "OPEN")
         ).length;
+        // 最大可以同时播放的video
         let limitNum = 1;
         if (this.isCDNLive && !isIOS()) {
+          // 非ios 最多同时拉6条流， http连接数限制
           limitNum = this.state.screenSharingUserList.length > 0 ? 5 : 6;
         }
+        // 如果当前推流人数大于最大拉流数限制
+        // 取最早进房间的user进行拉流展示
         if (userNum > limitNum) {
           let i = 0;
           let targetUsers = userListCopy
@@ -384,14 +387,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               return user;
             });
           const users = targetUsers.reverse();
-
+          // 更新用户列表
           this.setState(
             {
-              zegoCloudUserList: targetUsers,
-              memberList: users,
+              zegoCloudUserList: targetUsers, // 需要拉流用户列表
+              memberList: users, // 成员列表
             },
             () => {
-              this.handleLayoutChange(this.state.userLayoutStatus);
+              this.handleLayoutChange(this.state.userLayoutStatus, true);
             }
           );
 
@@ -407,6 +410,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           return;
         }
       } else if (notSupportPhone) {
+        // 只支持播放一个video的情况
         let targetUsers = userList.reverse();
 
         let targetUser = targetUsers.find(
@@ -426,7 +430,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             okText: "Okay",
             onOk: () => {
               this.safariLimitationNoticed = 1;
-              this.handleLayoutChange(this.state.userLayoutStatus);
+              this.handleLayoutChange(this.state.userLayoutStatus, true);
             },
           });
         }
@@ -461,7 +465,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.setState(
         { screenSharingUserList: notSupportPhone ? [] : userList },
         () => {
-          this.handleLayoutChange(this.state.userLayoutStatus);
+          this.handleLayoutChange(this.state.userLayoutStatus, true);
         }
       );
     });
@@ -923,7 +927,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       });
       return;
     }
-
+    if (this.cameraDevices.length === 0) {
+      this.cameraDevices = await this.props.core.getCameras();
+    }
     if (!this.state.localStream || this.cameraDevices.length < 2) {
       return;
     }
@@ -1096,16 +1102,20 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     } else {
       const res =
         await this.props.core._zimManager?._inRoomInviteMg.requestCohost();
-      if (res) {
+      if (res?.code === 0) {
         ZegoToast({
           content: `You've applied for connection, please wait for the host's confirmation.`,
         });
         this.setState({
           isRequestingCohost: true,
         });
-      } else {
+      } else if (res?.code === 1) {
         ZegoToast({
           content: `The host has left the room`,
+        });
+      } else {
+        ZegoToast({
+          content: `Failed to send application, please try again later`,
         });
       }
     }
@@ -1437,7 +1447,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
   }
   async handleLayoutChange(
-    selectLayout: "Auto" | "Grid" | "Sidebar"
+    selectLayout: "Auto" | "Grid" | "Sidebar",
+    stopUpdateUser?: boolean
   ): Promise<boolean> {
     if (selectLayout !== "Sidebar") {
       this._selectedUser && (this._selectedUser.pin = false);
@@ -1460,13 +1471,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       } else {
         await this.props.core.setMaxScreenNum(this.showSelf ? 4 : 5, true);
       }
-
-      this.userUpdateCallBack = () => {
-        resolve(true);
-      };
-      setTimeout(() => {
-        resolve(false);
-      }, 5000);
       let sidebarEnabled = false;
 
       if (selectLayout === "Sidebar") {
@@ -1477,7 +1481,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         }
       }
       await this.props.core.setSidebarLayOut(
-        this.state.screenSharingUserList.length > 0 ? false : sidebarEnabled
+        this.state.screenSharingUserList.length > 0 ? false : sidebarEnabled,
+        stopUpdateUser
       );
     });
   }
@@ -1680,7 +1685,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         } else if (
           hasVideo &&
           this.props.core._config.scenario.config.enableVideoMixing &&
-          this.state.isMixing === "1"
+          this.props.core._config.scenario.config.role === LiveRole.Audience
         ) {
           return (
             <div className={ZegoRoomCss.mixVideoWrapper}>

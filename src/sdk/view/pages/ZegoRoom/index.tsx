@@ -1735,16 +1735,20 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     } else {
       const res =
         await this.props.core._zimManager?._inRoomInviteMg.requestCohost();
-      if (res) {
+      if (res?.code === 0) {
         ZegoToast({
           content: `You've applied for connection, please wait for the host's confirmation.`,
         });
         this.setState({
           isRequestingCohost: true,
         });
-      } else {
+      } else if (res?.code === 1) {
         ZegoToast({
           content: `The host has left the room`,
+        });
+      } else {
+        ZegoToast({
+          content: `Failed to send application, please try again later`,
         });
       }
     }

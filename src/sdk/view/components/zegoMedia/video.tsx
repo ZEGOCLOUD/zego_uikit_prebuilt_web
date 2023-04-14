@@ -48,8 +48,9 @@ export default class ZegoVideo extends React.PureComponent<{
       if ((el as any)?.sinkId !== this.context?.speakerId) {
         (el as any)?.setSinkId?.(this.context?.speakerId || "");
       }
-      if (this.props.userInfo?.streamList?.[0]?.media) {
+      if (this.props.userInfo?.streamList?.[0]?.media?.id) {
         if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
+          el.src = "";
           el.srcObject = this.props.userInfo?.streamList?.[0]?.media!;
           el.setAttribute(
             "cameraOpen",
@@ -59,16 +60,11 @@ export default class ZegoVideo extends React.PureComponent<{
         } else {
           this.safariVideoMutedInvalidWhenOpenCamera(el);
         }
-        if (this.flvPlayer) {
-          this.flvPlayer.pause();
-          this.flvPlayer.unload();
-          this.flvPlayer.detachMediaElement();
-          this.flvPlayer.destroy();
-          this.flvPlayer = null;
-        }
+        this.destroyFlvPlayer();
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
         if (isSafari()) {
           if (el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {
+            el.srcObject = null;
             el.onloadedmetadata = this.onloadedmetadata;
             el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!;
             el.load();
@@ -102,6 +98,7 @@ export default class ZegoVideo extends React.PureComponent<{
   initFLVPlayer(videoElement: HTMLVideoElement, url: string) {
     if (this.flvPlayer) return;
     if (!flvjs.isSupported()) return;
+    videoElement.srcObject = null;
     this.flvPlayer = flvjs.createPlayer({
       type: "flv",
       isLive: true,
@@ -121,6 +118,14 @@ export default class ZegoVideo extends React.PureComponent<{
     });
     this.flvPlayer.on(flvjs.Events.ERROR, (error) => {
       console.error(flvjs.Events.ERROR, error);
+      if (error === "NetworkError") {
+        setTimeout(() => {
+          if (this.flvPlayer) {
+            this.destroyFlvPlayer();
+            this.initFLVPlayer(videoElement, url);
+          }
+        }, 3000);
+      }
     });
     this.flvPlayer.on("statistics_info", (res: any) => {
       if (this.lastDecodedFrame === 0) {
@@ -160,11 +165,7 @@ export default class ZegoVideo extends React.PureComponent<{
 
   componentWillUnmount() {
     if (this.flvPlayer) {
-      this.flvPlayer.pause();
-      this.flvPlayer.unload();
-      this.flvPlayer.detachMediaElement();
-      this.flvPlayer.destroy();
-      this.flvPlayer = null;
+      this.destroyFlvPlayer();
     } else {
       this.videoRef?.srcObject && (this.videoRef.srcObject = null);
       this.videoRef?.src && (this.videoRef.src = "");
@@ -176,6 +177,15 @@ export default class ZegoVideo extends React.PureComponent<{
       this.loadTimer = null;
     }
     this.reloadTimer && clearTimeout(this.reloadTimer);
+  }
+  destroyFlvPlayer() {
+    if (this.flvPlayer) {
+      this.flvPlayer.pause();
+      this.flvPlayer.unload();
+      this.flvPlayer.detachMediaElement();
+      this.flvPlayer.destroy();
+      this.flvPlayer = null;
+    }
   }
   safariAutoPlayTimer() {
     // 修复浏览器听不到拉流声音的问题 Safari15.3，chrome拒绝权限的时候

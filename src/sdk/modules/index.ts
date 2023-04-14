@@ -628,6 +628,8 @@ export class ZegoCloudRTCCore {
               key
             );
             this.remoteStreamMap[key].media = stream;
+            this.remoteStreamMap[key].urlsHttpsFLV = "";
+            this.remoteStreamMap[key].urlsHttpsHLS = "";
           }
           _streamList.push(this.remoteStreamMap[key]);
         }
@@ -2256,12 +2258,6 @@ export class ZegoCloudRTCCore {
   async startAndUpdateMixinTask(isHost = false) {
     // 多主播情况下，非房间属性主播开启直播，也需要开始混流
     if (!this.isHost() && !isHost) return;
-    console.warn("-----", this.isHost(), isHost);
-    console.warn(
-      "++++",
-      this._config.scenario?.config?.enableVideoMixing,
-      this.roomExtraInfo.live_status
-    );
     if (
       !(
         this._config.scenario?.config?.enableVideoMixing &&
