@@ -184,7 +184,7 @@ export class VideoPlayer extends React.PureComponent<{
                       }}
                     >
                       <span
-                        className={ZegoVideoPlayerCss.moreMenuRemoveIcon}
+                        className={ZegoVideoPlayerCss.moreMenuConnectIcon}
                       ></span>
                       <p>End the connect</p>
                     </div>

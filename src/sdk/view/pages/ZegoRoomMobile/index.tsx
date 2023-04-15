@@ -5,6 +5,7 @@ import {
   CoreError,
   LiveRole,
   LiveStreamingMode,
+  ReasonForRefusedInviteToCoHost,
   ScenarioModel,
   SoundLevelMap,
   UserListMenuItemType,
@@ -620,22 +621,21 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core._zimManager?._inRoomInviteMg.notifyInviteToCoHostRefused(
-      (inviteeName: string, inviteeID?: string) => {
-        if (inviteeName) {
-          if (inviteeName) {
-            const notify = {
-              content: `${inviteeName} disagreed with the invitation.`,
-              type: "INVITE",
-              userName: inviteeName,
-              messageID: randomNumber(5),
-            };
-            this.setState({
-              notificationList: [...this.state.notificationList, notify],
-            });
-          }
-        }
-        if (inviteeID) {
-          this.updateUserAttr(inviteeID, "invited", false);
+      (
+        reason: ReasonForRefusedInviteToCoHost,
+        user: { inviteeName: string; inviteeID?: string }
+      ) => {
+        const { inviteeName, inviteeID } = user;
+        if (reason === ReasonForRefusedInviteToCoHost.Disagree) {
+          ZegoToast({
+            content: `${inviteeName} disagreed with the invitation.`,
+          });
+        } else if (reason === ReasonForRefusedInviteToCoHost.Busy) {
+          ZegoToast({
+            content: `Invitation has been sent.`,
+          });
+        } else if (reason === ReasonForRefusedInviteToCoHost.Timeout) {
+          this.updateUserAttr(inviteeID!, "invited", false);
         }
       }
     );
@@ -678,7 +678,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core._zimManager?._inRoomInviteMg.notifyHostRespondRequestCohost(
-      (respond: 0 | 1 | 2) => {
+      (respond: 0 | 1 | 2 | 3) => {
         if (respond === 0) {
           this.props.core.changeAudienceToCohostInLiveStream();
           this.createStream();
@@ -1111,11 +1111,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         });
       } else if (res?.code === 1) {
         ZegoToast({
-          content: `The host has left the room`,
+          content: `The host has left the room.`,
         });
       } else {
         ZegoToast({
-          content: `Failed to send application, please try again later`,
+          content: `Failed to send application, please try again.`,
         });
       }
     }
@@ -1140,7 +1140,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.props.core._config.turnOnCameraWhenJoining = this.state.cameraOpen;
       this.props.core._config.turnOnMicrophoneWhenJoining = this.state.micOpen;
     }
-
+    this.props.core._zimManager?._inRoomInviteMg?.audienceCancelRequest();
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
 
@@ -1406,14 +1406,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         await this.props.core._zimManager?._inRoomInviteMg.hostRefuseRequest(
           this._selectedUser.userID
         );
-      if (res) {
-        this.updateUserAttr(this._selectedUser.userID, "requestCohost", "");
-        this.state.unreadInviteList.delete(this._selectedUser.userID);
-        this.setState({
-          unreadInviteList: this.state.unreadInviteList,
-        });
-      }
-
+      this.updateUserAttr(this._selectedUser.userID, "requestCohost", "");
+      this.state.unreadInviteList.delete(this._selectedUser.userID);
+      this.setState({
+        unreadInviteList: this.state.unreadInviteList,
+      });
       console.warn("DisagreeRequestCohost", res);
     },
     [UserListMenuItemType.AgreeRequestCohost]: async () => {
@@ -1421,14 +1418,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         await this.props.core._zimManager?._inRoomInviteMg.hostAcceptRequest(
           this._selectedUser.userID
         );
-      if (res) {
-        this.updateUserAttr(this._selectedUser.userID, "requestCohost", "");
-        this.state.unreadInviteList.delete(this._selectedUser.userID);
-        this.setState({
-          unreadInviteList: this.state.unreadInviteList,
+      if (res?.code === 6000276) {
+        ZegoToast({
+          content: "The request for connecting has expired.",
         });
       }
-
+      this.updateUserAttr(this._selectedUser.userID, "requestCohost", "");
+      this.state.unreadInviteList.delete(this._selectedUser.userID);
+      this.setState({
+        unreadInviteList: this.state.unreadInviteList,
+      });
       console.warn("AgreeRequestCohost", res);
     },
   };
@@ -1507,6 +1506,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
   get showRemoveButton() {
     if (!this.props.core._config.showRemoveUserButton) return false;
+    if (this.props.core.isHost(this._selectedUser.userID)) return false;
     return (
       this.props.core._config?.scenario?.config?.role === LiveRole.Host &&
       (this._selectedUser.userID !== this.props.core._expressConfig.userID ||
@@ -1689,6 +1689,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         ) {
           return (
             <div className={ZegoRoomCss.mixVideoWrapper}>
+              {this.state.isScreenPortrait &&
+                this.state.screenSharingUserList.length > 0 && (
+                  <div className={ZegoRoomCss.screenTopBar}>
+                    <p>
+                      <span>
+                        {this.state.screenSharingUserList[0].userName}
+                      </span>{" "}
+                      is presenting.
+                    </p>
+                  </div>
+                )}
               <ZegoUserVideo
                 user={this.props.core.mixUser}
                 volume={{}}

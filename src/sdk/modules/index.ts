@@ -896,8 +896,8 @@ export class ZegoCloudRTCCore {
       ) {
         // 停止直播
         this.clearMixUser();
-        this._zimManager?._inRoomInviteMg.audienceCancelRequest();
-        this._zimManager?._inRoomInviteMg.hostCancelAllInvitation();
+        this._zimManager?._inRoomInviteMg?.audienceCancelRequest();
+        this._zimManager?._inRoomInviteMg?.hostCancelAllInvitation();
         this._config.onLiveEnd &&
           this._config.onLiveEnd({
             userID: this._expressConfig.userID,

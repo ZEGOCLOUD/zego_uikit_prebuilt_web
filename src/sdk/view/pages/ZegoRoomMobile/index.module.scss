@@ -440,6 +440,16 @@
   //   left: 0;
   width: 100%;
   height: auto;
+  .screenTopBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    & + div {
+      & > div {
+        top: vw(84px);
+      }
+    }
+  }
 }
 @media screen and(orientation: landscape) {
   .ZegoRoom {

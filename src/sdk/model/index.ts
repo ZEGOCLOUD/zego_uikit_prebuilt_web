@@ -423,3 +423,8 @@ export enum UserListMenuItemType {
   DisagreeRequestCohost = "disagreeRequestCohost",
   AgreeRequestCohost = "agreeRequestCohost",
 }
+export const enum ReasonForRefusedInviteToCoHost {
+  Disagree, // 主动拒绝
+  Busy, // 占线拒绝
+  Timeout, // 超时拒绝
+}

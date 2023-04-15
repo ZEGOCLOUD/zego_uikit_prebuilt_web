@@ -6,10 +6,15 @@ export class ZegoToastComponents extends React.Component<{
   closeCallBack: () => void;
   content?: string;
   duration: number;
+  top: boolean;
 }> {
   render(): React.ReactNode {
     return (
-      <div className={`${ZegoToastCss.ZegoToast} ${ZegoToastCss.show}`}>
+      <div
+        className={`${ZegoToastCss.ZegoToast} ${ZegoToastCss.show} ${
+          this.props.top ? ZegoToastCss.top : ""
+        }`}
+      >
         <div className={ZegoToastCss.content}>{this.props.content}</div>
       </div>
     );
@@ -25,6 +30,7 @@ export const ZegoToast = (function () {
     closeCallBack?: () => void;
     content?: string;
     duration?: number;
+    top?: boolean;
   }) => {
     if (timer) {
       clearTimeout(timer);
@@ -46,6 +52,7 @@ export const ZegoToast = (function () {
         closeCallBack={() => {}}
         content={config?.content || ""}
         duration={config?.duration || 3}
+        top={config?.top || false}
       ></ZegoToastComponents>
     );
   };

@@ -53,7 +53,7 @@ export class ZegoUserList extends React.PureComponent<{
   }
   showRemoveButton(user: ZegoCloudUser) {
     if (!this.props.core._config.showRemoveUserButton) return false;
-
+    if (this.props.core.isHost(user.userID)) return false;
     return (
       this.props.core._config.scenario?.config?.role === LiveRole.Host &&
       (user.userID !== this.props.selfUserID || user.streamList.length === 0)

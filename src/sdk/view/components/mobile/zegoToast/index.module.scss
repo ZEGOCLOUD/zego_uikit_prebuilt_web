@@ -1,7 +1,8 @@
 @import "../../../../var.scss";
 .ZegoToast {
   position: fixed;
-  top: 45vh;
+  //   top: 45vh;
+  top: vw(30px);
   left: 0;
   z-index: 203;
   display: flex;
@@ -9,6 +10,9 @@
   justify-content: center;
   width: 100%;
   background: rgba($color: #2a2a2a, $alpha: 0);
+  &.top {
+    top: vw(20px);
+  }
   // animation: name duration timing-function delay iteration-count direction fill-mode;
   .content {
     box-sizing: border-box;
