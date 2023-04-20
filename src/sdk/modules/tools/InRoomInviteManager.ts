@@ -160,10 +160,10 @@ export default class InRoomInviteManager {
       await this._zim?.callAccept(callID || this.receivedInviteInfo.callID, {
         extendedData: "",
       });
-      this.receivedInviteInfo = {} as InRoomInvitationReceivedInfo;
     } catch (error) {
       console.error("【ZEGOCLOUD】inRoom acceptInvitation failed", error);
     }
+    this.receivedInviteInfo = {} as InRoomInvitationReceivedInfo;
   }
   async audienceRefuseInvitation(
     callID?: string,
@@ -180,10 +180,10 @@ export default class InRoomInviteManager {
       await this._zim?.callReject(callID || this.receivedInviteInfo.callID, {
         extendedData,
       });
-      clear && (this.receivedInviteInfo = {} as InRoomInvitationReceivedInfo);
     } catch (error) {
       console.error("【ZEGOCLOUD】inRoom refuseInvitation", error);
     }
+    clear && (this.receivedInviteInfo = {} as InRoomInvitationReceivedInfo);
   }
   async audienceCancelRequest() {
     if (!this.requestCohostInfo.callID) return;

@@ -531,6 +531,7 @@ export class ZegoCloudRTCCore {
 
     return true;
   }
+
   // Audience变成Cohost
   async changeAudienceToCohostInLiveStream() {
     const config = this._config;
@@ -559,12 +560,24 @@ export class ZegoCloudRTCCore {
     // 拉流需要变成RTC的
     let _streamList = [];
     for (let streamInfo of Object.values(this.remoteStreamMap)) {
-      const stream = await this.zum.startPullStream(
-        streamInfo.fromUser.userID,
-        streamInfo.streamID
-      );
-      this.remoteStreamMap[streamInfo.streamID].media = stream;
-      _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
+      // 需要停止原来的L3拉流
+      if (
+        streamInfo.media &&
+        this._config.scenario?.config?.liveStreamingMode !==
+          LiveStreamingMode.RealTimeLive
+      ) {
+        ZegoCloudRTCCore._zg.stopPlayingStream(streamInfo.streamID);
+      }
+      try {
+        const stream = await this.zum.startPullStream(
+          streamInfo.fromUser.userID,
+          streamInfo.streamID
+        );
+        this.remoteStreamMap[streamInfo.streamID].media = stream;
+        _streamList.push(this.remoteStreamMap[streamInfo.streamID]);
+      } catch (error) {
+        console.error("【ZEGOCLOUD】change to  Cohost:", error);
+      }
     }
     this.onRemoteMediaUpdateCallBack &&
       _streamList.length > 0 &&
@@ -857,6 +870,7 @@ export class ZegoCloudRTCCore {
     enable: boolean
   ): Promise<boolean> {
     this.localStreamInfo.cameraStatus = !enable ? "MUTE" : "OPEN";
+    this.startAndUpdateMixinTask();
     return ZegoCloudRTCCore._zg.enableVideoCaptureDevice(localStream, enable);
   }
 
@@ -864,16 +878,21 @@ export class ZegoCloudRTCCore {
     localStream: MediaStream,
     enable: boolean
   ): Promise<boolean> {
+    this.localStreamInfo.cameraStatus = enable ? "MUTE" : "OPEN";
+    this.startAndUpdateMixinTask();
     return ZegoCloudRTCCore._zg.mutePublishStreamVideo(localStream, enable);
   }
   async mutePublishStreamAudio(
     localStream: MediaStream,
     enable: boolean
   ): Promise<boolean> {
+    this.localStreamInfo.micStatus = enable ? "MUTE" : "OPEN";
+    this.startAndUpdateMixinTask();
     return ZegoCloudRTCCore._zg.mutePublishStreamAudio(localStream, enable);
   }
   async muteMicrophone(enable: boolean): Promise<boolean> {
     this.localStreamInfo.micStatus = enable ? "MUTE" : "OPEN";
+    this.startAndUpdateMixinTask();
     return ZegoCloudRTCCore._zg.muteMicrophone(enable);
   }
 
@@ -1938,7 +1957,7 @@ export class ZegoCloudRTCCore {
   }
   // 踢人
   removeMember(userID: string) {
-    this.sendInRoomCommand(JSON.stringify({ zego_remove_user: [userID] }), [
+    this.sendInRoomCommand(JSON.stringify({ zego_remove_user: userID }), [
       userID,
     ]);
   }
@@ -1979,6 +1998,8 @@ export class ZegoCloudRTCCore {
     const { width, height, bitrate, frameRate } = getVideoResolution(
       this._config.scenario?.config?.videoMixingOutputResolution || "540p"
     );
+    const inputList = this.getMixStreamInput(width, height);
+    if (!inputList.length) return { errorCode: 1 };
     const config: ZegoMixStreamConfig = {
       taskID: `${this._expressConfig.roomID}__task`,
       inputList: this.getMixStreamInput(width, height),
@@ -1993,6 +2014,7 @@ export class ZegoCloudRTCCore {
         outputHeight: height,
       },
     };
+    console.warn("getMixStreamInput", config);
     try {
       return await ZegoCloudRTCCore._zg.startMixerTask(config);
     } catch (error) {
@@ -2074,7 +2096,7 @@ export class ZegoCloudRTCCore {
           streamID:
             this.localScreensharingStreamInfo.streamID ||
             this.zum.remoteScreenStreamList[0].streamList[0].streamID,
-          contentType: "VIDEO",
+          // contentType: "VIDEO",
           layout: {
             top: 16,
             left: 16,
@@ -2116,7 +2138,7 @@ export class ZegoCloudRTCCore {
           streamID:
             this.localScreensharingStreamInfo.streamID ||
             this.zum.remoteScreenStreamList[0].streamList[0].streamID,
-          contentType: "VIDEO",
+          // contentType: "VIDEO",
           layout: {
             top: 16,
             left: 16,
@@ -2310,6 +2332,7 @@ export class ZegoCloudRTCCore {
       },
       micStatus: "OPEN",
       cameraStatus: "OPEN",
+      //   hasVideo: false, //为了一开始能播放纯音频
       state: "PLAYING",
       streamID: `${this._expressConfig.roomID}__mix`,
     };

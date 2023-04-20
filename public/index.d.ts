@@ -36,8 +36,8 @@ declare interface ScenarioConfig {
     role: LiveRole;
     liveStreamingMode: LiveStreamingMode;
     enableVideoMixing?: boolean;
-    videoMixingLayout?: VideoMixinLayoutType;
-    videoMixingOutputResolution: VideoMixinOutputResolution;
+    // videoMixingLayout?: VideoMixinLayoutType;
+    videoMixingOutputResolution?: VideoMixinOutputResolution;
   };
   [ScenarioModel.OneONoneCall]: {
     role: LiveRole;

@@ -44,7 +44,7 @@ import { ZegoSuperBoardView } from "zego-superboard-web";
 import { ZegoWhiteboardSharingLayout } from "./components/ZegoWhiteboardSharingLayout";
 import ShowManageContext from "../context/showManage";
 import ZegoAudio from "../../components/zegoMedia/audio";
-import { VideoPlayer } from "./components/zegoVideoPlayer";
+import { ZegoMixPlayer } from "./components/zegoMixPlayer";
 export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   state: {
     localStream: undefined | MediaStream;
@@ -579,8 +579,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             onOk: async () => {
               this.props.core._zimManager?._inRoomInviteMg.audienceAcceptInvitation();
               // TODO 角色变更，更新config，开始推流,
-              this.props.core.changeAudienceToCohostInLiveStream();
-              await this.createStream();
+              await this.props.core.changeAudienceToCohostInLiveStream();
+              const res = await this.createStream();
+              if (!res) {
+                this.props.core.changeCohostToAudienceInLiveStream();
+              }
             },
             onCancel: () => {
               this.props.core._zimManager?._inRoomInviteMg.audienceRefuseInvitation();
@@ -617,7 +620,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         // 左侧通知
         if (state === 1) {
           ZegoToast({
-            content: `${inviter.userName} disagreed with the invitation.`,
+            content: `${inviter.userName} is requesting a connection with you.`,
           });
         }
         // 设置红点
@@ -635,10 +638,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core._zimManager?._inRoomInviteMg.notifyHostRespondRequestCohost(
-      (respond: 0 | 1 | 2 | 3) => {
+      async (respond: 0 | 1 | 2 | 3) => {
         if (respond === 0) {
-          this.props.core.changeAudienceToCohostInLiveStream();
-          this.createStream();
+          await this.props.core.changeAudienceToCohostInLiveStream();
+          const res = await this.createStream();
+          if (!res) {
+            this.props.core.changeCohostToAudienceInLiveStream();
+          }
         } else if (respond === 1) {
           ZegoToast({
             content: "The host has rejected your request.",
@@ -704,20 +710,37 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           hasVideo: !this.props.core.status.videoRefuse,
           hasAudio: !this.props.core.status.audioRefuse,
         });
-        const res = this.props.core.publishLocalStream(
-          localStream,
-          "main",
-          extraInfo
-        );
-        if (res !== false) {
-          this.localStreamID = res as string;
+        try {
+          const res = this.props.core.publishLocalStream(
+            localStream,
+            "main",
+            extraInfo
+          );
+          if (res !== false) {
+            this.localStreamID = res as string;
+          }
+        } catch (error) {
+          // 推流失败就销毁创建的流
+          console.error("【ZEGOCLOUD】publishStream failed:", error);
+          this.props.core.destroyStream(localStream);
+          this.setState({
+            localStream: null,
+          });
+          return false;
         }
+
         return true;
       } catch (error: any) {
         console.error(
           "【ZEGOCLOUD】createStream or publishLocalStream failed,Reason: ",
           JSON.stringify(error)
         );
+        if (error?.code === 1103065 || error?.code === 1103061) {
+          ZegoToast({
+            content:
+              "The audio and video equipment is being occupied by another application.",
+          });
+        }
         if (error?.code === 1103064) {
           this.props.core.status.videoRefuse = true;
           this.props.core.status.audioRefuse = true;
@@ -1396,13 +1419,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
           this.props.core._config.scenario.config.role === LiveRole.Audience
         ) {
           return (
-            <VideoPlayer
+            <ZegoMixPlayer
               userInfo={this.props.core.mixUser}
-              muted={false}
-              hiddenName={true}
-              hiddenMore={true}
-              volume={{}}
-            ></VideoPlayer>
+              isPureAudio={this.props.core.zum.isPureAudio}
+              isPureVideo={this.props.core.zum.isPureVideo}
+            ></ZegoMixPlayer>
           );
         }
       }

@@ -52,7 +52,8 @@ import ZegoAudio from "../../components/zegoMedia/audio";
 import { ZegoWhiteboard } from "./components/zegoWhiteboard";
 import { formatTime } from "../../../modules/tools/util";
 import { ZegoTimer } from "./components/zegoTimer";
-import { ZegoUserVideo } from "./components/zegoUserVideo";
+
+import { ZegoMixPlayer } from "./components/zegoMixPlayer";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
@@ -611,8 +612,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             if (confirm) {
               this.props.core._zimManager?._inRoomInviteMg.audienceAcceptInvitation();
               // TODO 角色变更，更新config，开始推流,
-              this.props.core.changeAudienceToCohostInLiveStream();
-              await this.createStream();
+              await this.props.core.changeAudienceToCohostInLiveStream();
+              const res = await this.createStream();
+              if (!res) {
+                this.props.core.changeCohostToAudienceInLiveStream();
+              }
             } else {
               this.props.core._zimManager?._inRoomInviteMg.audienceRefuseInvitation();
             }
@@ -635,8 +639,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             content: `Invitation has been sent.`,
           });
         } else if (reason === ReasonForRefusedInviteToCoHost.Timeout) {
-          this.updateUserAttr(inviteeID!, "invited", false);
         }
+        this.updateUserAttr(inviteeID!, "invited", false);
       }
     );
     this.props.core._zimManager?._inRoomInviteMg.notifyRemoveCoHost(() => {
@@ -678,10 +682,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     );
     this.props.core._zimManager?._inRoomInviteMg.notifyHostRespondRequestCohost(
-      (respond: 0 | 1 | 2 | 3) => {
+      async (respond: 0 | 1 | 2 | 3) => {
         if (respond === 0) {
-          this.props.core.changeAudienceToCohostInLiveStream();
-          this.createStream();
+          await this.props.core.changeAudienceToCohostInLiveStream();
+          const res = await this.createStream();
+          if (!res) {
+            this.props.core.changeCohostToAudienceInLiveStream();
+          }
         } else if (respond === 1) {
           ZegoToast({
             content: "The host has rejected your request.",
@@ -776,20 +783,37 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           hasVideo: !this.props.core.status.videoRefuse,
           hasAudio: !this.props.core.status.audioRefuse,
         });
-        const res = this.props.core.publishLocalStream(
-          localStream,
-          "main",
-          extraInfo
-        );
-        if (res !== false) {
-          this.localStreamID = res as string;
+        try {
+          const res = this.props.core.publishLocalStream(
+            localStream,
+            "main",
+            extraInfo
+          );
+          if (res !== false) {
+            this.localStreamID = res as string;
+          }
+        } catch (error) {
+          // 推流失败就销毁创建的流
+          console.error("【ZEGOCLOUD】publishStream failed:", error);
+          this.props.core.destroyStream(localStream);
+          this.setState({
+            localStream: null,
+          });
+          return false;
         }
+
         return true;
       } catch (error: any) {
         console.error(
           "【ZEGOCLOUD】createStream or publishLocalStream failed,Reason: ",
           JSON.stringify(error)
         );
+        if (error?.code === 1103065 || error?.code === 1103061) {
+          ZegoToast({
+            content:
+              "The audio and video equipment is being occupied by another application.",
+          });
+        }
         if (error?.code === 1103064) {
           this.props.core.status.videoRefuse = true;
           this.props.core.status.audioRefuse = true;
@@ -1571,6 +1595,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           userList={this.getAllMemberList()}
           closeCallBack={(_user?: ZegoCloudUser) => {
             _user && (this._selectedUser = _user);
+            if (_user?.requestCohost) return;
             this.setState({
               layOutStatus: this.showManager(_user) ? "MANAGE" : "ONE_VIDEO",
             });
@@ -1700,17 +1725,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                     </p>
                   </div>
                 )}
-              <ZegoUserVideo
-                user={this.props.core.mixUser}
-                volume={{}}
-                muted={false}
-                hiddenName={true}
-                hiddenMore={true}
+              <ZegoMixPlayer
+                userInfo={this.props.core.mixUser}
                 showFullScreen={
                   this.state.liveStatus === "1" &&
                   this.props.core._config.scenario?.config?.enableVideoMixing
                 }
-              ></ZegoUserVideo>
+                isPureAudio={this.props.core.zum.isPureAudio}
+              ></ZegoMixPlayer>
             </div>
           );
         }

@@ -168,9 +168,11 @@ export class ZegoUserList extends React.PureComponent<{
                     <span key={user.userID + "_me"}> (You) </span>
                   )}
                 </div>
-                {user.invited && !user.requestCohost && (
-                  <div className={zegoUserListCss.invitedState}>Invited</div>
-                )}
+                {!user.streamList?.[0]?.media &&
+                  user.invited &&
+                  !user.requestCohost && (
+                    <div className={zegoUserListCss.invitedState}>Invited</div>
+                  )}
                 {user.requestCohost && (
                   <div className={zegoUserListCss.requestCohostWrapper}>
                     <div

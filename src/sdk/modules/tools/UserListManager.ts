@@ -39,6 +39,16 @@ export class ZegoCloudUserListManager {
       this.liveStreamingMode === LiveStreamingMode.InteractiveLiveStreaming
     );
   }
+  get isPureAudio(): boolean {
+    return !this.remoteUserList.some(
+      (user) => user.streamList?.[0]?.cameraStatus === "OPEN"
+    );
+  }
+  get isPureVideo(): boolean {
+    return !this.remoteUserList.some(
+      (user) => user.streamList?.[0]?.micStatus === "OPEN"
+    );
+  }
   setPin(userID?: string, pined?: boolean): void {
     this.remoteUserList = this.remoteUserList.map((u) => {
       if (u.userID === userID) {
@@ -235,6 +245,7 @@ export class ZegoCloudUserListManager {
           if (updateType === "ADD") {
             this.remoteUserList[u_index].streamList.push(stream);
             this.remoteUserList[u_index].requestCohost = undefined;
+            this.remoteUserList[u_index].invited = false;
           } else if (updateType === "DELETE" && s_index > -1) {
             this.remoteUserList[u_index].streamList.splice(s_index, 1);
             // 如果流全部删除了，且流对应用户不在用户变更数组中，则代表该用户也已经下线
