@@ -125,9 +125,9 @@ declare interface ZegoCloudRoomConfig {
     showAddImageButton?: boolean; // It's set to false by default. To use this feature, activate the File Sharing feature, and then import the plugin. Otherwise, this prompt will occur: "Failed to add image, this feature is not supported."
     showCreateAndCloseButton?: boolean; // Whether to display the button that is used to create/turn off the whiteboard. Displayed by default.
   };
-  showMakeCohostButton?: boolean; // 主播是否展示邀请观众连麦按钮
-  showRemoveCohostButton?: boolean; // 主播是否展示移下麦按钮
-  showRequestToCohostButton?: boolean; // 观众是否展示申请连麦按钮
+  showInviteToCohostButton?: boolean; // Whether to show the button that is used to invite the audience to co-host on the host end.
+  showRemoveCohostButton?: boolean; // Whether to show the button that is used to remove the audience on the host end.
+  showRequestToCohostButton?: boolean; // Whether to show the button that is used to request to co-host on the audience end.
   // 1.4 Leaving view
   showLeavingView?: boolean; // Whether to display the leaving view. Displayed by default.
 

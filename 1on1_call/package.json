@@ -1,6 +1,6 @@
 {
   "name": "@zegocloud/zego-uikit-prebuilt",
-  "version": "1.7.5",
+  "version": "1.8.0",
   "description": "zegocloud prebuilt meeting webrtc sdk",
   "keywords": [
     "sdk",

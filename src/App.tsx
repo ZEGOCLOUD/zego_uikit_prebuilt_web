@@ -279,7 +279,7 @@ export default class App extends React.PureComponent {
           showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
           showPinButton: true,
-          showMakeCohostButton: true,
+          showInviteToCohostButton: true,
           showRemoveCohostButton: true,
           showRequestToCohostButton: true,
         };

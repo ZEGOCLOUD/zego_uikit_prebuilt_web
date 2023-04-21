@@ -182,7 +182,7 @@ export interface ZegoCloudRoomConfig {
     messages: ZegoSignalingInRoomTextMessage[]
   ) => void; // zim房间文本消息回调
   //   1.8.0
-  showMakeCohostButton?: boolean; // 主播是否展示邀请观众连麦按钮
+  showInviteToCohostButton?: boolean; // 主播是否展示邀请观众连麦按钮
   showRemoveCohostButton?: boolean; // 主播是否展示移下麦按钮
   showRequestToCohostButton?: boolean; // 观众是否展示申请连麦按钮
 }

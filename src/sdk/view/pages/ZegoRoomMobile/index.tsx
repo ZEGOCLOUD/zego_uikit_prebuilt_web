@@ -160,7 +160,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     return !!this.props.core._config.showRequestToCohostButton;
   }
   get showInviteToCohostButton(): boolean {
-    if (!this.props.core._config.showMakeCohostButton) return false;
+    if (!this.props.core._config.showInviteToCohostButton) return false;
     if (this.state.liveStatus === "0") return false;
     if (this._selectedUser.streamList?.[0]?.media) return false;
     return this.props.core.isHost(this.props.core._expressConfig.userID);

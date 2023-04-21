@@ -88,7 +88,7 @@ export class ZegoUserList extends React.PureComponent<{
     }
   }
   showInviteCohostButton(user: ZegoCloudUser): boolean {
-    if (!this.props.core._config.showMakeCohostButton) return false;
+    if (!this.props.core._config.showInviteToCohostButton) return false;
     if (this.context.liveStatus === "0") return false;
     return this.props.core.isHost(this.props.selfUserID);
   }

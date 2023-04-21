@@ -181,7 +181,7 @@ export class ZegoCloudRTCCore {
     showRoomTimer: false, // 是否显示房间计时器
     videoCodec: "H264", //视频编解码器
     showRoomDetailsButton: true,
-    showMakeCohostButton: false, // 主播是否展示邀请观众连麦按钮
+    showInviteToCohostButton: false, // 主播是否展示邀请观众连麦按钮
     showRemoveCohostButton: false, // 主播是否展示移下麦按钮
     showRequestToCohostButton: false, // 观众是否展示申请连麦按钮
   };
@@ -393,7 +393,7 @@ export class ZegoCloudRTCCore {
         };
       }
     } else {
-      config.showMakeCohostButton = false;
+      config.showInviteToCohostButton = false;
       config.showRemoveCohostButton = false;
       config.showRequestToCohostButton = false;
     }
