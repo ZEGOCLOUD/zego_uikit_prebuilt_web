@@ -246,6 +246,8 @@ export default class App extends React.PureComponent {
               role,
               liveStreamingMode,
               enableVideoMixing: false,
+              videoMixingOutputResolution:
+                ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
             },
           },
           onUserAvatarSetter: (user) => {

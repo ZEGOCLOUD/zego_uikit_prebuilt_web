@@ -6,6 +6,7 @@ import {
   LiveRole,
   LiveStreamingMode,
   ScenarioModel,
+  VideoMixinOutputResolution,
   VideoResolution,
   ZegoCallInvitationConfig,
   ZegoCloudRoomConfig,
@@ -40,6 +41,7 @@ export class ZegoUIKitPrebuilt {
   static ConsoleWarning = ConsoleLevel.Warning;
   static ConsoleError = ConsoleLevel.Error;
   static ConsoleNone = ConsoleLevel.None;
+  static VideoMixinOutputResolution = VideoMixinOutputResolution;
   private hasJoinedRoom = false;
   root: Root | undefined;
 

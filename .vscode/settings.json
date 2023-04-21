@@ -12,10 +12,7 @@
   ],
   "editor.formatOnSave": true,
   "editor.formatOnType": false,
-  "i18n-ally.localesPaths": [
-    "lang"
-  ],
-  "cSpell.words": [
-    "devdependencies"
-  ]
+  "i18n-ally.localesPaths": ["lang"],
+  "cSpell.words": ["devdependencies"],
+  "vue.features.codeActions.enable": false
 }
