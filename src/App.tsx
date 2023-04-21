@@ -245,7 +245,7 @@ export default class App extends React.PureComponent {
             config: {
               role,
               liveStreamingMode,
-              enableVideoMixing: true,
+              enableVideoMixing: false,
             },
           },
           onUserAvatarSetter: (user) => {
