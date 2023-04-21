@@ -67,6 +67,7 @@ export default class App extends React.PureComponent {
 
     const roomID = getUrlParams().get("roomID") || randomID(5);
     const userID = getUrlParams().get("userID") || randomNumID(8);
+    // const enableMixing = getUrlParams().get("mixing") === "1" || false;
 
     let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
@@ -83,6 +84,30 @@ export default class App extends React.PureComponent {
     let mode = ScenarioModel.OneONoneCall;
     //@ts-ignore // just for debugger
     window.ZegoUIKitPrebuilt = ZegoUIKitPrebuilt;
+    if (!getUrlParams().get("roomID")) {
+      window.history.replaceState(
+        "",
+        "You have logged into room: " + roomID,
+        window.location.origin +
+          window.location.pathname +
+          "?roomID=" +
+          roomID +
+          "&role=Host&userID=" +
+          userID
+      );
+    }
+
+    if (!getUrlParams().get("userID")) {
+      window.history.replaceState(
+        "",
+        "You have logged into room: " + roomID,
+        window.location.origin +
+          window.location.pathname +
+          window.location.search +
+          "&userID=" +
+          userID
+      );
+    }
     if (process.env.REACT_APP_PATH === "1on1_call") {
       maxUsers = 2;
       sharedLinks.push({
@@ -133,16 +158,6 @@ export default class App extends React.PureComponent {
       });
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
-      if (!getUrlParams().get("userID")) {
-        window.history.replaceState(
-          "",
-          "You have logged into room: " + roomID,
-          window.location.origin +
-            window.location.pathname +
-            "?&userID=" +
-            userID
-        );
-      }
       window.addEventListener(
         "orientationchange",
         this.onOrientationChange.bind(this),
@@ -151,32 +166,20 @@ export default class App extends React.PureComponent {
       this.onOrientationChange();
       this.initCallInvitation(userID, roomID);
     } else {
-      if (!getUrlParams().get("roomID")) {
-        window.history.replaceState(
-          "",
-          "You have logged into room: " + roomID,
-          window.location.origin +
-            window.location.pathname +
-            "?roomID=" +
-            roomID +
-            "&role=Host&userID=" +
-            userID
-        );
-      }
       this.myMeeting = async (element: HTMLDivElement) => {
-        // let { token } = await generateToken(
-        //   randomID(5),
-        //   roomID,
-        //   userName || getRandomName()
-        // );
-        let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-          1484647939,
-          "22076fd0a8388f31dc1f6e344171b2b1",
+        let { token } = await generateToken(
+          randomID(5),
           roomID,
-          userID,
-          userName || getRandomName(),
-          7200
+          userName || getRandomName()
         );
+        // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+        //   4647939,
+        //   "22076fd0a8388f31dc1f6e344171****",
+        //   roomID,
+        //   userID,
+        //   userName || getRandomName(),
+        //   7200
+        // );
         const zp = ZegoUIKitPrebuilt.create(token);
         //@ts-ignore // just for debugger
         window.zp = zp;
@@ -184,6 +187,9 @@ export default class App extends React.PureComponent {
           zp.addPlugins({ ZegoSuperBoardManager });
         } else {
           zp.addPlugins({ ZIM });
+          ZIM.getInstance().setLogConfig({
+            logLevel: "error",
+          });
         }
         const param: ZegoCloudRoomConfig = {
           console: ZegoUIKitPrebuilt.ConsoleNone,
@@ -239,7 +245,7 @@ export default class App extends React.PureComponent {
             config: {
               role,
               liveStreamingMode,
-              enableVideoMixin: true,
+              enableVideoMixing: true,
             },
           },
           onUserAvatarSetter: (user) => {
@@ -273,9 +279,9 @@ export default class App extends React.PureComponent {
           showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
           showPinButton: true,
-          showInviteJoinCohostButton: true,
+          showMakeCohostButton: true,
           showRemoveCohostButton: true,
-          showRequestCoHostButton: true,
+          showRequestToCohostButton: true,
         };
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true";
@@ -302,7 +308,7 @@ export default class App extends React.PureComponent {
     );
     // console.warn(token);
     // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-    //   252984006,
+    //   252984,
     //   "16435f3bdb307f****b3f9e4259a29f0",
     //   roomID,
     //   userID,

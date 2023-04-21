@@ -21,11 +21,23 @@ declare enum VideoResolution {
   _480P = "480p",
   _720P = "720p",
 }
-
+export enum VideoMixinLayoutType {
+  AutoLayout = 0,
+}
+export enum VideoMixinOutputResolution {
+  _180P = "180p",
+  _360P = "360p",
+  _540P = "540p",
+  _720P = "720p",
+  _1080P = "1080p",
+}
 declare interface ScenarioConfig {
   [ScenarioModel.LiveStreaming]: {
     role: LiveRole;
     liveStreamingMode: LiveStreamingMode;
+    enableVideoMixing?: boolean;
+    // videoMixingLayout?: VideoMixinLayoutType;
+    videoMixingOutputResolution?: VideoMixinOutputResolution;
   };
   [ScenarioModel.OneONoneCall]: {
     role: LiveRole;
@@ -113,6 +125,9 @@ declare interface ZegoCloudRoomConfig {
     showAddImageButton?: boolean; // It's set to false by default. To use this feature, activate the File Sharing feature, and then import the plugin. Otherwise, this prompt will occur: "Failed to add image, this feature is not supported."
     showCreateAndCloseButton?: boolean; // Whether to display the button that is used to create/turn off the whiteboard. Displayed by default.
   };
+  showMakeCohostButton?: boolean; // 主播是否展示邀请观众连麦按钮
+  showRemoveCohostButton?: boolean; // 主播是否展示移下麦按钮
+  showRequestToCohostButton?: boolean; // 观众是否展示申请连麦按钮
   // 1.4 Leaving view
   showLeavingView?: boolean; // Whether to display the leaving view. Displayed by default.
 
