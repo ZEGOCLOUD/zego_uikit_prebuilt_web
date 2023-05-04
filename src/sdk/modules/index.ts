@@ -28,6 +28,7 @@ import {
   CoreError,
   LiveRole,
   LiveStreamingMode,
+  RightPanelExpandedType,
   ScenarioConfig,
   ScenarioModel,
   VideoMixinLayoutType,
@@ -184,6 +185,7 @@ export class ZegoCloudRTCCore {
     showInviteToCohostButton: false, // 主播是否展示邀请观众连麦按钮
     showRemoveCohostButton: false, // 主播是否展示移下麦按钮
     showRequestToCohostButton: false, // 观众是否展示申请连麦按钮
+    rightPanelExpandedType: RightPanelExpandedType.None,
   };
   _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
   extraInfoKey = "extra_info";
@@ -2085,6 +2087,7 @@ export class ZegoCloudRTCCore {
         userName: this._expressConfig.userName,
       });
     }
+    let config: ZegoMixStreamInput;
     if (hasScreensharing) {
       let maxVideo = 5;
       videoHeight = Math.floor((outHeight - 16 * 2 - 4 * 10) / 5);
@@ -2092,32 +2095,50 @@ export class ZegoCloudRTCCore {
       screensharingWidth = outWidth - 16 * 2 - 10 - videoWidth;
       screensharingHeight = outHeight - 16 * 2;
       if (streams.length > 0) {
+        // screen sharing
         inputList.push({
           streamID:
             this.localScreensharingStreamInfo.streamID ||
             this.zum.remoteScreenStreamList[0].streamList[0].streamID,
-          // contentType: "VIDEO",
+          contentType: "VIDEO",
           layout: {
             top: 16,
             left: 16,
             bottom: screensharingHeight + 16,
             right: screensharingWidth + 16,
           },
+          cornerRadius: 10,
           renderMode: 1,
         });
+        // user streams
         streams.forEach((user) => {
           if (maxVideo > 0) {
-            inputList.push({
+            config = {
               streamID: user.streamID,
-              // contentType: "VIDEO",
+              contentType: "VIDEO",
               layout: {
                 top: 16 + (5 - maxVideo) * (videoHeight + 10),
                 left: screensharingWidth + 26,
                 bottom: 16 + (5 - maxVideo) * (videoHeight + 10) + videoHeight,
                 right: outWidth - 16,
               },
+              label: {
+                text: user.userName!,
+                font: {
+                  size: 14,
+                  transparency: 0,
+                  color: 16777215,
+                  border: true,
+                  borderColor: 8421505,
+                },
+                left: 20,
+                top: videoWidth - 24,
+              },
+              cornerRadius: 10,
               renderMode: 1,
-            });
+            };
+
+            inputList.push(config);
             maxVideo--;
           } else {
             inputList.push({
@@ -2129,62 +2150,104 @@ export class ZegoCloudRTCCore {
                 bottom: 1,
                 right: 1,
               },
+
               renderMode: 1,
             });
           }
         });
       } else {
+        // 只有屏幕共享的情况
         inputList.push({
           streamID:
             this.localScreensharingStreamInfo.streamID ||
             this.zum.remoteScreenStreamList[0].streamList[0].streamID,
-          // contentType: "VIDEO",
+          contentType: "VIDEO",
           layout: {
             top: 16,
             left: 16,
             bottom: outHeight - 16,
             right: outWidth - 16,
           },
+          cornerRadius: 10,
           renderMode: 1,
         });
       }
     } else {
+      // 没有屏幕共享的情况
       let len = streams.length;
 
       if (len === 1) {
-        inputList.push({
+        config = {
           streamID: streams[0].streamID,
-          // contentType: "VIDEO",
+          contentType: "VIDEO",
           layout: {
             top: 16,
             left: 16,
             bottom: outHeight - 16,
             right: outWidth - 16,
           },
+          label: {
+            text: streams[0].userName!,
+            font: {
+              size: 14,
+              transparency: 0,
+              color: 16777215,
+              border: true,
+              borderColor: 8421505,
+            },
+            left: 20,
+            top: outHeight - 16 * 2 - 24,
+          },
+          cornerRadius: 10,
           renderMode: 1,
-        });
+        };
+        if (streams[0].cameraStatus === "MUTE") {
+          config.imageInfo = {
+            url: "https://resource.zegocloud.com/office/sdk_static/mixing_video_bg.jpg",
+          };
+        }
+        inputList.push(config);
       } else if (len === 2) {
         videoWidth = Math.floor((outWidth - 16 * 2 - 10) / 2);
         streams.forEach((u, i) => {
-          inputList.push({
+          config = {
             streamID: u.streamID,
-            // contentType: "VIDEO",
+            contentType: "VIDEO",
             layout: {
               top: 16,
               left: 16 + (videoWidth + 10) * i,
               bottom: outHeight - 16,
               right: 16 + (videoWidth + 10) * i + videoWidth,
             },
+            label: {
+              text: u.userName!,
+              font: {
+                size: 14,
+                transparency: 0,
+                color: 16777215,
+                border: true,
+                borderColor: 8421505,
+              },
+              left: 20,
+              top: outHeight - 16 * 2 - 24,
+            },
+            cornerRadius: 10,
             renderMode: 1,
-          });
+          };
+          if (u.cameraStatus === "MUTE") {
+            config.imageInfo = {
+              url: "https://resource.zegocloud.com/office/sdk_static/mixing_video_bg.jpg",
+            };
+          }
+          inputList.push(config);
         });
       } else if (len === 3 || len === 4) {
         videoWidth = Math.floor((outWidth - 16 * 2 - 10) / 2);
         videoHeight = Math.floor((outHeight - 16 * 2 - 10) / 2);
         streams.forEach((u, i) => {
-          inputList.push({
+          config = {
             streamID: u.streamID,
-            // contentType: "VIDEO",
+            contentType: "VIDEO",
             layout: {
               top: i <= 1 ? 16 : 16 + 10 + videoHeight,
               left:
@@ -2203,8 +2266,27 @@ export class ZegoCloudRTCCore {
                   ? 16 + videoWidth
                   : outWidth - 16,
             },
+            label: {
+              text: u.userName!,
+              font: {
+                size: 14,
+                transparency: 0,
+                color: 16777215,
+                border: true,
+                borderColor: 8421505,
+              },
+              left: 20,
+              top: videoHeight - 24,
+            },
+            cornerRadius: 10,
             renderMode: 1,
-          });
+          };
+          if (u.cameraStatus === "MUTE") {
+            config.imageInfo = {
+              url: "https://resource.zegocloud.com/office/sdk_static/mixing_video_bg.jpg",
+            };
+          }
+          inputList.push(config);
         });
       } else if (len === 5 || len === 6) {
         videoWidth = Math.floor((outWidth - 16 * 2 - 10 * 2) / 3);
@@ -2217,17 +2299,36 @@ export class ZegoCloudRTCCore {
             i <= 2
               ? 16 + (videoWidth + 10) * i
               : 16 + lastRowPaddingLeft + (videoWidth + 10) * (i % 3);
-          inputList.push({
+          config = {
             streamID: u.streamID,
-            // contentType: "VIDEO",
+            contentType: "VIDEO",
             layout: {
               top: i <= 2 ? 16 : 16 + 10 + videoHeight,
               left: left,
               bottom: i <= 2 ? 16 + videoHeight : outHeight - 16,
               right: left + videoWidth,
             },
+            label: {
+              text: u.userName!,
+              font: {
+                size: 14,
+                transparency: 0,
+                color: 16777215,
+                border: true,
+                borderColor: 8421505,
+              },
+              left: 20,
+              top: videoHeight - 16,
+            },
+            cornerRadius: 10,
             renderMode: 1,
-          });
+          };
+          if (u.cameraStatus === "MUTE") {
+            config.imageInfo = {
+              url: "https://resource.zegocloud.com/office/sdk_static/mixing_video_bg.jpg",
+            };
+          }
+          inputList.push(config);
         });
       } else {
         videoWidth = Math.floor((outWidth - 16 * 2 - 10 * 2) / 3);
@@ -2245,9 +2346,9 @@ export class ZegoCloudRTCCore {
               i < 6
                 ? 16 + (videoWidth + 10) * (i % 3)
                 : 16 + lastRowPaddingLeft + (videoWidth + 10) * (i % 3);
-            inputList.push({
+            config = {
               streamID: u.streamID,
-              // contentType: "VIDEO",
+              contentType: "VIDEO",
               layout: {
                 top: 16 + (videoHeight + 10) * Math.floor(i / 3),
                 left: left,
@@ -2255,8 +2356,27 @@ export class ZegoCloudRTCCore {
                   16 + (videoHeight + 10) * Math.floor(i / 3) + videoHeight,
                 right: left + videoWidth,
               },
+              label: {
+                text: u.userName!,
+                font: {
+                  size: 14,
+                  transparency: 0,
+                  color: 16777215,
+                  border: true,
+                  borderColor: 8421505,
+                },
+                left: 20,
+                top: videoHeight - 16,
+              },
+              cornerRadius: 10,
               renderMode: 1,
-            });
+            };
+            if (u.cameraStatus === "MUTE") {
+              config.imageInfo = {
+                url: "https://resource.zegocloud.com/office/sdk_static/mixing_video_bg.jpg",
+              };
+            }
+            inputList.push(config);
           } else {
             inputList.push({
               streamID: u.streamID,

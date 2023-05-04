@@ -112,19 +112,19 @@ export default class ZegoVideo extends React.PureComponent<{
     if (!flvjs.isSupported()) return;
     videoElement.srcObject = null;
     let hasVideo, hasAudio;
-    if (this.props.isMixing) {
-      hasAudio = !this.props.isPureVideo;
-      hasVideo = !this.props.isPureAudio;
-    } else {
-      hasVideo =
-        this.props.userInfo.streamList?.[0]?.hasVideo === undefined
-          ? this.props.userInfo.streamList?.[0]?.cameraStatus === "OPEN"
-          : this.props.userInfo.streamList?.[0]?.hasVideo;
-      hasAudio =
-        this.props.userInfo.streamList?.[0]?.hasAudio === undefined
-          ? this.props.userInfo.streamList?.[0]?.micStatus === "OPEN"
-          : this.props.userInfo.streamList?.[0]?.hasAudio;
-    }
+    // if (this.props.isMixing) {
+    //   hasAudio = !this.props.isPureVideo;
+    //   hasVideo = !this.props.isPureAudio;
+    // } else {
+    hasVideo =
+      this.props.userInfo.streamList?.[0]?.hasVideo === undefined
+        ? this.props.userInfo.streamList?.[0]?.cameraStatus === "OPEN"
+        : this.props.userInfo.streamList?.[0]?.hasVideo;
+    hasAudio =
+      this.props.userInfo.streamList?.[0]?.hasAudio === undefined
+        ? this.props.userInfo.streamList?.[0]?.micStatus === "OPEN"
+        : this.props.userInfo.streamList?.[0]?.hasAudio;
+    // }
 
     this.flvPlayer = flvjs.createPlayer({
       type: "flv",
@@ -164,36 +164,36 @@ export default class ZegoVideo extends React.PureComponent<{
           this.retryTimer = setTimeout(() => {
             this.lastDecodedFrame = 0;
             if (this.flvPlayer) {
-              if (this.props.isMixing) {
-                this.playPureAudioFlv?.();
-              } else {
-                this.flvPlayer.unload();
-                this.flvPlayer.load();
-              }
+              //   if (this.props.isMixing) {
+              //     this.playPureAudioFlv?.();
+              //   } else {
+              this.flvPlayer.unload();
+              this.flvPlayer.load();
+              //   }
             }
           }, 5000);
         }
         if (this.retryTime % 20 === 0) {
           this.lastDecodedFrame = 0;
           if (this.flvPlayer) {
-            if (this.props.isMixing) {
-              this.playPureAudioFlv?.();
-            } else {
-              this.flvPlayer.unload();
-              this.flvPlayer.load();
-            }
+            // if (this.props.isMixing) {
+            //   this.playPureAudioFlv?.();
+            // } else {
+            this.flvPlayer.unload();
+            this.flvPlayer.load();
+            // }
             clearTimeout(this.retryTimer);
             this.retryTimer = null;
           }
         }
       }
     });
-    if (this.props.isMixing) {
-      this.playPureAudioFlv = () => {
-        this.destroyFlvPlayer();
-        this.initFLVPlayer(videoElement, url);
-      };
-    }
+    // if (this.props.isMixing) {
+    //   this.playPureAudioFlv = () => {
+    //     this.destroyFlvPlayer();
+    //     this.initFLVPlayer(videoElement, url);
+    //   };
+    // }
     this.flvPlayer.attachMediaElement(videoElement);
     this.flvPlayer.load();
   }
@@ -294,8 +294,7 @@ export default class ZegoVideo extends React.PureComponent<{
             this.setState({
               isPaused: false,
             });
-          }}
-        ></video>
+          }}></video>
         {this.state.isPaused && (isSafari() || isIOS()) && (
           <div
             className={`${ZegoVideoCss.videoPlayBtn} ${
@@ -307,8 +306,7 @@ export default class ZegoVideo extends React.PureComponent<{
               this.setState({
                 isPaused: false,
               });
-            }}
-          ></div>
+            }}></div>
         )}
       </>
     );
