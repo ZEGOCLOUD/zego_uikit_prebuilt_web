@@ -128,7 +128,7 @@ declare interface ZegoCloudRoomConfig {
   showInviteToCohostButton?: boolean; // Whether to show the button that is used to invite the audience to co-host on the host end.
   showRemoveCohostButton?: boolean; // Whether to show the button that is used to remove the audience on the host end.
   showRequestToCohostButton?: boolean; // Whether to show the button that is used to request to co-host on the audience end.
-  rightPanelExpandedType?: RightPanelExpandedType; // 右侧面板展开状态
+  rightPanelExpandedType?: RightPanelExpandedType; // The right panel is expanded， The default value is "None".
   // 1.4 Leaving view
   showLeavingView?: boolean; // Whether to display the leaving view. Displayed by default.
 

@@ -41,12 +41,12 @@ export default class ZegoVideo extends React.PureComponent<{
   }
   componentDidUpdate(preProps: any) {
     this.initVideo(this.videoRef!);
-    if (
-      this.props.isPureAudio !== preProps.isPureAudio ||
-      this.props.isPureVideo !== preProps.isPureVideo
-    ) {
-      this.playPureAudioFlv?.();
-    }
+    // if (
+    //   this.props.isPureAudio !== preProps.isPureAudio ||
+    //   this.props.isPureVideo !== preProps.isPureVideo
+    // ) {
+    //   this.playPureAudioFlv?.();
+    // }
   }
   onloadedmetadata = () => {
     this.loadTimer = setTimeout(() => {
@@ -224,14 +224,14 @@ export default class ZegoVideo extends React.PureComponent<{
   }
   safariAutoPlayTimer() {
     // 修复浏览器听不到拉流声音的问题 Safari15.3，chrome拒绝权限的时候
-    if (!this.videoRef?.muted) {
+    if (!this.videoRef?.muted && !this.videoRef?.paused) {
       const currentTime = this.videoRef?.currentTime;
       this.reloadTimer = setTimeout(() => {
         if (currentTime === this.videoRef?.currentTime) {
           this.videoRef?.load();
           this.safariAutoPlayTimer();
         }
-      }, 1000);
+      }, 2000);
     }
   }
   //修复Safari15.3，关闭摄像头进房后，再打开摄像头，会听到自己的声音
