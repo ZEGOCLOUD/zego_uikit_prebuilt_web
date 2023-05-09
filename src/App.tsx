@@ -68,7 +68,7 @@ export default class App extends React.PureComponent {
 
     const roomID = getUrlParams().get("roomID") || randomID(5);
     const userID = getUrlParams().get("userID") || randomNumID(8);
-    // const enableMixing = getUrlParams().get("mixing") === "1" || false;
+    const enableMixing = getUrlParams().get("mixing") === "1" || false;
 
     let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
@@ -246,7 +246,7 @@ export default class App extends React.PureComponent {
             config: {
               role,
               liveStreamingMode,
-              enableVideoMixing: true,
+              enableVideoMixing: enableMixing,
               videoMixingOutputResolution:
                 ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
             },
