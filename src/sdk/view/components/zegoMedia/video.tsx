@@ -41,12 +41,12 @@ export default class ZegoVideo extends React.PureComponent<{
   }
   componentDidUpdate(preProps: any) {
     this.initVideo(this.videoRef!);
-    if (
-      this.props.isPureAudio !== preProps.isPureAudio ||
-      this.props.isPureVideo !== preProps.isPureVideo
-    ) {
-      this.playPureAudioFlv?.();
-    }
+    // if (
+    //   this.props.isPureAudio !== preProps.isPureAudio ||
+    //   this.props.isPureVideo !== preProps.isPureVideo
+    // ) {
+    //   this.playPureAudioFlv?.();
+    // }
   }
   onloadedmetadata = () => {
     this.loadTimer = setTimeout(() => {
@@ -112,19 +112,19 @@ export default class ZegoVideo extends React.PureComponent<{
     if (!flvjs.isSupported()) return;
     videoElement.srcObject = null;
     let hasVideo, hasAudio;
-    if (this.props.isMixing) {
-      hasAudio = !this.props.isPureVideo;
-      hasVideo = !this.props.isPureAudio;
-    } else {
-      hasVideo =
-        this.props.userInfo.streamList?.[0]?.hasVideo === undefined
-          ? this.props.userInfo.streamList?.[0]?.cameraStatus === "OPEN"
-          : this.props.userInfo.streamList?.[0]?.hasVideo;
-      hasAudio =
-        this.props.userInfo.streamList?.[0]?.hasAudio === undefined
-          ? this.props.userInfo.streamList?.[0]?.micStatus === "OPEN"
-          : this.props.userInfo.streamList?.[0]?.hasAudio;
-    }
+    // if (this.props.isMixing) {
+    //   hasAudio = !this.props.isPureVideo;
+    //   hasVideo = !this.props.isPureAudio;
+    // } else {
+    hasVideo =
+      this.props.userInfo.streamList?.[0]?.hasVideo === undefined
+        ? this.props.userInfo.streamList?.[0]?.cameraStatus === "OPEN"
+        : this.props.userInfo.streamList?.[0]?.hasVideo;
+    hasAudio =
+      this.props.userInfo.streamList?.[0]?.hasAudio === undefined
+        ? this.props.userInfo.streamList?.[0]?.micStatus === "OPEN"
+        : this.props.userInfo.streamList?.[0]?.hasAudio;
+    // }
 
     this.flvPlayer = flvjs.createPlayer({
       type: "flv",
@@ -164,36 +164,36 @@ export default class ZegoVideo extends React.PureComponent<{
           this.retryTimer = setTimeout(() => {
             this.lastDecodedFrame = 0;
             if (this.flvPlayer) {
-              if (this.props.isMixing) {
-                this.playPureAudioFlv?.();
-              } else {
-                this.flvPlayer.unload();
-                this.flvPlayer.load();
-              }
+              //   if (this.props.isMixing) {
+              //     this.playPureAudioFlv?.();
+              //   } else {
+              this.flvPlayer.unload();
+              this.flvPlayer.load();
+              //   }
             }
           }, 5000);
         }
         if (this.retryTime % 20 === 0) {
           this.lastDecodedFrame = 0;
           if (this.flvPlayer) {
-            if (this.props.isMixing) {
-              this.playPureAudioFlv?.();
-            } else {
-              this.flvPlayer.unload();
-              this.flvPlayer.load();
-            }
+            // if (this.props.isMixing) {
+            //   this.playPureAudioFlv?.();
+            // } else {
+            this.flvPlayer.unload();
+            this.flvPlayer.load();
+            // }
             clearTimeout(this.retryTimer);
             this.retryTimer = null;
           }
         }
       }
     });
-    if (this.props.isMixing) {
-      this.playPureAudioFlv = () => {
-        this.destroyFlvPlayer();
-        this.initFLVPlayer(videoElement, url);
-      };
-    }
+    // if (this.props.isMixing) {
+    //   this.playPureAudioFlv = () => {
+    //     this.destroyFlvPlayer();
+    //     this.initFLVPlayer(videoElement, url);
+    //   };
+    // }
     this.flvPlayer.attachMediaElement(videoElement);
     this.flvPlayer.load();
   }
@@ -224,14 +224,14 @@ export default class ZegoVideo extends React.PureComponent<{
   }
   safariAutoPlayTimer() {
     // 修复浏览器听不到拉流声音的问题 Safari15.3，chrome拒绝权限的时候
-    if (!this.videoRef?.muted) {
+    if (!this.videoRef?.muted && !this.videoRef?.paused) {
       const currentTime = this.videoRef?.currentTime;
       this.reloadTimer = setTimeout(() => {
         if (currentTime === this.videoRef?.currentTime) {
           this.videoRef?.load();
           this.safariAutoPlayTimer();
         }
-      }, 1000);
+      }, 2000);
     }
   }
   //修复Safari15.3，关闭摄像头进房后，再打开摄像头，会听到自己的声音
@@ -294,8 +294,7 @@ export default class ZegoVideo extends React.PureComponent<{
             this.setState({
               isPaused: false,
             });
-          }}
-        ></video>
+          }}></video>
         {this.state.isPaused && (isSafari() || isIOS()) && (
           <div
             className={`${ZegoVideoCss.videoPlayBtn} ${
@@ -307,8 +306,7 @@ export default class ZegoVideo extends React.PureComponent<{
               this.setState({
                 isPaused: false,
               });
-            }}
-          ></div>
+            }}></div>
         )}
       </>
     );

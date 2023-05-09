@@ -4,6 +4,7 @@ import {
   LiveRole,
   LiveStreamingMode,
   ReasonForRefusedInviteToCoHost,
+  RightPanelExpandedType,
   ScenarioModel,
   SoundLevelMap,
   UserListMenuItemType,
@@ -84,7 +85,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     isMixing: "1" | "0"; // 是否
   } = {
     localStream: undefined,
-    layOutStatus: "ONE_VIDEO",
+    layOutStatus: this.initLayout(),
     zegoCloudUserList: [],
     messageList: [],
     notificationList: [],
@@ -1906,6 +1907,22 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
       this.showTurnOffMicrophoneButton(user) ||
       this.showRemoveCohostButton(user)
     );
+  }
+  private initLayout(): "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" {
+    switch (this.props.core._config.rightPanelExpandedType) {
+      case RightPanelExpandedType.None:
+        return "ONE_VIDEO";
+      case RightPanelExpandedType.RoomDetails:
+        return this.props.core._config.showRoomDetailsButton
+          ? "INVITE"
+          : "ONE_VIDEO";
+      case RightPanelExpandedType.RoomMembers:
+        return this.props.core._config.showUserList ? "USER_LIST" : "ONE_VIDEO";
+      case RightPanelExpandedType.RoomMessages:
+        return this.props.core._config.showTextChat ? "MESSAGE" : "ONE_VIDEO";
+      default:
+        return "ONE_VIDEO";
+    }
   }
   render(): React.ReactNode {
     const startIndex =

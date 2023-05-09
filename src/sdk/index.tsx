@@ -5,6 +5,7 @@ import {
   ConsoleLevel,
   LiveRole,
   LiveStreamingMode,
+  RightPanelExpandedType,
   ScenarioModel,
   VideoMixinOutputResolution,
   VideoResolution,
@@ -42,6 +43,7 @@ export class ZegoUIKitPrebuilt {
   static ConsoleError = ConsoleLevel.Error;
   static ConsoleNone = ConsoleLevel.None;
   static VideoMixinOutputResolution = VideoMixinOutputResolution;
+  static RightPanelExpandedType = RightPanelExpandedType;
   private hasJoinedRoom = false;
   root: Root | undefined;
 
@@ -176,8 +178,7 @@ export class ZegoUIKitPrebuilt {
             this.root = undefined;
             this.hasJoinedRoom = false;
             div && div.remove();
-          }}
-        ></ZegoCloudRTCKitComponent>
+          }}></ZegoCloudRTCKitComponent>
       );
       this.hasJoinedRoom = true;
     } else {

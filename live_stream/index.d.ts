@@ -128,14 +128,15 @@ declare interface ZegoCloudRoomConfig {
   showInviteToCohostButton?: boolean; // Whether to show the button that is used to invite the audience to co-host on the host end.
   showRemoveCohostButton?: boolean; // Whether to show the button that is used to remove the audience on the host end.
   showRequestToCohostButton?: boolean; // Whether to show the button that is used to request to co-host on the audience end.
+  rightPanelExpandedType?: RightPanelExpandedType; // The right panel is expanded， The default value is "None".
   // 1.4 Leaving view
   showLeavingView?: boolean; // Whether to display the leaving view. Displayed by default.
 
   // 2 Related event callbacks
-  onJoinRoom?: (users: ZegoUser[]) => void; // Callback for participants join the room.
-  onLeaveRoom?: (users: ZegoUser[]) => void; // Callback for participants exits the room.
-  onUserJoin?: (user: ZegoUser[]) => void; // Callback for other participants join the call.
-  onUserLeave?: (user: ZegoUser[]) => void; // Callback for other participants leave the call.
+  onJoinRoom?: () => void; // Callback for participants join the room.
+  onLeaveRoom?: () => void; // Callback for participants exits the room.
+  onUserJoin?: (users: ZegoUser[]) => void; // Callback for other participants join the call.
+  onUserLeave?: (users: ZegoUser[]) => void; // Callback for other participants leave the call.
   onUserAvatarSetter?: (user: ZegoUser[]) => void; // Callback for the user avatar can be set.
   onLiveStart?: (user: ZegoUser) => void; //  Callback for livestream starts.
   onLiveEnd?: (user: ZegoUser) => void; // Callback for livestream ends.
@@ -145,6 +146,13 @@ declare interface ZegoCloudRoomConfig {
   onInRoomTextMessageReceived?: (
     messages: ZegoSignalingInRoomTextMessage[]
   ) => void; // Callback for room signaling text message
+}
+
+export enum RightPanelExpandedType {
+  None = "None",
+  RoomDetails = "RoomDetails",
+  RoomMembers = "RoomMembers",
+  RoomMessages = "RoomMessages",
 }
 declare interface ZegoSignalingInRoomTextMessage {
   messageID: string;

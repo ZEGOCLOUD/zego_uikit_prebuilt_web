@@ -5,6 +5,7 @@ import APP from "./App.module.scss";
 import { ZegoUIKitPrebuilt } from "./sdk/index";
 import {
   LiveRole,
+  RightPanelExpandedType,
   ScenarioModel,
   ZegoCloudRoomConfig,
   ZegoInvitationType,
@@ -173,7 +174,7 @@ export default class App extends React.PureComponent {
           userName || getRandomName()
         );
         // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        //   4647939,
+        //   1484647939,
         //   "22076fd0a8388f31dc1f6e344171****",
         //   roomID,
         //   userID,
@@ -245,7 +246,7 @@ export default class App extends React.PureComponent {
             config: {
               role,
               liveStreamingMode,
-              enableVideoMixing: false,
+              enableVideoMixing: true,
               videoMixingOutputResolution:
                 ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
             },
@@ -284,6 +285,7 @@ export default class App extends React.PureComponent {
           showInviteToCohostButton: true,
           showRemoveCohostButton: true,
           showRequestToCohostButton: true,
+          rightPanelExpandedType: RightPanelExpandedType.None,
         };
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true";
@@ -310,7 +312,7 @@ export default class App extends React.PureComponent {
     );
     // console.warn(token);
     // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-    //   252984,
+    //   252984006,
     //   "16435f3bdb307f****b3f9e4259a29f0",
     //   roomID,
     //   userID,
@@ -637,18 +639,15 @@ export default class App extends React.PureComponent {
       <div
         className={`${APP.app} ${isPc() ? APP.pcApp : APP.mobileApp} ${
           this.state.callInvitation ? APP.callInvitation : ""
-        }`}
-      >
+        }`}>
         {this.state.showPreviewHeader === "show" && (
           <div
-            className={`${APP.nav} ${isPc() ? "" : APP.mobileNav} preView_nav`}
-          >
+            className={`${APP.nav} ${isPc() ? "" : APP.mobileNav} preView_nav`}>
             <div
               className={`${APP.LOGO} ${isPc() ? "" : APP.mobileLOGO}`}
               onClick={() => {
                 window.open("https://www.zegocloud.com", "_blank");
-              }}
-            ></div>
+              }}></div>
             <div className={`${APP.link} ${isPc() ? "" : APP.mobileLink}`}>
               {this.state.showSettingsBtn && (
                 <div
@@ -660,8 +659,7 @@ export default class App extends React.PureComponent {
                         getUrlParams().get("liveStreamingMode") ||
                         "RealTimeLive",
                     });
-                  }}
-                >
+                  }}>
                   <span className={APP.icon_settings}></span>{" "}
                   {isPc() && "Settings"}
                 </div>
@@ -670,8 +668,7 @@ export default class App extends React.PureComponent {
                 href={this.state.docs}
                 target="_blank"
                 className={APP.link_item}
-                rel="noreferrer"
-              >
+                rel="noreferrer">
                 <span className={APP.icon__doc}></span>{" "}
                 {isPc() && "Documentation"}
               </a>
@@ -679,8 +676,7 @@ export default class App extends React.PureComponent {
                 href="https://github.com/ZEGOCLOUD/zego_uikit_prebuilt_web/"
                 target="_blank"
                 className={APP.link_item}
-                rel="noreferrer"
-              >
+                rel="noreferrer">
                 <span className={APP.icon__github}></span>
                 {isPc() && "View demo code"}
               </a>
@@ -690,8 +686,9 @@ export default class App extends React.PureComponent {
         {!this.state.callInvitation && (
           <div
             ref={this.myMeeting}
-            className={`${APP.myMeeting}  ${isPc() ? "" : APP.mobileMeeting}`}
-          ></div>
+            className={`${APP.myMeeting}  ${
+              isPc() ? "" : APP.mobileMeeting
+            }`}></div>
         )}
         {this.state.callInvitation && (
           <div className={APP.callInvitationWrapper}>
@@ -742,14 +739,12 @@ export default class App extends React.PureComponent {
               />
               <div
                 className={APP.invitationVideoCallBtn}
-                onClick={this.handleSendCallInvitation.bind(this, 1)}
-              >
+                onClick={this.handleSendCallInvitation.bind(this, 1)}>
                 Video call
               </div>
               <div
                 className={APP.invitationVoiceCallBtn}
-                onClick={this.handleSendCallInvitation.bind(this, 0)}
-              >
+                onClick={this.handleSendCallInvitation.bind(this, 0)}>
                 Voice call
               </div>
             </div>
@@ -758,22 +753,19 @@ export default class App extends React.PureComponent {
         <div
           className={`${APP.serviceTips}  ${
             isPc() ? APP.pcServiceTips : APP.mobileServiceTips
-          } preView_services`}
-        >
+          } preView_services`}>
           By clicking "Join", you agree to {!isPc() && <br />} our{" "}
           <a
             href="https://www.zegocloud.com/policy?index=1"
             target="_blank"
-            rel="noreferrer"
-          >
+            rel="noreferrer">
             Terms of Services
           </a>{" "}
           and{" "}
           <a
             href="https://www.zegocloud.com/policy?index=0"
             target="_blank"
-            rel="noreferrer"
-          >
+            rel="noreferrer">
             Privacy Policy
           </a>
           .
@@ -783,8 +775,7 @@ export default class App extends React.PureComponent {
           <div
             className={`${
               isPc() ? APP.pcSettingsModel : APP.mobileSettingsModel
-            }`}
-          >
+            }`}>
             <div className={APP.settingsWrapper}>
               <div className={APP.settingsHeader}>
                 <p>{isPc() ? "Settings" : "Live streaming mode"}</p>
@@ -794,8 +785,7 @@ export default class App extends React.PureComponent {
                     this.setState({
                       showSettings: false,
                     });
-                  }}
-                ></span>
+                  }}></span>
               </div>
               <div className={APP.settingsBody}>
                 {isPc() && (
@@ -810,8 +800,7 @@ export default class App extends React.PureComponent {
                     }`}
                     onClick={() => {
                       this.handleSelectMode("LiveStreaming");
-                    }}
-                  >
+                    }}>
                     <p>Live Streaming</p>
                     <span></span>
                   </div>
@@ -824,8 +813,7 @@ export default class App extends React.PureComponent {
                     }`}
                     onClick={() => {
                       this.handleSelectMode("InteractiveLiveStreaming");
-                    }}
-                  >
+                    }}>
                     <p>Interactive Live Streaming</p>
                     <span></span>
                   </div>
@@ -837,8 +825,7 @@ export default class App extends React.PureComponent {
                     }`}
                     onClick={() => {
                       this.handleSelectMode("RealTimeLive");
-                    }}
-                  >
+                    }}>
                     <p>Real-time Live</p>
                     <span></span>
                   </div>
@@ -848,8 +835,7 @@ export default class App extends React.PureComponent {
                     className={APP.settingsBtn}
                     onClick={() => {
                       this.handleSettingsConfirm();
-                    }}
-                  >
+                    }}>
                     Confirm
                   </div>
                 )}

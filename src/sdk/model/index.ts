@@ -185,8 +185,14 @@ export interface ZegoCloudRoomConfig {
   showInviteToCohostButton?: boolean; // 主播是否展示邀请观众连麦按钮
   showRemoveCohostButton?: boolean; // 主播是否展示移下麦按钮
   showRequestToCohostButton?: boolean; // 观众是否展示申请连麦按钮
+  rightPanelExpandedType?: RightPanelExpandedType; // 右侧面板展开状态
 }
-
+export enum RightPanelExpandedType {
+  None = "None",
+  RoomDetails = "RoomDetails",
+  RoomMembers = "RoomMembers",
+  RoomMessages = "RoomMessages",
+}
 export interface ZegoSignalingInRoomTextMessage {
   messageID: string;
   timestamp: number;
