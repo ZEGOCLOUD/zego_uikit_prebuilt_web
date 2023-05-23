@@ -168,6 +168,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             audio: false,
             videoInput: this.state.selectCamera,
             videoQuality: 4,
+
             ...solution,
           },
         });
@@ -363,16 +364,14 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       <div
         className={`${ZegoBrowserCheckCss.support} ${
           this.state.isSmallSize ? ZegoBrowserCheckCss.smallSize : ""
-        }`}
-      >
+        }`}>
         <div className={ZegoBrowserCheckCss.supportWrapper}>
           <div className={ZegoBrowserCheckCss.videoWrapper}>
             <video
               className={ZegoBrowserCheckCss.video}
               autoPlay
               muted
-              ref={this.videoRef}
-            ></video>
+              ref={this.videoRef}></video>
             {!this.props.core._config.showMyCameraToggleButton &&
               !this.props.core._config.turnOnCameraWhenJoining && (
                 <div className={ZegoBrowserCheckCss.noCamera}>
@@ -398,8 +397,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                   }`}
                   onClick={() => {
                     this.toggleStream("audio");
-                  }}
-                >
+                  }}>
                   <span className={ZegoBrowserCheckCss.buttonTip}>
                     {this.state.audioOpen
                       ? "Turn off microphone"
@@ -414,8 +412,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                   }`}
                   onClick={() => {
                     this.toggleStream("video");
-                  }}
-                >
+                  }}>
                   <span className={ZegoBrowserCheckCss.buttonTip}>
                     {this.state.videoOpen
                       ? "Turn off camera"
@@ -428,8 +425,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                   className={ZegoBrowserCheckCss.settingsButton}
                   onClick={() => {
                     this.openSettings();
-                  }}
-                >
+                  }}>
                   <span className={ZegoBrowserCheckCss.buttonTip}>
                     Settings
                   </span>
@@ -448,20 +444,19 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 value={this.state.userName}
                 onChange={(ev: ChangeEvent<HTMLInputElement>) => {
                   this.handleChange(ev);
-                }}
-              ></input>
+                }}></input>
               <div className={ZegoBrowserCheckCss.joinRoomButtonWrapper}>
                 <button
                   className={ZegoBrowserCheckCss.joinRoomButton}
                   disabled={!this.state.userName.length}
                   onClick={() => {
                     this.joinRoom();
-                  }}
-                >
+                  }}>
                   {this.state.isJoining && (
                     <span
-                      className={ZegoBrowserCheckCss.joinRoomButtonLoading}
-                    ></span>
+                      className={
+                        ZegoBrowserCheckCss.joinRoomButtonLoading
+                      }></span>
                   )}
                   Join
                 </button>
@@ -480,18 +475,15 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                   return (
                     <div
                       className={ZegoBrowserCheckCss.inviteLinkWrapper}
-                      key={link.name}
-                    >
+                      key={link.name}>
                       <div
-                        className={ZegoBrowserCheckCss.inviteLinkWrapperLeft}
-                      >
+                        className={ZegoBrowserCheckCss.inviteLinkWrapperLeft}>
                         <h3>{link.name}</h3>
                         <input
                           className={ZegoBrowserCheckCss.inviteLink}
                           placeholder="inviteLink"
                           readOnly
-                          value={link.url}
-                        ></input>
+                          value={link.url}></input>
                       </div>
                       <button
                         className={ZegoBrowserCheckCss.copyLinkButton}
@@ -523,8 +515,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                               }
                             );
                           }, 5000);
-                        }}
-                      ></button>
+                        }}></button>
                     </div>
                   );
                 })}
@@ -541,8 +532,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             okText="Okay"
             onOk={() => {
               this.setState({ showDeviceAuthorAlert: false });
-            }}
-          ></ZegoModel>
+            }}></ZegoModel>
         )}
         {this.state.showZegoSettings && (
           <ZegoSettings
@@ -598,8 +588,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               this.setState({
                 showNonVideoUser: selected,
               });
-            }}
-          ></ZegoSettings>
+            }}></ZegoSettings>
         )}
       </div>
     );

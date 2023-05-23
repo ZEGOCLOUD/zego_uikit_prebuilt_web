@@ -95,6 +95,7 @@ declare interface ZegoCloudRoomConfig {
   turnOnCameraWhenJoining?: boolean; // Whether to enable the camera when joining the call. Enabled by default.
   useFrontFacingCamera?: boolean; // Whether to use the front-facing camera when joining the room. Uses a front-facing camera by default.
   videoResolutionDefault?: VideoResolution; // The default video resolution.
+  enableStereo?: boolean; // Whether to enable stereo, disenabled by default.
 
   // 1.3 Room view
   showRoomDetailsButton?: boolean; // Whether to display room details. Displayed by default
@@ -129,6 +130,7 @@ declare interface ZegoCloudRoomConfig {
   showRemoveCohostButton?: boolean; // Whether to show the button that is used to remove the audience on the host end.
   showRequestToCohostButton?: boolean; // Whether to show the button that is used to request to co-host on the audience end.
   rightPanelExpandedType?: RightPanelExpandedType; // Controls the type of the information displayed on the right panel, display "None" by default.
+  autoHideFooter?: boolean; // Whether to enable the footer auto-hide feature, enabled by default.
 
   // 1.4 Leaving view
   showLeavingView?: boolean; // Whether to display the leaving view. Displayed by default.

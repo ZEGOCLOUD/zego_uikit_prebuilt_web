@@ -178,7 +178,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core._config.showRoomTimer && this.startRoomTimer();
     this.footerTimer = setTimeout(() => {
       this.setState({
-        showFooter: false,
+        showFooter: !this.props.core._config.autoHideFooter,
       });
     }, 5000);
   }
@@ -736,6 +736,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               audio: !this.props.core.status.audioRefuse,
               videoQuality: 4,
               facingMode: this.faceModel ? "user" : "environment",
+              channelCount: this.props.core._config.enableStereo ? 2 : 1,
               ...solution,
               //   width: 640,
               //   height: 360,
@@ -750,6 +751,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 video: !this.props.core.status.videoRefuse,
                 audio: !this.props.core.status.audioRefuse,
                 facingMode: this.faceModel ? "user" : "environment",
+                channelCount: this.props.core._config.enableStereo ? 2 : 1,
               },
             });
           }
@@ -977,6 +979,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           audio: !this.props.core.status.audioRefuse,
           videoQuality: 4,
           facingMode: !this.state.cameraFront ? "user" : "environment",
+          channelCount: this.props.core._config.enableStereo ? 2 : 1,
           ...solution,
           //   width: 640,
           //   height: 360,
@@ -1959,10 +1962,23 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           });
           clearTimeout(this.footerTimer);
           this.footerTimer = setTimeout(() => {
-            this.setState({ showFooter: false, showMore: false });
+            this.setState({
+              showFooter:
+                this.state.isZegoWhiteboardSharing &&
+                !this.state.isScreenPortrait
+                  ? false
+                  : !this.props.core._config.autoHideFooter,
+              showMore: false,
+            });
           }, 5000);
         } else {
-          this.setState({ showFooter: false, showMore: false });
+          this.setState({
+            showFooter:
+              this.state.isZegoWhiteboardSharing && !this.state.isScreenPortrait
+                ? false
+                : !this.props.core._config.autoHideFooter,
+            showMore: false,
+          });
         }
       }
       !whiteboardClick && e.stopPropagation();
@@ -1970,7 +1986,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       clearTimeout(this.footerTimer);
       this.footerTimer = setTimeout(() => {
         !this.state.showMore &&
-          this.setState({ showFooter: false, showMore: false });
+          this.setState({
+            showFooter:
+              this.state.isZegoWhiteboardSharing && !this.state.isScreenPortrait
+                ? false
+                : !this.props.core._config.autoHideFooter,
+            showMore: false,
+          });
       }, 5000);
     }
   }
@@ -2091,12 +2113,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       // 横屏
       isScreenPortrait = false;
     }
-    if (!isScreenPortrait) {
-      this.setState({ showFooter: false });
-    }
+
+    this.setState({});
+
     this.setState(
       {
         isScreenPortrait: isScreenPortrait,
+        showFooter:
+          this.state.isZegoWhiteboardSharing && !isScreenPortrait
+            ? false
+            : !this.props.core._config.autoHideFooter,
       },
       () => {
         if (!isScreenPortrait && !isIOS()) {

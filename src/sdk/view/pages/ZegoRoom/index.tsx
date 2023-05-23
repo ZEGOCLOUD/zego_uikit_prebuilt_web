@@ -690,6 +690,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             videoInput: this.state.selectCamera,
             audioInput: this.state.selectMic,
             videoQuality: 4,
+            channelCount: this.props.core._config.enableStereo ? 2 : 1,
             ...solution,
           },
         });

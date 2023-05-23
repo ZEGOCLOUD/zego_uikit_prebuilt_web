@@ -186,6 +186,8 @@ export class ZegoCloudRTCCore {
     showRemoveCohostButton: false, // 主播是否展示移下麦按钮
     showRequestToCohostButton: false, // 观众是否展示申请连麦按钮
     rightPanelExpandedType: RightPanelExpandedType.None,
+    autoHideFooter: true,
+    enableStereo: false,
   };
   _currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
   extraInfoKey = "extra_info";
@@ -1003,6 +1005,7 @@ export class ZegoCloudRTCCore {
     if (this._config.plugins?.ZegoSuperBoardManager) {
       this.zegoSuperBoard =
         this._config.plugins.ZegoSuperBoardManager.getInstance();
+
       this.zegoSuperBoard.init(ZegoCloudRTCCore._zg, {
         isTestEnv: false,
         parentDomID: "ZegoCloudWhiteboardContainer", // 需要挂载的父容器 ID
@@ -1010,6 +1013,28 @@ export class ZegoCloudRTCCore {
         userID: this._expressConfig.userID, // 用户自定义生成的用户 ID
         token: this._expressConfig.token, // 登录房间需要用于验证身份的 Token
       });
+      if (this._config.console) {
+        let logLevel:
+          | "debug"
+          | "info"
+          | "warn"
+          | "error"
+          | "report"
+          | "disable" = "debug";
+        if (this._config.console === "Info") {
+          logLevel = "warn";
+        } else if (this._config.console === "Warning") {
+          logLevel = "warn";
+        } else if (this._config.console === "Error") {
+          logLevel = "error";
+        } else if (this._config.console === "None") {
+          logLevel = "disable";
+        }
+        this.zegoSuperBoard.setLogConfig({
+          logLevel,
+          remoteLogLevel: logLevel,
+        });
+      }
       this.zegoSuperBoard.setWhiteboardBackgroundColor("#ffffff");
     }
     ZegoCloudRTCCore._zg.off("roomExtraInfoUpdate");
