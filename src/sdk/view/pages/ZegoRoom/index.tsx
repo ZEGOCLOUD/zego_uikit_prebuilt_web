@@ -523,7 +523,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         if (type === "Microphone" && status === "CLOSE" && this.state.micOpen) {
           await this.toggleMic();
           ZegoToast({
-            content: `${fromUser.userName} has turned your camera off`,
+            content: `${fromUser.userName} has turned your microphone off`,
           });
         }
       }
