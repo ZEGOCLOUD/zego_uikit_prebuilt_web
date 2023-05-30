@@ -15,7 +15,7 @@ export function getConfig(token: string) {
     return {
       appID: tokenInfo.appID * 1,
       userID: tokenInfo.userID as string,
-      userName: tokenInfo.userName as string,
+      userName: decodeURIComponent(tokenInfo.userName as string),
       roomID: tokenInfo.roomID as string,
       token: token.split("#")[0] as string,
     };

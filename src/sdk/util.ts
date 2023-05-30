@@ -458,6 +458,13 @@ export function generatePrebuiltToken(
   return (
     token +
     "#" +
-    window.btoa(JSON.stringify({ userID, roomID, userName, appID }))
+    window.btoa(
+      JSON.stringify({
+        userID,
+        roomID,
+        userName: encodeURIComponent(userName),
+        appID,
+      })
+    )
   );
 }

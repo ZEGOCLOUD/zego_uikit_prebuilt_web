@@ -75,7 +75,14 @@ export class ZegoUIKitPrebuilt {
     return (
       token +
       "#" +
-      window.btoa(JSON.stringify({ userID, roomID, userName, appID }))
+      window.btoa(
+        JSON.stringify({
+          userID,
+          roomID,
+          userName: encodeURIComponent(userName || ""),
+          appID,
+        })
+      )
     );
   }
 
