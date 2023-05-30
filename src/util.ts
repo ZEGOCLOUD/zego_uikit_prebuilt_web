@@ -25,7 +25,7 @@ export function generateToken(
       body: JSON.stringify({
         user_id: userID,
         room_id: roomID,
-        user_name: userName,
+        user_name: encodeURIComponent(userName),
       }),
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +57,12 @@ export function generateTokenForCallInvitation(
           result.token +
           "#" +
           window.btoa(
-            JSON.stringify({ userID, roomID, userName, appID: 252984006 })
+            JSON.stringify({
+              userID,
+              roomID,
+              userName: encodeURIComponent(userName),
+              appID: 252984006,
+            })
           ),
       };
     });
