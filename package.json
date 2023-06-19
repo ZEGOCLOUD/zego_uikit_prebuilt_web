@@ -62,8 +62,8 @@
     "sass-resources-loader": "^2.2.5",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.1",
-    "zego-express-engine-webrtc": "^2.24.0",
-    "zego-express-engine-webrtm": "^1.23.1",
+    "zego-express-engine-webrtc": "^2.25.2",
+    "zego-express-engine-webrtm": "^1.24.1",
     "zego-superboard-web": "^2.7.0",
     "zego-zim-web": "^2.7.0"
   },
