@@ -430,6 +430,11 @@ export class ZimManager {
         user_id: u.userID,
         user_name: u.userName,
       })),
+      inviter: {
+        id: this.expressConfig.userID,
+        name: this.expressConfig.userName,
+      },
+      type,
       custom_data: data,
     });
     const extendedData = JSON.stringify({
@@ -451,7 +456,7 @@ export class ZimManager {
           `Incoming ${invitees.length > 1 ? "group " : ""}${
             type === 0 ? "voice" : "video"
           } call...`,
-        payload: extendedData,
+        payload: _data,
         resourcesID: notificationConfig?.resourcesID ?? "zegouikit_call",
       };
       config.pushConfig = pushConfig;
