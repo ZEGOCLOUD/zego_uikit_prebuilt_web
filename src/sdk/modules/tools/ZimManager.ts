@@ -424,7 +424,7 @@ export class ZimManager {
     const inviteesID = invitees.map((i) => i.userID);
     const roomID = `call_${this.expressConfig.userID}_${new Date().getTime()}`;
 
-    const _data = JSON.stringify({
+    const _data = {
       call_id: roomID,
       invitees: invitees.map((u) => ({
         user_id: u.userID,
@@ -436,15 +436,15 @@ export class ZimManager {
       },
       type,
       custom_data: data,
-    });
-    const extendedData = JSON.stringify({
+    };
+    const extendedData = {
       inviter_name: this.expressConfig.userName,
       type,
-      data: _data,
-    });
+      data: JSON.stringify(_data),
+    };
     const config: ZIMCallInviteConfig = {
       timeout,
-      extendedData,
+      extendedData: JSON.stringify(extendedData),
     };
 
     // 发送离线消息
@@ -456,7 +456,7 @@ export class ZimManager {
           `Incoming ${invitees.length > 1 ? "group " : ""}${
             type === 0 ? "voice" : "video"
           } call...`,
-        payload: _data,
+        payload: JSON.stringify(Object.assign({}, _data, extendedData)),
         resourcesID: notificationConfig?.resourcesID ?? "zegouikit_call",
       };
       config.pushConfig = pushConfig;
