@@ -260,4 +260,8 @@ export class ZegoUIKitPrebuilt {
   ): Promise<boolean> {
     return await ZegoUIKitPrebuilt.core!.sendInRoomCommand(command, toUserIDs);
   }
+  // 主动退出房间
+  hangUp() {
+    ZegoUIKitPrebuilt.core?.eventEmitter.emit("hangUp");
+  }
 }

@@ -294,4 +294,5 @@ export declare class ZegoUIKitPrebuilt {
     errorInvitees: ZegoUser[];
   }>;
   sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean>;
+  hangUp(): void;
 }

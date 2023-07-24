@@ -3,7 +3,8 @@ import { ZegoCloudUser } from "../../../modules/tools/UserListManager";
 import ShowManageContext, {
   ShowManageType,
 } from "../../pages/context/showManage";
-import flvjs from "flv.js";
+// @ts-ignore
+import flvjs from "flv.js/dist/flv.min.js";
 import { isSafari, isPc, isIOS } from "../../../util";
 import ZegoVideoCss from "./index.module.scss";
 
@@ -137,7 +138,7 @@ export default class ZegoVideo extends React.PureComponent<{
     this.flvPlayer.on(flvjs.Events.LOADING_COMPLETE, () => {
       this.flvPlayer?.play();
     });
-    this.flvPlayer.on(flvjs.Events.ERROR, (error) => {
+    this.flvPlayer.on(flvjs.Events.ERROR, (error: any) => {
       console.error(flvjs.Events.ERROR, error);
       if (error === "NetworkError") {
         setTimeout(() => {

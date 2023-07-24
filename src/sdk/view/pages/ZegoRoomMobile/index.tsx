@@ -175,6 +175,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.onOrientationChange();
     this.initInRoomInviteMgListener();
     this.initSDK();
+    this.props.core.eventEmitter.on("hangUp", () => {
+      this.confirmLeaveRoom();
+    });
     this.props.core._config.showRoomTimer && this.startRoomTimer();
     this.footerTimer = setTimeout(() => {
       this.setState({
@@ -188,6 +191,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.onOrientationChange.bind(this),
       false
     );
+    this.props.core.eventEmitter.off("hangUp");
     if (this.roomTimer) {
       clearInterval(this.roomTimer);
       this.roomTimer = null;

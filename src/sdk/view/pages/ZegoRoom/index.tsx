@@ -173,6 +173,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     }, 5000);
     this.initInRoomInviteMgListener();
     this.initSDK();
+    this.props.core.eventEmitter.on("hangUp", () => {
+      this.leaveRoom();
+    });
     // 点击其他区域时, 隐藏更多弹窗)
     document.addEventListener("click", this.onOpenSettings);
     window.addEventListener("resize", this.onWindowResize.bind(this));
@@ -233,6 +236,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   componentWillUnmount() {
     document.removeEventListener("click", this.onOpenSettings);
     window.removeEventListener("resize", this.onWindowResize.bind(this));
+    this.props.core.eventEmitter.off("hangUp");
     this.state.isScreenSharingBySelf && this.closeScreenSharing();
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);

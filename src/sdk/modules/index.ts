@@ -51,6 +51,7 @@ import {
 import ZIM from "zego-zim-web";
 import { ZimManager } from "./tools/ZimManager";
 import { getVideoResolution } from "../util";
+import { EventEmitter } from "./tools/EventEmitter";
 
 export class ZegoCloudRTCCore {
   static _instance: ZegoCloudRTCCore;
@@ -67,6 +68,7 @@ export class ZegoCloudRTCCore {
   };
   zegoSuperBoard!: ZegoSuperBoardManager;
   zegoSuperBoardView: ZegoSuperBoardView | null | undefined = undefined;
+  eventEmitter = new EventEmitter();
   //   static _soundMeter: SoundMeter;
   static getInstance(kitToken: string): ZegoCloudRTCCore {
     const config = getConfig(kitToken);

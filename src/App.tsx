@@ -168,19 +168,19 @@ export default class App extends React.PureComponent {
       this.initCallInvitation(userID, roomID);
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
-        let { token } = await generateToken(
-          randomID(5),
-          roomID,
-          userName || getRandomName()
-        );
-        // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        //   1484647939,
-        //   "22076fd0a8388f31dc1f6e344171****",
+        // let { token } = await generateToken(
+        //   randomID(5),
         //   roomID,
-        //   userID,
-        //   userName || getRandomName(),
-        //   7200
+        //   userName || getRandomName()
         // );
+        let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+          1484647939,
+          "22076fd0a8388f31dc1f6e344171b2b1",
+          roomID,
+          userID,
+          userName || getRandomName(),
+          7200
+        );
         const zp = ZegoUIKitPrebuilt.create(token);
         //@ts-ignore // just for debugger
         window.zp = zp;
@@ -305,23 +305,24 @@ export default class App extends React.PureComponent {
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
     this.state.showPreviewHeader = isPc() ? "show" : "hide";
-    let { token } = await generateTokenForCallInvitation(
-      userID,
-      roomID,
-      "user_" + userID
-    );
-    // console.warn(token);
-    // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-    //   252984006,
-    //   "16435f3bdb307f****b3f9e4259a29f0",
-    //   roomID,
+    // let { token } = await generateTokenForCallInvitation(
     //   userID,
-    //   "user_" + userID,
-    //   60 * 60 * 24
+    //   roomID,
+    //   "user_" + userID
     // );
+    // console.warn(token);
+    let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+      252984006,
+      "16435f3bdb307f3020b3f9e4259a29f0",
+      roomID,
+      userID,
+      "user_" + userID,
+      60 * 60 * 24
+    );
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
-
+    //@ts-ignore // just for debugger
+    window.zp = this.zp;
     this.zp.setCallInvitationConfig({
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
       onConfirmDialogWhenReceiving: (

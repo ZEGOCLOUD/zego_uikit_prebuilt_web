@@ -3,7 +3,8 @@ import { ZegoCloudUser } from "../../../modules/tools/UserListManager";
 import ShowManageContext, {
   ShowManageType,
 } from "../../pages/context/showManage";
-import flvjs from "flv.js";
+// @ts-ignore
+import flvjs from "flv.js/dist/flv.min.js";
 
 export default class ZegoAudio extends React.PureComponent<{
   userInfo: ZegoCloudUser;
@@ -48,7 +49,6 @@ export default class ZegoAudio extends React.PureComponent<{
       hasVideo: false, //是否需要视频
     });
     this.flvPlayer.on(flvjs.Events.LOADING_COMPLETE, () => {
-      console.error("LOADING_COMPLETE");
       this.flvPlayer.play();
     });
     this.flvPlayer.attachMediaElement(audioElement);
@@ -81,8 +81,7 @@ export default class ZegoAudio extends React.PureComponent<{
         ref={this.initAudio.bind(this)}
         onCanPlay={(el) => {
           (el.target as HTMLAudioElement).play();
-        }}
-      ></audio>
+        }}></audio>
     );
   }
 }
