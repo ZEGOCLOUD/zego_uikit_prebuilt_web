@@ -1,8 +1,10 @@
 import ZIM, {
+  ZIMCallCancelConfig,
   ZIMCallInvitationSentResult,
   ZIMCallInviteConfig,
   ZIMEventOfConnectionStateChangedResult,
   ZIMEventOfReceiveConversationMessageResult,
+  ZIMPushConfig,
 } from "zego-zim-web";
 import {
   CallInvitationEndReason,
@@ -39,6 +41,8 @@ export class ZimManager {
     enableCustomCallInvitationDialog: false,
     enableNotifyWhenAppRunningInBackgroundOrQuit: false,
   };
+  notificationConfig: ZegoSignalingPluginNotificationConfig | undefined =
+    undefined;
   hostID = "";
   incomingTimer: NodeJS.Timer | null = null;
   outgoingTimer: NodeJS.Timer | null = null;
@@ -423,7 +427,9 @@ export class ZimManager {
     this.inSendOperation = true;
     const inviteesID = invitees.map((i) => i.userID);
     const roomID = `call_${this.expressConfig.userID}_${new Date().getTime()}`;
-
+    if (notificationConfig) {
+      this.notificationConfig = notificationConfig;
+    }
     const _data = {
       call_id: roomID,
       invitees: invitees.map((u) => ({
@@ -442,10 +448,10 @@ export class ZimManager {
       type,
       data: JSON.stringify(_data),
     };
-    const config: ZIMCallInviteConfig = {
+    const config = {
       timeout,
       extendedData: JSON.stringify(extendedData),
-    };
+    } as ZIMCallInviteConfig;
 
     // 发送离线消息
     if (this.config.enableNotifyWhenAppRunningInBackgroundOrQuit) {
@@ -566,10 +572,23 @@ export class ZimManager {
     if (data) {
       extendedData.custom_data = data;
     }
+    const config: ZIMCallCancelConfig = {
+      extendedData: JSON.stringify(extendedData),
+    };
+    if (this.config.enableNotifyWhenAppRunningInBackgroundOrQuit) {
+      config.pushConfig = {
+        title: this.notificationConfig?.title || this.expressConfig.userName,
+        content: this.notificationConfig?.message || "Cancelled invitation",
+        resourcesID: this.notificationConfig?.resourcesID ?? "zegouikit_call",
+        payload: JSON.stringify({
+          call_id: this.callInfo.roomID,
+          operation_type: "cancel_invitation",
+        }),
+      } as ZIMPushConfig;
+      console.log("cancelInvitation", config);
+    }
     try {
-      await this._zim?.callCancel(invitees, this.callInfo.callID, {
-        extendedData: JSON.stringify(extendedData),
-      });
+      await this._zim?.callCancel(invitees, this.callInfo.callID, config);
       callInvitationControl.callInvitationWaitingPageHide();
       this.clearCallInfo();
     } catch (error) {

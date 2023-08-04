@@ -66,7 +66,7 @@
     "zego-express-engine-webrtc": "^2.25.2",
     "zego-express-engine-webrtm": "^1.24.1",
     "zego-superboard-web": "^2.7.0",
-    "zego-zim-web": "^2.8.1"
+    "zego-zim-web": "^2.9.0"
   },
   "devDependencies": {
     "@formatjs/cli": "^5.0.2",

@@ -49,10 +49,10 @@ export default class InRoomInviteManager {
       type: ZegoInvitationType.InviteToCoHost,
       data: "",
     });
-    const config: ZIMCallInviteConfig = {
+    const config = {
       timeout: 60,
       extendedData,
-    };
+    } as ZIMCallInviteConfig;
     this.inviteToCoHostInfoMap.set(inviteeID, {
       callID: inviteeID + new Date().getTime(),
       inviter: this.expressConfig,
@@ -104,10 +104,10 @@ export default class InRoomInviteManager {
       type: ZegoInvitationType.RequestCoHost,
       data: "",
     });
-    const config: ZIMCallInviteConfig = {
+    const config = {
       timeout: 60,
       extendedData,
-    };
+    } as ZIMCallInviteConfig;
     try {
       this.requestCohostInfo = {
         callID: "" + Date.now(),
@@ -145,10 +145,10 @@ export default class InRoomInviteManager {
       type: ZegoInvitationType.RemoveCoHost,
       data: "",
     });
-    const config: ZIMCallInviteConfig = {
+    const config = {
       timeout: 60,
       extendedData,
-    };
+    } as ZIMCallInviteConfig;
     const res: ZIMCallInvitationSentResult = await this._zim!.callInvite(
       [inviteeID],
       config
