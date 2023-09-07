@@ -20,7 +20,7 @@
     "eject": "react-scripts eject",
     "publish": "cd ZegoUIKitPrebuilt && npm publish --access public",
     "publish:beta": "cd ZegoUIKitPrebuilt && npm publish --tag beta",
-    "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='call_invitation' react-scripts start",
+    "start": "HTTPS=true HOST=0.0.0.0  REACT_APP_ENV='test' REACT_APP_PATH='video_conference' react-scripts start",
     "start:m": "REACT_APP_MOBILE='yes'   npm run start"
   },
   "browserslist": {
@@ -50,6 +50,7 @@
     "css-loader": "^6.7.1",
     "file-loader": "^6.2.0",
     "flv.js": "^1.6.2",
+    "fuse.js": "^6.6.2",
     "gh-pages": "^4.0.0",
     "http-proxy-middleware": "^2.0.6",
     "localforage": "^1.10.0",
@@ -63,9 +64,9 @@
     "sass-resources-loader": "^2.2.5",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.1",
-    "zego-express-engine-webrtc": "^2.25.2",
-    "zego-express-engine-webrtm": "^1.24.1",
-    "zego-superboard-web": "^2.7.0",
+    "zego-express-engine-webrtc": "^2.26.0",
+    "zego-express-engine-webrtm": "^1.25.0",
+    "zego-superboard-web": "^2.14.0",
     "zego-zim-web": "^2.9.0"
   },
   "devDependencies": {

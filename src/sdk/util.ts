@@ -1,6 +1,7 @@
 /* eslint-disable no-cond-assign */
 import CryptoJS from "crypto-js";
-
+import Fuse from "fuse.js";
+import { ZegoCloudUserList } from "./modules/tools/UserListManager";
 export function randomNumber(len: number): number {
   let result = "";
   let chars = "123456789",
@@ -159,6 +160,17 @@ export function getVideoResolution(level: string): {
     frameRate,
   };
 }
+// 防抖
+export const debounce = (fn: Function, wait: number) => {
+  let timer: any;
+  return function () {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      // @ts-ignore
+      fn.apply(this, arguments);
+    }, wait);
+  };
+};
 
 export const throttle = (fn: Function, wait: number) => {
   let canRun = true;
@@ -468,3 +480,23 @@ export function generatePrebuiltToken(
     )
   );
 }
+
+/**
+ * Performs a search for a given name in a list of members.
+ *
+ * @param {string[]} memberList - The list of members to search through.
+ * @param {string} name - The name to search for.
+ * @return {any[]} An array of search results.
+ */
+export function memberSearch(memberList: ZegoCloudUserList, name: string) {
+    const option = {
+        location: 0,
+        distance: 100,
+        threshold: 0.0,
+        keys: ["userName"],
+    };
+    const fuse = new Fuse(memberList, option);
+    return fuse.search(name);
+}
+
+

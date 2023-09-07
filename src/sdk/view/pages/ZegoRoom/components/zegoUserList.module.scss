@@ -4,6 +4,7 @@
   flex-direction: column;
   box-sizing: border-box;
   padding: 20px 4px;
+  flex: 1;
   .member {
     position: relative;
     display: flex;
@@ -199,6 +200,64 @@
     .agreeBtn {
       color: #fff;
       background-color: #0055ff;
+    }
+  }
+  .memberSearch {
+    margin:0 8px 8px 12px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    border-radius: 17px;
+    background-color: #1f2022;
+    flex: 0 0 auto;
+    span {
+        width: 16px;
+        height: 16px;
+        background-color: #0055ff;
+    }
+    .memberSearchPrefix {
+        margin-left: 14px;
+        margin-right: 6px;
+        background: url('../../../../sdkAssets/member_search.png') no-repeat center;
+        background-size: 100%;
+    }
+    .memberSearchSuffix {
+        margin-right: 14px;
+        margin-left: 6px;
+        background: url('../../../../sdkAssets/member_search_close.png') no-repeat center, #85878b;
+        border-radius: 50%;
+        background-size: 100%;
+        cursor: pointer;
+    }
+    input {
+        width: 240px;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        color: #edf1fa;
+        background-color: #1f2022;
+        
+    }
+  }
+  .noResult {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    flex: 1;
+    min-height: 100px;
+    & > div {
+        width: 90px;
+        height: 90px;
+        background: url('../../../../sdkAssets/member_search_empty.png') no-repeat center;
+        background-size: 100%;
+        margin-top: -14px;
+    }
+    & > p {
+        font-size: 14px;
+        color: #85878b;
+        margin: 0;
+        text-align: center;
     }
   }
 }

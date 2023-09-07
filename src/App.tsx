@@ -168,136 +168,132 @@ export default class App extends React.PureComponent {
       this.initCallInvitation(userID, roomID);
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
-        let { token } = await generateToken(
-          randomID(5),
-          roomID,
-          userName || getRandomName()
-        );
-        // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        //   1484647939,
-        //   "22076fd0a8388f31dc1f6e344171****",
-        //   roomID,
-        //   userID,
-        //   userName || getRandomName(),
-        //   7200
-        // );
-        const zp = ZegoUIKitPrebuilt.create(token);
-        //@ts-ignore // just for debugger
-        window.zp = zp;
-        if (process.env.REACT_APP_PATH !== "live_stream") {
-          zp.addPlugins({ ZegoSuperBoardManager });
-        } else {
-          zp.addPlugins({ ZIM });
-          ZIM.getInstance().setLogConfig({
-            logLevel: "error",
-          });
-        }
-        const param: ZegoCloudRoomConfig = {
-          console: ZegoUIKitPrebuilt.ConsoleNone,
-          //   turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
-          //   turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
-          //   showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
-          //   showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
-          //   showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
-          //   showNonVideoUser: true,
-          // @ts-ignore
-          container: element, // 挂载容器
-          //   showPreJoinView: false,
-          preJoinViewConfig: {
-            title: "Join Room",
-          },
-          //   showRoomDetailsButton: false,
-          showTextChat: true,
-          showUserList: true,
-          showLeavingView: true,
-          maxUsers,
-          //   layout: "Auto",
-          onJoinRoom: () => {
-            console.log("test:leaveRoomCallback");
-            window?.parent?.postMessage("leaveRoom", "*");
-          }, // 退出房间回调
-          onLeaveRoom: () => {
-            window?.parent?.postMessage("joinRoom", "*");
-          },
-          onInRoomMessageReceived: (messageInfo) => {
-            console.warn("onInRoomMessageReceived", messageInfo);
-          },
-          onInRoomCommandReceived: (fromUser, command) => {
-            console.warn(
-              "onInRoomCommandReceived",
-              fromUser,
-              JSON.parse(command)
-            );
-          },
-          onInRoomTextMessageReceived(messages) {
-            console.warn("onInRoomTextMessageReceived", messages);
-          },
-          //   showScreenSharingButton: true,
-          lowerLeftNotification: {
-            showTextChat: true,
-          },
-          showOnlyAudioUser: true,
-          branding: {
-            logoURL: require("./assets/zegocloud_logo.png"),
-          },
-          sharedLinks,
-          scenario: {
-            mode,
-            config: {
-              role,
-              liveStreamingMode,
-              enableVideoMixing: enableMixing,
-              videoMixingOutputResolution:
-                ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
-            },
-          },
-          onUserAvatarSetter: (user) => {
-            user.forEach((u) => {
-              u.setUserAvatar &&
-                u.setUserAvatar(
-                  // "https://images.pexels.com/photos/4172877/pexels-photo-4172877.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
-                  `https://api.multiavatar.com/${u.userID}.svg?apikey=XqHm465NYsdLfb` // random avatar
-                );
-            });
-          },
-          videoResolutionList: [
-            ZegoUIKitPrebuilt.VideoResolution_360P,
-            ZegoUIKitPrebuilt.VideoResolution_180P,
-            ZegoUIKitPrebuilt.VideoResolution_480P,
-            ZegoUIKitPrebuilt.VideoResolution_720P,
-          ],
-          videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
-          onLiveStart: (user) => {
-            console.warn("onLiveStart", user);
-          },
-          onLiveEnd: (user) => {
-            console.warn("onLiveEnd", user);
-          },
-          onYouRemovedFromRoom: () => {
-            console.warn("【demo】onYouRemovedFromRoom");
-            this.showToast(`You've been removed by the host.`);
-          },
-          showRoomTimer: true,
-          showTurnOffRemoteCameraButton: true,
-          showTurnOffRemoteMicrophoneButton: true,
-          showRemoveUserButton: true,
-          showPinButton: true,
-          showInviteToCohostButton: true,
-          showRemoveCohostButton: true,
-          showRequestToCohostButton: true,
-          rightPanelExpandedType: RightPanelExpandedType.None,
-        };
-        if (showNonVideoUser !== undefined) {
-          param.showNonVideoUser = showNonVideoUser === "true";
-        }
-        if (process.env.REACT_APP_PATH !== "live_stream") {
-          param.whiteboardConfig = {
-            showAddImageButton: true,
-            showCreateAndCloseButton: true,
-          };
-        }
-        zp.joinRoom(param);
-      };
+			let { token } = await generateToken(
+			  randomID(5),
+			  roomID,
+			  userName || getRandomName()
+			);
+			// let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+			// 	1484647939,
+			// 	"22076fd0a8388f31dc1f6e344171****",
+			// 	roomID,
+			// 	userID,
+			// 	userName || getRandomName(),
+			// 	7200
+			// )
+			const zp = ZegoUIKitPrebuilt.create(token)
+			//@ts-ignore // just for debugger
+			window.zp = zp
+			if (process.env.REACT_APP_PATH !== "live_stream") {
+				zp.addPlugins({ ZegoSuperBoardManager })
+			} else {
+				zp.addPlugins({ ZIM })
+				ZIM.getInstance().setLogConfig({
+					logLevel: "error",
+				})
+			}
+			const param: ZegoCloudRoomConfig = {
+				console: ZegoUIKitPrebuilt.ConsoleNone,
+				//   turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+				//   turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
+				//   showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
+				//   showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
+				//   showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
+				//   showNonVideoUser: true,
+				enableUserSearch: true,
+				// @ts-ignore
+				container: element, // 挂载容器
+				//   showPreJoinView: false,
+				preJoinViewConfig: {
+					title: "Join Room",
+				},
+				//   showRoomDetailsButton: false,
+				showTextChat: true,
+				showUserList: true,
+				showLeavingView: true,
+				maxUsers,
+				//   layout: "Auto",
+				onJoinRoom: () => {
+					console.log("test:leaveRoomCallback")
+					window?.parent?.postMessage("leaveRoom", "*")
+				}, // 退出房间回调
+				onLeaveRoom: () => {
+					window?.parent?.postMessage("joinRoom", "*")
+				},
+				onInRoomMessageReceived: (messageInfo) => {
+					console.warn("onInRoomMessageReceived", messageInfo)
+				},
+				onInRoomCommandReceived: (fromUser, command) => {
+					console.warn("onInRoomCommandReceived", fromUser, JSON.parse(command))
+				},
+				onInRoomTextMessageReceived(messages) {
+					console.warn("onInRoomTextMessageReceived", messages)
+				},
+				//   showScreenSharingButton: true,
+				lowerLeftNotification: {
+					showTextChat: true,
+				},
+				showOnlyAudioUser: true,
+				branding: {
+					logoURL: require("./assets/zegocloud_logo.png"),
+				},
+				sharedLinks,
+				scenario: {
+					mode,
+					config: {
+						role,
+						liveStreamingMode,
+						enableVideoMixing: enableMixing,
+						videoMixingOutputResolution: ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
+					},
+				},
+				onUserAvatarSetter: (user) => {
+					user.forEach((u) => {
+						u.setUserAvatar &&
+							u.setUserAvatar(
+								// "https://images.pexels.com/photos/4172877/pexels-photo-4172877.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
+								`https://api.multiavatar.com/${u.userID}.svg?apikey=XqHm465NYsdLfb` // random avatar
+							)
+					})
+				},
+				videoResolutionList: [
+					ZegoUIKitPrebuilt.VideoResolution_360P,
+					ZegoUIKitPrebuilt.VideoResolution_180P,
+					ZegoUIKitPrebuilt.VideoResolution_480P,
+					ZegoUIKitPrebuilt.VideoResolution_720P,
+				],
+				videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
+				onLiveStart: (user) => {
+					console.warn("onLiveStart", user)
+				},
+				onLiveEnd: (user) => {
+					console.warn("onLiveEnd", user)
+				},
+				onYouRemovedFromRoom: () => {
+					console.warn("【demo】onYouRemovedFromRoom")
+					this.showToast(`You've been removed by the host.`)
+				},
+				showRoomTimer: true,
+				showTurnOffRemoteCameraButton: true,
+				showTurnOffRemoteMicrophoneButton: true,
+				showRemoveUserButton: true,
+				showPinButton: true,
+				showInviteToCohostButton: true,
+				showRemoveCohostButton: true,
+				showRequestToCohostButton: true,
+				rightPanelExpandedType: RightPanelExpandedType.None,
+			}
+			if (showNonVideoUser !== undefined) {
+				param.showNonVideoUser = showNonVideoUser === "true"
+			}
+			if (process.env.REACT_APP_PATH !== "live_stream") {
+				param.whiteboardConfig = {
+					showAddImageButton: true,
+					showCreateAndCloseButton: true,
+				}
+			}
+			zp.joinRoom(param)
+		};
     }
   }
   private async initCallInvitation(userID: string, roomID: string) {
