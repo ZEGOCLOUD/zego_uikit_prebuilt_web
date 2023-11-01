@@ -51,6 +51,9 @@ export class ZegoUIKitPrebuilt {
 	constructor() {
 		this.express = ZegoCloudRTCCore._zg;
 	}
+	get localStream() {
+		return ZegoUIKitPrebuilt.core?.localStream;
+	}
 	static generateKitTokenForTest(
 		appID: number,
 		serverSecret: string,

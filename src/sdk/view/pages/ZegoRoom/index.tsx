@@ -240,6 +240,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     this.state.isScreenSharingBySelf && this.closeScreenSharing();
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
+      this.props.core.localStream = undefined;
+
   }
   async initSDK() {
     this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
@@ -698,6 +700,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
             ...solution,
           },
         });
+        this.props.core.localStream = localStream;
         this.props.core.enableVideoCaptureDevice(
           localStream,
           !!this.props.core._config.turnOnCameraWhenJoining
@@ -767,6 +770,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
         this.props.core.stopPublishingStream(this.localStreamID);
       this.state.localStream &&
         this.props.core.destroyStream(this.state.localStream);
+      this.props.core.localStream = undefined;
+
       this.setState({
         localStream: null,
       });
@@ -1123,6 +1128,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
     this.state.isScreenSharingBySelf && this.closeScreenSharing();
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
+      this.props.core.localStream = undefined;
     this.props.core.leaveRoom();
     this.props.leaveRoom && this.props.leaveRoom(isKickedOut);
   }

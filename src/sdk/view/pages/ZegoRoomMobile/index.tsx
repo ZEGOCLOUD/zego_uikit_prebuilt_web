@@ -198,6 +198,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
+      this.props.core.localStream = undefined;
+
   }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
@@ -539,6 +541,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.props.core._zimManager.notifyLeaveRoom(() => {
         this.state.localStream &&
           this.props.core.destroyStream(this.state.localStream);
+            this.props.core.localStream = undefined;
+
         this.props.core.leaveRoom();
         this.props.leaveRoom && this.props.leaveRoom();
       });
@@ -748,6 +752,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               //   frameRate: 15,
             },
           });
+          this.props.core.localStream = localStream;
         } catch (error: any) {
           if (JSON.stringify(error).includes("constrain")) {
             localStream = await this.props.core.createStream({
@@ -758,6 +763,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 channelCount: this.props.core._config.enableStereo ? 2 : 1,
               },
             });
+            this.props.core.localStream = localStream;
           }
           if (error?.code === 1103064) {
             this.props.core.status.videoRefuse = true;
@@ -840,6 +846,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.props.core.stopPublishingStream(this.localStreamID);
       this.state.localStream &&
         this.props.core.destroyStream(this.state.localStream);
+      this.props.core.localStream = undefined;
+
       this.setState({
         localStream: null,
       });
@@ -1174,6 +1182,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core._zimManager?._inRoomInviteMg?.audienceCancelRequest();
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
+      this.props.core.localStream = undefined;
 
     this.props.core.leaveRoom();
     this.props.leaveRoom && this.props.leaveRoom(isKickedOut);

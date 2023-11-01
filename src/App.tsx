@@ -180,6 +180,19 @@ export default class App extends React.PureComponent {
 			const zp = ZegoUIKitPrebuilt.create(token);
 			//@ts-ignore // just for debugger
 			window.zp = zp;
+			zp.express!.on("audioDeviceStateChanged", async (updateType, deviceType, deviceInfo) => {
+				if (isPc()) return;
+				if (updateType === "ADD") {
+					if (deviceType === "Input") {
+						zp.express?.useAudioDevice(zp.localStream!, deviceInfo.deviceID);
+					}
+				} else if (updateType === "DELETE") {
+					const microphones = await zp.express?.getMicrophones();
+					if (microphones?.length) {
+						zp.express?.useAudioDevice(zp.localStream!, microphones[0].deviceID);
+					}
+				}
+			});
 			if (process.env.REACT_APP_PATH !== "live_stream") {
 				zp.addPlugins({ ZegoSuperBoardManager });
 			} else {

@@ -264,6 +264,7 @@ export declare class ZegoUIKitPrebuilt {
 	static ConsoleNone: ConsoleLevel;
 	private hasJoinedRoom;
 	express: ZegoExpressEngine;
+	localStream: MediaStream | undefined;
 	static generateKitTokenForTest(
 		appID: number,
 		serverSecret: string,
