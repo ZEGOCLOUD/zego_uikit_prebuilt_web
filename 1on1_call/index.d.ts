@@ -1,4 +1,5 @@
 declare type ZegoCloudRTCCore = {};
+declare type ZegoExpressEngine = {};
 declare interface ZegoUser {
   userID: string;
   userName?: string;
@@ -79,74 +80,74 @@ declare interface InRoomMessageInfo {
 declare interface ZegoCloudRoomConfig {
 	// 1 UI controls
 	// 1.1 Global
-	container?: HTMLElement | undefined | null // Component container.
-	maxUsers?: number // In-call participants range from [2 - 20]. The default value is unlimited.
+	container?: HTMLElement | undefined | null; // Component container.
+	maxUsers?: number; // In-call participants range from [2 - 20]. The default value is unlimited.
 	scenario?: {
-		mode?: ScenarioModel // Scenario selection.
-		config?: ScenarioConfig[ScenarioModel] // Specific configurations in the corresponding scenario.
-	}
-	console?: ConsoleLevel // Used to problem localization, not a regular setup. While setting this can decide what severity of logs you want to print.
+		mode?: ScenarioModel; // Scenario selection.
+		config?: ScenarioConfig[ScenarioModel]; // Specific configurations in the corresponding scenario.
+	};
+	console?: ConsoleLevel; // Used to problem localization, not a regular setup. While setting this can decide what severity of logs you want to print.
 	// 1.2 Prejoin view
-	showPreJoinView?: boolean // Whether to display the prejoin view. Displayed by default.
+	showPreJoinView?: boolean; // Whether to display the prejoin view. Displayed by default.
 	preJoinViewConfig?: {
-		title?: string // The title of the prejoin view. Uses "enter Room" by default.
-	}
-	turnOnMicrophoneWhenJoining?: boolean // Whether to enable the microphone when joining the call. Enabled by default.
-	turnOnCameraWhenJoining?: boolean // Whether to enable the camera when joining the call. Enabled by default.
-	useFrontFacingCamera?: boolean // Whether to use the front-facing camera when joining the room. Uses a front-facing camera by default.
-	videoResolutionDefault?: VideoResolution // The default video resolution.
-	enableStereo?: boolean // Whether to enable stereo, disenabled by default.
+		title?: string; // The title of the prejoin view. Uses "enter Room" by default.
+	};
+	turnOnMicrophoneWhenJoining?: boolean; // Whether to enable the microphone when joining the call. Enabled by default.
+	turnOnCameraWhenJoining?: boolean; // Whether to enable the camera when joining the call. Enabled by default.
+	useFrontFacingCamera?: boolean; // Whether to use the front-facing camera when joining the room. Uses a front-facing camera by default.
+	videoResolutionDefault?: VideoResolution; // The default video resolution.
+	enableStereo?: boolean; // Whether to enable stereo, disenabled by default.
 
 	// 1.3 Room view
-	showRoomDetailsButton?: boolean // Whether to display room details. Displayed by default
-	showRoomTimer?: boolean //  Whether to display the timer. Not displayed by default.
-	showMyCameraToggleButton?: boolean // Whether to display the button for toggling my camera. Displayed by default.
-	showMyMicrophoneToggleButton?: boolean // Whether to display the button for toggling my microphone. Displayed by default.
-	showAudioVideoSettingsButton?: boolean // Whether to display the button for audio and video settings. Displayed by default.
-	showTurnOffRemoteCameraButton: boolean /// Whether to display the button for turning off the remote camera. Not displayed by default.
-	showTurnOffRemoteMicrophoneButton: boolean // Whether to display the button for turning off the remote microphone. Not displayed by default.
-	showTextChat?: boolean // Whether to display the text chat interface on the right side. Displayed by default.
-	showUserList?: boolean // Whether to display the participant list. Displayed by default.
-	showRemoveUserButton: boolean // Whether to display the button for removing participants. Not displayed by default.
+	showRoomDetailsButton?: boolean; // Whether to display room details. Displayed by default
+	showRoomTimer?: boolean; //  Whether to display the timer. Not displayed by default.
+	showMyCameraToggleButton?: boolean; // Whether to display the button for toggling my camera. Displayed by default.
+	showMyMicrophoneToggleButton?: boolean; // Whether to display the button for toggling my microphone. Displayed by default.
+	showAudioVideoSettingsButton?: boolean; // Whether to display the button for audio and video settings. Displayed by default.
+	showTurnOffRemoteCameraButton?: boolean; /// Whether to display the button for turning off the remote camera. Not displayed by default.
+	showTurnOffRemoteMicrophoneButton?: boolean; // Whether to display the button for turning off the remote microphone. Not displayed by default.
+	showTextChat?: boolean; // Whether to display the text chat interface on the right side. Displayed by default.
+	showUserList?: boolean; // Whether to display the participant list. Displayed by default.
+	showRemoveUserButton?: boolean; // Whether to display the button for removing participants. Not displayed by default.
 	lowerLeftNotification?: {
-		showUserJoinAndLeave?: boolean // Whether to display notifications on the lower left area when participants join and leave the room. Displayed by default.
-		showTextChat?: boolean // Whether to display the latest messages on the lower left area. Displayed by default.
-	}
+		showUserJoinAndLeave?: boolean; // Whether to display notifications on the lower left area when participants join and leave the room. Displayed by default.
+		showTextChat?: boolean; // Whether to display the latest messages on the lower left area. Displayed by default.
+	};
 	branding?: {
-		logoURL?: string // The branding LOGO URL.
-	}
-	layout?: "Sidebar" | "Grid" | "Auto" // The layout modes. Uses the Auto mode by default.
-	showLayoutButton?: boolean // Whether to display the button for switching layouts. Displayed by default.
-	showNonVideoUser?: boolean // Whether to display the non-video participants. Displayed by default.
-	showOnlyAudioUser?: boolean // Whether to display audio-only participants. Displayed by default.
-	sharedLinks?: { name?: string; url?: string }[] // Description of the generated shared links.
-	showScreenSharingButton?: boolean // Whether to display the Screen Sharing button. Displayed by default.
-	showPinButton?: boolean // Whether to display the Pin button. Displayed by default.
+		logoURL?: string; // The branding LOGO URL.
+	};
+	layout?: "Sidebar" | "Grid" | "Auto"; // The layout modes. Uses the Auto mode by default.
+	showLayoutButton?: boolean; // Whether to display the button for switching layouts. Displayed by default.
+	showNonVideoUser?: boolean; // Whether to display the non-video participants. Displayed by default.
+	showOnlyAudioUser?: boolean; // Whether to display audio-only participants. Displayed by default.
+	sharedLinks?: { name?: string; url?: string }[]; // Description of the generated shared links.
+	showScreenSharingButton?: boolean; // Whether to display the Screen Sharing button. Displayed by default.
+	showPinButton?: boolean; // Whether to display the Pin button. Displayed by default.
 	whiteboardConfig?: {
-		showAddImageButton?: boolean // It's set to false by default. To use this feature, activate the File Sharing feature, and then import the plugin. Otherwise, this prompt will occur: "Failed to add image, this feature is not supported."
-		showCreateAndCloseButton?: boolean // Whether to display the button that is used to create/turn off the whiteboard. Displayed by default.
-	}
-	showInviteToCohostButton?: boolean // Whether to show the button that is used to invite the audience to co-host on the host end.
-	showRemoveCohostButton?: boolean // Whether to show the button that is used to remove the audience on the host end.
-	showRequestToCohostButton?: boolean // Whether to show the button that is used to request to co-host on the audience end.
-	rightPanelExpandedType?: RightPanelExpandedType // Controls the type of the information displayed on the right panel, display "None" by default.
-	autoHideFooter?: boolean // Whether to enable the footer auto-hide feature, enabled by default.
-	enableUserSearch?: boolean // Whether to enable the user search feature, false by default.
+		showAddImageButton?: boolean; // It's set to false by default. To use this feature, activate the File Sharing feature, and then import the plugin. Otherwise, this prompt will occur: "Failed to add image, this feature is not supported."
+		showCreateAndCloseButton?: boolean; // Whether to display the button that is used to create/turn off the whiteboard. Displayed by default.
+	};
+	showInviteToCohostButton?: boolean; // Whether to show the button that is used to invite the audience to co-host on the host end.
+	showRemoveCohostButton?: boolean; // Whether to show the button that is used to remove the audience on the host end.
+	showRequestToCohostButton?: boolean; // Whether to show the button that is used to request to co-host on the audience end.
+	rightPanelExpandedType?: RightPanelExpandedType; // Controls the type of the information displayed on the right panel, display "None" by default.
+	autoHideFooter?: boolean; // Whether to enable the footer auto-hide feature, enabled by default.
+	enableUserSearch?: boolean; // Whether to enable the user search feature, false by default.
 	// 1.4 Leaving view
-	showLeavingView?: boolean // Whether to display the leaving view. Displayed by default.
+	showLeavingView?: boolean; // Whether to display the leaving view. Displayed by default.
 
 	// 2 Related event callbacks
-	onJoinRoom?: () => void // Callback for participants join the room.
-	onLeaveRoom?: () => void // Callback for participants exits the room.
-	onUserJoin?: (users: ZegoUser[]) => void // Callback for other participants join the call.
-	onUserLeave?: (users: ZegoUser[]) => void // Callback for other participants leave the call.
-	onUserAvatarSetter?: (user: ZegoUser[]) => void // Callback for the user avatar can be set.
-	onLiveStart?: (user: ZegoUser) => void //  Callback for livestream starts.
-	onLiveEnd?: (user: ZegoUser) => void // Callback for livestream ends.
-	onYouRemovedFromRoom?: () => void // Callback for me removed from the room.
-	onInRoomMessageReceived?: (messageInfo: InRoomMessageInfo) => void // Callback for room chat message
-	onInRoomCommandReceived?: (fromUser: ZegoUser, command: string) => void // Callback for room command message
-	onInRoomTextMessageReceived?: (messages: ZegoSignalingInRoomTextMessage[]) => void // Callback for room signaling text message
+	onJoinRoom?: () => void; // Callback for participants join the room.
+	onLeaveRoom?: () => void; // Callback for participants exits the room.
+	onUserJoin?: (users: ZegoUser[]) => void; // Callback for other participants join the call.
+	onUserLeave?: (users: ZegoUser[]) => void; // Callback for other participants leave the call.
+	onUserAvatarSetter?: (user: ZegoUser[]) => void; // Callback for the user avatar can be set.
+	onLiveStart?: (user: ZegoUser) => void; //  Callback for livestream starts.
+	onLiveEnd?: (user: ZegoUser) => void; // Callback for livestream ends.
+	onYouRemovedFromRoom?: () => void; // Callback for me removed from the room.
+	onInRoomMessageReceived?: (messageInfo: InRoomMessageInfo) => void; // Callback for room chat message
+	onInRoomCommandReceived?: (fromUser: ZegoUser, command: string) => void; // Callback for room command message
+	onInRoomTextMessageReceived?: (messages: ZegoSignalingInRoomTextMessage[]) => void; // Callback for room signaling text message
 }
 
 export enum RightPanelExpandedType {
@@ -240,57 +241,58 @@ declare type AcceptCallInvitationFunc = (data?: string) => void; // accept invit
 declare type RefuseCallInvitationFunc = (data?: string) => void; // reject invitation
 
 export declare class ZegoUIKitPrebuilt {
-  static core: ZegoCloudRTCCore | undefined;
-  static _instance: ZegoUIKitPrebuilt;
-  static Host: LiveRole;
-  static Cohost: LiveRole;
-  static Audience: LiveRole;
-  static OneONoneCall: ScenarioModel;
-  static GroupCall: ScenarioModel;
-  static LiveStreaming: ScenarioModel;
-  static VideoConference: ScenarioModel;
-  static VideoResolution_180P: VideoResolution;
-  static VideoResolution_360P: VideoResolution;
-  static VideoResolution_480P: VideoResolution;
-  static VideoResolution_720P: VideoResolution;
-  static LiveStreamingMode: typeof LiveStreamingMode;
-  static InvitationTypeVoiceCall: ZegoInvitationType;
-  static InvitationTypeVideoCall: ZegoInvitationType;
-  static ConsoleDebug: ConsoleLevel;
-  static ConsoleInfo: ConsoleLevel;
-  static ConsoleWarning: ConsoleLevel;
-  static ConsoleError: ConsoleLevel;
-  static ConsoleNone: ConsoleLevel;
-  private hasJoinedRoom;
-  static generateKitTokenForTest(
-    appID: number,
-    serverSecret: string,
-    roomID: string,
-    userID: string,
-    userName?: string,
-    ExpirationSeconds?: number
-  ): string;
-  static generateKitTokenForProduction(
-    appID: number,
-    token: string,
-    roomID: string,
-    userID: string,
-    userName?: string
-  ): string;
-  static create(kitToken: string): ZegoUIKitPrebuilt;
-  addPlugins(plugins?: { ZegoSuperBoardManager?: any; ZIM?: any }): void;
-  joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
-  destroy(): void;
-  setCallInvitationConfig(config?: ZegoCallInvitationConfig): void;
-  sendCallInvitation(params: {
-    callees: ZegoUser[];
-    callType: ZegoInvitationType;
-    timeout?: number;
-    data?: string;
-    notificationConfig?: ZegoSignalingPluginNotificationConfig;
-  }): Promise<{
-    errorInvitees: ZegoUser[];
-  }>;
-  sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean>;
-  hangUp(): void;
+	static core: ZegoCloudRTCCore | undefined;
+	static _instance: ZegoUIKitPrebuilt;
+	static Host: LiveRole;
+	static Cohost: LiveRole;
+	static Audience: LiveRole;
+	static OneONoneCall: ScenarioModel;
+	static GroupCall: ScenarioModel;
+	static LiveStreaming: ScenarioModel;
+	static VideoConference: ScenarioModel;
+	static VideoResolution_180P: VideoResolution;
+	static VideoResolution_360P: VideoResolution;
+	static VideoResolution_480P: VideoResolution;
+	static VideoResolution_720P: VideoResolution;
+	static LiveStreamingMode: typeof LiveStreamingMode;
+	static InvitationTypeVoiceCall: ZegoInvitationType;
+	static InvitationTypeVideoCall: ZegoInvitationType;
+	static ConsoleDebug: ConsoleLevel;
+	static ConsoleInfo: ConsoleLevel;
+	static ConsoleWarning: ConsoleLevel;
+	static ConsoleError: ConsoleLevel;
+	static ConsoleNone: ConsoleLevel;
+	private hasJoinedRoom;
+	express: ZegoExpressEngine;
+	static generateKitTokenForTest(
+		appID: number,
+		serverSecret: string,
+		roomID: string,
+		userID: string,
+		userName?: string,
+		ExpirationSeconds?: number
+	): string;
+	static generateKitTokenForProduction(
+		appID: number,
+		token: string,
+		roomID: string,
+		userID: string,
+		userName?: string
+	): string;
+	static create(kitToken: string): ZegoUIKitPrebuilt;
+	addPlugins(plugins?: { ZegoSuperBoardManager?: any; ZIM?: any }): void;
+	joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
+	destroy(): void;
+	setCallInvitationConfig(config?: ZegoCallInvitationConfig): void;
+	sendCallInvitation(params: {
+		callees: ZegoUser[];
+		callType: ZegoInvitationType;
+		timeout?: number;
+		data?: string;
+		notificationConfig?: ZegoSignalingPluginNotificationConfig;
+	}): Promise<{
+		errorInvitees: ZegoUser[];
+	}>;
+	sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean>;
+	hangUp(): void;
 }

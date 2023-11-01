@@ -175,22 +175,22 @@ export default class App extends React.PureComponent {
 			// );
 			let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
 				1484647939,
-				"22076fd0a8388f31dc1f6e344171b2b1",
+				"22076fd0a8388f31dc1f6e344171****",
 				roomID,
 				userID,
 				userName || getRandomName(),
 				7200
-			)
-			const zp = ZegoUIKitPrebuilt.create(token)
+			);
+			const zp = ZegoUIKitPrebuilt.create(token);
 			//@ts-ignore // just for debugger
-			window.zp = zp
+			window.zp = zp;
 			if (process.env.REACT_APP_PATH !== "live_stream") {
-				zp.addPlugins({ ZegoSuperBoardManager })
+				zp.addPlugins({ ZegoSuperBoardManager });
 			} else {
-				zp.addPlugins({ ZIM })
+				zp.addPlugins({ ZIM });
 				ZIM.getInstance().setLogConfig({
 					logLevel: "error",
-				})
+				});
 			}
 			const param: ZegoCloudRoomConfig = {
 				console: ZegoUIKitPrebuilt.ConsoleNone,
@@ -214,20 +214,20 @@ export default class App extends React.PureComponent {
 				maxUsers,
 				//   layout: "Auto",
 				onJoinRoom: () => {
-					console.log("test:leaveRoomCallback")
-					window?.parent?.postMessage("leaveRoom", "*")
+					console.log("test:leaveRoomCallback");
+					window?.parent?.postMessage("leaveRoom", "*");
 				}, // 退出房间回调
 				onLeaveRoom: () => {
-					window?.parent?.postMessage("joinRoom", "*")
+					window?.parent?.postMessage("joinRoom", "*");
 				},
 				onInRoomMessageReceived: (messageInfo) => {
-					console.warn("onInRoomMessageReceived", messageInfo)
+					console.warn("onInRoomMessageReceived", messageInfo);
 				},
 				onInRoomCommandReceived: (fromUser, command) => {
-					console.warn("onInRoomCommandReceived", fromUser, JSON.parse(command))
+					console.warn("onInRoomCommandReceived", fromUser, JSON.parse(command));
 				},
 				onInRoomTextMessageReceived(messages) {
-					console.warn("onInRoomTextMessageReceived", messages)
+					console.warn("onInRoomTextMessageReceived", messages);
 				},
 				//   showScreenSharingButton: true,
 				lowerLeftNotification: {
@@ -253,8 +253,8 @@ export default class App extends React.PureComponent {
 							u.setUserAvatar(
 								// "https://images.pexels.com/photos/4172877/pexels-photo-4172877.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
 								`https://api.multiavatar.com/${u.userID}.svg?apikey=XqHm465NYsdLfb` // random avatar
-							)
-					})
+							);
+					});
 				},
 				videoResolutionList: [
 					ZegoUIKitPrebuilt.VideoResolution_360P,
@@ -264,14 +264,14 @@ export default class App extends React.PureComponent {
 				],
 				videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
 				onLiveStart: (user) => {
-					console.warn("onLiveStart", user)
+					console.warn("onLiveStart", user);
 				},
 				onLiveEnd: (user) => {
-					console.warn("onLiveEnd", user)
+					console.warn("onLiveEnd", user);
 				},
 				onYouRemovedFromRoom: () => {
-					console.warn("【demo】onYouRemovedFromRoom")
-					this.showToast(`You've been removed by the host.`)
+					console.warn("【demo】onYouRemovedFromRoom");
+					this.showToast(`You've been removed by the host.`);
 				},
 				showRoomTimer: true,
 				showTurnOffRemoteCameraButton: true,
@@ -282,17 +282,17 @@ export default class App extends React.PureComponent {
 				showRemoveCohostButton: true,
 				showRequestToCohostButton: true,
 				rightPanelExpandedType: RightPanelExpandedType.None,
-			}
+			};
 			if (showNonVideoUser !== undefined) {
-				param.showNonVideoUser = showNonVideoUser === "true"
+				param.showNonVideoUser = showNonVideoUser === "true";
 			}
 			if (process.env.REACT_APP_PATH !== "live_stream") {
 				param.whiteboardConfig = {
 					showAddImageButton: true,
 					showCreateAndCloseButton: true,
-				}
+				};
 			}
-			zp.joinRoom(param)
+			zp.joinRoom(param);
 		};
     }
   }
@@ -308,13 +308,13 @@ export default class App extends React.PureComponent {
     // );
     // console.warn(token);
     let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      252984006,
-      "16435f3bdb307f3020b3f9e4259a29f0",
-      roomID,
-      userID,
-      "user_" + userID,
-      60 * 60 * 24
-    );
+		252984006,
+		"16435f3bdb307f****b3f9e4259a29f0",
+		roomID,
+		userID,
+		"user_" + userID,
+		60 * 60 * 24
+	);
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
     //@ts-ignore // just for debugger
