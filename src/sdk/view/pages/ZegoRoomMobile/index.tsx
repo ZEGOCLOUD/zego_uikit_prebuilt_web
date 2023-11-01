@@ -2182,316 +2182,270 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         : this.state.notificationList.length - 2;
 
     return (
-      <ShowManageContext.Provider
-        value={{
-          show: (_user: ZegoCloudUser) => {
-            _user && (this._selectedUser = _user);
-            this.setState({
-              layOutStatus: this.showManager(_user) ? "MANAGE" : "ONE_VIDEO",
-            });
-          },
-          liveStatus: this.state.liveStatus,
-          showPinButton:
-            (!!this.props.core._config.showPinButton ||
-              !!this.props.core._config.showTurnOffRemoteCameraButton ||
-              !!this.props.core._config.showTurnOffRemoteMicrophoneButton ||
-              !!this.props.core._config.showRemoveUserButton) &&
-            this.getShownUser().length > 1,
-          whiteboard_page:
-            this.state.zegoSuperBoardView
-              ?.getCurrentSuperBoardSubView()
-              ?.getCurrentPage() || 1,
-          whiteboard_toolType:
-            this.props.core.zegoSuperBoard?.getToolType() || 0,
-          whiteboard_fontSize:
-            this.props.core.zegoSuperBoard?.getFontSize() || 0,
-          whiteboard_brushSize:
-            this.props.core.zegoSuperBoard?.getBrushSize() || 0,
-          whiteboard_brushColor:
-            this.props.core.zegoSuperBoard?.getBrushColor() || "",
-          whiteboard_isFontBold: this.props.core.zegoSuperBoard?.isFontBold(),
-          whiteboard_isFontItalic:
-            this.props.core.zegoSuperBoard?.isFontItalic(),
-          whiteboard_showAddImage:
-            this.props.core._config.whiteboardConfig?.showAddImageButton,
-          whiteboard_showCreateClose:
-            this.props.core._config.whiteboardConfig?.showCreateAndCloseButton,
-          userInfo: { userID: this.props.core._expressConfig.userID },
-        }}>
-        <div
-          className={`${ZegoRoomCss.ZegoRoom}  ZegoRoomMobile_ZegoRoom ${
-            this.props.core._config.scenario?.mode ===
-            ScenarioModel.LiveStreaming
-              ? this.props.core._config.scenario?.config?.role === LiveRole.Host
-                ? ZegoRoomCss.host
-                : this.props.core._config.scenario?.config?.role ===
-                  LiveRole.Audience
-                ? ZegoRoomCss.audience
-                : ""
-              : ""
-          }`}
-          onClick={(e) => {
-            // @ts-ignore
-            this.clickVideo(e);
-          }}>
-          {this.getLayoutScreen()}
-          {this.state.isNetworkPoor && (
-            <div className={ZegoRoomCss.network}></div>
-          )}
-          {(this.state.showFooter || false) && (
-            <div className={ZegoRoomCss.footer}>
-              {this.props.core._config.showMyCameraToggleButton &&
-                (this.props.core._config.scenario?.mode !==
-                  ScenarioModel.LiveStreaming ||
-                  this.props.core._config.scenario?.config?.role ===
-                    LiveRole.Cohost) && (
-                  <a
-                    className={`${ZegoRoomCss.switchCamera}`}
-                    onClick={() => {
-                      this.switchCamera();
-                    }}></a>
-                )}
+		<ShowManageContext.Provider
+			value={{
+				enableVideoMixing: this.props.core._config.scenario?.config?.enableVideoMixing,
+				show: (_user: ZegoCloudUser) => {
+					_user && (this._selectedUser = _user)
+					this.setState({
+						layOutStatus: this.showManager(_user) ? "MANAGE" : "ONE_VIDEO",
+					})
+				},
+				liveStatus: this.state.liveStatus,
+				showPinButton:
+					(!!this.props.core._config.showPinButton ||
+						!!this.props.core._config.showTurnOffRemoteCameraButton ||
+						!!this.props.core._config.showTurnOffRemoteMicrophoneButton ||
+						!!this.props.core._config.showRemoveUserButton) &&
+					this.getShownUser().length > 1,
+				whiteboard_page: this.state.zegoSuperBoardView?.getCurrentSuperBoardSubView()?.getCurrentPage() || 1,
+				whiteboard_toolType: this.props.core.zegoSuperBoard?.getToolType() || 0,
+				whiteboard_fontSize: this.props.core.zegoSuperBoard?.getFontSize() || 0,
+				whiteboard_brushSize: this.props.core.zegoSuperBoard?.getBrushSize() || 0,
+				whiteboard_brushColor: this.props.core.zegoSuperBoard?.getBrushColor() || "",
+				whiteboard_isFontBold: this.props.core.zegoSuperBoard?.isFontBold(),
+				whiteboard_isFontItalic: this.props.core.zegoSuperBoard?.isFontItalic(),
+				whiteboard_showAddImage: this.props.core._config.whiteboardConfig?.showAddImageButton,
+				whiteboard_showCreateClose: this.props.core._config.whiteboardConfig?.showCreateAndCloseButton,
+				userInfo: { userID: this.props.core._expressConfig.userID },
+			}}>
+			<div
+				className={`${ZegoRoomCss.ZegoRoom}  ZegoRoomMobile_ZegoRoom ${
+					this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
+						? this.props.core._config.scenario?.config?.role === LiveRole.Host
+							? ZegoRoomCss.host
+							: this.props.core._config.scenario?.config?.role === LiveRole.Audience
+							? ZegoRoomCss.audience
+							: ""
+						: ""
+				}`}
+				onClick={(e) => {
+					// @ts-ignore
+					this.clickVideo(e)
+				}}>
+				{this.getLayoutScreen()}
+				{this.state.isNetworkPoor && <div className={ZegoRoomCss.network}></div>}
+				{(this.state.showFooter || false) && (
+					<div className={ZegoRoomCss.footer}>
+						{this.props.core._config.showMyCameraToggleButton &&
+							(this.props.core._config.scenario?.mode !== ScenarioModel.LiveStreaming ||
+								this.props.core._config.scenario?.config?.role === LiveRole.Cohost) && (
+								<a
+									className={`${ZegoRoomCss.switchCamera}`}
+									onClick={() => {
+										this.switchCamera()
+									}}></a>
+							)}
 
-              {this.props.core._config.showMyCameraToggleButton && (
-                <a
-                  className={
-                    this.state.cameraOpen
-                      ? ZegoRoomCss.toggleCamera
-                      : ZegoRoomCss.cameraClose
-                  }
-                  onClick={() => {
-                    this.toggleCamera();
-                  }}></a>
-              )}
+						{this.props.core._config.showMyCameraToggleButton && (
+							<a
+								className={this.state.cameraOpen ? ZegoRoomCss.toggleCamera : ZegoRoomCss.cameraClose}
+								onClick={() => {
+									this.toggleCamera()
+								}}></a>
+						)}
 
-              {this.props.core._config.showMyMicrophoneToggleButton && (
-                <a
-                  className={
-                    this.state.micOpen
-                      ? ZegoRoomCss.toggleMic
-                      : ZegoRoomCss.micClose
-                  }
-                  onClick={() => {
-                    this.toggleMic();
-                  }}></a>
-              )}
+						{this.props.core._config.showMyMicrophoneToggleButton && (
+							<a
+								className={this.state.micOpen ? ZegoRoomCss.toggleMic : ZegoRoomCss.micClose}
+								onClick={() => {
+									this.toggleMic()
+								}}></a>
+						)}
 
-              <a
-                className={
-                  this.props.core._config.scenario?.mode ===
-                  ScenarioModel.LiveStreaming
-                    ? ZegoRoomCss.liveLeaveButton
-                    : ZegoRoomCss.leaveRoom
-                }
-                onClick={() => {
-                  this.leaveRoom();
-                }}></a>
+						<a
+							className={
+								this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
+									? ZegoRoomCss.liveLeaveButton
+									: ZegoRoomCss.leaveRoom
+							}
+							onClick={() => {
+								this.leaveRoom()
+							}}></a>
 
-              {(this.props.core._config.showTextChat ||
-                this.props.core._config.showUserList ||
-                this.props.core._config.sharedLinks) && (
-                <a
-                  id="ZegoRoomCssMobileMore"
-                  className={`${ZegoRoomCss.more} ${
-                    !this.state.showMore && this.state.unreadInviteList.size > 0
-                      ? ZegoRoomCss.moreRedPoint
-                      : ""
-                  }`}
-                  onClick={() => {
-                    this.openMore();
-                  }}>
-                  {(this.state.showMore || false) && (
-                    <div
-                      id="ZegoRoomCssMobilePopMore"
-                      className={`${ZegoRoomCss.popMore} ${ZegoRoomCss.popLiveMore}`}>
-                      <div className={ZegoRoomCss.popMoreContent}>
-                        {this.props.core._config.showMyCameraToggleButton &&
-                          this.props.core._config.scenario?.mode ===
-                            ScenarioModel.LiveStreaming &&
-                          this.props.core._config.scenario.config?.role ===
-                            LiveRole.Host && (
-                            <div
-                              className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}
-                              onClick={() => {
-                                this.switchCamera();
-                              }}>
-                              <i
-                                className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}></i>
-                              <span>Flip</span>
-                            </div>
-                          )}
+						{(this.props.core._config.showTextChat ||
+							this.props.core._config.showUserList ||
+							this.props.core._config.sharedLinks) && (
+							<a
+								id="ZegoRoomCssMobileMore"
+								className={`${ZegoRoomCss.more} ${
+									!this.state.showMore && this.state.unreadInviteList.size > 0
+										? ZegoRoomCss.moreRedPoint
+										: ""
+								}`}
+								onClick={() => {
+									this.openMore()
+								}}>
+								{(this.state.showMore || false) && (
+									<div
+										id="ZegoRoomCssMobilePopMore"
+										className={`${ZegoRoomCss.popMore} ${ZegoRoomCss.popLiveMore}`}>
+										<div className={ZegoRoomCss.popMoreContent}>
+											{this.props.core._config.showMyCameraToggleButton &&
+												this.props.core._config.scenario?.mode ===
+													ScenarioModel.LiveStreaming &&
+												this.props.core._config.scenario.config?.role === LiveRole.Host && (
+													<div
+														className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}
+														onClick={() => {
+															this.switchCamera()
+														}}>
+														<i
+															className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}></i>
+														<span>Flip</span>
+													</div>
+												)}
 
-                        {this.props.core._config.showRoomDetailsButton && (
-                          <div
-                            className={ZegoRoomCss.roomDetail}
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              this.toggleLayOut("INVITE");
-                            }}>
-                            <i className={ZegoRoomCss.details}></i>
-                            <span>Room details</span>
-                          </div>
-                        )}
+											{this.props.core._config.showRoomDetailsButton && (
+												<div
+													className={ZegoRoomCss.roomDetail}
+													onClick={(ev) => {
+														ev.stopPropagation()
+														this.toggleLayOut("INVITE")
+													}}>
+													<i className={ZegoRoomCss.details}></i>
+													<span>Room details</span>
+												</div>
+											)}
 
-                        {this.props.core._config.showUserList && (
-                          <div
-                            className={`${
-                              this.state.unreadInviteList.size > 0
-                                ? ZegoRoomCss.unread
-                                : ""
-                            }`}
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              this.toggleLayOut("USER_LIST");
-                            }}>
-                            <i className={ZegoRoomCss.member}></i>
-                            <span>Member</span>
-                          </div>
-                        )}
-                        {this.props.core._config.showTextChat && (
-                          <div
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              this.toggleLayOut("MESSAGE");
-                            }}>
-                            <i className={ZegoRoomCss.chat}></i>
-                            <span>Chat</span>
-                          </div>
-                        )}
-                        {this.props.core._config.showLayoutButton && (
-                          <div
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              this.toggleLayOut("LAYOUT");
-                            }}>
-                            <i className={ZegoRoomCss.layout}></i>
-                            <span>Layout</span>
-                          </div>
-                        )}
-                        {this.showRequestToCohostButton && (
-                          <div
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              this.handleRequestCohost();
-                            }}>
-                            <i
-                              className={`${
-                                this.state.isRequestingCohost
-                                  ? ZegoRoomCss.connected
-                                  : ZegoRoomCss.connect
-                              } `}></i>
-                            <span>Connect</span>
-                          </div>
-                        )}
+											{this.props.core._config.showUserList && (
+												<div
+													className={`${
+														this.state.unreadInviteList.size > 0 ? ZegoRoomCss.unread : ""
+													}`}
+													onClick={(ev) => {
+														ev.stopPropagation()
+														this.toggleLayOut("USER_LIST")
+													}}>
+													<i className={ZegoRoomCss.member}></i>
+													<span>Member</span>
+												</div>
+											)}
+											{this.props.core._config.showTextChat && (
+												<div
+													onClick={(ev) => {
+														ev.stopPropagation()
+														this.toggleLayOut("MESSAGE")
+													}}>
+													<i className={ZegoRoomCss.chat}></i>
+													<span>Chat</span>
+												</div>
+											)}
+											{this.props.core._config.showLayoutButton && (
+												<div
+													onClick={(ev) => {
+														ev.stopPropagation()
+														this.toggleLayOut("LAYOUT")
+													}}>
+													<i className={ZegoRoomCss.layout}></i>
+													<span>Layout</span>
+												</div>
+											)}
+											{this.showRequestToCohostButton && (
+												<div
+													onClick={(ev) => {
+														ev.stopPropagation()
+														this.handleRequestCohost()
+													}}>
+													<i
+														className={`${
+															this.state.isRequestingCohost
+																? ZegoRoomCss.connected
+																: ZegoRoomCss.connect
+														} `}></i>
+													<span>Connect</span>
+												</div>
+											)}
 
-                        {this.props.core._config.plugins
-                          ?.ZegoSuperBoardManager &&
-                          this.props.core._config.whiteboardConfig
-                            ?.showCreateAndCloseButton && (
-                            <div
-                              onClick={(ev) => {
-                                ev.stopPropagation();
-                                this.toggleLayOut("WHITEBOARD");
-                                this.toggleWhiteboardSharing();
-                              }}>
-                              <i
-                                className={`${ZegoRoomCss.whiteboard} ${
-                                  this.state.isZegoWhiteboardSharing
-                                    ? ZegoRoomCss.sharing
-                                    : ""
-                                } ${
-                                  this.state.screenSharingUserList.length > 0
-                                    ? ZegoRoomCss.forbiddenSharing
-                                    : ""
-                                }`}></i>
-                              <span>Whiteboard</span>
-                            </div>
-                          )}
-                      </div>
-                    </div>
-                  )}
-                  {(this.state.showMore || false) && (
-                    <div className={ZegoRoomCss.popMoreArray}></div>
-                  )}
-                </a>
-              )}
+											{this.props.core._config.plugins?.ZegoSuperBoardManager &&
+												this.props.core._config.whiteboardConfig?.showCreateAndCloseButton && (
+													<div
+														onClick={(ev) => {
+															ev.stopPropagation()
+															this.toggleLayOut("WHITEBOARD")
+															this.toggleWhiteboardSharing()
+														}}>
+														<i
+															className={`${ZegoRoomCss.whiteboard} ${
+																this.state.isZegoWhiteboardSharing
+																	? ZegoRoomCss.sharing
+																	: ""
+															} ${
+																this.state.screenSharingUserList.length > 0
+																	? ZegoRoomCss.forbiddenSharing
+																	: ""
+															}`}></i>
+														<span>Whiteboard</span>
+													</div>
+												)}
+										</div>
+									</div>
+								)}
+								{(this.state.showMore || false) && <div className={ZegoRoomCss.popMoreArray}></div>}
+							</a>
+						)}
 
-              {this.props.core._config.scenario?.mode ===
-                ScenarioModel.LiveStreaming &&
-                this.props.core._config.scenario.config?.role ===
-                  LiveRole.Host && (
-                  <a
-                    className={`${ZegoRoomCss.goLive}  ${
-                      this.state.liveCountdown === 0
-                        ? ZegoRoomCss.goLiveEnabled
-                        : ""
-                    }`}
-                    id="ZegoLiveButton"
-                    onClick={() => {
-                      this.setLive();
-                    }}>
-                    {this.state.liveCountdown === 3 ||
-                    this.state.liveCountdown === -1
-                      ? "Go Live"
-                      : this.state.liveCountdown === 0
-                      ? "Stop"
-                      : "Go Live"}
-                  </a>
-                )}
-            </div>
-          )}
-          {this.getListScreen()}
-          <>{this.getHiddenUser()}</>
-          <div className={ZegoRoomCss.notify} id="zego_left_notify_wrapper">
-            {this.state.notificationList.slice(startIndex).map((notify) => {
-              if (notify.type === "MSG") {
-                return (
-                  <div
-                    key={notify.content}
-                    className={ZegoRoomCss.notifyContent}>
-                    <h5>{notify.userName}</h5>
-                    <span>{notify.content}</span>
-                  </div>
-                );
-              } else {
-                return (
-                  <div
-                    key={notify.content}
-                    className={ZegoRoomCss.notifyContent}>
-                    <span>{notify.content}</span>
-                  </div>
-                );
-              }
-            })}
-          </div>
-          {this.state.liveCountdown > 0 && (
-            <div className={ZegoRoomCss.countDown}>
-              <div>{this.state.liveCountdown}</div>
-            </div>
-          )}
-          {(this.state.connecting || false) && (
-            <ZegoReconnect
-              content={
-                this.state.firstLoading || false
-                  ? "Joining Room"
-                  : "Trying to reconnect..."
-              }></ZegoReconnect>
-          )}
-          {this.props.core._config.scenario?.mode ===
-            ScenarioModel.LiveStreaming &&
-            (this.state.liveCountdown === 0 ||
-              this.state.liveStatus === "1") && (
-              <button
-                className={`${ZegoRoomCss.LiveStateButton}  ${
-                  this.state.showFooter
-                    ? ""
-                    : ZegoRoomCss.LiveStateButtonNoFooter
-                }`}>
-                Live
-              </button>
-            )}
-        </div>
-      </ShowManageContext.Provider>
-    );
+						{this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+							this.props.core._config.scenario.config?.role === LiveRole.Host && (
+								<a
+									className={`${ZegoRoomCss.goLive}  ${
+										this.state.liveCountdown === 0 ? ZegoRoomCss.goLiveEnabled : ""
+									}`}
+									id="ZegoLiveButton"
+									onClick={() => {
+										this.setLive()
+									}}>
+									{this.state.liveCountdown === 3 || this.state.liveCountdown === -1
+										? "Go Live"
+										: this.state.liveCountdown === 0
+										? "Stop"
+										: "Go Live"}
+								</a>
+							)}
+					</div>
+				)}
+				{this.getListScreen()}
+				<>{this.getHiddenUser()}</>
+				<div className={ZegoRoomCss.notify} id="zego_left_notify_wrapper">
+					{this.state.notificationList.slice(startIndex).map((notify) => {
+						if (notify.type === "MSG") {
+							return (
+								<div key={notify.content} className={ZegoRoomCss.notifyContent}>
+									<h5>{notify.userName}</h5>
+									<span>{notify.content}</span>
+								</div>
+							)
+						} else {
+							return (
+								<div key={notify.content} className={ZegoRoomCss.notifyContent}>
+									<span>{notify.content}</span>
+								</div>
+							)
+						}
+					})}
+				</div>
+				{this.state.liveCountdown > 0 && (
+					<div className={ZegoRoomCss.countDown}>
+						<div>{this.state.liveCountdown}</div>
+					</div>
+				)}
+				{(this.state.connecting || false) && (
+					<ZegoReconnect
+						content={
+							this.state.firstLoading || false ? "Joining Room" : "Trying to reconnect..."
+						}></ZegoReconnect>
+				)}
+				{this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+					(this.state.liveCountdown === 0 || this.state.liveStatus === "1") && (
+						<button
+							className={`${ZegoRoomCss.LiveStateButton}  ${
+								this.state.showFooter ? "" : ZegoRoomCss.LiveStateButtonNoFooter
+							}`}>
+							Live
+						</button>
+					)}
+			</div>
+		</ShowManageContext.Provider>
+	)
   }
 }
