@@ -168,19 +168,15 @@ export default class App extends React.PureComponent {
       this.initCallInvitation(userID, roomID);
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
-			// let { token } = await generateToken(
-			//   randomID(5),
-			//   roomID,
-			//   userName || getRandomName()
+			let { token } = await generateToken(randomID(5), roomID, userName || getRandomName());
+			// let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+			// 	1484647939,
+			// 	"22076fd0a8388f31dc1f6e344171****",
+			// 	roomID,
+			// 	userID,
+			// 	userName || getRandomName(),
+			// 	7200
 			// );
-			let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-				1484647939,
-				"22076fd0a8388f31dc1f6e344171****",
-				roomID,
-				userID,
-				userName || getRandomName(),
-				7200
-			);
 			const zp = ZegoUIKitPrebuilt.create(token);
 			//@ts-ignore // just for debugger
 			window.zp = zp;
@@ -297,155 +293,115 @@ export default class App extends React.PureComponent {
     }
   }
   private async initCallInvitation(userID: string, roomID: string) {
-    this.state.userID = userID;
-    this.state.userName = "user_" + userID;
-    this.state.callInvitation = true;
-    this.state.showPreviewHeader = isPc() ? "show" : "hide";
-    // let { token } = await generateTokenForCallInvitation(
-    //   userID,
-    //   roomID,
-    //   "user_" + userID
-    // );
-    // console.warn(token);
-    let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-		252984006,
-		"16435f3bdb307f****b3f9e4259a29f0",
-		roomID,
-		userID,
-		"user_" + userID,
-		60 * 60 * 24
-	);
-    this.zp = ZegoUIKitPrebuilt.create(token);
-    this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
-    //@ts-ignore // just for debugger
-    window.zp = this.zp;
-    this.zp.setCallInvitationConfig({
-      enableNotifyWhenAppRunningInBackgroundOrQuit: true,
-      onConfirmDialogWhenReceiving: (
-        callType,
-        caller,
-        refuse,
-        accept,
-        data
-      ) => {
-        console.warn(
-          "【demo】onCallInvitationDialogShowed",
-          callType,
-          caller,
-          refuse,
-          accept,
-          data
-        );
-        this.inviter = caller;
-      },
-      onWaitingPageWhenSending: (callType, callees, cancel) => {
-        console.warn(
-          "【demo】onCallInvitationWaitingPageShowed",
-          callType,
-          callees,
-          cancel
-        );
-      },
-      onSetRoomConfigBeforeJoining: (callType) => {
-        console.warn("【demo】onSetRoomConfigBeforeJoining", callType);
-        if (this.state.invitees.length > 1) {
-          this.showToast("Waiting for others to join the call.");
-        }
-        return {
-          branding: {
-            logoURL: require("./assets/zegocloud_logo.png"),
-          },
-          onYouRemovedFromRoom: () => {
-            console.warn("【demo】onYouRemovedFromRoom");
-            this.showToast(`You've been removed by the host.`);
-          },
-          showRoomTimer: true,
-          showTurnOffRemoteCameraButton: true,
-          showTurnOffRemoteMicrophoneButton: true,
-          showRemoveUserButton: true,
-        };
-      },
-      onCallInvitationEnded: (reason, data) => {
-        console.warn("【demo】onCallInvitationEnded", reason, data);
-        if (reason === "Canceled") {
-          this.showToast("The call has been canceled.");
-        }
-        if (this.state.invitees.length === 1) {
-          // 单人呼叫提示
-          if (
-            reason === "Busy" ||
-            (reason === "Timeout" && this.inviter?.userID === this.state.userID)
-          ) {
-            this.showToast(this.state.invitees[0].userName + " is busy now.");
-          }
-          if (
-            reason === "Declined" &&
-            this.inviter?.userID === this.state.userID
-          ) {
-            this.showToast(
-              this.state.invitees[0].userName + " declined the call."
-            );
-          }
-        }
+		this.state.userID = userID;
+		this.state.userName = "user_" + userID;
+		this.state.callInvitation = true;
+		this.state.showPreviewHeader = isPc() ? "show" : "hide";
+		let { token } = await generateTokenForCallInvitation(userID, roomID, "user_" + userID);
+		// console.warn(token);
+		// let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+		// 	252984006,
+		// 	"16435f3bdb307f****b3f9e4259a29f0",
+		// 	roomID,
+		// 	userID,
+		// 	"user_" + userID,
+		// 	60 * 60 * 24
+		// );
+		this.zp = ZegoUIKitPrebuilt.create(token);
+		this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
+		//@ts-ignore // just for debugger
+		window.zp = this.zp;
+		this.zp.setCallInvitationConfig({
+			enableNotifyWhenAppRunningInBackgroundOrQuit: true,
+			onConfirmDialogWhenReceiving: (callType, caller, refuse, accept, data) => {
+				console.warn("【demo】onCallInvitationDialogShowed", callType, caller, refuse, accept, data);
+				this.inviter = caller;
+			},
+			onWaitingPageWhenSending: (callType, callees, cancel) => {
+				console.warn("【demo】onCallInvitationWaitingPageShowed", callType, callees, cancel);
+			},
+			onSetRoomConfigBeforeJoining: (callType) => {
+				console.warn("【demo】onSetRoomConfigBeforeJoining", callType);
+				if (this.state.invitees.length > 1) {
+					this.showToast("Waiting for others to join the call.");
+				}
+				return {
+					branding: {
+						logoURL: require("./assets/zegocloud_logo.png"),
+					},
+					onYouRemovedFromRoom: () => {
+						console.warn("【demo】onYouRemovedFromRoom");
+						this.showToast(`You've been removed by the host.`);
+					},
+					showRoomTimer: true,
+					showTurnOffRemoteCameraButton: true,
+					showTurnOffRemoteMicrophoneButton: true,
+					showRemoveUserButton: true,
+				};
+			},
+			onCallInvitationEnded: (reason, data) => {
+				console.warn("【demo】onCallInvitationEnded", reason, data);
+				if (reason === "Canceled") {
+					this.showToast("The call has been canceled.");
+				}
+				if (this.state.invitees.length === 1) {
+					// 单人呼叫提示
+					if (reason === "Busy" || (reason === "Timeout" && this.inviter?.userID === this.state.userID)) {
+						this.showToast(this.state.invitees[0].userName + " is busy now.");
+					}
+					if (reason === "Declined" && this.inviter?.userID === this.state.userID) {
+						this.showToast(this.state.invitees[0].userName + " declined the call.");
+					}
+				}
 
-        if (isPc()) {
-          const nav = document.querySelector(`.${APP.nav}`) as HTMLDivElement;
-          const serviceTips = document.querySelector(
-            `.${APP.serviceTips}`
-          ) as HTMLDivElement;
-          const meetingEl =
-            serviceTips.previousElementSibling as HTMLDivElement;
-          nav.style.display = "flex";
-          serviceTips.style.display = "block";
-          meetingEl.style.height = "auto";
-        }
-        this.inviter = {};
+				if (isPc()) {
+					const nav = document.querySelector(`.${APP.nav}`) as HTMLDivElement;
+					const serviceTips = document.querySelector(`.${APP.serviceTips}`) as HTMLDivElement;
+					const meetingEl = serviceTips.previousElementSibling as HTMLDivElement;
+					nav.style.display = "flex";
+					serviceTips.style.display = "block";
+					meetingEl.style.height = "auto";
+				}
+				this.inviter = {};
 
-        document.querySelector(".preView_services") &&
-          // @ts-ignore
-          (document.querySelector(".preView_services")!.style.display =
-            "block");
-      },
-      // Prebuilt内部收到呼叫邀请后，将内部数据转成对应数据后抛出
-      onIncomingCallReceived: (
-        callID: string,
-        caller: ZegoUser,
-        callType: ZegoInvitationType,
-        callees: ZegoUser[]
-      ) => {
-        console.warn(
-          "onIncomingCallReceived",
-          callID,
-          caller,
-          callType,
-          callees
-        );
-      },
-      // 当呼叫者取消呼叫后，将内部数据转成对应数据后抛出。
-      onIncomingCallCanceled: (callID: string, caller: ZegoUser) => {
-        console.warn("onIncomingCallCanceled", callID, caller);
-      },
-      // 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-      onOutgoingCallAccepted: (callID: string, callee: ZegoUser) => {
-        console.warn("onOutgoingCallAccepted", callID, callee);
-      },
-      // 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-      onOutgoingCallRejected: (callID: string, callee: ZegoUser) => {
-        console.warn("onOutgoingCallRejected", callID, callee);
-      },
-      // 当被叫者主动拒绝通话时，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-      onOutgoingCallDeclined: (callID: string, callee: ZegoUser) => {
-        console.warn("onOutgoingCallDeclined", callID, callee);
-      },
-      //当被叫者超时没回应邀请时，被叫者会收到该回调，将内部数据转成对应数据后抛出。
-      onIncomingCallTimeout: (callID: string, caller: ZegoUser) => {
-        console.warn("onIncomingCallTimeout", callID, caller);
-      },
-      //当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-      onOutgoingCallTimeout: (callID: string, callees: ZegoUser[]) => {
-        console.warn("onOutgoingCallTimeout", callID, callees);
-      },
-    });
+				document.querySelector(".preView_services") &&
+					// @ts-ignore
+					(document.querySelector(".preView_services")!.style.display = "block");
+			},
+			// Prebuilt内部收到呼叫邀请后，将内部数据转成对应数据后抛出
+			onIncomingCallReceived: (
+				callID: string,
+				caller: ZegoUser,
+				callType: ZegoInvitationType,
+				callees: ZegoUser[]
+			) => {
+				console.warn("onIncomingCallReceived", callID, caller, callType, callees);
+			},
+			// 当呼叫者取消呼叫后，将内部数据转成对应数据后抛出。
+			onIncomingCallCanceled: (callID: string, caller: ZegoUser) => {
+				console.warn("onIncomingCallCanceled", callID, caller);
+			},
+			// 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+			onOutgoingCallAccepted: (callID: string, callee: ZegoUser) => {
+				console.warn("onOutgoingCallAccepted", callID, callee);
+			},
+			// 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+			onOutgoingCallRejected: (callID: string, callee: ZegoUser) => {
+				console.warn("onOutgoingCallRejected", callID, callee);
+			},
+			// 当被叫者主动拒绝通话时，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+			onOutgoingCallDeclined: (callID: string, callee: ZegoUser) => {
+				console.warn("onOutgoingCallDeclined", callID, callee);
+			},
+			//当被叫者超时没回应邀请时，被叫者会收到该回调，将内部数据转成对应数据后抛出。
+			onIncomingCallTimeout: (callID: string, caller: ZegoUser) => {
+				console.warn("onIncomingCallTimeout", callID, caller);
+			},
+			//当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+			onOutgoingCallTimeout: (callID: string, callees: ZegoUser[]) => {
+				console.warn("onOutgoingCallTimeout", callID, callees);
+			},
+		});
   }
   private getLiveStreamingMode(): string {
     const mode = getUrlParams().get("liveStreamingMode");
