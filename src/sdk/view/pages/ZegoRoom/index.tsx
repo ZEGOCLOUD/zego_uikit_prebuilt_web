@@ -166,23 +166,23 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
   }
   userUpdateCallBack = () => {};
   componentDidMount() {
-    this.setAllSinkId(this.state.selectSpeaker || "");
-    this.computeByResize();
-    setTimeout(() => {
-      this.msgDelayed = false;
-    }, 5000);
-    this.initInRoomInviteMgListener();
-    this.initSDK();
-    this.props.core.eventEmitter.on("hangUp", () => {
-      this.leaveRoom();
-    });
-    // 点击其他区域时, 隐藏更多弹窗)
-    document.addEventListener("click", this.onOpenSettings);
-    window.addEventListener("resize", this.onWindowResize.bind(this));
-    this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-      this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
-      this.toggleLayOut("MESSAGE");
-    // if(this.props.core._zimManager && )
+		this.setAllSinkId(this.state.selectSpeaker || "");
+		this.computeByResize();
+		setTimeout(() => {
+			this.msgDelayed = false;
+		}, 5000);
+		this.initInRoomInviteMgListener();
+		this.initSDK();
+		this.props.core.eventEmitter.on("hangUp", () => {
+			this.leaveRoom();
+		});
+		// 点击其他区域时, 隐藏更多弹窗)
+		document.addEventListener("click", this.onOpenSettings);
+		window.addEventListener("resize", this.onWindowResize.bind(this));
+		// this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+		//   this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
+		//   this.toggleLayOut("MESSAGE");
+		// if(this.props.core._zimManager && )
   }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
