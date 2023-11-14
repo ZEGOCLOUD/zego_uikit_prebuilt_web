@@ -249,7 +249,6 @@ export default class ZegoVideo extends React.PureComponent<{
 	render(): React.ReactNode {
 		return (
 			<>
-				; ; ; ;
 				<video
 					autoPlay
 					className={`${ZegoVideoCss.video}  ${
@@ -260,56 +259,56 @@ export default class ZegoVideo extends React.PureComponent<{
 					} ${this.props.classList}`}
 					playsInline={true}
 					ref={(el: HTMLVideoElement) => {
-						el && this.props.videoRefs?.(el)
-						!this.videoRef && (this.videoRef = el)
+						el && this.props.videoRefs?.(el);
+						!this.videoRef && (this.videoRef = el);
 					}}
 					onPause={() => {
 						this.setState({
 							isPaused: true,
-						})
+						});
 						setTimeout(() => {
-							this.videoRef?.load()
-							this.videoRef?.play()
-						}, 2000)
-						this.props.onPause && this.props.onPause()
+							this.videoRef?.load();
+							this.videoRef?.play();
+						}, 2000);
+						this.props.onPause && this.props.onPause();
 					}}
 					onCanPlay={() => {
 						if (this.loadTimer) {
-							this.videoRef!.onloadedmetadata = null
-							clearTimeout(this.loadTimer)
-							this.loadTimer = null
+							this.videoRef!.onloadedmetadata = null;
+							clearTimeout(this.loadTimer);
+							this.loadTimer = null;
 						}
 						this.videoRef
 							?.play()
 							.then((res) => {
 								this.setState({
 									isPaused: false,
-								})
+								});
 							})
 							.catch((error) => {
 								this.setState({
 									isPaused: true,
-								})
-							})
-						this.props.onCanPlay && this.props.onCanPlay()
+								});
+							});
+						this.props.onCanPlay && this.props.onCanPlay();
 					}}
 					onPlaying={() => {
 						this.setState({
 							isPaused: false,
-						})
+						});
 					}}></video>
 				{this.state.isPaused && (isSafari() || isIOS()) && (
 					<div
 						className={`${ZegoVideoCss.videoPlayBtn} ${isPc() ? "" : ZegoVideoCss.mobile}`}
 						onClick={() => {
-							this.videoRef?.load()
-							this.videoRef?.play()
+							this.videoRef?.load();
+							this.videoRef?.play();
 							this.setState({
 								isPaused: false,
-							})
+							});
 						}}></div>
 				)}
 			</>
-		)
+		);
 	}
 }
