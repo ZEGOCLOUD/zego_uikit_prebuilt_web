@@ -238,6 +238,9 @@ export default class App extends React.PureComponent {
 				onInRoomTextMessageReceived(messages) {
 					console.warn("onInRoomTextMessageReceived", messages);
 				},
+				onInRoomCustomCommandReceived(command) {
+					console.warn("onInRoomCustomCommandReceived", command);
+				},
 				//   showScreenSharingButton: true,
 				lowerLeftNotification: {
 					showTextChat: true,

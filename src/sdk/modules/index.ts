@@ -1165,6 +1165,8 @@ export class ZegoCloudRTCCore {
 		// 监听房间内ZIM text消息
 		this._config.onInRoomTextMessageReceived &&
 			this._zimManager?.onRoomTextMessage(this._config.onInRoomTextMessageReceived);
+            this._config.onInRoomCustomCommandReceived &&
+				this._zimManager?.onRoomCommandMessage(this._config.onInRoomCustomCommandReceived);
 		const resp = await new Promise<number>(async (res, rej) => {
 			ZegoCloudRTCCore._zg.on(
 				"roomStateUpdate",

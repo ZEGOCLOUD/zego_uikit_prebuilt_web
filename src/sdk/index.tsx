@@ -13,6 +13,7 @@ import {
 	ZegoCallInvitationConfig,
 	ZegoCloudRoomConfig,
 	ZegoInvitationType,
+	ZegoSignalingInRoomCommandMessage,
 	ZegoSignalingPluginNotificationConfig,
 	ZegoUser,
 } from "./model/index";
@@ -226,6 +227,16 @@ export class ZegoUIKitPrebuilt {
 
 	async sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean> {
 		return await ZegoUIKitPrebuilt.core!.sendInRoomCommand(command, toUserIDs);
+	}
+	async sendInRoomCustomCommand(command: object, priority = 1): Promise<ZegoSignalingInRoomCommandMessage> {
+		if (!ZegoUIKitPrebuilt.core?._zimManager?._zim) {
+			console.error("【ZEGOCLOUD】Please add ZIM plugin first");
+			return Promise.reject("ZEGOCLOUD】Please add ZIM plugin first");
+		}
+		if (typeof command !== "object" || command === null) {
+			return Promise.reject("【ZEGOCLOUD】sendInRoomCustomCommand params error: command !!");
+		}
+		return await ZegoUIKitPrebuilt.core._zimManager.sendMessage(command, priority);
 	}
 	// 主动退出房间
 	hangUp() {
