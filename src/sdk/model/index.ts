@@ -40,56 +40,57 @@ export enum VideoResolution {
   _480P = "480p",
   _720P = "720p",
 }
+export enum ScreenSharingResolution {
+	_360P = "360p",
+	_480P = "480p",
+	_720P = "720p",
+	_1080P = "1080p",
+	_2K = "2k",
+	_4K = "4k",
+	Auto = "auto",
+	Custom = "custom",
+}
+
 export interface ScenarioConfig {
-  //   [ScenarioModel.LiveStreaming]: {
-  role: LiveRole;
-  liveStreamingMode?: LiveStreamingMode;
-  enableVideoMixing?: boolean; // 是否混流
-  videoMixingLayout?: VideoMixinLayoutType; // 混流布局
-  videoMixingOutputResolution?: VideoMixinOutputResolution; // 混流输出分辨率
-  //   };
-  //   [ScenarioModel.OneONoneCall]: {
-  //     role: LiveRole;
-  //   };
-  //   [ScenarioModel.GroupCall]: {
-  //     role: LiveRole;
-  //   };
-  //   [ScenarioModel.VideoConference]: {
-  //     role: LiveRole;
-  //   };
+	role: LiveRole;
+	liveStreamingMode?: LiveStreamingMode;
+	enableVideoMixing?: boolean; // 是否混流
+	videoMixingLayout?: VideoMixinLayoutType; // 混流布局
+	videoMixingOutputResolution?: VideoMixinOutputResolution; // 混流输出分辨率
 }
 export enum LiveStreamingMode {
-  /**
-   * @Deprecated  StanderLive will be removed, please use LiveStreaming instead
-   */
-  StanderLive = "LiveStreaming",
-  /**
-   * @Deprecated  PremiumLive will be removed, please use InteractiveLiveStreaming instead
-   */
-  PremiumLive = "InteractiveLiveStreaming",
-  LiveStreaming = "LiveStreaming", // CDN
-  InteractiveLiveStreaming = "InteractiveLiveStreaming", // L3
-  RealTimeLive = "RealTimeLive", //RTC
+	/**
+	 * @Deprecated  StanderLive will be removed, please use LiveStreaming instead
+	 */
+	StanderLive = "LiveStreaming",
+	/**
+	 * @Deprecated  PremiumLive will be removed, please use InteractiveLiveStreaming instead
+	 */
+	PremiumLive = "InteractiveLiveStreaming",
+	LiveStreaming = "LiveStreaming", // CDN
+	InteractiveLiveStreaming = "InteractiveLiveStreaming", // L3
+	RealTimeLive = "RealTimeLive", //RTC
 }
 export enum VideoMixinLayoutType {
-  AutoLayout = 0, // 自适应布局
-  GridLayout, //平分布局
-  HorizontalLayout, // 水平布局
-  VerticalLayout, // 垂直布局
+	AutoLayout = 0, // 自适应布局
+	GridLayout, //平分布局
+	HorizontalLayout, // 水平布局
+	VerticalLayout, // 垂直布局
 }
 export enum VideoMixinOutputResolution {
-  _180P = "180p",
-  _360P = "360p",
-  _540P = "540p",
-  _720P = "720p",
-  _1080P = "1080p",
+	_180P = "180p",
+	_360P = "360p",
+	_540P = "540p",
+	_720P = "720p",
+	_1080P = "1080p",
 }
+
 export enum ConsoleLevel {
-  Debug = "Debug",
-  Info = "Info",
-  Warning = "Warning",
-  Error = "Error",
-  None = "None",
+	Debug = "Debug",
+	Info = "Info",
+	Warning = "Warning",
+	Error = "Error",
+	None = "None",
 }
 export interface ZegoCloudRoomConfig {
 	container?: HTMLElement | undefined | null; // 挂载容器
@@ -133,7 +134,6 @@ export interface ZegoCloudRoomConfig {
 		// config?: ScenarioConfig[ScenarioModel]; // 对应场景专有配置
 		config?: ScenarioConfig; // 对应场景专有配置
 	};
-
 	showLayoutButton?: boolean; // 是否显示布局切换按钮
 	showPinButton?: boolean; // 是否显pin按钮
 	onUserAvatarSetter?: (user: ZegoUser[]) => void; //是否可以设置用户头像回调
@@ -187,6 +187,15 @@ export interface ZegoCloudRoomConfig {
 	enableUserSearch?: boolean; // 是否开启用户搜索, 默认false
 	// 1.9.0
 	onInRoomCustomCommandReceived?: (command: ZegoSignalingInRoomCommandMessage[]) => void; //
+	// 1.10.0
+	showLeaveRoomConfirmDialog?: boolean; // default true
+	screenSharingConfig?: {
+		resolution?: ScreenSharingResolution;
+		width?: number;
+		height?: number;
+		frameRate?: number;
+		maxBitRate?: number;
+	};
 }
 export enum RightPanelExpandedType {
   None = "None",

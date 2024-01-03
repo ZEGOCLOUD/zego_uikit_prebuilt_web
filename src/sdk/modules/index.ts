@@ -25,29 +25,21 @@ import {
   ZegoRoomExtraInfo,
 } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import {
-  CoreError,
-  LiveRole,
-  LiveStreamingMode,
-  RightPanelExpandedType,
-  ScenarioConfig,
-  ScenarioModel,
-  VideoMixinLayoutType,
-  VideoMixinOutputResolution,
-  VideoResolution,
-  ZegoCloudRemoteMedia,
-  ZegoCloudRoomConfig,
-  ZegoUser,
+	CoreError,
+	LiveRole,
+	LiveStreamingMode,
+	RightPanelExpandedType,
+	ScenarioModel,
+	ScreenSharingResolution,
+	VideoMixinLayoutType,
+	VideoMixinOutputResolution,
+	VideoResolution,
+	ZegoCloudRemoteMedia,
+	ZegoCloudRoomConfig,
+	ZegoUser,
 } from "../model";
-import {
-  ZegoCloudUser,
-  ZegoCloudUserList,
-  ZegoCloudUserListManager,
-} from "./tools/UserListManager";
-import {
-  ZegoSuperBoardManager,
-  ZegoSuperBoardSubViewModel,
-  ZegoSuperBoardView,
-} from "zego-superboard-web";
+import { ZegoCloudUser, ZegoCloudUserList, ZegoCloudUserListManager } from "./tools/UserListManager";
+import { ZegoSuperBoardManager, ZegoSuperBoardSubViewModel, ZegoSuperBoardView } from "zego-superboard-web";
 import ZIM from "zego-zim-web";
 import { ZimManager } from "./tools/ZimManager";
 import { getVideoResolution } from "../util";
@@ -187,6 +179,10 @@ export class ZegoCloudRTCCore {
 		rightPanelExpandedType: RightPanelExpandedType.None,
 		autoHideFooter: true,
 		enableStereo: false,
+		showLeaveRoomConfirmDialog: true,
+		screenSharingConfig: {
+			resolution: ScreenSharingResolution.Auto,
+		},
 	};
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage";
 	extraInfoKey = "extra_info";
@@ -439,6 +435,31 @@ export class ZegoCloudRTCCore {
 			config.videoResolutionList = list.length > 0 ? list : [VideoResolution._360P];
 		} else {
 			config.videoResolutionList = [VideoResolution._360P];
+		}
+		if (config.screenSharingConfig && config.screenSharingConfig.resolution) {
+			if (config.screenSharingConfig.resolution === ScreenSharingResolution.Custom) {
+				const { width, height, frameRate, maxBitRate } = config.screenSharingConfig;
+				if (!width || !height || !frameRate || !maxBitRate) {
+					console.error(
+						"【ZEGOCLOUD】【screenSharingConfig】 Please configure 'width', 'height', 'frameRate' and 'maxBitRate' for custom screen sharing resolution"
+					);
+					return false;
+				}
+				if (height < 360 && width < 640) {
+					config.screenSharingConfig.resolution = ScreenSharingResolution._360P;
+                    // width height too small, it will cause screen sharing failed
+                    console.warn("【ZEGOCLOUD】 The minimum value of 'width' and 'height' are 640 and 360");
+				}
+				if (width > 3840 && height > 2160) {
+					config.screenSharingConfig.resolution = ScreenSharingResolution._4K;
+					// width height too large, it will cause screen sharing failed
+                    console.warn("【ZEGOCLOUD】 The maximum value of 'width' and 'height' are 3840 and 2160");
+				}
+				if (maxBitRate > 10000) {
+					config.screenSharingConfig.maxBitRate = 10000;
+					console.warn("【ZEGOCLOUD】【screenSharingConfig】 The maximum value of 'maxBitRate' is 10000");
+				}
+			}
 		}
 		config.preJoinViewConfig &&
 			(config.preJoinViewConfig = {
@@ -1165,8 +1186,8 @@ export class ZegoCloudRTCCore {
 		// 监听房间内ZIM text消息
 		this._config.onInRoomTextMessageReceived &&
 			this._zimManager?.onRoomTextMessage(this._config.onInRoomTextMessageReceived);
-            this._config.onInRoomCustomCommandReceived &&
-				this._zimManager?.onRoomCommandMessage(this._config.onInRoomCustomCommandReceived);
+		this._config.onInRoomCustomCommandReceived &&
+			this._zimManager?.onRoomCommandMessage(this._config.onInRoomCustomCommandReceived);
 		const resp = await new Promise<number>(async (res, rej) => {
 			ZegoCloudRTCCore._zg.on(
 				"roomStateUpdate",

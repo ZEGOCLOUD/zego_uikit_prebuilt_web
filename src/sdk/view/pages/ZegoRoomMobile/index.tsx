@@ -1112,17 +1112,22 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   leaveRoom() {
-    ZegoConfirm({
-      title: "Leave the room",
-      content: "Are you sure to leave the room?",
-      cancel: "Cancel",
-      confirm: "Confirm",
-      closeCallBack: (confirm: boolean) => {
-        if (confirm) {
-          this.confirmLeaveRoom();
-        }
-      },
-    });
+    if (!this.props.core._config.showLeaveRoomConfirmDialog) {
+		this.confirmLeaveRoom();
+	} else {
+		ZegoConfirm({
+			title: "Leave the room",
+			content: "Are you sure to leave the room?",
+			cancel: "Cancel",
+			confirm: "Confirm",
+			closeCallBack: (confirm: boolean) => {
+				if (confirm) {
+					this.confirmLeaveRoom();
+				}
+			},
+		});
+	}
+    
   }
   private cohostToBeAudience() {
     this.stopPublish();

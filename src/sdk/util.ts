@@ -152,6 +152,14 @@ export function getVideoResolution(level: string): {
     width = 1920;
     height = 1080;
     bitrate = 1500;
+  } else if (level === "2k") {
+    width = 2560;
+    height = 1440;
+    bitrate = 6000;
+  } else if (level === "4k") {
+    width = 3840;
+    height = 2160;
+    bitrate = 10000;
   }
   return {
     width,

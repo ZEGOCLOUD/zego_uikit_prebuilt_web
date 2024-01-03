@@ -8,6 +8,7 @@ import {
 	LiveStreamingMode,
 	RightPanelExpandedType,
 	ScenarioModel,
+	ScreenSharingResolution,
 	VideoMixinOutputResolution,
 	VideoResolution,
 	ZegoCallInvitationConfig,
@@ -36,6 +37,14 @@ export class ZegoUIKitPrebuilt {
 	static VideoResolution_360P = VideoResolution._360P;
 	static VideoResolution_480P = VideoResolution._480P;
 	static VideoResolution_720P = VideoResolution._720P;
+	static ScreenSharingResolution_360P = ScreenSharingResolution._360P;
+	static ScreenSharingResolution_480P = ScreenSharingResolution._480P;
+	static ScreenSharingResolution_720P = ScreenSharingResolution._720P;
+	static ScreenSharingResolution_1080P = ScreenSharingResolution._1080P;
+	static ScreenSharingResolution_2K = ScreenSharingResolution._2K;
+	static ScreenSharingResolution_4K = ScreenSharingResolution._4K;
+	static ScreenSharingResolution_Auto = ScreenSharingResolution.Auto;
+	static ScreenSharingResolution_Custom = ScreenSharingResolution.Custom;
 	static LiveStreamingMode = LiveStreamingMode;
 	static InvitationTypeVoiceCall = ZegoInvitationType.VoiceCall;
 	static InvitationTypeVideoCall = ZegoInvitationType.VideoCall;
