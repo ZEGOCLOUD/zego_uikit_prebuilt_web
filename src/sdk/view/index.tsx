@@ -209,9 +209,14 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
               });
             }}
             returnHome={() => {
-              this.setState({
-                step: 0,
-              });
+                if (this.props.core._config.onReturnToHomeScreenClicked) {
+					this.props.core._config.onReturnToHomeScreenClicked();
+				} else {
+					this.setState({
+						step: 0,
+					});
+				}
+              
             }}
           ></ZegoRejoinRoom>
         );

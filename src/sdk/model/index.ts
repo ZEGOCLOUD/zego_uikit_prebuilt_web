@@ -196,6 +196,8 @@ export interface ZegoCloudRoomConfig {
 		frameRate?: number;
 		maxBitRate?: number;
 	};
+	// 1.11.0
+	onReturnToHomeScreenClicked?: () => void; //
 }
 export enum RightPanelExpandedType {
   None = "None",

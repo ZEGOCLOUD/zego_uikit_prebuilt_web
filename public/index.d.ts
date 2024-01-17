@@ -77,6 +77,16 @@ declare interface InRoomMessageInfo {
   sendTime: number;
   messageID: number;
 }
+declare enum ScreenSharingResolution {
+	_360P = "360p",
+	_480P = "480p",
+	_720P = "720p",
+	_1080P = "1080p",
+	_2K = "2k",
+	_4K = "4k",
+	Auto = "auto",
+	Custom = "custom",
+}
 declare interface ZegoCloudRoomConfig {
 	// 1 UI controls
 	// 1.1 Global
@@ -87,6 +97,14 @@ declare interface ZegoCloudRoomConfig {
 		config?: ScenarioConfig[ScenarioModel]; // Specific configurations in the corresponding scenario.
 	};
 	console?: ConsoleLevel; // Used to problem localization, not a regular setup. While setting this can decide what severity of logs you want to print.
+	screenSharingConfig?: {
+		resolution?: ScreenSharingResolution;
+		width?: number;
+		height?: number;
+		frameRate?: number;
+		maxBitRate?: number;
+	}; // Screen sharing settings, resolution settings
+
 	// 1.2 Prejoin view
 	showPreJoinView?: boolean; // Whether to display the prejoin view. Displayed by default.
 	preJoinViewConfig?: {
@@ -135,6 +153,7 @@ declare interface ZegoCloudRoomConfig {
 	enableUserSearch?: boolean; // Whether to enable the user search feature, false by default.
 	// 1.4 Leaving view
 	showLeavingView?: boolean; // Whether to display the leaving view. Displayed by default.
+	showLeaveRoomConfirmDialog?: boolean; // When leaving the room, whether to display a confirmation pop-up window, the default is true
 
 	// 2 Related event callbacks
 	onJoinRoom?: () => void; // Callback for participants join the room.
@@ -149,6 +168,7 @@ declare interface ZegoCloudRoomConfig {
 	onInRoomCommandReceived?: (fromUser: ZegoUser, command: string) => void; // Callback for room command message
 	onInRoomTextMessageReceived?: (messages: ZegoSignalingInRoomTextMessage[]) => void; // Callback for room signaling text message
 	onInRoomCustomCommandReceived?: (command: ZegoSignalingInRoomCommandMessage[]) => void; // Callback for room custom command message
+	onReturnToHomeScreenClicked?: () => void; // Callback for click return to home screen button.
 }
 
 export enum RightPanelExpandedType {

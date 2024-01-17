@@ -1,9 +1,4 @@
-import {
-  generateStreamID,
-  getConfig,
-  changeCDNUrlOrigin,
-  throttle,
-} from "./tools/util";
+import { generateStreamID, getConfig, changeCDNUrlOrigin, throttle, transformMsg } from "./tools/util";
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import {
   ZegoDeviceInfo,
@@ -1068,7 +1063,8 @@ export class ZegoCloudRTCCore {
 			}
 		);
 		ZegoCloudRTCCore._zg.on("IMRecvBroadcastMessage", (roomID: string, chatData: ZegoBroadcastMessageInfo[]) => {
-			this.onRoomMessageUpdateCallBack && this.onRoomMessageUpdateCallBack(roomID, chatData);
+            const newChatData = transformMsg(chatData);
+			this.onRoomMessageUpdateCallBack && this.onRoomMessageUpdateCallBack(roomID, newChatData);
 			chatData.forEach((data) => {
 				this._config.onInRoomMessageReceived && this._config.onInRoomMessageReceived(data);
 			});
