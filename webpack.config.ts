@@ -9,8 +9,9 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 
 const config: webpack.Configuration = {
-	mode: "development",
+	mode: "production",
 	entry: "./src/sdk/index.tsx",
+	devtool: false,
 	output: {
 		filename: "zego-uikit-prebuilt.js",
 		path: path.resolve(__dirname, "./ZegoUIKitPrebuilt"),
@@ -61,9 +62,9 @@ const config: webpack.Configuration = {
 					// },
 					{
 						loader: "sass-loader",
-						options: {
-							sourceMap: true,
-						},
+						// options: {
+						// 	sourceMap: false,
+						// },
 					},
 				],
 			},
@@ -152,5 +153,5 @@ const config: webpack.Configuration = {
 		"zego-superboard-web": "zego-superboard-web",
 		"zego-zim-web": "zego-zim-web",
 	},
-};
+}
 export default config;
