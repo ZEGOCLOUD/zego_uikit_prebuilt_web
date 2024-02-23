@@ -168,7 +168,7 @@ export default class App extends React.PureComponent {
       this.initCallInvitation(userID, roomID);
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
-			let { token } = await generateToken(randomID(5), roomID, userName || getRandomName());
+			let { token } = await generateToken(randomID(5), roomID, userName || getRandomName())
 			// let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
 			// 	1484647939,
 			// 	"22076fd0a8388f31dc1f6e344171****",
@@ -177,29 +177,29 @@ export default class App extends React.PureComponent {
 			// 	userName || getRandomName(),
 			// 	7200
 			// );
-			const zp = ZegoUIKitPrebuilt.create(token);
+			const zp = ZegoUIKitPrebuilt.create(token)
 			//@ts-ignore // just for debugger
-			window.zp = zp;
+			window.zp = zp
 			zp.express!.on("audioDeviceStateChanged", async (updateType, deviceType, deviceInfo) => {
-				if (isPc()) return;
+				if (isPc()) return
 				if (updateType === "ADD") {
 					if (deviceType === "Input") {
-						zp.express?.useAudioDevice(zp.localStream!, deviceInfo.deviceID);
+						zp.express?.useAudioDevice(zp.localStream!, deviceInfo.deviceID)
 					}
 				} else if (updateType === "DELETE") {
-					const microphones = await zp.express?.getMicrophones();
+					const microphones = await zp.express?.getMicrophones()
 					if (microphones?.length) {
-						zp.express?.useAudioDevice(zp.localStream!, microphones[0].deviceID);
+						zp.express?.useAudioDevice(zp.localStream!, microphones[0].deviceID)
 					}
 				}
-			});
+			})
 			if (process.env.REACT_APP_PATH !== "live_stream") {
-				zp.addPlugins({ ZegoSuperBoardManager });
+				zp.addPlugins({ ZegoSuperBoardManager })
 			} else {
-				zp.addPlugins({ ZIM });
+				zp.addPlugins({ ZIM })
 				ZIM.getInstance().setLogConfig({
 					logLevel: "error",
-				});
+				})
 			}
 			const param: ZegoCloudRoomConfig = {
 				console: ZegoUIKitPrebuilt.ConsoleNone,
@@ -223,23 +223,23 @@ export default class App extends React.PureComponent {
 				maxUsers,
 				//   layout: "Auto",
 				onJoinRoom: () => {
-					console.log("test:leaveRoomCallback");
-					window?.parent?.postMessage("leaveRoom", "*");
+					console.log("test:leaveRoomCallback")
+					window?.parent?.postMessage("leaveRoom", "*")
 				}, // 退出房间回调
 				onLeaveRoom: () => {
-					window?.parent?.postMessage("joinRoom", "*");
+					window?.parent?.postMessage("joinRoom", "*")
 				},
 				onInRoomMessageReceived: (messageInfo) => {
-					console.warn("onInRoomMessageReceived", messageInfo);
+					console.warn("onInRoomMessageReceived", messageInfo)
 				},
 				onInRoomCommandReceived: (fromUser, command) => {
-					console.warn("onInRoomCommandReceived", fromUser, JSON.parse(command));
+					console.warn("onInRoomCommandReceived", fromUser, JSON.parse(command))
 				},
 				onInRoomTextMessageReceived(messages) {
-					console.warn("onInRoomTextMessageReceived", messages);
+					console.warn("onInRoomTextMessageReceived", messages)
 				},
 				onInRoomCustomCommandReceived(command) {
-					console.warn("onInRoomCustomCommandReceived", command);
+					console.warn("onInRoomCustomCommandReceived", command)
 				},
 				//   showScreenSharingButton: true,
 				lowerLeftNotification: {
@@ -265,8 +265,8 @@ export default class App extends React.PureComponent {
 							u.setUserAvatar(
 								// "https://images.pexels.com/photos/4172877/pexels-photo-4172877.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
 								`https://api.multiavatar.com/${u.userID}.svg?apikey=XqHm465NYsdLfb` // random avatar
-							);
-					});
+							)
+					})
 				},
 				videoResolutionList: [
 					ZegoUIKitPrebuilt.VideoResolution_360P,
@@ -276,14 +276,14 @@ export default class App extends React.PureComponent {
 				],
 				videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
 				onLiveStart: (user) => {
-					console.warn("onLiveStart", user);
+					console.warn("onLiveStart", user)
 				},
 				onLiveEnd: (user) => {
-					console.warn("onLiveEnd", user);
+					console.warn("onLiveEnd", user)
 				},
 				onYouRemovedFromRoom: () => {
-					console.warn("【demo】onYouRemovedFromRoom");
-					this.showToast(`You've been removed by the host.`);
+					console.warn("【demo】onYouRemovedFromRoom")
+					this.showToast(`You've been removed by the host.`)
 				},
 				showRoomTimer: true,
 				showTurnOffRemoteCameraButton: true,
@@ -294,17 +294,40 @@ export default class App extends React.PureComponent {
 				showRemoveCohostButton: true,
 				showRequestToCohostButton: true,
 				rightPanelExpandedType: RightPanelExpandedType.None,
-			};
+				addInRoomMessageAttributes: () => {
+					return { lv: "9" }
+				},
+				// customMessageUI: (msg) => {
+				// 	const wrapper = document.createElement("div")
+				// 	wrapper.classList.add("custom-message-wrapper")
+				//     if (userID === msg.fromUser.userID) {
+				//         wrapper.classList.add("send-message")
+				//     }
+				//     wrapper.innerHTML = `<div class="msgNameWrapper">
+				// 					<span class="name">${msg.fromUser.userName}</span>
+				// 					<span class="sendTime">
+				// 						${new Date(msg.sendTime).getHours() >= 12 ? "PM" : "AM"}  ${msg.sendTime}
+				// 					</span>
+				// 				</div>
+				// 				<p
+				// 					class="${msg.status === "SENDING" && 'loading'} ${
+				// 						msg.status === "FAILED" && 'error'
+				// 					}">
+				// 					${msg.message}
+				// 				</p>`
+				// 	return wrapper
+				// },
+			}
 			if (showNonVideoUser !== undefined) {
-				param.showNonVideoUser = showNonVideoUser === "true";
+				param.showNonVideoUser = showNonVideoUser === "true"
 			}
 			if (process.env.REACT_APP_PATH !== "live_stream") {
 				param.whiteboardConfig = {
 					showAddImageButton: true,
 					showCreateAndCloseButton: true,
-				};
+				}
 			}
-			zp.joinRoom(param);
+			zp.joinRoom(param)
 		};
     }
   }

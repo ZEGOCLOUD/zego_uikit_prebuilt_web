@@ -1064,7 +1064,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     });
     let resp = {} as any;
     try {
-      resp = await this.props.core.sendRoomMessage(msg);
+        let message
+		if (this.props.core._config.addInRoomMessageAttributes) {
+			message = JSON.stringify({
+				msg,
+				attrs: this.props.core._config.addInRoomMessageAttributes(),
+			})
+		} else {
+			message = msg
+		}
+
+		resp = await this.props.core.sendRoomMessage(message)
     } catch (err) {
       console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
     }

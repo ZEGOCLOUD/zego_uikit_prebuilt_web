@@ -93,137 +93,142 @@ export enum ConsoleLevel {
 	None = "None",
 }
 export interface ZegoCloudRoomConfig {
-	container?: HTMLElement | undefined | null; // 挂载容器
+	container?: HTMLElement | undefined | null // 挂载容器
 	preJoinViewConfig?: {
-		title?: string; // 标题设置，默认enter Room
-		invitationLink?: string;
-	};
-	showPreJoinView?: boolean; // 是否显示预览检测页面，默认显示
-	turnOnMicrophoneWhenJoining?: boolean; // 是否开启自己的麦克风,默认开启
-	turnOnCameraWhenJoining?: boolean; // 是否开启自己的摄像头 ,默认开启
-	showMyCameraToggleButton?: boolean; // 是否显示控制自己的麦克风按钮,默认显示
-	showMyMicrophoneToggleButton?: boolean; // 是否显示控制自己摄像头按钮,默认显示
-	showAudioVideoSettingsButton?: boolean; // 是否显示音视频设置按钮,默认显示
+		title?: string // 标题设置，默认enter Room
+		invitationLink?: string
+	}
+	showPreJoinView?: boolean // 是否显示预览检测页面，默认显示
+	turnOnMicrophoneWhenJoining?: boolean // 是否开启自己的麦克风,默认开启
+	turnOnCameraWhenJoining?: boolean // 是否开启自己的摄像头 ,默认开启
+	showMyCameraToggleButton?: boolean // 是否显示控制自己的麦克风按钮,默认显示
+	showMyMicrophoneToggleButton?: boolean // 是否显示控制自己摄像头按钮,默认显示
+	showAudioVideoSettingsButton?: boolean // 是否显示音视频设置按钮,默认显示
 
-	showTextChat?: boolean; // 是否开启聊天，默认开启
-	showUserList?: boolean; //是否显示成员列表，默认不展示
+	showTextChat?: boolean // 是否开启聊天，默认开启
+	showUserList?: boolean //是否显示成员列表，默认不展示
 	lowerLeftNotification?: {
-		showUserJoinAndLeave?: boolean; //是否显示成员进出，默认不显示
-		showTextChat?: boolean; // 是否显示未读消息，默认不显示
-	};
+		showUserJoinAndLeave?: boolean //是否显示成员进出，默认不显示
+		showTextChat?: boolean // 是否显示未读消息，默认不显示
+	}
 	branding?: {
-		logoURL?: string; // 通话页面Logo
-	};
-	showLeavingView?: boolean; // 离开房间后页面，默认有
+		logoURL?: string // 通话页面Logo
+	}
+	showLeavingView?: boolean // 离开房间后页面，默认有
 
-	maxUsers?: number; // 房间人数2～20，默认2
-	layout?: "Sidebar" | "Grid" | "Auto"; // 默认Default
+	maxUsers?: number // 房间人数2～20，默认2
+	layout?: "Sidebar" | "Grid" | "Auto" // 默认Default
 
-	showNonVideoUser?: boolean; // 是否显示无视频用户，默认显示
-	showOnlyAudioUser?: boolean; // 是否显示纯音频用户，默认显示
+	showNonVideoUser?: boolean // 是否显示无视频用户，默认显示
+	showOnlyAudioUser?: boolean // 是否显示纯音频用户，默认显示
 
-	useFrontFacingCamera?: boolean;
-	onJoinRoom?: () => void; // 用户进入通话页面回调
-	onLeaveRoom?: () => void; // 用户退出通话页面回调
-	onUserJoin?: (user: ZegoUser[]) => void; // 其他用户进入回调
-	onUserLeave?: (user: ZegoUser[]) => void; // 其他用户退入回调
-	sharedLinks?: { name?: string; url?: string }[]; // 产品链接描述
-	showScreenSharingButton?: boolean; // 是否显示屏幕共享按钮
+	useFrontFacingCamera?: boolean
+	onJoinRoom?: () => void // 用户进入通话页面回调
+	onLeaveRoom?: () => void // 用户退出通话页面回调
+	onUserJoin?: (user: ZegoUser[]) => void // 其他用户进入回调
+	onUserLeave?: (user: ZegoUser[]) => void // 其他用户退入回调
+	sharedLinks?: { name?: string; url?: string }[] // 产品链接描述
+	showScreenSharingButton?: boolean // 是否显示屏幕共享按钮
 	scenario?: {
-		mode?: ScenarioModel; // 场景选择
+		mode?: ScenarioModel // 场景选择
 		// config?: ScenarioConfig[ScenarioModel]; // 对应场景专有配置
-		config?: ScenarioConfig; // 对应场景专有配置
-	};
-	showLayoutButton?: boolean; // 是否显示布局切换按钮
-	showPinButton?: boolean; // 是否显pin按钮
-	onUserAvatarSetter?: (user: ZegoUser[]) => void; //是否可以设置用户头像回调
-	videoResolutionList?: VideoResolution[]; // 视频分辨率列表（默认使用第一个）
-	videoResolutionDefault?: VideoResolution; // 默认视频分辨率
-	onLiveStart?: (user: ZegoUser) => void; //直播开始回调
-	onLiveEnd?: (user: ZegoUser) => void; //直播结束回调
+		config?: ScenarioConfig // 对应场景专有配置
+	}
+	showLayoutButton?: boolean // 是否显示布局切换按钮
+	showPinButton?: boolean // 是否显pin按钮
+	onUserAvatarSetter?: (user: ZegoUser[]) => void //是否可以设置用户头像回调
+	videoResolutionList?: VideoResolution[] // 视频分辨率列表（默认使用第一个）
+	videoResolutionDefault?: VideoResolution // 默认视频分辨率
+	onLiveStart?: (user: ZegoUser) => void //直播开始回调
+	onLiveEnd?: (user: ZegoUser) => void //直播结束回调
 	/**
 	 * @deprecated facingMode will be removed
 	 * */
-	facingMode?: "user" | "environment"; // 前置摄像头模式
+	facingMode?: "user" | "environment" // 前置摄像头模式
 	/**
 	 * @deprecated joinRoomCallback will be removed
 	 * */
-	joinRoomCallback?: () => void; // 加入房间成功回调
+	joinRoomCallback?: () => void // 加入房间成功回调
 	/**
 	 * @deprecated leaveRoomCallback will be removed
 	 * */
-	leaveRoomCallback?: () => void; // 退出房间回调
+	leaveRoomCallback?: () => void // 退出房间回调
 	/**
 	 * @deprecated userUpdateCallback will be removed
 	 * */
-	userUpdateCallback?: (updateType: "DELETE" | "ADD", userList: ZegoUser[]) => void; // 用户新增/退出 回调
+	userUpdateCallback?: (updateType: "DELETE" | "ADD", userList: ZegoUser[]) => void // 用户新增/退出 回调
 
 	whiteboardConfig?: {
-		showAddImageButton?: boolean; //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
-		showCreateAndCloseButton?: boolean;
-	};
-	autoLeaveRoomWhenOnlySelfInRoom?: boolean; // 当房间内只剩一个人的时候，自动退出房间
-	console?: ConsoleLevel;
+		showAddImageButton?: boolean //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
+		showCreateAndCloseButton?: boolean
+	}
+	autoLeaveRoomWhenOnlySelfInRoom?: boolean // 当房间内只剩一个人的时候，自动退出房间
+	console?: ConsoleLevel
 	//  1.7.0版本新增
-	showRoomTimer?: Boolean; // 是否展示计时器，默认false，
-	showTurnOffRemoteCameraButton?: Boolean; // 是否显示关闭远端摄像头按钮，默认false
-	showTurnOffRemoteMicrophoneButton?: Boolean; // 是否显示关闭远端麦克风按钮，默认false
-	showRemoveUserButton?: Boolean; // 是否显示移出成员按钮， 默认false
-	onYouRemovedFromRoom?: () => void; // 自己被移出房间回调
-	videoCodec?: "H264" | "VP8"; // 视频编解码器
+	showRoomTimer?: Boolean // 是否展示计时器，默认false，
+	showTurnOffRemoteCameraButton?: Boolean // 是否显示关闭远端摄像头按钮，默认false
+	showTurnOffRemoteMicrophoneButton?: Boolean // 是否显示关闭远端麦克风按钮，默认false
+	showRemoveUserButton?: Boolean // 是否显示移出成员按钮， 默认false
+	onYouRemovedFromRoom?: () => void // 自己被移出房间回调
+	videoCodec?: "H264" | "VP8" // 视频编解码器
 	//   1.7.3
-	showRoomDetailsButton?: boolean; // 是否显示RoomDetail
-	onInRoomMessageReceived?: (messageInfo: InRoomMessageInfo) => void;
-	onInRoomCommandReceived?: (fromUser: ZegoUser, command: string) => void; // 房间自定义消息回调
-	onInRoomTextMessageReceived?: (messages: ZegoSignalingInRoomTextMessage[]) => void; // zim房间文本消息回调
+	showRoomDetailsButton?: boolean // 是否显示RoomDetail
+	onInRoomMessageReceived?: (messageInfo: InRoomMessageInfo) => void
+	onInRoomCommandReceived?: (fromUser: ZegoUser, command: string) => void // 房间自定义消息回调
+	onInRoomTextMessageReceived?: (messages: ZegoSignalingInRoomTextMessage[]) => void // zim房间文本消息回调
 	//   1.8.0
-	showInviteToCohostButton?: boolean; // 主播是否展示邀请观众连麦按钮
-	showRemoveCohostButton?: boolean; // 主播是否展示移下麦按钮
-	showRequestToCohostButton?: boolean; // 观众是否展示申请连麦按钮
-	rightPanelExpandedType?: RightPanelExpandedType; // 右侧面板展开状态
-	enableStereo?: boolean; // 是否开启双声道
-	autoHideFooter?: boolean; // 是否自动隐藏底部工具栏
+	showInviteToCohostButton?: boolean // 主播是否展示邀请观众连麦按钮
+	showRemoveCohostButton?: boolean // 主播是否展示移下麦按钮
+	showRequestToCohostButton?: boolean // 观众是否展示申请连麦按钮
+	rightPanelExpandedType?: RightPanelExpandedType // 右侧面板展开状态
+	enableStereo?: boolean // 是否开启双声道
+	autoHideFooter?: boolean // 是否自动隐藏底部工具栏
 	// 1.8.11
-	enableUserSearch?: boolean; // 是否开启用户搜索, 默认false
+	enableUserSearch?: boolean // 是否开启用户搜索, 默认false
 	// 1.9.0
-	onInRoomCustomCommandReceived?: (command: ZegoSignalingInRoomCommandMessage[]) => void; //
+	onInRoomCustomCommandReceived?: (command: ZegoSignalingInRoomCommandMessage[]) => void //
 	// 1.10.0
-	showLeaveRoomConfirmDialog?: boolean; // default true
+	showLeaveRoomConfirmDialog?: boolean // default true
 	screenSharingConfig?: {
-		resolution?: ScreenSharingResolution;
-		width?: number;
-		height?: number;
-		frameRate?: number;
-		maxBitRate?: number;
-	};
+		resolution?: ScreenSharingResolution
+		width?: number
+		height?: number
+		frameRate?: number
+		maxBitRate?: number
+	}
 	// 1.11.0
-	onReturnToHomeScreenClicked?: () => void; //
+	onReturnToHomeScreenClicked?: () => void //
+	// 1.12.0
+	addInRoomMessageAttributes?: () => any //  add in room message message attribute. return custom message attribute.
+	customMessageUI?: (msg: InRoomMessageInfo) => HTMLElement
 }
 export enum RightPanelExpandedType {
-  None = "None",
-  RoomDetails = "RoomDetails",
-  RoomMembers = "RoomMembers",
-  RoomMessages = "RoomMessages",
+	None = "None",
+	RoomDetails = "RoomDetails",
+	RoomMembers = "RoomMembers",
+	RoomMessages = "RoomMessages",
 }
 export interface ZegoSignalingInRoomTextMessage {
-  messageID: string;
-  timestamp: number;
-  orderKey: number;
-  senderUserID: string;
-  text: string;
+	messageID: string
+	timestamp: number
+	orderKey: number
+	senderUserID: string
+	text: string
 }
 export interface ZegoSignalingInRoomCommandMessage {
-    messageID: string;
-    timestamp: number;
-    orderKey: number;
-    senderUserID: string;
-    command: object;
-};
+	messageID: string
+	timestamp: number
+	orderKey: number
+	senderUserID: string
+	command: object
+}
 export interface InRoomMessageInfo {
-  fromUser: ZegoUser;
-  message: string;
-  sendTime: number;
-  messageID: number;
+	fromUser: ZegoUser
+	message: string
+	sendTime: number
+	messageID: number
+	attrs?: any
+	status?: "SENDING" | "SENDED" | "FAILED"
 }
 
 export interface ZegoBrowserCheckProp {

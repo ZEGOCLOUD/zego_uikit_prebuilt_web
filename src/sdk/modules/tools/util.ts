@@ -104,8 +104,9 @@ export function transformMsg(msgs: ZegoBroadcastMessageInfo[]) {
 			const message = JSON.parse(msg.message);
 			return {
 				...msg,
-				message: message.msg !== undefined ? message.msg :  msg.message,
-			};
+				message: message.msg !== undefined ? message.msg : msg.message,
+				attrs: message.attrs || "",
+			}
 		} catch (error) {
 			return msg;
 		}

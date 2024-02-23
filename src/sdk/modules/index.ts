@@ -1061,7 +1061,7 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.on("IMRecvBroadcastMessage", (roomID: string, chatData: ZegoBroadcastMessageInfo[]) => {
 			const newChatData = transformMsg(chatData)
 			this.onRoomMessageUpdateCallBack && this.onRoomMessageUpdateCallBack(roomID, newChatData)
-			chatData.forEach((data) => {
+			newChatData.forEach((data) => {
 				this._config.onInRoomMessageReceived && this._config.onInRoomMessageReceived(data)
 			})
 		})
