@@ -100,7 +100,7 @@ const config: webpack.Configuration = {
 			new TerserPlugin({
 				terserOptions: {
 					compress: {
-						drop_console: true,
+						drop_console: ["log", "info", "warn"],
 					},
 				},
 			}),

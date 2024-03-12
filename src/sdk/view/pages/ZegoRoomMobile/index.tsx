@@ -14,10 +14,10 @@ import {
   ZegoNotification,
 } from "../../../model";
 import ZegoRoomCss from "./index.module.scss";
-import {
-  ZegoUser,
-  ZegoBroadcastMessageInfo,
-} from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+// import {
+//   ZegoUser,
+//   ZegoBroadcastMessageInfo,
+// } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
 import {
@@ -54,6 +54,7 @@ import { formatTime } from "../../../modules/tools/util";
 import { ZegoTimer } from "./components/zegoTimer";
 
 import { ZegoMixPlayer } from "./components/zegoMixPlayer";
+import { ZegoBroadcastMessageInfo, ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity"
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {

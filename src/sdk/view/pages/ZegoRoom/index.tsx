@@ -144,8 +144,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		return (
 			this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
 			this.state.liveStatus === "1" &&
-			this.props.core._config?.showRemoveCohostButton
-		);
+			this.props.core._config?.showRequestToCohostButton
+		)
 	}
 	userUpdateCallBack = () => {};
 	componentDidMount() {

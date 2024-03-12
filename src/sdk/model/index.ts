@@ -1,44 +1,38 @@
-import {
-  // ZegoUser,
-  ZegoBroadcastMessageInfo,
-} from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
-import { ZegoSuperBoardView } from "zego-superboard-web";
-import { ZegoCloudRTCCore } from "../modules";
-import {
-  ZegoCloudUser,
-  ZegoCloudUserList,
-} from "../modules/tools/UserListManager";
+import { ZegoSuperBoardView } from "zego-superboard-web"
+import type { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity"
+import { ZegoCloudRTCCore } from "../modules"
+import { ZegoCloudUser, ZegoCloudUserList } from "../modules/tools/UserListManager"
 export interface ZegoCloudRemoteMedia {
-  media: MediaStream | undefined;
-  fromUser: ZegoUser;
-  micStatus: "OPEN" | "MUTE";
-  cameraStatus: "OPEN" | "MUTE";
-  state: "NO_PLAY" | "PLAY_REQUESTING" | "PLAYING";
-  streamID: string;
-  // 新增 CDN 拉流地址
-  urlsHttpsFLV?: string;
-  urlsHttpsHLS?: string;
-  hasAudio?: boolean;
-  hasVideo?: boolean;
+	media: MediaStream | undefined
+	fromUser: ZegoUser
+	micStatus: "OPEN" | "MUTE"
+	cameraStatus: "OPEN" | "MUTE"
+	state: "NO_PLAY" | "PLAY_REQUESTING" | "PLAYING"
+	streamID: string
+	// 新增 CDN 拉流地址
+	urlsHttpsFLV?: string
+	urlsHttpsHLS?: string
+	hasAudio?: boolean
+	hasVideo?: boolean
 }
 
 export enum LiveRole {
-  Host = "Host",
-  Cohost = "Cohost",
-  Audience = "Audience",
+	Host = "Host",
+	Cohost = "Cohost",
+	Audience = "Audience",
 }
 
 export enum ScenarioModel {
-  OneONoneCall = "OneONoneCall",
-  GroupCall = "GroupCall",
-  VideoConference = "VideoConference",
-  LiveStreaming = "LiveStreaming",
+	OneONoneCall = "OneONoneCall",
+	GroupCall = "GroupCall",
+	VideoConference = "VideoConference",
+	LiveStreaming = "LiveStreaming",
 }
 export enum VideoResolution {
-  _180P = "180p",
-  _360P = "360p",
-  _480P = "480p",
-  _720P = "720p",
+	_180P = "180p",
+	_360P = "360p",
+	_480P = "480p",
+	_720P = "720p",
 }
 export enum ScreenSharingResolution {
 	_360P = "360p",
@@ -52,11 +46,11 @@ export enum ScreenSharingResolution {
 }
 
 export interface ScenarioConfig {
-	role: LiveRole;
-	liveStreamingMode?: LiveStreamingMode;
-	enableVideoMixing?: boolean; // 是否混流
-	videoMixingLayout?: VideoMixinLayoutType; // 混流布局
-	videoMixingOutputResolution?: VideoMixinOutputResolution; // 混流输出分辨率
+	role: LiveRole
+	liveStreamingMode?: LiveStreamingMode
+	enableVideoMixing?: boolean // 是否混流
+	videoMixingLayout?: VideoMixinLayoutType // 混流布局
+	videoMixingOutputResolution?: VideoMixinOutputResolution // 混流输出分辨率
 }
 export enum LiveStreamingMode {
 	/**
@@ -232,229 +226,217 @@ export interface InRoomMessageInfo {
 }
 
 export interface ZegoBrowserCheckProp {
-  core: ZegoCloudRTCCore;
-  joinRoom?: () => void;
-  leaveRoom?: (isKickedOut?: boolean) => void;
-  returnHome?: () => void;
+	core: ZegoCloudRTCCore
+	joinRoom?: () => void
+	leaveRoom?: (isKickedOut?: boolean) => void
+	returnHome?: () => void
 }
 
 export interface ZegoNotification {
-  type: "USER" | "MSG" | "INVITE";
-  content: string;
-  userName: undefined | string;
-  messageID: number;
+	type: "USER" | "MSG" | "INVITE"
+	content: string
+	userName: undefined | string
+	messageID: number
 }
 
 export declare type ZegoBroadcastMessageInfo2 = ZegoBroadcastMessageInfo & {
-  status: "SENDING" | "SENDED" | "FAILED";
-};
+	status: "SENDING" | "SENDED" | "FAILED"
+}
 
 export interface ZegoSettingsProps {
-  core: ZegoCloudRTCCore;
-  theme?: string;
-  initDevices: {
-    mic: string | undefined;
-    cam: string | undefined;
-    speaker: string | undefined;
-    videoResolve: string | undefined;
-    showNonVideoUser: boolean | undefined;
-  };
-  closeCallBack?: () => void;
-  onMicChange: (deviceID: string) => void;
-  onCameraChange: (deviceID: string) => void;
-  onSpeakerChange: (deviceID: string) => void;
-  onVideoResolutionChange: (level: string) => void;
-  onShowNonVideoChange: (selected: boolean) => void;
+	core: ZegoCloudRTCCore
+	theme?: string
+	initDevices: {
+		mic: string | undefined
+		cam: string | undefined
+		speaker: string | undefined
+		videoResolve: string | undefined
+		showNonVideoUser: boolean | undefined
+	}
+	closeCallBack?: () => void
+	onMicChange: (deviceID: string) => void
+	onCameraChange: (deviceID: string) => void
+	onSpeakerChange: (deviceID: string) => void
+	onVideoResolutionChange: (level: string) => void
+	onShowNonVideoChange: (selected: boolean) => void
 }
 
 export interface ZegoGridLayoutProps {
-  userList: ZegoCloudUserList;
-  videoShowNumber: number;
-  gridRowNumber?: number;
-  selfInfo?: {
-    userID: string;
-  };
-  handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
+	userList: ZegoCloudUserList
+	videoShowNumber: number
+	gridRowNumber?: number
+	selfInfo?: {
+		userID: string
+	}
+	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
-  soundLevel?: SoundLevelMap;
+	soundLevel?: SoundLevelMap
 }
 
 export interface ZegoSidebarLayoutProps {
-  handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
+	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
-  userList: ZegoCloudUserList;
-  videoShowNumber: number;
-  selfInfo: {
-    userID: string;
-  };
-  soundLevel?: SoundLevelMap;
+	userList: ZegoCloudUserList
+	videoShowNumber: number
+	selfInfo: {
+		userID: string
+	}
+	soundLevel?: SoundLevelMap
 }
 export interface ZegoScreenSharingLayoutProps {
-  handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
+	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
-  userList: ZegoCloudUserList;
-  videoShowNumber: number;
-  selfInfo: {
-    userID: string;
-  };
-  roomID?: String;
-  screenSharingUser: ZegoCloudUser;
-  soundLevel?: SoundLevelMap;
-  handleFullScreen?: (fullScreen: boolean) => void;
+	userList: ZegoCloudUserList
+	videoShowNumber: number
+	selfInfo: {
+		userID: string
+	}
+	roomID?: String
+	screenSharingUser: ZegoCloudUser
+	soundLevel?: SoundLevelMap
+	handleFullScreen?: (fullScreen: boolean) => void
 }
 export interface ZegoWhiteboardSharingLayoutProps {
-  handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void;
-  handleSetPin?: (userID: string) => void;
-  userList: ZegoCloudUserList;
-  videoShowNumber: number;
-  selfInfo: {
-    userID: string;
-  };
-  roomID?: String;
-  onShow: (el: HTMLDivElement) => void;
-  onResize: (el: HTMLDivElement) => void;
-  onclose: () => void;
-  onToolChange: (type: number, fontSize?: number, color?: string) => void;
-  onFontChange: (
-    font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
-    fontSize?: number,
-    color?: string
-  ) => void;
-  soundLevel?: SoundLevelMap;
-  handleFullScreen?: (fullScreen: boolean) => void;
-  onImageAdd?: () => void;
-  zegoSuperBoardView?: ZegoSuperBoardView | null;
+	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
+	handleSetPin?: (userID: string) => void
+	userList: ZegoCloudUserList
+	videoShowNumber: number
+	selfInfo: {
+		userID: string
+	}
+	roomID?: String
+	onShow: (el: HTMLDivElement) => void
+	onResize: (el: HTMLDivElement) => void
+	onclose: () => void
+	onToolChange: (type: number, fontSize?: number, color?: string) => void
+	onFontChange: (font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC", fontSize?: number, color?: string) => void
+	soundLevel?: SoundLevelMap
+	handleFullScreen?: (fullScreen: boolean) => void
+	onImageAdd?: () => void
+	zegoSuperBoardView?: ZegoSuperBoardView | null
 }
 export interface SoundLevelMap {
-  [userID: string]: {
-    [streamID: string]: number;
-  };
+	[userID: string]: {
+		[streamID: string]: number
+	}
 }
 export enum ZegoStreamType {
-  main,
-  media,
-  screensharing,
+	main,
+	media,
+	screensharing,
 }
 export interface ZegoUser {
-  userID: string;
-  userName?: string;
-  setUserAvatar?: (avatar: string) => void;
+	userID: string
+	userName?: string
+	setUserAvatar?: (avatar: string) => void
 }
 export enum CoreError {
-  notSupportCDNLive = 10001,
-  notSupportStandardLive = 10002,
+	notSupportCDNLive = 10001,
+	notSupportStandardLive = 10002,
 }
 export enum ZegoInvitationType {
-  VoiceCall = 0,
-  VideoCall,
-  RequestCoHost,
-  InviteToCoHost,
-  RemoveCoHost,
+	VoiceCall = 0,
+	VideoCall,
+	RequestCoHost,
+	InviteToCoHost,
+	RemoveCoHost,
 }
 export interface ZegoCallInvitationConfig {
-  enableCustomCallInvitationWaitingPage?: boolean; // 是否自定义呼叫邀请等待页面，默认false
-  enableCustomCallInvitationDialog?: boolean; // 是否自定义呼叫邀请弹窗,默认false
-  enableNotifyWhenAppRunningInBackgroundOrQuit?: boolean; // Notify users when the app is running in the background or the app is killed, 默认false
-  ringtoneConfig?: {
-    incomingCallUrl?: string; // 接收时的铃声
-    outgoingCallUrl?: string; // 呼出去的铃声
-  };
-  // 进入呼叫等待页面时的回调，返回cancel方法，调用的话可以取消邀请
-  onWaitingPageWhenSending?: (
-    callType: ZegoInvitationType,
-    callees: ZegoUser[],
-    cancel: CancelCallInvitationFunc
-  ) => void;
+	enableCustomCallInvitationWaitingPage?: boolean // 是否自定义呼叫邀请等待页面，默认false
+	enableCustomCallInvitationDialog?: boolean // 是否自定义呼叫邀请弹窗,默认false
+	enableNotifyWhenAppRunningInBackgroundOrQuit?: boolean // Notify users when the app is running in the background or the app is killed, 默认false
+	ringtoneConfig?: {
+		incomingCallUrl?: string // 接收时的铃声
+		outgoingCallUrl?: string // 呼出去的铃声
+	}
+	// 进入呼叫等待页面时的回调，返回cancel方法，调用的话可以取消邀请
+	onWaitingPageWhenSending?: (
+		callType: ZegoInvitationType,
+		callees: ZegoUser[],
+		cancel: CancelCallInvitationFunc
+	) => void
 
-  // 被呼叫者收到邀请时，邀请弹窗展示回调，返回accept、refuse方法给用户绑定UI
-  onConfirmDialogWhenReceiving?: (
-    callType: ZegoInvitationType,
-    caller: ZegoUser,
-    refuse: RefuseCallInvitationFunc,
-    accept: AcceptCallInvitationFunc,
-    data: string
-  ) => void;
+	// 被呼叫者收到邀请时，邀请弹窗展示回调，返回accept、refuse方法给用户绑定UI
+	onConfirmDialogWhenReceiving?: (
+		callType: ZegoInvitationType,
+		caller: ZegoUser,
+		refuse: RefuseCallInvitationFunc,
+		accept: AcceptCallInvitationFunc,
+		data: string
+	) => void
 
-  // 接受邀请后进房前的回调，用于设置房间配置，由内部自动加入房间，房间配置根据ZegoInvitationType默认的来
-  onSetRoomConfigBeforeJoining?: (
-    callType: ZegoInvitationType
-  ) => ZegoCloudRoomConfig;
+	// 接受邀请后进房前的回调，用于设置房间配置，由内部自动加入房间，房间配置根据ZegoInvitationType默认的来
+	onSetRoomConfigBeforeJoining?: (callType: ZegoInvitationType) => ZegoCloudRoomConfig
 
-  // 呼叫邀请结束回调（呼叫拒绝、超时、占线，用户退出呼叫邀请的房间等情况触发）
-  onCallInvitationEnded?: (
-    reason: CallInvitationEndReason,
-    data: string
-  ) => void;
+	// 呼叫邀请结束回调（呼叫拒绝、超时、占线，用户退出呼叫邀请的房间等情况触发）
+	onCallInvitationEnded?: (reason: CallInvitationEndReason, data: string) => void
 
-  // Prebuilt内部收到呼叫邀请后，将内部数据转成对应数据后抛出
-  onIncomingCallReceived?: (
-    callID: string,
-    caller: ZegoUser,
-    callType: ZegoInvitationType,
-    callees: ZegoUser[]
-  ) => void;
-  // 当呼叫者取消呼叫后，将内部数据转成对应数据后抛出。
-  onIncomingCallCanceled?: (callID: string, caller: ZegoUser) => void;
-  // 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-  onOutgoingCallAccepted?: (callID: string, callee: ZegoUser) => void;
-  // 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-  onOutgoingCallRejected?: (callID: string, callee: ZegoUser) => void;
-  // 当被叫者主动拒绝通话时，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-  onOutgoingCallDeclined?: (callID: string, callee: ZegoUser) => void;
-  //当被叫者超时没回应邀请时，被叫者会收到该回调，将内部数据转成对应数据后抛出。
-  onIncomingCallTimeout?: (callID: string, caller: ZegoUser) => void;
-  //当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-  onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void;
+	// Prebuilt内部收到呼叫邀请后，将内部数据转成对应数据后抛出
+	onIncomingCallReceived?: (
+		callID: string,
+		caller: ZegoUser,
+		callType: ZegoInvitationType,
+		callees: ZegoUser[]
+	) => void
+	// 当呼叫者取消呼叫后，将内部数据转成对应数据后抛出。
+	onIncomingCallCanceled?: (callID: string, caller: ZegoUser) => void
+	// 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+	onOutgoingCallAccepted?: (callID: string, callee: ZegoUser) => void
+	// 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+	onOutgoingCallRejected?: (callID: string, callee: ZegoUser) => void
+	// 当被叫者主动拒绝通话时，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+	onOutgoingCallDeclined?: (callID: string, callee: ZegoUser) => void
+	//当被叫者超时没回应邀请时，被叫者会收到该回调，将内部数据转成对应数据后抛出。
+	onIncomingCallTimeout?: (callID: string, caller: ZegoUser) => void
+	//当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
+	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void
 }
-export type CancelCallInvitationFunc = (data?: string) => void; // 取消邀请
-export type AcceptCallInvitationFunc = (data?: string) => void; // 接受邀请
-export type RefuseCallInvitationFunc = (data?: string) => void; // 拒绝邀请
+export type CancelCallInvitationFunc = (data?: string) => void // 取消邀请
+export type AcceptCallInvitationFunc = (data?: string) => void // 接受邀请
+export type RefuseCallInvitationFunc = (data?: string) => void // 拒绝邀请
 
 export interface InRoomInvitationInfo {
-  callID: string;
-  inviter: ZegoUser;
-  invitee: ZegoUser;
-  type: ZegoInvitationType;
+	callID: string
+	inviter: ZegoUser
+	invitee: ZegoUser
+	type: ZegoInvitationType
 }
-export type InRoomInvitationReceivedInfo = Omit<
-  InRoomInvitationInfo,
-  "invitee"
->;
+export type InRoomInvitationReceivedInfo = Omit<InRoomInvitationInfo, "invitee">
 
 export interface CallInvitationInfo {
-  callID: string;
-  roomID: string;
-  inviter: ZegoUser;
-  invitees: ZegoUser[];
-  /** 已接受邀请的用户 */
-  acceptedInvitees: ZegoUser[];
-  type: ZegoInvitationType;
-  isGroupCall: boolean;
+	callID: string
+	roomID: string
+	inviter: ZegoUser
+	invitees: ZegoUser[]
+	/** 已接受邀请的用户 */
+	acceptedInvitees: ZegoUser[]
+	type: ZegoInvitationType
+	isGroupCall: boolean
 }
 export enum CallInvitationEndReason {
-  Declined = "Declined",
-  Timeout = "Timeout",
-  Canceled = "Canceled",
-  Busy = "Busy",
-  LeaveRoom = "LeaveRoom",
+	Declined = "Declined",
+	Timeout = "Timeout",
+	Canceled = "Canceled",
+	Busy = "Busy",
+	LeaveRoom = "LeaveRoom",
 }
 export interface ZegoSignalingPluginNotificationConfig {
-  resourcesID?: string;
-  title?: string;
-  message?: string;
+	resourcesID?: string
+	title?: string
+	message?: string
 }
 export enum UserListMenuItemType {
-  ChangePin = "ChangePin",
-  MuteMic = "MuteMic",
-  MuteCamera = "MuteCamera",
-  RemoveUser = "RemoveUser",
-  RemoveCohost = "RemoveCohost",
-  InviteCohost = "InviteCohost",
-  DisagreeRequestCohost = "disagreeRequestCohost",
-  AgreeRequestCohost = "agreeRequestCohost",
+	ChangePin = "ChangePin",
+	MuteMic = "MuteMic",
+	MuteCamera = "MuteCamera",
+	RemoveUser = "RemoveUser",
+	RemoveCohost = "RemoveCohost",
+	InviteCohost = "InviteCohost",
+	DisagreeRequestCohost = "disagreeRequestCohost",
+	AgreeRequestCohost = "agreeRequestCohost",
 }
 export const enum ReasonForRefusedInviteToCoHost {
-  Disagree, // 主动拒绝
-  Busy, // 占线拒绝
-  Timeout, // 超时拒绝
+	Disagree, // 主动拒绝
+	Busy, // 占线拒绝
+	Timeout, // 超时拒绝
 }

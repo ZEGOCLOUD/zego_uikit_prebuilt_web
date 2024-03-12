@@ -1,4 +1,4 @@
-import { generateStreamID, getConfig, changeCDNUrlOrigin, throttle, transformMsg } from "./tools/util"
+import { generateStreamID, getConfig, changeCDNUrlOrigin, throttle, transformMsg, compareVersion } from "./tools/util"
 import { ZegoExpressEngine } from "zego-express-engine-webrtc"
 import {
 	ZegoDeviceInfo,
@@ -216,6 +216,17 @@ export class ZegoCloudRTCCore {
 		return userID === this.roomExtraInfo?.host
 	}
 	addPlugins(plugins: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager; ZIM?: ZIM }): void {
+		// check superboard version
+		// express 3.0.0+ need superboard version >= 2.15.0
+
+		if (plugins.ZegoSuperBoardManager) {
+			if (
+				compareVersion(plugins.ZegoSuperBoardManager?.getInstance()?.getSDKVersion(), "2.15.0") < 0 &&
+				compareVersion(ZegoCloudRTCCore._zg.getVersion(), "3.0.0") < 0
+			) {
+				throw new Error("zego-superboard-web version need >= 2.15.0")
+			}
+		}
 		this._config.plugins = plugins
 		if (plugins.ZIM && this._expressConfig.token) {
 			this.initZIM(plugins.ZIM)
@@ -1256,8 +1267,8 @@ export class ZegoCloudRTCCore {
 				// @ts-ignore 日志上报
 				ZegoCloudRTCCore._zg.logger.error("zu.jr " + JSON.stringify(this.originConfig))
 			} catch (error) {
-                console.error(error)
-            }
+				console.error(error)
+			}
 		})
 		this._zimManager?.enterRoom()
 		ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300)
@@ -1661,9 +1672,12 @@ export class ZegoCloudRTCCore {
 			this._roomExtraInfo = setRoomExtraInfo
 		}
 		this.hasPublishedStream = false
+
 		this._zimManager?.leaveRoom()
-		ZegoCloudRTCCore._zg.logoutRoom()
 		this.status.loginRsp = false
+		setTimeout(() => {
+			ZegoCloudRTCCore._zg.logoutRoom()
+		}, 300)
 	}
 	setStreamExtraInfo(streamID: string, extraInfo: string): Promise<ZegoServerResponse> {
 		return ZegoCloudRTCCore._zg.setStreamExtraInfo(streamID, extraInfo)
@@ -1845,7 +1859,7 @@ export class ZegoCloudRTCCore {
 									borderColor: 8421505,
 								},
 								left: 20,
-								top: videoWidth - 24,
+								top: videoHeight - 24,
 							},
 							cornerRadius: 10,
 							renderMode: 1,
