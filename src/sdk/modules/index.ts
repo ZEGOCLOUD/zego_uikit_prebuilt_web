@@ -1706,7 +1706,7 @@ export class ZegoCloudRTCCore {
 	}
 	// 踢人
 	removeMember(userID: string) {
-		this.sendInRoomCommand(JSON.stringify({ zego_remove_user: userID }), [userID])
+		this.sendInRoomCommand(JSON.stringify({ zego_remove_user: [userID] }), [userID])
 	}
 	//关闭摄像头麦克风
 	async turnRemoteCameraOff(userID: string): Promise<boolean> {
