@@ -1,0 +1,113 @@
+.penTools {
+  position: absolute;
+  top: -77px;
+  left: 45px;
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 200px;
+  padding: 16px;
+  background-color: #ffffff;
+  border: 1px solid #f2f2f2;
+  border-radius: 6px;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.04);
+  &.twoRows {
+    left: 105px;
+  }
+  div {
+    margin: 0;
+    padding: 0;
+    &:hover {
+      background-color: #ffffff;
+    }
+  }
+
+  .penTools_bold,
+  .penTools_color {
+    h3 {
+      &:hover {
+        background-color: #ffffff;
+      }
+    }
+    width: 100%;
+    height: auto;
+    color: #666666;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 17px;
+    ul {
+      display: flex;
+      flex-direction: row;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: 5px;
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        i {
+          display: inline-block;
+          background: #dedede;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+  .penTools_bold {
+    ul {
+      margin-left: -4px;
+      li {
+        i {
+          &.selected,
+          &:hover {
+            background: #0055ff;
+          }
+        }
+      }
+      li:nth-child(1) {
+        margin-right: 9px;
+      }
+      li:nth-child(2) {
+        margin-right: 11px;
+      }
+      li:nth-child(3) {
+        margin-right: 13px;
+      }
+    }
+  }
+  .penTools_color {
+    margin-top: 13px;
+    ul {
+      flex-wrap: wrap;
+      li {
+        box-sizing: border-box;
+        width: 16px;
+        height: 16px;
+        margin-right: 14px;
+        margin-bottom: 8px;
+        background-position: center;
+        background-size: contain;
+        border-radius: 50%;
+        &.selected,
+        &:hover {
+          background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@2x.png);
+        }
+      }
+      li:first-child {
+        border: 1px solid #dedede;
+        &.selected,
+        &:hover {
+          background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@3x.png);
+        }
+      }
+      li:nth-child(6n + 6) {
+        margin-right: 0px;
+      }
+    }
+  }
+}

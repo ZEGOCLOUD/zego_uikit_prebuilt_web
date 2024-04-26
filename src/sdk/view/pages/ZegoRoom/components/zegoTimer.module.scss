@@ -1,0 +1,22 @@
+.timer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 3px 8px;
+  color: rgba($color: #fff, $alpha: 0.8);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 18px;
+  background: #313443;
+  border-radius: 12px;
+  i {
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    background: url("../../../../sdkAssets/icon_timer.png") no-repeat
+      center/cover;
+  }
+  span {
+    min-width: 50px;
+  }
+}

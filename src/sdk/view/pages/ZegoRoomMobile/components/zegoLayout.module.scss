@@ -1,0 +1,90 @@
+@import "../../../../var.scss";
+
+.layoutList {
+  position: fixed;
+  bottom: 0px;
+  z-index: 202;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  background: #242736;
+  border-radius: vw(46px) vw(46px) 0px 0px;
+
+  .layoutHeader {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: vw(15px) vw(23px) vw(13px) vw(23px);
+    color: #ffffff;
+    font-weight: 400;
+    font-size: vw(36px);
+    box-shadow: 0px 1px 0px 0px rgba(61, 64, 84, 1);
+
+    .layoutHide {
+      width: vw(70px);
+      height: vw(70px);
+      margin-right: vw(21px);
+      background-image: url(../../../../sdkMobileAssets/Room_member_hide@2x.png);
+      background-size: contain;
+    }
+  }
+
+  .layoutListContent {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    box-sizing: border-box;
+    width: 100%;
+    padding: vw(10px) 0 vw(36px) 0;
+
+    .layoutContent {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      box-sizing: border-box;
+      width: 100%;
+      margin-top: vw(26px);
+      padding: vw(8px) vw(36px) vw(8px) vw(35px);
+      .layoutContentLeft {
+        display: flex;
+        align-items: center;
+        i {
+          width: vw(56px);
+          height: vw(56px);
+          margin-right: vw(26px);
+          color: #557bff;
+        }
+        span {
+          color: #ffffff;
+          font-weight: 400;
+          font-size: vw(32px);
+          line-height: vw(45px);
+        }
+      }
+      & > i {
+        width: vw(56px);
+        height: vw(56px);
+      }
+      .selected {
+        background-image: url(../../../../sdkMobileAssets/Room_layout_selected@2x.png);
+        background-size: contain;
+      }
+      .default {
+        background-image: url(../../../../sdkMobileAssets/Room_layoyut_auto@2x.png);
+        background-size: contain;
+      }
+      .grid {
+        background-image: url(../../../../sdkMobileAssets/Room_layoyut_grid@2x.png);
+        background-size: contain;
+      }
+      .sidebar {
+        background-image: url(../../../../sdkMobileAssets/Room_layoyut_side@2x.png);
+        background-size: contain;
+      }
+    }
+  }
+}

@@ -1,0 +1,189 @@
+@import "../../../../var.scss";
+.container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: vw(14px);
+  .videoCommon {
+    display: block;
+    width: 100%;
+    height: 100%;
+    // object-fit: cover;
+    background: #242736;
+    border-radius: vw(14px);
+  }
+//   .hideVideo {
+//     width: 1px;
+//     height: 1px;
+//   }
+  .noVideoWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    // background: #171821;
+    background: #242736;
+    border-radius: vw(14px);
+    .nameWrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .nameCircle {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        width: vw(160px);
+        height: vw(160px);
+        margin-bottom: vw(16px);
+        font-weight: 600;
+        font-size: vw(35px);
+        line-height: vw(49px);
+        text-align: center;
+        background: #ffffff1a;
+        border: 0px solid #242736;
+        border-radius: 50%;
+        img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: vw(160px);
+          height: vw(160px);
+          object-fit: cover;
+          border-radius: 50%;
+        }
+      }
+
+      .gridCircle {
+        width: vw(120.28px);
+        height: vw(120px);
+
+        &:nth-of-type(2) {
+          margin-left: vw(-28.28px);
+        }
+        img {
+          width: vw(120.28px);
+          height: vw(120px);
+          object-fit: cover;
+        }
+      }
+      .sidebarCircle {
+        width: vw(84px);
+        height: vw(84px);
+        &:nth-of-type(2) {
+          margin-left: vw(-20px);
+        }
+        &img,
+        img {
+          width: vw(84px);
+          height: vw(84px);
+          object-fit: cover;
+        }
+      }
+    }
+    .othersNumber {
+      color: #ffffff;
+      font-size: vw(24px);
+      line-height: vw(33px);
+      text-align: center;
+      text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+  }
+  .bigVideo {
+    background: #171821 !important;
+  }
+  .name {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 11;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5px;
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      // box-sizing: border-box;
+      width: max-content;
+      max-width: calc(100% - 10px);
+      height: vw(46px);
+      padding: vw(7px) vw(12px) vw(6px) vw(10px);
+      line-height: vw(33px);
+      text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+      background: #46464666;
+      border-radius: vw(12px);
+      p {
+        // max-width: 70%;
+        /*第一步： 溢出隐藏 */
+        overflow: hidden;
+        color: #ffffff;
+        font-weight: 400;
+        font-size: vw(24px);
+        line-height: vw(33px);
+        /* 第二步：让文本不会换行， 在同一行继续 */
+        white-space: nowrap;
+        /* 第三步：用省略号来代表未显示完的文本 */
+        text-overflow: ellipsis;
+        text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+      }
+      span {
+        color: #ffffff;
+        font-weight: 400;
+        font-size: vw(24px);
+        line-height: vw(33px);
+      }
+
+      .micIcon {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        width: vw(36px);
+        height: vw(36px);
+        background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        & > span {
+          position: absolute;
+          bottom: vw(16px);
+          left: 50%;
+          width: 26%;
+          background: #0055ff;
+          border-radius: 5px;
+          transform: translateX(-50%);
+        }
+        &.close {
+          background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_close@2x.png);
+          background-size: cover;
+          &::before {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+  .fullScreenBtn {
+    position: absolute;
+    top: vw(24px);
+    left: vw(24px);
+    z-index: 11;
+    width: vw(60px);
+    height: vw(60px);
+    background-image: url("../../../../sdkMobileAssets/icon_full_screen@2x.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+  }
+}

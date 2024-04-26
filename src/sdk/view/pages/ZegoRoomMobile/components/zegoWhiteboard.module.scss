@@ -1,0 +1,155 @@
+@import "../../../../var.scss";
+.upWrapper {
+  padding: vw(10px);
+}
+.whiteboardWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #f2f2f2;
+  border-radius: vw(14px) vw(14px) 0 0;
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    height: vw(84px);
+    padding: vw(12px) vw(12px) vw(12px) vw(24px);
+    background: #ffffff;
+    border-radius: vw(12px) vw(12px) 0px 0px;
+    .toolLeft {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .undo,
+      .redo {
+        box-sizing: border-box;
+        width: vw(64px);
+        height: vw(64px);
+        margin-right: vw(16px);
+        padding: vw(12px);
+        // background-color: #f5f7fa;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: vw(40px);
+      }
+      .undo {
+        background-image: url(../../../../sdkAssets/icon_undo_blue@2x.png);
+        &.active {
+          background-image: url(../../../../sdkAssets/icon_undo_blue@2x.png);
+          cursor: pointer;
+        }
+      }
+
+      .redo {
+        background-image: url(../../../../sdkAssets/icon_redo_blue@2x.png);
+        &.active {
+          background-image: url(../../../../sdkAssets/icon_redo_blue@2x.png);
+          cursor: pointer;
+        }
+      }
+    }
+    .stop {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: vw(240px);
+      height: vw(60px);
+      padding: vw(10px) vw(15px) vw(10px) vw(15px);
+      color: #ff4a50;
+      font-weight: 400;
+      font-size: vw(26px);
+      line-height: vw(40px);
+      background: #ffffff;
+      border: vw(2px) solid #ff4a50;
+      border-radius: vw(12px);
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  .content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: vw(384px);
+    margin: vw(153px) 0 0 0;
+    background: #f2f2f2;
+    pre {
+      padding-right: 5px;
+      line-height: 2;
+    }
+  }
+  .page {
+    position: fixed;
+    bottom: vw(172px);
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: vw(256px);
+      height: vw(68px);
+      border-radius: vw(12px);
+      p {
+        display: inline-block;
+        width: vw(64px);
+        height: vw(64px);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: vw(40px);
+        border-radius: 6px;
+      }
+      .page_sub {
+        margin-right: vw(44px);
+        background-image: url(../../../../sdkAssets/icon_left_gray@2x.png);
+        &.active {
+          background-image: url(../../../../sdkAssets/icon_left_blue@2x.png);
+        }
+      }
+      .page_add {
+        margin-left: vw(46px);
+        background-image: url(../../../../sdkAssets/icon_right_gray@2x.png);
+        &.active {
+          background-image: url(../../../../sdkAssets/icon_right_blue@2x.png);
+        }
+      }
+      .page_value {
+        color: #2a2a2a;
+        font-weight: 500;
+        font-size: vw(32px);
+        line-height: vw(45px);
+      }
+      .page_value_total {
+        color: #666666;
+        font-weight: 400;
+        font-size: vw(32px);
+        line-height: vw(45px);
+      }
+    }
+  }
+}
+@media screen and(orientation: landscape) {
+  .whiteboardWrapper {
+    .page {
+      position: absolute;
+      top: vw(8px);
+      bottom: 0;
+      left: 50%;
+      width: max-content;
+      height: vw(68px);
+      transform: translateX(-50%);
+    }
+    .top {
+      border-radius: 0;
+    }
+    .content {
+      height: vw(646px);
+      margin: vw(10px) 0;
+    }
+  }
+}

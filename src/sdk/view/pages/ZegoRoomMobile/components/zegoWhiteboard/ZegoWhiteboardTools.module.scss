@@ -1,0 +1,179 @@
+@import "../../../../../var.scss";
+.tools {
+  position: absolute;
+  right: vw(20px);
+  bottom: vw(172px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: vw(96px);
+  height: auto;
+  padding: vw(16px) vw(8px) vw(8px) vw(8px);
+  background: #ffffff;
+  border: vw(2px) solid #f2f2f2;
+  border-radius: vw(20px);
+  .tool_select,
+  .tool_drag,
+  .tool_pen,
+  .tool_text,
+  .tool_react,
+  .tool_image,
+  .tool_eraser,
+  .tool_delete,
+  .tool_snapshot,
+  .tool_hide,
+  .tool_show {
+    position: relative;
+    box-sizing: border-box;
+    width: vw(68px);
+    height: vw(68px);
+    margin: 0px vw(14px) vw(8px) vw(14px);
+    padding: vw(14px);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: vw(36px);
+    border-radius: vw(12px);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    &:hover {
+      background-color: #f5f7fa;
+      cursor: pointer;
+    }
+    &.selected {
+      background-color: #0055ff;
+    }
+  }
+  p {
+    width: 125%;
+    height: 1px;
+    margin-top: vw(8px);
+    background-color: #f2f2f2;
+  }
+  .tool_select {
+    background-image: url(../../../../../sdkAssets/icon_tools_select_gray@2x.png);
+    &.selected {
+      background-image: url(../../../../../sdkAssets/icon_tools_select_white@2x.png);
+    }
+  }
+  .tool_drag {
+    background-image: url(../../../../../sdkAssets/icon_tools_drag_gray@2x.png);
+    &.selected {
+      background-image: url(../../../../../sdkAssets/icon_tools_drag_white@2x.png);
+    }
+  }
+  .tool_pen {
+    background-image: url(../../../../../sdkAssets/icon_tools_pen_gray@2x.png);
+    &.selected {
+      background-image: url(../../../../../sdkAssets/icon_tools_pen_white@2x.png);
+    }
+  }
+  .tool_text {
+    background-image: url(../../../../../sdkAssets/icon_tools_text_gray@2x.png);
+    &.selected {
+      background-image: url(../../../../../sdkAssets/icon_tools_text_white@2x.png);
+    }
+  }
+  .tool_react {
+    background-image: url(../../../../../sdkAssets/icon_tools_react_gray@2x.png);
+    &.selected {
+      background-image: url(../../../../../sdkAssets/icon_tools_react_white@2x.png);
+    }
+  }
+  .tool_image {
+    background-image: url(../../../../../sdkAssets/icon_tools_image_gray@2x.png);
+    &.selected {
+      background-image: url(../../../../../sdkAssets/icon_tools_image_white@2x.png);
+    }
+  }
+  .tool_eraser {
+    background-image: url(../../../../../sdkAssets/icon_tools_eraser_gray@2x.png);
+    &.selected {
+      background-image: url(../../../../../sdkAssets/icon_tools_eraser_white@2x.png);
+    }
+  }
+  .tool_delete {
+    background-image: url(../../../../../sdkAssets/icon_tools_delete_gray@2x.png);
+    &.selected {
+      background-image: url(../../../../../sdkAssets/icon_tools_delete_white@2x.png);
+    }
+  }
+  .tool_snapshot {
+    background-image: url(../../../../../sdkAssets/icon_tools_snapshot_gray@2x.png);
+    &.selected {
+      background-image: url(../../../../../sdkAssets/icon_tools_snapshot_white@2x.png);
+    }
+  }
+  .tool_hide {
+    width: vw(36px);
+    height: vw(36px);
+    margin: vw(8px) 0 0 0;
+    background-image: url(../../../../../sdkAssets/icon_tools_up_gray@2x.png);
+    &:hover {
+      background-color: #ffffff;
+    }
+  }
+  .tool_show {
+    width: vw(36px);
+    height: vw(36px);
+    margin: vw(8px) 0 0 0;
+    background-image: url(../../../../../sdkAssets/icon_tools_down_gray@2x.png);
+    &:hover {
+      background-color: #ffffff;
+    }
+  }
+}
+@media screen and (orientation: landscape) {
+  .tools {
+    right: vw(20px);
+    bottom: vw(20px);
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    height: vw(96px);
+    padding: 0;
+    padding-left: vw(16px);
+    background: #ffffff;
+    border: vw(2px) solid #f2f2f2;
+    border-radius: vw(20px);
+    &.showTools {
+      right: 50%;
+      transform: translateX(50%);
+    }
+    p {
+      width: 1px;
+      height: 100%;
+      margin-top: 0;
+      margin-right: vw(8px);
+      margin-left: vw(8px);
+    }
+
+    .tool_select,
+    .tool_drag,
+    .tool_pen,
+    .tool_text,
+    .tool_react,
+    .tool_image,
+    .tool_eraser,
+    .tool_delete,
+    .tool_snapshot,
+    .tool_hide,
+    .tool_show {
+      margin: vw(14px) vw(8px) vw(14px) 0;
+      background-size: vw(40px);
+    }
+    .tool_show {
+      width: vw(40px);
+      height: vw(40px);
+      background-image: url("../../../../../sdkMobileAssets/icon_packup@2x.png");
+    }
+    .tool_hide {
+      width: vw(40px);
+      height: vw(40px);
+      transform: rotate(90deg);
+      &:hover {
+        background-color: #ffffff;
+      }
+    }
+  }
+}

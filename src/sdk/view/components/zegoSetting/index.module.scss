@@ -1,0 +1,317 @@
+.whiteTheme {
+  --bgColor: #ffffff;
+  --borderColor: #dde0e3;
+  --lineColor: #edeff3;
+  --titleColor: #2a2a2a;
+  --tabTextColor: #333333;
+  --activeColor: #0055ff;
+  --labelColor: #666666;
+  --volomeColor: #cfcfd4;
+  --volomeActiveColor: #0055ff;
+}
+.blackTheme {
+  --bgColor: #2c2f3e;
+  --borderColor: #3d4054;
+  --lineColor: #3d4054;
+  --titleColor: #fff;
+  --tabTextColor: #a4a4a4;
+  --activeColor: #fff;
+  --labelColor: #a6a7ad;
+  --volomeColor: #5b5e72;
+  --volomeActiveColor: #cfcfd4;
+  .right::-webkit-scrollbar-thumb {
+    background: #5b5e72;
+    border-radius: 2px;
+  }
+  .closeIcon {
+    background: url("../../../sdkAssets/icon_settings_black_close.png")
+      no-repeat center/cover;
+    &:hover {
+      background: url("../../../sdkAssets/icon_settings_black_close_hover.png")
+        no-repeat center/cover;
+    }
+  }
+  .leftAudioTab::before {
+    background: url("../../../sdkAssets/icon_settings_black_audio.png")
+      no-repeat center/cover;
+  }
+  .leftVideoTab::before {
+    background: url("../../../sdkAssets/icon_settings_black_video.png")
+      no-repeat center/cover;
+  }
+  .left {
+    .tabActive {
+      &.leftAudioTab::before {
+        background: url("../../../sdkAssets/icon_settings_black_audio_active.png")
+          no-repeat center/cover;
+      }
+      &.leftVideoTab::before {
+        background: url("../../../sdkAssets/icon_settings_black_video_active.png")
+          no-repeat center/cover;
+      }
+    }
+  }
+  .volumeWrapper {
+    .micIcon {
+      background: url("../../../sdkAssets/icon_settings_black_audio_volume.png")
+        no-repeat center/cover;
+
+      &.micIconAcitve {
+        background: url("../../../sdkAssets/icon_settings_black_audio_volume_active.png")
+          no-repeat center/cover;
+      }
+    }
+    .speakerIcon {
+      background: url("../../../sdkAssets/icon_settings_black_speaker_volume.png")
+        no-repeat center/cover;
+
+      &.speakerIconAcitve {
+        background: url("../../../sdkAssets/icon_settings_black_speaker_volume_active.png")
+          no-repeat center/cover;
+      }
+    }
+  }
+}
+
+.frame {
+  position: absolute;
+  top: 0;
+  top: 0;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  align-items: center;
+  justify-content: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.noFrame {
+  display: none;
+}
+.body {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 478px;
+  height: 346px;
+  background: var(--bgColor);
+  border: 1px solid var(--borderColor);
+  border-radius: 8px;
+  box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.75);
+}
+.header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 20px;
+  color: var(--titleColor);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 16px;
+  border-bottom: 1px solid var(--lineColor);
+  border-radius: 8px 8px 0px 0px;
+}
+.closeIcon {
+  width: 18px;
+  height: 18px;
+  background: url("../../../sdkAssets/icon_settings_close.png") no-repeat
+    center/cover;
+  cursor: pointer;
+  &:hover {
+    background: url("../../../sdkAssets/icon_settings_close_hover.png")
+      no-repeat center/cover;
+  }
+}
+.content {
+  display: flex;
+  flex: 1;
+  height: 100%;
+}
+.left {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 116px;
+  height: 300px;
+  padding-top: 18px;
+  border-right: 1px solid var(--lineColor);
+  & > div {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 36px;
+    margin-bottom: 6px;
+    color: var(--tabTextColor);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    cursor: pointer;
+    &::before {
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+      content: "";
+    }
+  }
+  .tabActive {
+    color: var(--activeColor);
+    &::after {
+      position: absolute;
+      top: 10px;
+      right: 0;
+      width: 2px;
+      height: 16px;
+      background-color: var(--activeColor);
+      content: "";
+    }
+    &.leftAudioTab::before {
+      background: url("../../../sdkAssets/icon_settings_audio_active.png")
+        no-repeat center/cover;
+    }
+    &.leftVideoTab::before {
+      background: url("../../../sdkAssets/icon_settings_video_active.png")
+        no-repeat center/cover;
+    }
+  }
+}
+
+.leftAudioTab::before {
+  background: url("../../../sdkAssets/icon_settings_audio.png") no-repeat
+    center/cover;
+}
+.leftVideoTab::before {
+  background: url("../../../sdkAssets/icon_settings_video.png") no-repeat
+    center/cover;
+}
+.right {
+  flex: 1;
+  height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #dde0e3;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.device {
+  margin-bottom: 18px;
+}
+.volumeWrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  padding-left: 4px;
+  .micIcon {
+    width: 16px;
+    height: 16px;
+    margin-right: 9px;
+    background: url("../../../sdkAssets/icon_settings_audio_volume.png")
+      no-repeat center/cover;
+    &.micIconAcitve {
+      background: url("../../../sdkAssets/icon_settings_audio_volume_active.png")
+        no-repeat center/cover;
+    }
+  }
+  .speakerIcon {
+    width: 16px;
+    height: 16px;
+    margin-right: 9px;
+    background: url("../../../sdkAssets/icon_settings_speaker_volume.png")
+      no-repeat center/cover;
+    &.speakerIconAcitve {
+      background: url("../../../sdkAssets/icon_settings_speaker_volume_active.png")
+        no-repeat center/cover;
+    }
+  }
+  .volume {
+    width: 4px;
+    height: 18px;
+    background: var(--volomeColor);
+    border-radius: 2px;
+    &:not(:last-of-type) {
+      margin-right: 8px;
+    }
+    &.volumeActive {
+      background-color: var(--activeColor);
+    }
+  }
+  .speakerTestButton {
+    width: 35px;
+    height: 19px;
+    margin-left: 13px;
+    color: #a6a7ad;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 17px;
+    text-align: center;
+    border: 1px solid #a4a4a4;
+    border-radius: 4px;
+    cursor: pointer;
+    &:hover {
+      color: var(--activeColor);
+      border-color: var(--activeColor);
+    }
+  }
+}
+label {
+  margin-bottom: 6px;
+  padding-top: 2px;
+  color: var(--labelColor);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 17px;
+}
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  .checkbox {
+    width: 14px;
+    height: 14px;
+    margin-right: 16px;
+    border: 1px solid var(--titleColor);
+    border-radius: 2px;
+    cursor: pointer;
+    &.selected {
+      width: 16px;
+      height: 16px;
+      background: url("../../../sdkAssets/icon_choose_pre@2x.png") no-repeat
+        center/cover;
+      border: none;
+    }
+  }
+  p {
+    color: var(--titleColor);
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    cursor: pointer;
+  }
+}
+.rightAudio,
+.rightVideo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 18px 20px 18px 48px;
+}
+.previewVideo {
+  width: 264px;
+  height: 144px;
+  margin-top: 6px;
+  object-fit: cover;
+  background-color: #000;
+  border-radius: 4px;
+  transform: rotateY(180deg);
+}

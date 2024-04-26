@@ -1,0 +1,148 @@
+.graphicsTools {
+  position: absolute;
+  top: -112px;
+  left: 45px;
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 200px;
+  padding: 16px;
+  background-color: #ffffff;
+  border: 1px solid #f2f2f2;
+  border-radius: 6px;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.04);
+  &.twoRows {
+    top: -0;
+  }
+  div {
+    margin: 0;
+    padding: 0;
+    &:hover {
+      background-color: #ffffff;
+    }
+  }
+  .graphicsTools_react,
+  .graphicsTools_bold,
+  .graphicsTools_color {
+    h3 {
+      &:hover {
+        background-color: #ffffff;
+      }
+    }
+    width: 100%;
+    height: auto;
+    color: #666666;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 17px;
+    ul {
+      display: flex;
+      flex-direction: row;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        i {
+          display: inline-block;
+          background: #dedede;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+  .graphicsTools_react {
+    ul {
+      margin-top: 11px;
+      li {
+        width: 18px;
+        height: 18px;
+        margin-right: 14px;
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
+      li:nth-child(1) {
+        background-image: url(../../../../../sdkAssets/icon_tools_text_react_gray@2x.png);
+        &.selected,
+        &:hover {
+          background-image: url(../../../../../sdkAssets/icon_tools_text_react_blue@2x.png);
+        }
+      }
+      li:nth-child(2) {
+        background-image: url(../../../../../sdkAssets/icon_tools_text_eclipse_gray@2x.png);
+        &.selected,
+        &:hover {
+          background-image: url(../../../../../sdkAssets/icon_tools_text_eclipse_blue@2x.png);
+        }
+      }
+      li:nth-child(3) {
+        background-image: url(../../../../../sdkAssets/icon_tools_text_line_gray@2x.png);
+        &.selected,
+        &:hover {
+          background-image: url(../../../../../sdkAssets/icon_tools_text_line_blue@2x.png);
+        }
+      }
+    }
+  }
+  .graphicsTools_bold {
+    margin-top: 17px;
+    ul {
+      margin-top: 5px;
+      margin-left: -4px;
+      li {
+        width: 16px;
+        height: 16px;
+        i {
+          &.selected,
+          &:hover {
+            background: #0055ff;
+          }
+        }
+      }
+      li:nth-child(1) {
+        margin-right: 9px;
+      }
+      li:nth-child(2) {
+        margin-right: 11px;
+      }
+      li:nth-child(3) {
+        margin-right: 13px;
+      }
+    }
+  }
+  .graphicsTools_color {
+    margin-top: 16px;
+    ul {
+      flex-wrap: wrap;
+      margin-top: 8px;
+      li {
+        box-sizing: border-box;
+        width: 16px;
+        height: 16px;
+        margin-right: 14px;
+        margin-bottom: 8px;
+        background-position: center;
+        background-size: contain;
+        border-radius: 50%;
+        &.selected,
+        &:hover {
+          background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@2x.png);
+        }
+      }
+      li:first-child {
+        border: 2px solid #dedede;
+        &.selected,
+        &:hover {
+          background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@3x.png);
+        }
+      }
+      li:nth-child(6n + 6) {
+        margin-right: 0px;
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+@import "../../../../var.scss";
+.ZegoToast {
+  position: fixed;
+  //   top: 45vh;
+  top: vw(30px);
+  left: 0;
+  z-index: 203;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: rgba($color: #2a2a2a, $alpha: 0);
+  &.top {
+    top: vw(20px);
+  }
+  // animation: name duration timing-function delay iteration-count direction fill-mode;
+  .content {
+    box-sizing: border-box;
+    max-width: 60%;
+    padding: vw(14px) vw(30px);
+    color: #ffffff00;
+    font-weight: 400;
+    font-size: vw(24px);
+    // font-family: PingFangSC-Regular, PingFang SC;
+    line-height: vw(33px);
+    background: rgba(42, 42, 42, 0);
+    border-radius: vw(12px);
+    transition: color 1s ease-in-out;
+    transition: background 1s ease-in-out;
+  }
+}
+.show {
+  .content {
+    color: #ffffff;
+    background: #46464666;
+  }
+}

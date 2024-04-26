@@ -1,0 +1,22 @@
+.bigVideo,
+.smallVideo {
+  background: #242736;
+}
+
+.bigVideo {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.smallVideo {
+  position: absolute !important;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  width: 282px;
+  height: 212px;
+  //   overflow: hidden;
+  border: 1px solid #3d4054;
+  border-radius: 10px;
+}

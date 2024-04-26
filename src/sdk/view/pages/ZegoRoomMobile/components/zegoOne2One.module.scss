@@ -1,0 +1,141 @@
+@import "../../../../var.scss";
+.bigVideo,
+.smallVideo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+
+  .name {
+    position: fixed;
+    right: vw(24px);
+    bottom: vw(24px);
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: vw(46px);
+    padding: vw(7px) vw(12px) vw(6px) vw(10px);
+    line-height: vw(33px);
+    text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+    background: rgba(42, 42, 42, 0.5);
+    border-radius: vw(12px);
+    p {
+      /*第一步： 溢出隐藏 */
+      overflow: hidden;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(24px);
+      line-height: vw(33px);
+      /* 第二步：让文本不会换行， 在同一行继续 */
+      white-space: nowrap;
+      /* 第三步：用省略号来代表未显示完的文本 */
+      text-overflow: ellipsis;
+      text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+    }
+    span {
+      width: vw(36px);
+      height: vw(36px);
+      background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_close@2x.png);
+      background-size: contain;
+    }
+    .bigVideoMicOpen {
+      background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
+      background-size: contain;
+    }
+  }
+
+  video {
+    height: 100vh;
+  }
+  i {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: vw(160px);
+    height: vw(160px);
+    color: #1fad40;
+    font-weight: 600;
+    font-size: vw(46px);
+    // font-family: PingFangSC-Semibold, PingFang SC;
+    line-height: vw(65px);
+    background: #171821;
+    border-radius: vw(80px);
+  }
+}
+
+.bigVideo {
+  width: 100%;
+  height: 100%;
+  &.hasTimer {
+    height: calc(100% - 7.733333vmin);
+  }
+  i {
+    position: fixed;
+    top: vw(730px);
+    left: vw(295px);
+  }
+  video {
+    border-radius: 0 !important;
+  }
+}
+
+.smallVideo {
+  position: fixed;
+  top: vw(90px);
+  right: vw(24px);
+  z-index: 13;
+  width: vw(190px);
+  height: vw(338px);
+  overflow: hidden;
+  border: 1px solid #3d4054;
+  border-radius: vw(14px);
+  video {
+    width: 100%;
+  }
+  .smallName {
+    position: absolute;
+    right: vw(10px);
+    bottom: vw(10px);
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    max-width: vw(170px);
+    height: vw(46px);
+    padding: vw(7px) vw(12px) vw(6px) vw(10px);
+    background: rgba(42, 42, 42, 0.5);
+    border: vw(0px) solid #a4a4a4;
+    border-radius: vw(18px);
+
+    p {
+      box-sizing: border-box;
+      max-width: vw(104px);
+      /*第一步： 溢出隐藏 */
+      overflow: hidden;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(24px);
+      line-height: vw(33px);
+      /* 第二步：让文本不会换行， 在同一行继续 */
+      white-space: nowrap;
+      /* 第三步：用省略号来代表未显示完的文本 */
+      text-overflow: ellipsis;
+      text-shadow: 0px vw(2px) vw(3px) rgba(0, 0, 0, 0.2);
+    }
+    span {
+      width: vw(36px);
+      height: vw(36px);
+      background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_close@2x.png);
+      background-size: contain;
+    }
+    .smallVideoMicOpen {
+      background-image: url(../../../../sdkMobileAssets/Room_smallName_audio_open@2x.png);
+      background-size: contain;
+    }
+  }
+  i {
+    top: vw(89px);
+    right: vw(15px);
+  }
+}

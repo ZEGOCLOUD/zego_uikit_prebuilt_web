@@ -1,0 +1,145 @@
+.msgContentWrapper {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0 16px;
+  height: 100%;
+  box-sizing: border-box;
+}
+.msgList {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 16px;
+  height: calc(100% - 57px);
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #3d4054;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  & > div {
+    display: flex;
+    flex-direction: column;
+    &:not(:last-of-type) {
+      margin-bottom: 18px;
+    }
+  }
+  .self {
+    align-items: flex-end;
+    .msgNameWrapper {
+      flex-direction: row-reverse;
+    }
+    p {
+      background-color: #0055ff;
+    }
+  }
+  p {
+    max-width: 282px;
+    width: max-content;
+    box-sizing: border-box;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #ffffff;
+    line-height: 20px;
+    border-radius: 10px;
+    background-color: rgba(48, 51, 65, 0.7);
+    position: relative;
+    word-break: break-word;
+    white-space: break-spaces;
+  }
+  .loading {
+    &::after {
+      content: "";
+      width: 24px;
+      height: 24px;
+      background: url("../../../../sdkAssets/icon_inner_msg_loading.png")
+        no-repeat center/cover;
+      animation: loading 1.2s linear infinite;
+      position: absolute;
+      top: calc(50% - 12px);
+      left: -28px;
+    }
+  }
+  .error {
+    &::after {
+      content: "";
+      width: 20px;
+      height: 20px;
+      background: url("../../../../sdkAssets/icon_inner_msg_error.png")
+        no-repeat center/cover;
+      position: absolute;
+      top: calc(50% - 10px);
+      left: -26px;
+    }
+  }
+}
+@keyframes loading {
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+.msgNameWrapper {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 17px;
+  margin-bottom: 4px;
+}
+.name {
+  max-width: 198px;
+  color: #a4a4a4;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.sendTime {
+  color: rgba(164, 164, 164, 0.6);
+  margin: 0 10px;
+}
+.sendWrapper {
+  flex: 0 0 auto;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  padding: 0 16px;
+  input {
+    width: 256px;
+    height: 44px;
+    background: rgba(48, 51, 65, 0.7);
+    border-radius: 8px;
+    padding: 12px;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 20px;
+    margin-right: 8px;
+    border: none;
+    outline: none;
+  }
+  button {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: #0055ff;
+    background-image: url("../../../../sdkAssets/icon_inner_send.png");
+    background-size: 22px 22px;
+    background-position: center;
+    background-repeat: no-repeat;
+    &[disabled] {
+      background-color: rgba($color: #0055ff, $alpha: 0.3);
+      background-image: url("../../../../sdkAssets/icon_inner_send_disable.png");
+      cursor: no-drop;
+    }
+  }
+}
