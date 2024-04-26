@@ -4,13 +4,13 @@ import { ZegoBrowserCheck } from "./pages/ZegoBrowserCheck";
 import { ZegoBrowserCheckMobile } from "./pages/ZegoBrowserCheckMobile";
 import { ZegoRoom } from "./pages/ZegoRoom";
 import { ZegoRoomMobile } from "./pages/ZegoRoomMobile";
-import { IntlProvider } from "react-intl";
 import index from "./index.module.scss";
 import { ZegoRejoinRoom } from "./pages/ZegoRejoinRoom";
 import { isPc } from "../util";
 import { ZegoModel } from "./components/zegoModel";
-import { CallInvitationEndReason } from "../model";
-
+import { CallInvitationEndReason, ZegoUIKitLanguage } from "../model";
+import { IntlProvider } from "react-intl";
+import { i18nMap } from '../locale';
 declare const SDK_ENV: boolean;
 export class ZegoCloudRTCKitComponent extends React.Component<{
   core: ZegoCloudRTCCore;
@@ -19,12 +19,17 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
   state = {
     step: this.props.core._config.showPreJoinView ? 0 : 1,
     isSupportWebRTC: true,
+    lang: this.props.core._config.language || ZegoUIKitLanguage.ENGLISH,
   };
-
   async componentDidMount() {
     // const notSupportPhone =
     //   !isPc() && isIOS() && IsSafari();
     const res = await this.props.core.checkWebRTC();
+    this.props.core.eventEmitter.on("lang", (lang: string) => {
+      this.setState({
+        lang,
+      })
+    })
     // await this.deviceCheck();
     this.setState({
       isSupportWebRTC: res,
@@ -209,14 +214,14 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
               });
             }}
             returnHome={() => {
-                if (this.props.core._config.onReturnToHomeScreenClicked) {
-					this.props.core._config.onReturnToHomeScreenClicked();
-				} else {
-					this.setState({
-						step: 0,
-					});
-				}
-              
+              if (this.props.core._config.onReturnToHomeScreenClicked) {
+                this.props.core._config.onReturnToHomeScreenClicked();
+              } else {
+                this.setState({
+                  step: 0,
+                });
+              }
+
             }}
           ></ZegoRejoinRoom>
         );
@@ -237,7 +242,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
       this.props.core.setCurrentPage("BrowserCheckPage");
     }
     return (
-      <IntlProvider locale="en">
+      <IntlProvider locale={this.state.lang} messages={i18nMap[this.state.lang]}>
         <div className={index.index}>{page}</div>
       </IntlProvider>
     );

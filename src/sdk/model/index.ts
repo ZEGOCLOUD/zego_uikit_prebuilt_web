@@ -195,6 +195,8 @@ export interface ZegoCloudRoomConfig {
 	// 1.12.0
 	addInRoomMessageAttributes?: () => any //  add in room message message attribute. return custom message attribute.
 	customMessageUI?: (msg: InRoomMessageInfo) => HTMLElement
+	// 2.1.0
+	language?: ZegoUIKitLanguage
 }
 export enum RightPanelExpandedType {
 	None = "None",
@@ -439,4 +441,8 @@ export const enum ReasonForRefusedInviteToCoHost {
 	Disagree, // 主动拒绝
 	Busy, // 占线拒绝
 	Timeout, // 超时拒绝
+}
+export const enum ZegoUIKitLanguage {
+	CHS = "zh-CN", // 中文
+	ENGLISH = "en-US", // 英文
 }

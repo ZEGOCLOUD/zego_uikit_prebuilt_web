@@ -16,6 +16,7 @@ import {
 	ZegoInvitationType,
 	ZegoSignalingInRoomCommandMessage,
 	ZegoSignalingPluginNotificationConfig,
+	ZegoUIKitLanguage,
 	ZegoUser,
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
@@ -250,5 +251,17 @@ export class ZegoUIKitPrebuilt {
 	// 主动退出房间
 	hangUp() {
 		ZegoUIKitPrebuilt.core?.eventEmitter.emit("hangUp");
+	}
+
+	// 设置语言
+	setLanguage(language: ZegoUIKitLanguage): void {
+		console.warn("【ZEGOCLOUD】setLanguage", language, ZegoUIKitPrebuilt.core);
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return;
+		}
+		ZegoUIKitPrebuilt.core._config.language = language;
+		ZegoUIKitPrebuilt.core.changeIntl();
+		ZegoUIKitPrebuilt.core?.eventEmitter.emit("lang", language);
 	}
 }
