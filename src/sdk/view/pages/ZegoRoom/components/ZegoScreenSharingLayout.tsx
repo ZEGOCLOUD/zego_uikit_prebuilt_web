@@ -8,6 +8,7 @@ import { OthersVideo } from "./zegoOthersVideo";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import ZegoAudio from "../../../components/zegoMedia/audio";
+import { FormattedMessage } from "react-intl";
 
 export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenSharingLayoutProps> {
   state = {
@@ -56,6 +57,7 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
         (this.state.fullScreen && this.props.userList.length > 0) ||
         this.props.userList.length === 0,
     });
+    const { formatMessage } = this.props.core.intl;
     return (
       <div className={ZegoSidebarCss.sidebarWrapper}>
         <div className={ZegoSidebarCss.bigVideoWrapper}>
@@ -79,16 +81,15 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
               <i></i>
               <p>
                 {this.props.screenSharingUser.userID ===
-                this.props.selfInfo.userID
+                  this.props.selfInfo.userID
                   ? "You are presenting your screen"
                   : `${this.props.screenSharingUser.userName} is presenting the screen`}
               </p>
             </div>
           )}
           <div
-            className={`${ZegoSidebarCss.fullScreenBtn} ${
-              this.state.fullScreen ? ZegoSidebarCss.expend : ""
-            }`}
+            className={`${ZegoSidebarCss.fullScreenBtn} ${this.state.fullScreen ? ZegoSidebarCss.expend : ""
+              }`}
             onClick={() => {
               this.props.handleFullScreen &&
                 this.props.handleFullScreen(!this.state.fullScreen);
@@ -97,16 +98,15 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
               });
             }}
           >
-            <p>{this.state.fullScreen ? "Exit full screen" : "Full screen"}</p>
+            <p>{this.state.fullScreen ? formatMessage({ id: "room.exitFullScreen" }) : formatMessage({ id: "room.fullScreen" })}</p>
           </div>
           {this.state.showBottomTip && (
             <div className={ZegoSidebarCss.screenTipWrapper}>
               <div className={ZegoSidebarCss.bottomWrapper}>
                 <p>
-                  To avoid an infinity mirror, we suggest you not to share your
-                  entire screen or browser window.
+                  <FormattedMessage id="room.presentingMirrorTip" />
                 </p>
-                <div onClick={this.handleIgnore.bind(this)}>Ignore</div>
+                <div onClick={this.handleIgnore.bind(this)}><FormattedMessage id="room.ignore" /></div>
               </div>
             </div>
           )}

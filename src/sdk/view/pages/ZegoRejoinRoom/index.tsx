@@ -4,6 +4,7 @@ import { isPc } from "../../../util";
 import * as PCZegoToast from "../../components/zegoToast";
 import * as MZegoToast from "../../components/mobile/zegoToast";
 import ZegoRejoinRoomCss from "./index.module.scss";
+import { FormattedMessage } from "react-intl";
 
 const ZegoToast = isPc() ? PCZegoToast.ZegoToast : MZegoToast.ZegoToast;
 
@@ -58,12 +59,11 @@ export class ZegoRejoinRoom extends React.Component<ZegoBrowserCheckProp> {
   render(): React.ReactNode {
     return (
       <div
-        className={`${ZegoRejoinRoomCss.rejoinRoomContainer} ${
-          this.state.isPc ? ZegoRejoinRoomCss.isPC : ""
-        }`}
+        className={`${ZegoRejoinRoomCss.rejoinRoomContainer} ${this.state.isPc ? ZegoRejoinRoomCss.isPC : ""
+          }`}
       >
         <button className={ZegoRejoinRoomCss.title}>
-          You have left the room.
+          <FormattedMessage id="global.leftRoom" />
         </button>
         <button
           className={ZegoRejoinRoomCss.rejoin}
@@ -74,7 +74,7 @@ export class ZegoRejoinRoom extends React.Component<ZegoBrowserCheckProp> {
           {this.state.isJoining && (
             <span className={ZegoRejoinRoomCss.joinRoomButtonLoading}></span>
           )}{" "}
-          Rejoin
+          <FormattedMessage id="global.rejoin" />
         </button>
         {this.props.core._config.showPreJoinView && (
           <button
@@ -83,7 +83,7 @@ export class ZegoRejoinRoom extends React.Component<ZegoBrowserCheckProp> {
               this.returnHome();
             }}
           >
-            Return to home screen
+            <FormattedMessage id="global.return" />
           </button>
         )}
       </div>

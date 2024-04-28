@@ -255,13 +255,18 @@ export class ZegoUIKitPrebuilt {
 
 	// 设置语言
 	setLanguage(language: ZegoUIKitLanguage): void {
-		console.warn("【ZEGOCLOUD】setLanguage", language, ZegoUIKitPrebuilt.core);
 		if (!ZegoUIKitPrebuilt.core) {
 			console.error("【ZEGOCLOUD】 please call init first !!");
 			return;
 		}
-		ZegoUIKitPrebuilt.core._config.language = language;
-		ZegoUIKitPrebuilt.core.changeIntl();
-		ZegoUIKitPrebuilt.core?.eventEmitter.emit("lang", language);
+		if (ZegoUIKitPrebuilt.core?._zimManager) {
+			ZegoUIKitPrebuilt.core._zimManager.config.language = language;
+			ZegoUIKitPrebuilt.core._zimManager.changeIntl();
+		} else {
+			ZegoUIKitPrebuilt.core._config.language = language;
+			ZegoUIKitPrebuilt.core.changeIntl();
+			ZegoUIKitPrebuilt.core?.eventEmitter.emit("lang", language);
+		}
+		console.warn("【ZEGOCLOUD】setLanguage", language, ZegoUIKitPrebuilt.core);
 	}
 }

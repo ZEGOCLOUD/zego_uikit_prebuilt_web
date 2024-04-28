@@ -47,6 +47,7 @@ export default class App extends React.PureComponent {
     toastShow: false,
     toastText: "",
     isScreenPortrait: false,
+    showLangBox: false,
   };
 
   settingsEl = null;
@@ -330,11 +331,11 @@ export default class App extends React.PureComponent {
           }
         }
         zp.joinRoom(param);
-        // zp.setLanguage(ZegoUIKitLanguage.CHS);
       };
     }
   }
   private async initCallInvitation(userID: string, roomID: string) {
+
     this.state.userID = userID;
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
@@ -354,6 +355,7 @@ export default class App extends React.PureComponent {
     //@ts-ignore // just for debugger
     window.zp = this.zp;
     this.zp.setCallInvitationConfig({
+      // language: ZegoUIKitLanguage.CHS,
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
       onConfirmDialogWhenReceiving: (callType, caller, refuse, accept, data) => {
         console.warn("【demo】onCallInvitationDialogShowed", callType, caller, refuse, accept, data);
@@ -631,8 +633,10 @@ export default class App extends React.PureComponent {
   }
   // 设置语言
   setLanguage(language: ZegoUIKitLanguage) {
-    console.log('===mytag setlanguage', language, window.zp);
     window.zp.setLanguage(language);
+    this.setState({
+      showLangBox: false,
+    })
   }
   render(): React.ReactNode {
     return (
@@ -681,9 +685,16 @@ export default class App extends React.PureComponent {
               </a>
               <div
                 className={APP.link_item}
-                onClick={this.setLanguage.bind(this, ZegoUIKitLanguage.CHS)}
+                onClick={() => { this.setState({ showLangBox: !this.state.showLangBox }) }}
               >
-                language
+                <span className={APP.icon__doc}></span>{" "}
+                <div className={APP.text}>{isPc() && "Language"}</div>
+                {this.state.showLangBox && (
+                  <div className={APP.lang_box} >
+                    <span onClick={this.setLanguage.bind(this, ZegoUIKitLanguage.CHS)}>中文</span>
+                    <span onClick={this.setLanguage.bind(this, ZegoUIKitLanguage.ENGLISH)}>English</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import React from "react";
 import { UserListMenuItemType } from "../../../../model";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import zegoManageCss from "./zegoManage.module.scss";
+import { FormattedMessage } from "react-intl";
 export class ZegoManage extends React.PureComponent<{
   showPinButton: boolean;
   showMicButton: boolean;
@@ -42,7 +43,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.muteItem}`}
               >
                 <i></i>
-                <span>Mute</span>
+                <span><FormattedMessage id="global.mute" /></span>
               </div>
             </div>
           )}
@@ -57,7 +58,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.cameraItem}`}
               >
                 <i></i>
-                <span>Turn off camera</span>
+                <span><FormattedMessage id="global.turnOffCamera" /></span>
               </div>
             </div>
           )}
@@ -78,9 +79,8 @@ export class ZegoManage extends React.PureComponent<{
                 <span>Pin</span>
               </div>
               <div
-                className={`${
-                  this.props.selectedUser.pin ? zegoManageCss.selected : ""
-                } ${zegoManageCss.selectIcon}`}
+                className={`${this.props.selectedUser.pin ? zegoManageCss.selected : ""
+                  } ${zegoManageCss.selectIcon}`}
               ></div>
             </div>
           )}

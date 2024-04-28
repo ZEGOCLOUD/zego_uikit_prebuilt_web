@@ -4,7 +4,10 @@ import { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh
 import { DateFormat, isFireFox, isIOS, userNameColor } from "../../../../util";
 import { ZegoBroadcastMessageInfo2 } from "../../../../model";
 import { ZegoToast } from "../../../components/mobile/zegoToast";
+import { ZegoCloudRTCCore } from "../../../../modules";
+import { FormattedMessage } from "react-intl";
 export class ZegoMessage extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   messageList: ZegoBroadcastMessageInfo2[];
   sendMessage: (msg: string) => void;
   userID: string;
@@ -15,14 +18,15 @@ export class ZegoMessage extends React.PureComponent<{
     message: string;
     isFocus: boolean;
   } = {
-    message: "",
-    isFocus: false,
-  };
+      message: "",
+      isFocus: false,
+    };
   sendTime = 0;
   msgContentListRef: RefObject<HTMLDivElement>;
   isIOS = isIOS();
   isFireFox = isFireFox();
   constructor(props: {
+    core: ZegoCloudRTCCore
     messageList: ZegoBroadcastMessageInfo2[];
     sendMessage: (msg: string) => void;
     userID: string;
@@ -115,11 +119,11 @@ export class ZegoMessage extends React.PureComponent<{
     }
   };
   render(): React.ReactNode {
+    const { formatMessage } = this.props.core.intl;
     return (
       <div
-        className={`${zegoMessageCss.msgList} ${
-          this.state.isFocus ? zegoMessageCss.msgListExpend : ""
-        }`}
+        className={`${zegoMessageCss.msgList} ${this.state.isFocus ? zegoMessageCss.msgListExpend : ""
+          }`}
       >
         <div className={zegoMessageCss.msgListHeader}>
           <div
@@ -129,7 +133,7 @@ export class ZegoMessage extends React.PureComponent<{
               this.props.closeCallBac();
             }}
           ></div>
-          Chat
+          <FormattedMessage id="mobileRoom.chat" />
         </div>
 
         <div
@@ -195,7 +199,7 @@ export class ZegoMessage extends React.PureComponent<{
             }}
             onFocus={this.onFocus}
             onBlur={this.onBlur}
-            placeholder={"Send a message to everyone"}
+            placeholder={formatMessage({ id: "global.send" })}
             onKeyPress={(event) => {
               if (event.key === "Enter") {
                 this.handleSend();

@@ -286,6 +286,7 @@ export interface ZegoSidebarLayoutProps {
 	soundLevel?: SoundLevelMap
 }
 export interface ZegoScreenSharingLayoutProps {
+	core: ZegoCloudRTCCore
 	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
 	userList: ZegoCloudUserList
@@ -299,6 +300,7 @@ export interface ZegoScreenSharingLayoutProps {
 	handleFullScreen?: (fullScreen: boolean) => void
 }
 export interface ZegoWhiteboardSharingLayoutProps {
+	core: ZegoCloudRTCCore
 	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 	handleSetPin?: (userID: string) => void
 	userList: ZegoCloudUserList
@@ -392,6 +394,8 @@ export interface ZegoCallInvitationConfig {
 	onIncomingCallTimeout?: (callID: string, caller: ZegoUser) => void
 	//当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
 	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void
+	// 2.1.0
+	language?: ZegoUIKitLanguage
 }
 export type CancelCallInvitationFunc = (data?: string) => void // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void // 接受邀请

@@ -3,11 +3,13 @@ import zegoRoomInviteCss from "./zegoRoomInvite.module.scss";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { copy } from "../../../../modules/tools/util";
 import { ZegoToast } from "../../../components/mobile/zegoToast";
+import { FormattedMessage } from "react-intl";
 export class ZegoRoomInvite extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   closeCallBack: () => void;
 }> {
   render(): React.ReactNode {
+    const { formatMessage } = this.props.core.intl;
     return (
       <div className={zegoRoomInviteCss.roomDetails}>
         <div className={zegoRoomInviteCss.inviteHeader}>
@@ -18,7 +20,7 @@ export class ZegoRoomInvite extends React.PureComponent<{
               this.props.closeCallBack();
             }}
           ></div>
-          Room details
+          <FormattedMessage id="global.roomDetails" />
         </div>
         {this.props.core._config.sharedLinks?.map((link) => {
           return (
@@ -39,7 +41,7 @@ export class ZegoRoomInvite extends React.PureComponent<{
                     ev.stopPropagation();
                     link && link.url && copy(link.url);
                     ZegoToast({
-                      content: "Copy successfully",
+                      content: formatMessage({ id: "room.copyToast" }),
                       duration: 3000,
                     });
                   }}
@@ -65,7 +67,7 @@ export class ZegoRoomInvite extends React.PureComponent<{
             }
 
             ZegoToast({
-              content: "Copy successfully",
+              content: formatMessage({ id: "room.copyToast" }),
               duration: 3,
             });
           }}

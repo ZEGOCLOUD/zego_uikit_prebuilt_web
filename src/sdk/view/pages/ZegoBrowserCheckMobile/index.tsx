@@ -6,6 +6,8 @@ import { ZegoToast } from "../../components/mobile/zegoToast";
 import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoLoading } from "./components/ZegoLoading";
 import { isAndroid, isIOS } from "../../../util";
+import { FormattedMessage } from "react-intl";
+
 export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
 	state = {
 		localStream: undefined,
@@ -349,14 +351,14 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		metaEl.content = content;
 	}
 	render(): React.ReactNode {
+		const { formatMessage } = this.props.core.intl;
 		return (
 			<div className={ZegoBrowserCheckCss.ZegoBrowserCheckSupport}>
 				<div className={ZegoBrowserCheckCss.videoScree}>
 					<video
 						playsInline={true}
-						className={`${ZegoBrowserCheckCss.video} ${this.isIOS ? ZegoBrowserCheckCss.fill : ""} ${
-							this.state.videoOpen ? "" : ZegoBrowserCheckCss.hideVideo
-						}`}
+						className={`${ZegoBrowserCheckCss.video} ${this.isIOS ? ZegoBrowserCheckCss.fill : ""} ${this.state.videoOpen ? "" : ZegoBrowserCheckCss.hideVideo
+							}`}
 						autoPlay
 						muted
 						ref={this.videoRef}></video>
@@ -372,9 +374,9 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					{(this.props.core._config.showMyCameraToggleButton ||
 						this.props.core._config.turnOnCameraWhenJoining) &&
 						!this.state.videoOpen &&
-						!this.state.isVideoOpening && <div className={ZegoBrowserCheckCss.videoTip}>Camera is off</div>}
+						!this.state.isVideoOpening && <div className={ZegoBrowserCheckCss.videoTip}><FormattedMessage id="browserCheck.cameraDesc" /></div>}
 					{this.state.isVideoOpening && (
-						<div className={ZegoBrowserCheckCss.videoTip}>Camera is starting…</div>
+						<div className={ZegoBrowserCheckCss.videoTip}><FormattedMessage id="browserCheck.cameraStart" /></div>
 					)}
 					<div className={ZegoBrowserCheckCss.handler}>
 						{this.props.core._config.showMyMicrophoneToggleButton && (
@@ -401,9 +403,9 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 				</div>
 				<div className={ZegoBrowserCheckCss.joinScreen}>
 					<div className={`${ZegoBrowserCheckCss.joinRoom} ${ZegoBrowserCheckCss.focus}`}>
-						{this.state.userName && <label>Your Name</label>}
+						{this.state.userName && <label><FormattedMessage id="browserCheck.placeholder" /></label>}
 						<input
-							placeholder="Your Name"
+							placeholder={formatMessage({ id: "browserCheck.placeholder" })}
 							ref={this.nameInputRef}
 							value={this.state.userName}
 							className={
@@ -435,7 +437,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 							onClick={() => {
 								this.joinRoom();
 							}}>
-							Join
+							<FormattedMessage id="browserCheck.join" />
 						</button>
 					</div>
 					{this.state.sharedLinks?.map((link) => {

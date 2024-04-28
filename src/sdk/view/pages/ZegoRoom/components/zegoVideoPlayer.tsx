@@ -5,6 +5,7 @@ import ShowManageContext, { ShowManageType } from "../../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
 import ZegoVideo from "../../../components/zegoMedia/video";
 import { UserListMenuItemType } from "../../../../model";
+import { FormattedMessage } from "react-intl";
 export class VideoPlayer extends React.PureComponent<{
   userInfo: ZegoCloudUser;
   muted: boolean;
@@ -90,10 +91,9 @@ export class VideoPlayer extends React.PureComponent<{
           <div className={ZegoVideoPlayerCss.name}>
             {!this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV && (
               <span
-                className={`${ZegoVideoPlayerCss.micIcon} ${
-                  this.props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
+                className={`${ZegoVideoPlayerCss.micIcon} ${this.props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
                   ZegoVideoPlayerCss.close
-                }`}
+                  }`}
               >
                 {this.props.userInfo?.streamList?.[0]?.micStatus === "OPEN" && (
                   <span style={{ height: height + "px" }}></span>
@@ -110,7 +110,7 @@ export class VideoPlayer extends React.PureComponent<{
               {this.props.userInfo.userName}
             </p>
             {this.props.muted && (
-              <span className={ZegoVideoPlayerCss.nameTag}>(You)</span>
+              <span className={ZegoVideoPlayerCss.nameTag}>(<FormattedMessage id="global.you" />)</span>
             )}
           </div>
         )}
@@ -138,7 +138,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuMicIcon}
                       ></span>
-                      <p>Mute</p>
+                      <p><FormattedMessage id="global.mute" /></p>
                     </div>
                   )}
                   {showTurnOffCameraButton!(this.props.userInfo) && (
@@ -154,7 +154,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuCameraIcon}
                       ></span>
-                      <p>Turn off camera</p>
+                      <p><FormattedMessage id="global.turnOffCamera" /></p>
                     </div>
                   )}
                   {isShownPin!(this.props.userInfo) && (

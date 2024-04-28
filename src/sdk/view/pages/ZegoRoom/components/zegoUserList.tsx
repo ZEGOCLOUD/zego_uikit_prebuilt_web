@@ -5,6 +5,7 @@ import ZegoUserListCss from "./zegoUserList.module.scss"
 import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/UserListManager"
 import { LiveRole, LiveStreamingMode, ScenarioModel, SoundLevelMap, UserListMenuItemType } from "../../../../model"
 import ShowManageContext, { ShowManageType } from "../../context/showManage"
+import { FormattedMessage } from "react-intl";
 
 export class ZegoUserList extends React.PureComponent<{
 	core: ZegoCloudRTCCore
@@ -182,6 +183,7 @@ export class ZegoUserList extends React.PureComponent<{
 		el.classList.remove(`${ZegoUserListCss.showMenu}`, `${ZegoUserListCss.bottomMenu}`)
 	}
 	render(): React.ReactNode {
+		const { formatMessage } = this.props.core.intl;
 		return (
 			<div className={ZegoUserListCss.memberListWrapper}>
 				{this.props.core._config.enableUserSearch && (
@@ -189,7 +191,7 @@ export class ZegoUserList extends React.PureComponent<{
 						<span className={ZegoUserListCss.memberSearchPrefix}></span>
 						<input
 							type="text"
-							placeholder="Search"
+							placeholder={formatMessage({ id: "global.search" })}
 							onInput={(e) => {
 								this.onInput(e)
 							}}
@@ -205,9 +207,8 @@ export class ZegoUserList extends React.PureComponent<{
 				{this.hostAndCohostList.map((user) => {
 					return (
 						<div
-							className={`${ZegoUserListCss.member} ${
-								this.showMenu(user) ? ZegoUserListCss.haveMenu : ""
-							}`}
+							className={`${ZegoUserListCss.member} ${this.showMenu(user) ? ZegoUserListCss.haveMenu : ""
+								}`}
 							key={user.userID}
 							data-id={user.userID}
 							onMouseEnter={(e: React.MouseEvent) => {
@@ -232,7 +233,7 @@ export class ZegoUserList extends React.PureComponent<{
 								</span>
 
 								<p>{user.userName}</p>
-								{user.userID === this.props.selfUserID && "(You)"}
+								{user.userID === this.props.selfUserID && `(${formatMessage({ id: "global.you" })})`}
 							</div>
 
 							{this.showUserRightIcon(user) && (
@@ -242,10 +243,9 @@ export class ZegoUserList extends React.PureComponent<{
 											<span className={`${ZegoUserListCss.memberPinIcon}`}></span>
 										)}
 										<span
-											className={`${ZegoUserListCss.memberMicIcon} ${
-												user.streamList?.[0]?.micStatus === "OPEN" &&
+											className={`${ZegoUserListCss.memberMicIcon} ${user.streamList?.[0]?.micStatus === "OPEN" &&
 												ZegoUserListCss.memberMicIconOpen
-											}`}>
+												}`}>
 											{user?.streamList?.[0]?.micStatus === "OPEN" && (
 												<span
 													style={{
@@ -258,10 +258,9 @@ export class ZegoUserList extends React.PureComponent<{
 											)}
 										</span>
 										<span
-											className={`${ZegoUserListCss.memberCameraIcon} ${
-												user.streamList?.[0]?.cameraStatus === "OPEN" &&
+											className={`${ZegoUserListCss.memberCameraIcon} ${user.streamList?.[0]?.cameraStatus === "OPEN" &&
 												ZegoUserListCss.memberCameraIconOpen
-											}`}></span>
+												}`}></span>
 									</div>
 									<div className={ZegoUserListCss.selfStatusWrapper}>
 										<span></span>
@@ -276,7 +275,7 @@ export class ZegoUserList extends React.PureComponent<{
 												onClick={() =>
 													this.props.handleMenuItem(UserListMenuItemType.MuteMic, user)
 												}>
-												Mute
+												<FormattedMessage id="global.mute" />
 											</div>
 										)}
 										{this.showTurnOffCameraButton(user) && (
@@ -285,7 +284,7 @@ export class ZegoUserList extends React.PureComponent<{
 												onClick={() =>
 													this.props.handleMenuItem(UserListMenuItemType.MuteCamera, user)
 												}>
-												Turn off camera
+												<FormattedMessage id="global.turnOffCamera" />
 											</div>
 										)}
 
@@ -325,11 +324,10 @@ export class ZegoUserList extends React.PureComponent<{
 				{this.audienceList.map((user) => {
 					return (
 						<div
-							className={`${ZegoUserListCss.member} ${
-								this.showRemoveButton(user) || this.showInviteCohostButton(user)
-									? ZegoUserListCss.haveMenu
-									: ""
-							}`}
+							className={`${ZegoUserListCss.member} ${this.showRemoveButton(user) || this.showInviteCohostButton(user)
+								? ZegoUserListCss.haveMenu
+								: ""
+								}`}
 							key={user.userID}
 							data-id={user.userID}
 							onMouseEnter={(e: React.MouseEvent) => {
@@ -354,7 +352,7 @@ export class ZegoUserList extends React.PureComponent<{
 								</span>
 
 								<p>{user.userName}</p>
-								{user.userID === this.props.selfUserID && "(You)"}
+								{user.userID === this.props.selfUserID && `(${formatMessage({ id: "global.you" })})`}
 							</div>
 
 							{user.requestCohost ? (

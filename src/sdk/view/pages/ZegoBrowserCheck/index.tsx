@@ -291,7 +291,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async joinRoom() {
-
     if (!this.state.userName.length) return;
     if (this.state.isJoining) return;
     this.setState(
@@ -384,8 +383,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                 <div className={ZegoBrowserCheckCss.videoTip}>
                   {!this.state.videoOpen &&
                     !this.state.isVideoOpening &&
-                    "Camera is off"}
-                  {this.state.isVideoOpening && "Camera is starting…"}
+                    <FormattedMessage id="browserCheck.cameraDesc" />}
+                  {this.state.isVideoOpening && <FormattedMessage id="browserCheck.cameraStart" />}
                 </div>
               )}
             <div className={ZegoBrowserCheckCss.toolsWrapper}>
@@ -398,8 +397,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                   }}>
                   <span className={ZegoBrowserCheckCss.buttonTip}>
                     {this.state.audioOpen
-                      ? <FormattedMessage id="browserCheck.turnOffMicrophone" />
-                      : <FormattedMessage id="browserCheck.turnOnMicrophone" />}
+                      ? <FormattedMessage id="global.turnOffMicrophone" />
+                      : <FormattedMessage id="global.turnOnMicrophone" />}
                   </span>
                 </div>
               )}
@@ -412,8 +411,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                   }}>
                   <span className={ZegoBrowserCheckCss.buttonTip}>
                     {this.state.videoOpen
-                      ? "Turn off camera"
-                      : "Turn on camera"}
+                      ? <FormattedMessage id="global.turnOffCamera" />
+                      : <FormattedMessage id="global.turnOnCamera" />}
                   </span>
                 </div>
               )}
@@ -424,7 +423,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                     this.openSettings();
                   }}>
                   <span className={ZegoBrowserCheckCss.buttonTip}>
-                    Settings
+                    <FormattedMessage id="global.settings" />
                   </span>
                 </div>
               )}
