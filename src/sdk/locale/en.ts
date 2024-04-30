@@ -68,6 +68,7 @@ const en = {
     "room.autoLayout": "Auto",
     "room.gridLayout": "Grid",
     "room.sidebarLayout": "Sidebar",
+    "room.liveNotStarted": "The Live has not started yet",
 
     "mobileRoom.member": "Member",
     "mobileRoom.chat": "Chat",

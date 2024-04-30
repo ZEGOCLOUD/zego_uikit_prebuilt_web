@@ -1301,7 +1301,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					return (
 						<div className={ZegoRoomCss.liveNotStart}>
 							<i></i>
-							<span>The Live has not started yet</span>
+							<span>{this.props.core.intl.formatMessage({ id: "room.liveNotStarted" })}</span>
 						</div>
 					);
 				} else if (

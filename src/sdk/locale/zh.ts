@@ -63,6 +63,7 @@ const zh = {
     "room.autoLayout": "自动",
     "room.gridLayout": "网格",
     "room.sidebarLayout": "侧边栏",
+    "room.liveNotStarted": "直播尚未开始",
 
     "mobileRoom.member": "成员",
     "mobileRoom.chat": "聊天",

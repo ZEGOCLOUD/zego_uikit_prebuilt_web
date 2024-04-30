@@ -1735,7 +1735,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           return (
             <div className={`${ZegoRoomCss.liveNotStart} zegoUserVideo_click`}>
               <i></i>
-              <span>The Live has not started yet</span>
+              <span>{this.props.core.intl.formatMessage({ id: "room.liveNotStarted" })}</span>
             </div>
           );
         } else if (
