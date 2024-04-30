@@ -6,7 +6,9 @@ import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
 import ZegoVideo from "../../../components/zegoMedia/video";
 import { UserListMenuItemType } from "../../../../model";
 import { FormattedMessage } from "react-intl";
+import { ZegoCloudRTCCore } from "../../../../modules";
 export class VideoPlayer extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   userInfo: ZegoCloudUser;
   muted: boolean;
   volume?: {
@@ -35,6 +37,7 @@ export class VideoPlayer extends React.PureComponent<{
       isShownPin,
       showRemoveCohostButton,
     } = this.context;
+    const { formatMessage } = this.props.core.intl;
     return (
       <div
         className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
@@ -170,7 +173,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuPinIcon}
                       ></span>
-                      <p>{this.props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
+                      <p>{this.props.userInfo.pin ? formatMessage({ id: "room.removePin" }) : "Pin"}</p>
                     </div>
                   )}
                   {showRemoveCohostButton!(this.props.userInfo) && (
@@ -202,7 +205,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuRemoveIcon}
                       ></span>
-                      <p>Remove participant</p>
+                      <p>{formatMessage({ id: "room.remove" })}</p>
                     </div>
                   )}
                 </div>

@@ -23,9 +23,9 @@ export class ZegoUserList extends React.PureComponent<{
 		searchList: ZegoCloudUser[]
 		searchText: string
 	} = {
-		searchList: [],
-		searchText: "",
-	}
+			searchList: [],
+			searchText: "",
+		}
 	componentDidUpdate(
 		prevProps: Readonly<{
 			core: ZegoCloudRTCCore
@@ -294,7 +294,7 @@ export class ZegoUserList extends React.PureComponent<{
 												onClick={() =>
 													this.props.handleMenuItem(UserListMenuItemType.ChangePin, user)
 												}>
-												{user.pin ? "Remove Pin" : "Pin"}
+												{user.pin ? formatMessage({ id: "room.removePin" }) : "Pin"}
 											</div>
 										)}
 										{this.showRemoveCohostButton(user) && (
@@ -312,7 +312,7 @@ export class ZegoUserList extends React.PureComponent<{
 												onClick={() =>
 													this.props.handleMenuItem(UserListMenuItemType.RemoveUser, user)
 												}>
-												Remove participant
+												{formatMessage({ id: "room.remove" })}
 											</div>
 										)}
 									</div>
@@ -396,7 +396,7 @@ export class ZegoUserList extends React.PureComponent<{
 											onClick={() =>
 												this.props.handleMenuItem(UserListMenuItemType.RemoveUser, user)
 											}>
-											Remove participant
+											{formatMessage({ id: "room.remove" })}
 										</div>
 									)}
 								</div>
@@ -407,7 +407,7 @@ export class ZegoUserList extends React.PureComponent<{
 				{this.state.searchText.length > 0 && this.state.searchList.length === 0 && (
 					<div className={ZegoUserListCss.noResult}>
 						<div></div>
-						<p>No search results</p>
+						<p>{formatMessage({ id: "global.noSearchResults" })}</p>
 					</div>
 				)}
 			</div>

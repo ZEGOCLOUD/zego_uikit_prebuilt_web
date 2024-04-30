@@ -62,6 +62,7 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
       <div className={ZegoSidebarCss.sidebarWrapper}>
         <div className={ZegoSidebarCss.bigVideoWrapper}>
           <VideoPlayer
+            core={this.props.core}
             key={"screen_" + this.props.screenSharingUser.userID}
             myClass={ZegoSidebarCss.screenVideo}
             userInfo={this.props.screenSharingUser}
@@ -141,6 +142,7 @@ export class ZegoScreenSharingLayout extends React.PureComponent<ZegoScreenShari
             }
             return (
               <VideoPlayer
+                core={this.props.core}
                 key={user.userID}
                 userInfo={user}
                 muted={user.userID === this.props.selfInfo.userID}

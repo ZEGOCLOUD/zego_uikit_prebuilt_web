@@ -264,6 +264,7 @@ export interface ZegoSettingsProps {
 }
 
 export interface ZegoGridLayoutProps {
+	core: ZegoCloudRTCCore
 	userList: ZegoCloudUserList
 	videoShowNumber: number
 	gridRowNumber?: number
@@ -276,6 +277,7 @@ export interface ZegoGridLayoutProps {
 }
 
 export interface ZegoSidebarLayoutProps {
+	core: ZegoCloudRTCCore
 	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
 	userList: ZegoCloudUserList

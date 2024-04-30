@@ -26,10 +26,10 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
     rows: 1 | 2;
     fullScreen: boolean;
   } = {
-    currentZoom: 100,
-    rows: 1,
-    fullScreen: false,
-  };
+      currentZoom: 100,
+      rows: 1,
+      fullScreen: false,
+    };
   static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
   componentDidMount() {
@@ -94,8 +94,8 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                             preState.currentZoom - 25 > 300
                               ? 300
                               : preState.currentZoom - 25 < 100
-                              ? 100
-                              : preState.currentZoom - 25,
+                                ? 100
+                                : preState.currentZoom - 25,
                         };
                       },
                       () => {
@@ -122,8 +122,8 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                             preState.currentZoom + 25 > 300
                               ? 300
                               : preState.currentZoom + 25 < 100
-                              ? 100
-                              : preState.currentZoom + 25,
+                                ? 100
+                                : preState.currentZoom + 25,
                         };
                       },
                       () => {
@@ -326,6 +326,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
               }
               return (
                 <VideoPlayer
+                  core={this.props.core}
                   key={user.userID}
                   userInfo={user}
                   muted={user.userID === this.props.selfInfo.userID}

@@ -17,10 +17,10 @@ export class ZegoUserList extends React.Component<{
 		searchList: ZegoCloudUser[]
 		searchText: string
 	} = {
-		message: "",
-		searchList: [],
-		searchText: "",
-	}
+			message: "",
+			searchList: [],
+			searchText: "",
+		}
 
 	static contextType?: React.Context<ShowManageType> = ShowManageContext
 	context!: React.ContextType<typeof ShowManageContext>
@@ -255,7 +255,7 @@ export class ZegoUserList extends React.Component<{
 					{this.state.searchText.length > 0 && this.state.searchList.length === 0 && (
 						<div className={zegoUserListCss.noResult}>
 							<div></div>
-							<p>No search results</p>
+							<p>{formatMessage({ id: "global.noSearchResults" })}</p>
 						</div>
 					)}
 				</div>

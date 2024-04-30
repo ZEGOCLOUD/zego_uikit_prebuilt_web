@@ -677,6 +677,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	stopPublish() {
 		try {
 			this.localStreamID && this.props.core.stopPublishingStream(this.localStreamID);
+			console.log('===mytag', this.state.localStream)
 			this.state.localStream && this.props.core.destroyStream(this.state.localStream);
 			this.props.core.localStream = undefined;
 
@@ -969,7 +970,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		});
 		let resp = {} as any;
 		try {
-            let message
+			let message
 			if (this.props.core._config.addInRoomMessageAttributes) {
 				message = JSON.stringify({
 					msg,
@@ -1422,6 +1423,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		if ((this.state.layout === "Auto" && this.getShownUser().length < 3) || this.getShownUser().length < 2) {
 			return (
 				<ZegoOne2One
+					core={this.props.core}
 					onLocalStreamPaused={async () => {
 						await this.props.core.enableVideoCaptureDevice(this.state.localStream!, !this.state.cameraOpen);
 						this.props.core.enableVideoCaptureDevice(this.state.localStream!, this.state.cameraOpen);
@@ -1440,6 +1442,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		) {
 			return (
 				<ZegoGridLayout
+					core={this.props.core}
 					userList={this.getShownUser()}
 					videoShowNumber={this.state.videoShowNumber}
 					gridRowNumber={this.state.gridRowNumber}
@@ -1453,6 +1456,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		if (this.state.layout === "Sidebar" && this.getShownUser().length > 1) {
 			return (
 				<ZegoSidebarLayout
+					core={this.props.core}
 					handleMenuItem={this.handleMenuItem.bind(this)}
 					userList={this.getShownUser()}
 					videoShowNumber={this.state.videoShowNumber}
@@ -1514,12 +1518,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} catch (error) { }
 		},
 		[UserListMenuItemType.RemoveUser]: (user: ZegoCloudUser) => {
+			const { formatMessage } = this.props.core.intl;
 			ZegoModelShow(
 				{
-					header: "Remove participant",
-					contentText: "Are you sure to remove " + user.userName + " ?",
-					okText: "Confirm",
-					cancelText: "Cancel",
+					header: formatMessage({ id: "room.remove" }),
+					contentText: formatMessage({ id: "room.removeDesc" }, { user: user.userName }),
+					okText: formatMessage({ id: "global.confirm" }),
+					cancelText: formatMessage({ id: "global.cancel" }),
 					onOk: () => {
 						this.props.core.removeMember(user.userID);
 					},
@@ -1777,7 +1782,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 	render(): React.ReactNode {
 		const startIndex = this.state.notificationList.length < 4 ? 0 : this.state.notificationList.length - 2;
-
+		const { formatMessage } = this.props.core.intl
 		return (
 			<ShowManageContext.Provider
 				value={{
@@ -2093,7 +2098,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 														? ZegoRoomCss.layoutSettingsItemLoading
 														: ""
 													}`}></span>
-											Auto
+											{formatMessage({ id: "room.autoLayout" })}
 										</p>
 										<img
 											src={require("../../../sdkAssets/img_layout_auto@2x.png")}
@@ -2112,7 +2117,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 														? ZegoRoomCss.layoutSettingsItemLoading
 														: ""
 													}`}></span>
-											Grid
+											{formatMessage({ id: "room.gridLayout" })}
 										</p>
 										<img
 											src={require("../../../sdkAssets/img_layout_grid@2x.png")}
@@ -2131,7 +2136,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 														? ZegoRoomCss.layoutSettingsItemLoading
 														: ""
 													}`}></span>
-											Sidebar
+											{formatMessage({ id: "room.sidebarLayout" })}
 										</p>
 										<img
 											src={require("../../../sdkAssets/img_layout_sidebar@2x.png")}

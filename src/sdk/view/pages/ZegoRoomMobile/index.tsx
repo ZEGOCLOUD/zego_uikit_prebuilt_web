@@ -93,33 +93,33 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     unreadInviteList: Set<string>; // 是否有未读的连麦申请
     isMixing: "1" | "0"; // 是否开始混流
   } = {
-    micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
-    cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
-    localStream: undefined,
-    layOutStatus: "ONE_VIDEO",
-    userLayoutStatus: this.props.core._config.layout || "Auto",
-    zegoCloudUserList: [],
-    memberList: [],
-    messageList: [],
-    notificationList: [],
-    showMore: false,
-    connecting: false,
-    firstLoading: true,
-    cameraFront: true,
-    showFooter: true,
-    isNetworkPoor: false,
-    soundLevel: {},
-    liveCountdown: -1,
-    liveStatus: "0",
-    screenSharingUserList: [],
-    zegoSuperBoardView: null, // 本地白板共享
-    isZegoWhiteboardSharing: false, // 是否开启白板共享
-    roomTime: "00:00:00",
-    isScreenPortrait: true, // 是否竖屏
-    isRequestingCohost: false,
-    unreadInviteList: new Set(),
-    isMixing: "0",
-  };
+      micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
+      cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
+      localStream: undefined,
+      layOutStatus: "ONE_VIDEO",
+      userLayoutStatus: this.props.core._config.layout || "Auto",
+      zegoCloudUserList: [],
+      memberList: [],
+      messageList: [],
+      notificationList: [],
+      showMore: false,
+      connecting: false,
+      firstLoading: true,
+      cameraFront: true,
+      showFooter: true,
+      isNetworkPoor: false,
+      soundLevel: {},
+      liveCountdown: -1,
+      liveStatus: "0",
+      screenSharingUserList: [],
+      zegoSuperBoardView: null, // 本地白板共享
+      isZegoWhiteboardSharing: false, // 是否开启白板共享
+      roomTime: "00:00:00",
+      isScreenPortrait: true, // 是否竖屏
+      isRequestingCohost: false,
+      unreadInviteList: new Set(),
+      isMixing: "0",
+    };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
     : 0;
@@ -146,7 +146,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this.props.core._config.scenario.config?.role === LiveRole.Audience &&
       (this.props.core._config.scenario.config as any).liveStreamingMode ===
-        LiveStreamingMode.LiveStreaming
+      LiveStreamingMode.LiveStreaming
     );
   }
   get showRoomTimerUI() {
@@ -200,7 +200,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
-      this.props.core.localStream = undefined;
+    this.props.core.localStream = undefined;
 
   }
   componentDidUpdate(
@@ -222,8 +222,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.state.notificationList.length > 0 &&
         preState.notificationList[preState.notificationList.length - 1]
           .messageID !==
-          this.state.notificationList[this.state.notificationList.length - 1]
-            .messageID) ||
+        this.state.notificationList[this.state.notificationList.length - 1]
+          .messageID) ||
       (preState.notificationList.length === 0 &&
         this.state.notificationList.length > 0)
     ) {
@@ -544,7 +544,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.props.core._zimManager.notifyLeaveRoom(() => {
         this.state.localStream &&
           this.props.core.destroyStream(this.state.localStream);
-            this.props.core.localStream = undefined;
+        this.props.core.localStream = undefined;
 
         this.props.core.leaveRoom();
         this.props.leaveRoom && this.props.leaveRoom();
@@ -1029,12 +1029,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.setState(
       (state: {
         layOutStatus:
-          | "ONE_VIDEO"
-          | "INVITE"
-          | "USER_LIST"
-          | "MESSAGE"
-          | "LAYOUT"
-          | "WHITEBOARD";
+        | "ONE_VIDEO"
+        | "INVITE"
+        | "USER_LIST"
+        | "MESSAGE"
+        | "LAYOUT"
+        | "WHITEBOARD";
         showMore: boolean;
       }) => {
         return {
@@ -1067,17 +1067,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     });
     let resp = {} as any;
     try {
-        let message
-		if (this.props.core._config.addInRoomMessageAttributes) {
-			message = JSON.stringify({
-				msg,
-				attrs: this.props.core._config.addInRoomMessageAttributes(),
-			})
-		} else {
-			message = msg
-		}
+      let message
+      if (this.props.core._config.addInRoomMessageAttributes) {
+        message = JSON.stringify({
+          msg,
+          attrs: this.props.core._config.addInRoomMessageAttributes(),
+        })
+      } else {
+        message = msg
+      }
 
-		resp = await this.props.core.sendRoomMessage(message)
+      resp = await this.props.core.sendRoomMessage(message)
     } catch (err) {
       console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
     }
@@ -1200,7 +1200,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core._zimManager?._inRoomInviteMg?.audienceCancelRequest();
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
-      this.props.core.localStream = undefined;
+    this.props.core.localStream = undefined;
 
     this.props.core.leaveRoom();
     this.props.leaveRoom && this.props.leaveRoom(isKickedOut);
@@ -1396,11 +1396,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.setState({
         layOutStatus: "ONE_VIDEO",
       });
+      const { formatMessage } = this.props.core.intl;
       ZegoConfirm({
-        title: "Remove participant",
-        content: "Are you sure to remove " + this._selectedUser.userName + " ?",
-        cancel: "Cancel",
-        confirm: "Confirm",
+        title: formatMessage({ id: "room.remove" }),
+        content: formatMessage({ id: "room.removeDesc" }, { user: this._selectedUser.userName }),
+        cancel: formatMessage({ id: "global.cancel" }),
+        confirm: formatMessage({ id: "global.confirm" }),
         closeCallBack: (confirm: boolean) => {
           if (confirm) {
             this.props.core.removeMember(this._selectedUser.userID);
@@ -1441,8 +1442,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         content: isSelf
           ? `Are you sure to end the connection with the host?`
           : "Are you sure to end the connection with " +
-            this._selectedUser.userName +
-            " ?",
+          this._selectedUser.userName +
+          " ?",
         cancel: "Cancel",
         confirm: "Yes",
         closeCallBack: (confirm: boolean) => {
@@ -1664,6 +1665,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     } else if (this.state.layOutStatus === "LAYOUT") {
       pages = (
         <ZegoLayout
+          core={this.props.core}
           selectLayout={this.state.userLayoutStatus}
           closeCallBac={() => {
             this.setState({
@@ -1675,6 +1677,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     } else if (this.state.layOutStatus === "MANAGE") {
       pages = (
         <ZegoManage
+          core={this.props.core}
           closeCallback={() => {
             this.setState({
               layOutStatus: "ONE_VIDEO",
@@ -1876,7 +1879,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             ) => {
               this.props.core.setWhiteboardFont(font, fontSize, color);
             }}
-            onImageAdd={async () => {}}
+            onImageAdd={async () => { }}
             zegoSuperBoardView={this.state.zegoSuperBoardView}></ZegoWhiteboard>
         </>
       );
@@ -1896,6 +1899,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             </div>
           )}
           <ZegoOne2One
+            core={this.props.core}
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
             }}
@@ -1928,6 +1932,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             </div>
           )}
           <ZegoGrid
+            core={this.props.core}
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
             }}
@@ -1949,6 +1954,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             </div>
           )}
           <ZegoSidebar
+            core={this.props.core}
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
             }}
@@ -1999,7 +2005,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             this.setState({
               showFooter:
                 this.state.isZegoWhiteboardSharing &&
-                !this.state.isScreenPortrait
+                  !this.state.isScreenPortrait
                   ? false
                   : !this.props.core._config.autoHideFooter,
               showMore: false,
@@ -2099,10 +2105,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       return;
     } else if (this.state.zegoSuperBoardView) {
       ZegoToast({
-        content: `${
-          this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.getModel
-            .name
-        } is presenting now. You cannot share your whiteboard.`,
+        content: `${this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.getModel
+          .name
+          } is presenting now. You cannot share your whiteboard.`,
       });
       return;
     }
@@ -2346,7 +2351,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                                 this.toggleLayOut("USER_LIST")
                               }}>
                               <i className={ZegoRoomCss.member}></i>
-                              <span><FormattedMessage id="mobileRoom.member" /></span>
+                              <span>{formatMessage({ id: "mobileRoom.member" })}</span>
                             </div>
                           )}
                           {this.props.core._config.showTextChat && (
@@ -2356,7 +2361,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                                 this.toggleLayOut("MESSAGE")
                               }}>
                               <i className={ZegoRoomCss.chat}></i>
-                              <span><FormattedMessage id="mobileRoom.chat" /></span>
+                              <span>{formatMessage({ id: "mobileRoom.chat" })}</span>
                             </div>
                           )}
                           {this.props.core._config.showLayoutButton && (
@@ -2366,7 +2371,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                                 this.toggleLayOut("LAYOUT")
                               }}>
                               <i className={ZegoRoomCss.layout}></i>
-                              <span>Layout</span>
+                              <span>{formatMessage({ id: "mobileRoom.layout" })}</span>
                             </div>
                           )}
                           {this.showRequestToCohostButton && (
@@ -2400,7 +2405,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                                       ? ZegoRoomCss.forbiddenSharing
                                       : ""
                                     }`}></i>
-                                <span><FormattedMessage id="mobileRoom.whiteboard" /></span>
+                                <span>{formatMessage({ id: "mobileRoom.whiteboard" })}</span>
                               </div>
                             )}
                         </div>

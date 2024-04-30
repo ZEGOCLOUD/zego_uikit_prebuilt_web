@@ -65,6 +65,7 @@ export class ZegoGridLayout extends React.PureComponent<ZegoGridLayoutProps> {
             }
             return (
               <VideoPlayer
+                core={this.props.core}
                 key={user.userID}
                 userInfo={user}
                 muted={user.userID === this.props.selfInfo!.userID}

@@ -259,14 +259,17 @@ export class ZegoUIKitPrebuilt {
 			console.error("【ZEGOCLOUD】 please call init first !!");
 			return;
 		}
-		if (ZegoUIKitPrebuilt.core?._zimManager) {
-			ZegoUIKitPrebuilt.core._zimManager.config.language = language;
-			ZegoUIKitPrebuilt.core._zimManager.changeIntl();
-		} else {
-			ZegoUIKitPrebuilt.core._config.language = language;
-			ZegoUIKitPrebuilt.core.changeIntl();
-			ZegoUIKitPrebuilt.core?.eventEmitter.emit("lang", language);
+		ZegoUIKitPrebuilt.core._config.language = language;
+		ZegoUIKitPrebuilt.core.changeIntl();
+		ZegoUIKitPrebuilt.core?.eventEmitter.emit("lang", language);
+
+		if (!ZegoUIKitPrebuilt.core?._zimManager) {
+			console.error("【ZEGOCLOUD】Please add ZIM plugin first");
+			return;
 		}
+		// call
+		ZegoUIKitPrebuilt.core._zimManager.config.language = language;
+		ZegoUIKitPrebuilt.core._zimManager.changeIntl();
 		console.warn("【ZEGOCLOUD】setLanguage", language, ZegoUIKitPrebuilt.core);
 	}
 }

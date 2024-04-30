@@ -5,6 +5,10 @@
 /.pnp
 .pnp.js
 package-lock.json
+/1on1_call
+/call_invitation
+/live_stream
+/video_conferenct
 
 # testing
 /coverage

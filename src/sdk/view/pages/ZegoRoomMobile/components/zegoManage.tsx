@@ -3,7 +3,10 @@ import { UserListMenuItemType } from "../../../../model";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import zegoManageCss from "./zegoManage.module.scss";
 import { FormattedMessage } from "react-intl";
+import { ZegoCloudRTCCore } from "../../../../modules";
+
 export class ZegoManage extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   showPinButton: boolean;
   showMicButton: boolean;
   showCameraButton: boolean;
@@ -18,6 +21,7 @@ export class ZegoManage extends React.PureComponent<{
     this.props.selectCallback && this.props.selectCallback(type, value);
   }
   render(): React.ReactNode {
+    const { formatMessage } = this.props.core.intl;
     return (
       <div className={zegoManageCss.manageList}>
         <div className={zegoManageCss.manageHeader}>
@@ -126,7 +130,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.removeItem}`}
               >
                 <i></i>
-                <span>Remove participant</span>
+                <span>{formatMessage({ id: "room.remove" })}</span>
               </div>
             </div>
           )}

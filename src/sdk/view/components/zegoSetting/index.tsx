@@ -518,7 +518,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                               ZegoSettingsCss.selected
                               }`}
                           ></span>
-                          <p>Show non-video participant</p>
+                          <p>{formatMessage({ id: "settings.showVideo" })}</p>
                         </div>
                       </div>
                     )}
