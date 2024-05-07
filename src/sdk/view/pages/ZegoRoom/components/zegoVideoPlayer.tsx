@@ -189,7 +189,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuConnectIcon}
                       ></span>
-                      <p>End the connect</p>
+                      <p>{formatMessage({ id: "room.endConnection" })}</p>
                     </div>
                   )}
                   {showRemoveButton!(this.props.userInfo) && (

@@ -95,8 +95,8 @@ export interface ZegoCloudRoomConfig {
 	showPreJoinView?: boolean // 是否显示预览检测页面，默认显示
 	turnOnMicrophoneWhenJoining?: boolean // 是否开启自己的麦克风,默认开启
 	turnOnCameraWhenJoining?: boolean // 是否开启自己的摄像头 ,默认开启
-	showMyCameraToggleButton?: boolean // 是否显示控制自己的麦克风按钮,默认显示
-	showMyMicrophoneToggleButton?: boolean // 是否显示控制自己摄像头按钮,默认显示
+	showMyCameraToggleButton?: boolean // 是否显示控制自己的摄像头按钮,默认显示
+	showMyMicrophoneToggleButton?: boolean // 是否显示控制自己麦克风按钮,默认显示
 	showAudioVideoSettingsButton?: boolean // 是否显示音视频设置按钮,默认显示
 
 	showTextChat?: boolean // 是否开启聊天，默认开启

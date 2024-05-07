@@ -99,7 +99,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.inviteItem}`}
               >
                 <i></i>
-                <span>Invite to connect</span>
+                <span>{formatMessage({ id: "room.invite" })}</span>
               </div>
             </div>
           )}
@@ -114,7 +114,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.inviteItem}`}
               >
                 <i></i>
-                <span>End the connect</span>
+                <span>{formatMessage({ id: "room.endConnection" })}</span>
               </div>
             </div>
           )}

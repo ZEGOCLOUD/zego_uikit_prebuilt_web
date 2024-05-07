@@ -3,7 +3,7 @@ import { ZegoCloudRTCCore } from "../../../../modules";
 import { getNameFirstLetter, userNameColor, debounce, memberSearch } from "../../../../util"
 import ZegoUserListCss from "./zegoUserList.module.scss"
 import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/UserListManager"
-import { LiveRole, LiveStreamingMode, ScenarioModel, SoundLevelMap, UserListMenuItemType } from "../../../../model"
+import { LiveRole, LiveStreamingMode, ScenarioModel, SoundLevelMap, UserListMenuItemType, ZegoUIKitLanguage } from "../../../../model"
 import ShowManageContext, { ShowManageType } from "../../context/showManage"
 import { FormattedMessage } from "react-intl";
 
@@ -218,7 +218,7 @@ export class ZegoUserList extends React.PureComponent<{
 								this.onMouseLeave(e)
 							}}>
 							<div
-								className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper}`}>
+								className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper} ${this.props.core._config.language === ZegoUIKitLanguage.CHS ? ZegoUserListCss.zh : ''}`}>
 								{user.avatar && (
 									<img
 										src={user.avatar}
@@ -303,7 +303,7 @@ export class ZegoUserList extends React.PureComponent<{
 												onClick={() =>
 													this.props.handleMenuItem(UserListMenuItemType.RemoveCohost, user)
 												}>
-												End the connection
+												{formatMessage({ id: "room.endConnection" })}
 											</div>
 										)}
 										{this.showRemoveButton(user) && (
@@ -337,7 +337,7 @@ export class ZegoUserList extends React.PureComponent<{
 								this.onMouseLeave(e)
 							}}>
 							<div
-								className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper}`}>
+								className={`${ZegoUserListCss.memberNameWrapper} ${ZegoUserListCss.memberGuestNameWrapper} ${this.props.core._config.language === ZegoUIKitLanguage.CHS ? ZegoUserListCss.zh : ''}`}>
 								{user.avatar && (
 									<img
 										src={user.avatar}
@@ -362,14 +362,14 @@ export class ZegoUserList extends React.PureComponent<{
 										onClick={() =>
 											this.props.handleMenuItem(UserListMenuItemType.DisagreeRequestCohost, user)
 										}>
-										Disagree
+										{formatMessage({ id: "global.disagree" })}
 									</div>
 									<div
 										className={ZegoUserListCss.agreeBtn}
 										onClick={() =>
 											this.props.handleMenuItem(UserListMenuItemType.AgreeRequestCohost, user)
 										}>
-										Agree
+										{formatMessage({ id: "global.agree" })}
 									</div>
 								</div>
 							) : (
@@ -387,7 +387,7 @@ export class ZegoUserList extends React.PureComponent<{
 											onClick={() =>
 												this.props.handleMenuItem(UserListMenuItemType.InviteCohost, user)
 											}>
-											Invite to connect
+											{formatMessage({ id: "room.invite" })}
 										</div>
 									)}
 									{this.showRemoveButton(user) && (

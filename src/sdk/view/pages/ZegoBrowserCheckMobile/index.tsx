@@ -479,7 +479,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					})}
 				</div>
 
-				{this.state.isJoining && <ZegoLoading content="Loading..."></ZegoLoading>}
+				{this.state.isJoining && <ZegoLoading content={formatMessage({ id: "global.loading" })}></ZegoLoading>}
 			</div>
 		);
 	}

@@ -408,13 +408,21 @@ export class ZimManager {
 			extendedData: JSON.stringify(extendedData),
 		} as ZIMCallInviteConfig;
 
+		if (!this.languageManager) {
+			this.changeIntl();
+		}
 		// 发送离线消息
+		const { formatMessage } = this.languageManager;
 		if (this.config.enableNotifyWhenAppRunningInBackgroundOrQuit) {
+			const group = this.config.language === ZegoUIKitLanguage.ENGLISH ? "group " : "群组";
 			const pushConfig = {
 				title: notificationConfig?.title || this.expressConfig.userName,
 				content:
 					notificationConfig?.message ||
-					`Incoming ${invitees.length > 1 ? "group " : ""}${type === 0 ? "voice" : "video"} call...`,
+					(invitees.length > 1 ?
+						(type === 0 ? formatMessage({ id: "call.incomingVoice" }, { group: group }) : formatMessage({ id: "call.incomingVideo" }, { group: group }))
+						: (type === 0 ? formatMessage({ id: "call.incomingVoice" }) : formatMessage({ id: "call.incomingVideo" }))),
+				// `Incoming ${invitees.length > 1 ? "group " : ""}${type === 0 ? "voice" : "video"} call...`,
 				payload: JSON.stringify(Object.assign({}, _data, extendedData)),
 				resourcesID: notificationConfig?.resourcesID ?? "zegouikit_call",
 			};
@@ -510,10 +518,11 @@ export class ZimManager {
 		const config: ZIMCallCancelConfig = {
 			extendedData: JSON.stringify(extendedData),
 		};
+		const { formatMessage } = this.languageManager;
 		if (this.config.enableNotifyWhenAppRunningInBackgroundOrQuit) {
 			config.pushConfig = {
 				title: this.notificationConfig?.title || this.expressConfig.userName,
-				content: this.notificationConfig?.message || "Cancelled invitation",
+				content: this.notificationConfig?.message || formatMessage({ id: "call.cancelled" }),
 				resourcesID: this.notificationConfig?.resourcesID ?? "zegouikit_call",
 				payload: JSON.stringify({
 					call_id: this.callInfo.roomID,

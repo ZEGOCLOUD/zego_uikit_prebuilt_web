@@ -224,6 +224,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.props.core.localStream = undefined;
 	}
 	async initSDK() {
+		const { formatMessage } = this.props.core.intl;
 		this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
 			this.setState({
 				isNetworkPoor: level > 2,
@@ -346,9 +347,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						this.notSupportMultipleVideoNotice = 1;
 						ZegoModelShow(
 							{
-								header: "Notice",
-								contentText:
-									"Your current browser does not support the display of multiple video screens during the live streaming.",
+								header: formatMessage({ id: "global.notice" }),
+								contentText: formatMessage({ id: "room.browserNotSupport" }),
 								okText: "Okay",
 							},
 							document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
@@ -443,9 +443,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				this.showNotSupported = 1;
 				ZegoModelShow(
 					{
-						header: "Notice",
-						contentText:
-							"The service is not available, please contact the live streaming service provider to resolve.",
+						header: formatMessage({ id: "global.notice" }),
+						contentText: formatMessage({ id: "room.serviceNotAvailable" }),
 						okText: "Okay",
 					},
 					document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
@@ -463,13 +462,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				if (type === "Camera" && status === "CLOSE" && this.state.cameraOpen) {
 					await this.toggleCamera();
 					ZegoToast({
-						content: `${fromUser.userName} has turned your camera off`,
+						content: formatMessage({ id: "room.turnedCameraOff" }, { user: fromUser.userName }),
 					});
 				}
 				if (type === "Microphone" && status === "CLOSE" && this.state.micOpen) {
 					await this.toggleMic();
 					ZegoToast({
-						content: `${fromUser.userName} has turned your microphone off`,
+						content: formatMessage({ id: "room.turnedMicOff" }, { user: fromUser.userName }),
 					});
 				}
 			}
@@ -485,22 +484,22 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			return;
 		} else if (logInRsp === 1002034) {
 			// 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
-			massage = "Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
+			massage = formatMessage({ id: "global.joinRoomFailedDesc" });
 		} else if ([1002031, 1002053].includes(logInRsp)) {
 			//登录房间超时，可能是由于网络原因导致。
-			massage = "There's something wrong with your network. Please check it and try again.";
+			massage = formatMessage({ id: "global.joinRoomFailedNetwork" });
 		} else if ([1102018, 1102016, 1102020].includes(logInRsp)) {
 			// 登录 token 错误，
-			massage = "Failed to join the room, token authentication error.";
+			massage = formatMessage({ id: "global.joinRoomFailedToken" });
 		} else if (1002056 === logInRsp) {
 			// 用户重复进行登录。
-			massage = "You are on a call in another room, please leave that room first.";
+			massage = formatMessage({ id: "global.joinRoomFailedRepeat" });
 		} else {
-			massage = "Failed to join the room, please try again.(error code:" + logInRsp + ")";
+			massage = formatMessage({ id: "global.joinRoomFailed" }, { code: logInRsp });
 		}
 		ZegoModelShow(
 			{
-				header: "Login room Failed",
+				header: formatMessage({ id: "global.loginRoomFailed" }),
 				contentText: massage,
 				okText: "OK",
 			},
@@ -509,13 +508,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 	initInRoomInviteMgListener() {
 		// 收到邀请上麦的通知
+		const { formatMessage } = this.props.core.intl;
 		this.props.core._zimManager?._inRoomInviteMg.notifyInviteToCoHost((inviterName: string) => {
 			this.inviteModelRoot = ZegoModelShow(
 				{
-					header: "Invitation",
-					contentText: "The host invites you to have a connection.",
-					okText: "Confirm",
-					cancelText: "Disagree",
+					header: formatMessage({ id: "room.invitationDialogTitle" }),
+					contentText: formatMessage({ id: "room.invitationDialogDesc" }),
+					okText: formatMessage({ id: "global.agree" }),
+					cancelText: formatMessage({ id: "global.disagree" }),
 					onOk: async () => {
 						this.props.core._zimManager?._inRoomInviteMg.audienceAcceptInvitation();
 						// TODO 角色变更，更新config，开始推流,
@@ -537,11 +537,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			(reason: ReasonForRefusedInviteToCoHost, user: { inviteeName: string; inviteeID?: string }) => {
 				if (reason === ReasonForRefusedInviteToCoHost.Disagree) {
 					ZegoToast({
-						content: `${user.inviteeName} disagreed with the invitation.`,
+						content: formatMessage({ id: "room.disagreedInvitationToast" }, { user: user.inviteeName }),
 					});
 				} else if (reason === ReasonForRefusedInviteToCoHost.Busy) {
 					ZegoToast({
-						content: "Invitation has been sent.",
+						content: formatMessage({ id: "room.InvitationSent" }),
 					});
 				}
 			}
@@ -555,7 +555,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			// 左侧通知
 			if (state === 1) {
 				ZegoToast({
-					content: `${inviter.userName} is requesting a connection with you.`,
+					content: formatMessage({ id: "room.requestingConnectionToast" }, { user: inviter.userName }),
 				});
 			}
 			// 设置红点
@@ -580,7 +580,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				}
 			} else if (respond === 1) {
 				ZegoToast({
-					content: "The host has rejected your request.",
+					content: formatMessage({ id: "room.rejectedRequestToast" }),
 				});
 			} else if (respond === 2) {
 				this.inviteModelRoot?.unmount();
@@ -598,6 +598,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	async createStream(): Promise<boolean> {
+		const { formatMessage } = this.props.core.intl;
 		if (
 			!this.props.core._config.turnOnCameraWhenJoining &&
 			!this.props.core._config.turnOnMicrophoneWhenJoining &&
@@ -657,7 +658,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				console.error("【ZEGOCLOUD】createStream or publishLocalStream failed,Reason: ", JSON.stringify(error));
 				if (error?.code === 1103065 || error?.code === 1103061) {
 					ZegoToast({
-						content: "The audio and video equipment is being occupied by another application.",
+						content: formatMessage({ id: "room.occupiedToast" }),
 					});
 				}
 				if (error?.code === 1103064) {
@@ -690,12 +691,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		}
 	}
 	async toggleMic() {
+		const { formatMessage } = this.props.core.intl;
 		if (this.props.core.status.audioRefuse) {
 			ZegoModelShow(
 				{
-					header: "Equipment authorization",
-					contentText:
-						"We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+					header: formatMessage({ id: "global.equipment" }),
+					contentText: formatMessage({ id: "global.equipmentDesc" }),
 					okText: "Okay",
 				},
 				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
@@ -740,12 +741,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	async toggleCamera(): Promise<boolean> {
+		const { formatMessage } = this.props.core.intl;
 		if (this.props.core.status.videoRefuse) {
 			ZegoModelShow(
 				{
-					header: "Equipment authorization",
-					contentText:
-						"We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+					header: formatMessage({ id: "global.equipment" }),
+					contentText: formatMessage({ id: "global.equipmentDesc" }),
 					okText: "Okay",
 				},
 				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
@@ -796,9 +797,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 
 	async createScreenSharing() {
 		if (this.state.isZegoWhiteboardSharing) return;
+		const { formatMessage } = this.props.core.intl;
 		if (this.state.screenSharingUserList.length > 0) {
 			ZegoToast({
-				content: `${this.state.screenSharingUserList[0].userName} is presenting now. You cannot share your screen.`,
+				content: formatMessage({ id: "room.otherScreenPresentingToast" }, { user: this.state.screenSharingUserList[0].userName }),
 			});
 			return;
 		}
@@ -855,8 +857,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			if (error?.code === 1103043) {
 				ZegoModelShow(
 					{
-						header: "Notice",
-						contentText: "Your browser does not support screen sharing.",
+						header: formatMessage({ id: "global.notice" }),
+						contentText: formatMessage({ id: "global.browserNotSupportSharing" }),
 						okText: "Okay",
 					},
 					document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
@@ -864,16 +866,15 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} else if (error?.code === 1103010 && error?.msg.includes("Permission")) {
 				ZegoModelShow(
 					{
-						header: "Grant access to share your screen",
-						contentText:
-							"Your system does not have access to share a screen from the browser. Please grant access to share your screen on your system settings.",
+						header: formatMessage({ id: "global.shareAuthority" }),
+						contentText: formatMessage({ id: "global.shareAuthorityDesc" }),
 						okText: "Okay",
 					},
 					document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
 				);
 			} else if (error?.code !== 1103042) {
 				ZegoToast({
-					content: `Failed to present your screen. error code: ${error?.code || -1}`,
+					content: formatMessage({ id: "room.presentingFailed" }, { code: error?.code || -1 }),
 				});
 			}
 		}
@@ -901,16 +902,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	async createWhiteboardSharing() {
+		const { formatMessage } = this.props.core.intl;
 		if (this.state.screenSharingUserList.length > 0) {
 			ZegoToast({
-				content: `${this.state.screenSharingUserList[0].userName} is presenting now. You cannot share your whiteboard.`,
+				content: formatMessage({ id: "room.otherWhiteboardPresentingToast" }, { user: this.state.screenSharingUserList[0].userName }),
 			});
 
 			return;
 		} else if (this.state.zegoSuperBoardView) {
 			ZegoToast({
-				content: `${this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.getModel.name
-					} is presenting now. You cannot share your whiteboard.`,
+				content: formatMessage({ id: "room.otherWhiteboardPresentingToast" }, { user: this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.getModel.name }),
 			});
 			return;
 		}
@@ -1346,6 +1347,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		}
 
 		if (this.state.isZegoWhiteboardSharing) {
+			const { formatMessage } = this.props.core.intl;
 			return (
 				<ZegoWhiteboardSharingLayout
 					core={this.props.core}
@@ -1377,8 +1379,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 							} catch (error: any) {
 								ZegoModelShow(
 									{
-										header: "Notice",
-										contentText: "Operation too frequent, failed to load the whiteboard.",
+										header: formatMessage({ id: "global.notice" }),
+										contentText: formatMessage({ id: "global.tooFrequent" }),
 										okText: "Okay",
 									},
 									document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
@@ -1538,13 +1540,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				user.userName || ""
 			);
 			console.warn("InviteCohost", res);
+			const { formatMessage } = this.props.core.intl;
 			let text = "";
 			if (res?.code === 2) {
-				text = this.props.core.intl.formatMessage({ id: "room.sendInvitation" });
+				text = formatMessage({ id: "room.sendInvitation" });
 			} else if (res?.code === 0) {
-				text = this.props.core.intl.formatMessage({ id: "room.sendInvitationSuccessToast" });
+				text = formatMessage({ id: "room.sendInvitationSuccessToast" });
 			} else {
-				text = this.props.core.intl.formatMessage({ id: "room.sendInvitationFailToast" });
+				text = formatMessage({ id: "room.sendInvitationFailToast" });
 			}
 			ZegoToast({
 				content: text,
@@ -1552,14 +1555,15 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		},
 		[UserListMenuItemType.RemoveCohost]: async (user: ZegoCloudUser) => {
 			const isSelf = user.userID === this.props.core._expressConfig.userID;
+			const { formatMessage } = this.props.core.intl;
 			ZegoModelShow(
 				{
-					header: "End the connection",
+					header: formatMessage({ id: "room.endConnection" }),
 					contentText: isSelf
-						? `Are you sure to end the connection with the host?`
-						: "Are you sure to end the connection with " + user.userName + " ?",
-					okText: "Yes",
-					cancelText: "Cancel",
+						? formatMessage({ id: "room.endConnectionDesc" }, { user: "the host" })
+						: formatMessage({ id: "room.endConnectionDesc" }, { user: user.userName }),
+					okText: formatMessage({ id: "global.confirm" }),
+					cancelText: formatMessage({ id: "global.cancel" }),
 					onOk: () => {
 						if (isSelf) {
 							this.cohostToBeAudience();
@@ -1584,7 +1588,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			const res = await this.props.core._zimManager?._inRoomInviteMg.hostAcceptRequest(user.userID);
 			if (res?.code === 6000276) {
 				ZegoToast({
-					content: "The request for connecting has expired.",
+					content: this.props.core.intl.formatMessage({ id: "room.requestExpired" }),
 				});
 			}
 			this.updateUserRequestCohostState(user.userID, false);
@@ -1606,6 +1610,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	async handleRequestCohost() {
+		const { formatMessage } = this.props.core.intl;
 		if (this.state.isRequestingCohost) {
 			await this.props.core._zimManager?._inRoomInviteMg.audienceCancelRequest();
 			this.setState({
@@ -1615,18 +1620,18 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			const res = await this.props.core._zimManager?._inRoomInviteMg.requestCohost();
 			if (res?.code === 0) {
 				ZegoToast({
-					content: `You've applied for connection, please wait for the host's confirmation.`,
+					content: formatMessage({ id: "room.appliedConnectionToast" }),
 				});
 				this.setState({
 					isRequestingCohost: true,
 				});
 			} else if (res?.code === 1) {
 				ZegoToast({
-					content: `The host has left the room.`,
+					content: formatMessage({ id: "room.hostLeftToast" }),
 				});
 			} else {
 				ZegoToast({
-					content: `Failed to send application, please try again.`,
+					content: formatMessage({ id: "room.appliedFailToast" }),
 				});
 			}
 		}
@@ -1924,8 +1929,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 								<span></span>
 								<p>
 									{this.state.isScreenSharingBySelf
-										? <FormattedMessage id="room.presentingDesc" />
-										: `${this.state.screenSharingUserList[0].userName} is presenting the screen`}
+										? formatMessage({ id: "room.presentingDesc" })
+										: formatMessage({ id: "room.presenting" }, { user: this.state.screenSharingUserList[0].userName })}
 								</p>
 							</div>
 							{this.state.isScreenSharingBySelf && (
@@ -1934,7 +1939,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 									onClick={() => {
 										this.toggleScreenSharing()
 									}}>
-									<FormattedMessage id="room.stopPresenting" />
+									{formatMessage({ id: "room.stopPresenting" })}
 								</div>
 							)}
 						</div>

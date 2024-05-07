@@ -233,7 +233,7 @@ export class ZegoUserList extends React.Component<{
 													)
 													ev.stopPropagation()
 												}}>
-												Disagree
+												{formatMessage({ id: "global.disagree" })}
 											</div>
 											<div
 												className={zegoUserListCss.agreeBtn}
@@ -244,7 +244,7 @@ export class ZegoUserList extends React.Component<{
 													)
 													ev.stopPropagation()
 												}}>
-												Agree
+												{formatMessage({ id: "global.agree" })}
 											</div>
 										</div>
 									)}
