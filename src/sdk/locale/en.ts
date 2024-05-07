@@ -134,8 +134,8 @@ const en = {
     "call.decline": "Decline",
     "call.accept": "Accept",
     "call.cancelled": "Cancelled invitation",
-    "call.incomingVoice": "Incoming voice call...",
-    "call.incomingVideo": "Incoming video call...",
+    "call.incomingVoice": "Incoming {group}voice call...",
+    "call.incomingVideo": "Incoming {group}video call...",
 
 }
 export default en;

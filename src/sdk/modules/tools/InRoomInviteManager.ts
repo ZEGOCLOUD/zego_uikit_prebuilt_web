@@ -345,7 +345,7 @@ export default class InRoomInviteManager {
       let data;
       try {
         data = JSON.parse(extendedData);
-      } catch (error) {}
+      } catch (error) { }
 
       this.notifyInviteToCoHostRefusedCallback(
         data?.data === "busy"
@@ -430,7 +430,7 @@ export default class InRoomInviteManager {
     }
   }
   // 通知观众UI层，收到主播的连麦邀请
-  private notifyInviteToCoHostCallback = (inviterName: string) => {};
+  private notifyInviteToCoHostCallback = (inviterName: string) => { };
   notifyInviteToCoHost(fn: (inviterName: string) => void) {
     this.notifyInviteToCoHostCallback = fn;
   }
@@ -441,7 +441,7 @@ export default class InRoomInviteManager {
       inviteeName: string;
       inviteeID?: string;
     }
-  ) => {};
+  ) => { };
   notifyInviteToCoHostRefused(
     fn: (
       reason: ReasonForRefusedInviteToCoHost,
@@ -454,24 +454,24 @@ export default class InRoomInviteManager {
     this.notifyInviteToCoHostRefusedCallback = fn;
   }
   // 通知观众UI层， 收到主播让下麦的通知
-  private notifyRemoveCoHostCallback = () => {};
+  private notifyRemoveCoHostCallback = () => { };
   notifyRemoveCoHost(fn: () => void) {
     this.notifyRemoveCoHostCallback = fn;
   }
   // 通知主播UI层，收到观众发来的连麦消息，state: 0 取消| 超时， 1 发起申请
-  private notifyRequestCoHostCallback = (inviter: ZegoUser, state: 0 | 1) => {};
+  private notifyRequestCoHostCallback = (inviter: ZegoUser, state: 0 | 1) => { };
   notifyRequestCoHost(fn: (inviter: ZegoUser, state: 0 | 1) => void) {
     this.notifyRequestCoHostCallback = fn;
   }
-  // 通知观众UI层，收到主播同意/拒绝/取消连麦申请的消息,0: 1: 拒绝 2: 取消 3:占线中
+  // 通知观众UI层，收到主播同意/拒绝/取消连麦申请的消息,0:同意 1: 拒绝 2: 取消 3:占线中
   private notifyHostRespondRequestCohostCallback = (
     respond: 0 | 1 | 2 | 3
-  ) => {};
+  ) => { };
   notifyHostRespondRequestCohost(fn: (respond: 0 | 1 | 2 | 3) => void) {
     this.notifyHostRespondRequestCohostCallback = fn;
   }
   // 通知观众UI层， 观众的连麦申请超时了
-  private notifyRequestCohostTimeoutCallback = () => {};
+  private notifyRequestCohostTimeoutCallback = () => { };
   notifyRequestCohostTimeout(fn: () => void) {
     this.notifyRequestCohostTimeoutCallback = fn;
   }

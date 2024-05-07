@@ -90,6 +90,10 @@ export class ZimManager {
 				// 登录成功
 				console.warn("zim login success!!");
 				this.isLogin = true;
+				// 用户不调用 setCallInvitationConfig 时也需要初始化language
+				if (!this.languageManager) {
+					this.changeIntl();
+				}
 			})
 			.catch((err: any) => {
 				// 登录失败
@@ -408,9 +412,6 @@ export class ZimManager {
 			extendedData: JSON.stringify(extendedData),
 		} as ZIMCallInviteConfig;
 
-		if (!this.languageManager) {
-			this.changeIntl();
-		}
 		// 发送离线消息
 		const { formatMessage } = this.languageManager;
 		if (this.config.enableNotifyWhenAppRunningInBackgroundOrQuit) {
@@ -421,7 +422,7 @@ export class ZimManager {
 					notificationConfig?.message ||
 					(invitees.length > 1 ?
 						(type === 0 ? formatMessage({ id: "call.incomingVoice" }, { group: group }) : formatMessage({ id: "call.incomingVideo" }, { group: group }))
-						: (type === 0 ? formatMessage({ id: "call.incomingVoice" }) : formatMessage({ id: "call.incomingVideo" }))),
+						: (type === 0 ? formatMessage({ id: "call.incomingVoice" }, { group: "" }) : formatMessage({ id: "call.incomingVideo" }, { group: "" }))),
 				// `Incoming ${invitees.length > 1 ? "group " : ""}${type === 0 ? "voice" : "video"} call...`,
 				payload: JSON.stringify(Object.assign({}, _data, extendedData)),
 				resourcesID: notificationConfig?.resourcesID ?? "zegouikit_call",
@@ -632,9 +633,9 @@ export class ZimManager {
 	}
 	setCallInvitationConfig(config: ZegoCallInvitationConfig) {
 		this.config = Object.assign(this.config, config);
-		// if (this.config.language) {
-		this.changeIntl();
-		// }
+		if (!this.languageManager) {
+			this.changeIntl();
+		}
 	}
 
 	// 改变多语言对象
