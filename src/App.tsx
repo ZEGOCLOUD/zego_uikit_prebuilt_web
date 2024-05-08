@@ -340,7 +340,6 @@ export default class App extends React.PureComponent {
     }
   }
   private async initCallInvitation(userID: string, roomID: string) {
-
     this.state.userID = userID;
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
@@ -507,7 +506,10 @@ export default class App extends React.PureComponent {
     if (this.invitationInput.current?.value) {
       this.inOperation = true;
       const values = this.invitationInput.current?.value.split(",");
-      const invitees = values
+      // id 去重并重新赋值给input框
+      const deduplicationValues = Array.from(new Set(values));
+      this.invitationInput.current.value = deduplicationValues.join(',');
+      const invitees = deduplicationValues
         .filter((v) => v.length)
         .map((v) => ({
           userID: v,
