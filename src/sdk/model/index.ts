@@ -100,7 +100,7 @@ export interface ZegoCloudRoomConfig {
 	showAudioVideoSettingsButton?: boolean // 是否显示音视频设置按钮,默认显示
 
 	showTextChat?: boolean // 是否开启聊天，默认开启
-	showUserList?: boolean //是否显示成员列表，默认不展示
+	showUserList?: boolean // 是否显示成员列表，默认显示
 	lowerLeftNotification?: {
 		showUserJoinAndLeave?: boolean //是否显示成员进出，默认不显示
 		showTextChat?: boolean // 是否显示未读消息，默认不显示
@@ -129,7 +129,7 @@ export interface ZegoCloudRoomConfig {
 		config?: ScenarioConfig // 对应场景专有配置
 	}
 	showLayoutButton?: boolean // 是否显示布局切换按钮
-	showPinButton?: boolean // 是否显pin按钮
+	showPinButton?: boolean // 是否显示 pin 按钮，默认false
 	onUserAvatarSetter?: (user: ZegoUser[]) => void //是否可以设置用户头像回调
 	videoResolutionList?: VideoResolution[] // 视频分辨率列表（默认使用第一个）
 	videoResolutionDefault?: VideoResolution // 默认视频分辨率
@@ -166,21 +166,21 @@ export interface ZegoCloudRoomConfig {
 	onYouRemovedFromRoom?: () => void // 自己被移出房间回调
 	videoCodec?: "H264" | "VP8" // 视频编解码器
 	//   1.7.3
-	showRoomDetailsButton?: boolean // 是否显示RoomDetail
+	showRoomDetailsButton?: boolean // 是否显示RoomDetail，默认true
 	onInRoomMessageReceived?: (messageInfo: InRoomMessageInfo) => void
 	onInRoomCommandReceived?: (fromUser: ZegoUser, command: string) => void // 房间自定义消息回调
 	onInRoomTextMessageReceived?: (messages: ZegoSignalingInRoomTextMessage[]) => void // zim房间文本消息回调
 	//   1.8.0
-	showInviteToCohostButton?: boolean // 主播是否展示邀请观众连麦按钮
-	showRemoveCohostButton?: boolean // 主播是否展示移下麦按钮
-	showRequestToCohostButton?: boolean // 观众是否展示申请连麦按钮
+	showInviteToCohostButton?: boolean // 主播是否展示邀请观众连麦按钮，默认false
+	showRemoveCohostButton?: boolean // 主播是否展示移下麦按钮，默认false
+	showRequestToCohostButton?: boolean // 观众是否展示申请连麦按钮，默认false
 	rightPanelExpandedType?: RightPanelExpandedType // 右侧面板展开状态
 	enableStereo?: boolean // 是否开启双声道
-	autoHideFooter?: boolean // 是否自动隐藏底部工具栏
+	autoHideFooter?: boolean // 是否自动隐藏底部工具栏，默认true
 	// 1.8.11
 	enableUserSearch?: boolean // 是否开启用户搜索, 默认false
 	// 1.9.0
-	onInRoomCustomCommandReceived?: (command: ZegoSignalingInRoomCommandMessage[]) => void //
+	onInRoomCustomCommandReceived?: (command: ZegoSignalingInRoomCommandMessage[]) => void // 收到 zim 房间自定义消息回调
 	// 1.10.0
 	showLeaveRoomConfirmDialog?: boolean // default true
 	screenSharingConfig?: {

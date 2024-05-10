@@ -117,7 +117,7 @@ export class ZegoCloudRTCCore {
 			showAudioVideoSettingsButton: true,
 
 			showTextChat: true, // 是否开启聊天，默认开启   preJoinViewConfig: boolean，// 通话前检测页面是否需要，默认需要
-			showUserList: true, //是否显示成员列表，默认展示
+			showUserList: true, // 是否显示成员列表，默认展示
 			lowerLeftNotification: {
 				showUserJoinAndLeave: true, //是否显示成员进出，默认显示
 				showTextChat: true, // 是否显示未读消息，默认显示
@@ -986,6 +986,7 @@ export class ZegoCloudRTCCore {
 				streamList: ZegoStreamList[],
 				extendedData?: string
 			) => {
+				console.warn("【ZEGOCLOUD】roomStreamUpdate", roomID, streamList, updateType, extendedData);
 				if (updateType === "ADD") {
 					this.mixStreamDomain = changeCDNUrlOrigin(streamList[0]?.urlsFLV?.replace(/[^/]+$/, "") || "")
 					this.waitingHandlerStreams.add = [...this.waitingHandlerStreams.add, ...streamList]
