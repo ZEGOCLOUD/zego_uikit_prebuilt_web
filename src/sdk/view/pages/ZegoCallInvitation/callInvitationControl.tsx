@@ -3,6 +3,7 @@ import { CallInvitationDialog } from "./callInvitationDialog";
 import ReactDOM, { Root } from "react-dom/client";
 import { ZegoInvitationType, ZegoUser } from "../../../model";
 import { isPc } from "../../../util";
+
 class CallInvitationControl {
   isWaitingPageShow = false;
   isDialogShow = false;
@@ -16,11 +17,13 @@ class CallInvitationControl {
     invitee: ZegoUser,
     type: ZegoInvitationType,
     cancel: () => void,
-    outgoingCallUrl?: string
+    languageManager: any,
+    outgoingCallUrl?: string,
   ) {
     this.root = ReactDOM.createRoot(this.container);
     this.root.render(
       <CallInvitationWaiting
+        languageManager={languageManager}
         invitee={invitee}
         type={type}
         cancel={cancel}
@@ -41,11 +44,13 @@ class CallInvitationControl {
     inviter: ZegoUser,
     refuse: Function,
     accept: Function,
+    languageManager: any,
     incomingCallUrl?: string
   ) {
     this.root = ReactDOM.createRoot(this.container);
     this.root.render(
       <CallInvitationDialog
+        languageManager={languageManager}
         inviter={inviter}
         refuse={refuse}
         accept={accept}

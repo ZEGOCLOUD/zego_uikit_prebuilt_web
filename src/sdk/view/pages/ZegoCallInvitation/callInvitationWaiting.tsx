@@ -8,6 +8,7 @@ export class CallInvitationWaiting extends React.PureComponent<{
   type: ZegoInvitationType;
   isPc: boolean;
   cancel: () => void;
+  languageManager: any,
   outgoingCallUrl?: string;
 }> {
   audioRef: HTMLAudioElement | null = null;
@@ -15,13 +16,13 @@ export class CallInvitationWaiting extends React.PureComponent<{
     this.audioRef && (this.audioRef.src = "");
   }
   render(): React.ReactNode {
+    const { formatMessage } = this.props.languageManager;
     return (
       <div
-        className={` ${
-          this.props.isPc ? WaitingCss.wrapper : WaitingCss.mobileWrapper
-        }`}
+        className={` ${this.props.isPc ? WaitingCss.wrapper : WaitingCss.mobileWrapper
+          }`}
       >
-        <p className={WaitingCss.tip}>Calling…</p>
+        <p className={WaitingCss.tip}>{formatMessage({ id: "call.calling" })}</p>
         <div className={WaitingCss.userWrapper}>
           <div
             className={WaitingCss.avatar}
@@ -37,7 +38,7 @@ export class CallInvitationWaiting extends React.PureComponent<{
             this.props.cancel && this.props.cancel();
           }}
         >
-          End call
+          {formatMessage({ id: "call.endCall" })}
         </div>
         {this.props.isPc && this.props.outgoingCallUrl && (
           <audio

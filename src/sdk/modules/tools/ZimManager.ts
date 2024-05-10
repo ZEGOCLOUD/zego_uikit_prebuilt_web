@@ -16,10 +16,14 @@ import {
 	ZegoSignalingInRoomCommandMessage,
 	ZegoSignalingInRoomTextMessage,
 	ZegoSignalingPluginNotificationConfig,
+	ZegoUIKitLanguage,
 	ZegoUser,
 } from "../../model";
 import { callInvitationControl } from "../../view/pages/ZegoCallInvitation/callInvitationControl";
 import InRoomInviteManager from "./InRoomInviteManager";
+import { createIntl, createIntlCache } from "react-intl";
+import { i18nMap } from '../../locale';
+
 export class ZimManager {
 	_zim: ZIM | null;
 	_inRoomInviteMg: InRoomInviteManager = {} as InRoomInviteManager;
@@ -41,11 +45,14 @@ export class ZimManager {
 		enableCustomCallInvitationWaitingPage: false,
 		enableCustomCallInvitationDialog: false,
 		enableNotifyWhenAppRunningInBackgroundOrQuit: false,
+		language: ZegoUIKitLanguage.ENGLISH,
 	};
 	notificationConfig: ZegoSignalingPluginNotificationConfig | undefined = undefined;
 	hostID = "";
 	incomingTimer: NodeJS.Timer | null = null;
 	outgoingTimer: NodeJS.Timer | null = null;
+	// 多语言
+	languageManager: any
 	constructor(
 		ZIM: ZIM,
 		expressConfig: {
@@ -54,7 +61,7 @@ export class ZimManager {
 			userName: string;
 			roomID: string;
 			token: string;
-		}
+		},
 	) {
 		// @ts-ignore
 		this._zim = ZIM.create({ appID: expressConfig.appID }) || ZIM.getInstance();
@@ -83,6 +90,10 @@ export class ZimManager {
 				// 登录成功
 				console.warn("zim login success!!");
 				this.isLogin = true;
+				// 用户不调用 setCallInvitationConfig 时也需要初始化language
+				if (!this.languageManager) {
+					this.changeIntl();
+				}
 			})
 			.catch((err: any) => {
 				// 登录失败
@@ -165,6 +176,7 @@ export class ZimManager {
 								this.acceptInvitation();
 								this.notifyJoinRoomCallback();
 							},
+							this.languageManager,
 							this.config?.ringtoneConfig?.incomingCallUrl
 						);
 					}
@@ -401,12 +413,17 @@ export class ZimManager {
 		} as ZIMCallInviteConfig;
 
 		// 发送离线消息
+		const { formatMessage } = this.languageManager;
 		if (this.config.enableNotifyWhenAppRunningInBackgroundOrQuit) {
+			const group = this.config.language === ZegoUIKitLanguage.ENGLISH ? "group " : "群组";
 			const pushConfig = {
 				title: notificationConfig?.title || this.expressConfig.userName,
 				content:
 					notificationConfig?.message ||
-					`Incoming ${invitees.length > 1 ? "group " : ""}${type === 0 ? "voice" : "video"} call...`,
+					(invitees.length > 1 ?
+						(type === 0 ? formatMessage({ id: "call.incomingVoice" }, { group: group }) : formatMessage({ id: "call.incomingVideo" }, { group: group }))
+						: (type === 0 ? formatMessage({ id: "call.incomingVoice" }, { group: "" }) : formatMessage({ id: "call.incomingVideo" }, { group: "" }))),
+				// `Incoming ${invitees.length > 1 ? "group " : ""}${type === 0 ? "voice" : "video"} call...`,
 				payload: JSON.stringify(Object.assign({}, _data, extendedData)),
 				resourcesID: notificationConfig?.resourcesID ?? "zegouikit_call",
 			};
@@ -468,7 +485,8 @@ export class ZimManager {
 							this.cancelInvitation();
 							this.config?.onCallInvitationEnded?.(CallInvitationEndReason.Canceled, "");
 						},
-						this.config?.ringtoneConfig?.outgoingCallUrl
+						this.languageManager,
+						this.config?.ringtoneConfig?.outgoingCallUrl,
 					);
 				}
 
@@ -501,10 +519,11 @@ export class ZimManager {
 		const config: ZIMCallCancelConfig = {
 			extendedData: JSON.stringify(extendedData),
 		};
+		const { formatMessage } = this.languageManager;
 		if (this.config.enableNotifyWhenAppRunningInBackgroundOrQuit) {
 			config.pushConfig = {
 				title: this.notificationConfig?.title || this.expressConfig.userName,
-				content: this.notificationConfig?.message || "Cancelled invitation",
+				content: this.notificationConfig?.message || formatMessage({ id: "call.cancelled" }),
 				resourcesID: this.notificationConfig?.resourcesID ?? "zegouikit_call",
 				payload: JSON.stringify({
 					call_id: this.callInfo.roomID,
@@ -567,13 +586,14 @@ export class ZimManager {
 		this._zim?.destroy();
 		this._zim = null;
 	}
-	private notifyJoinRoomCallback = () => {};
+	private notifyJoinRoomCallback = () => { };
 	/** 通知UI层调用joinRoom */
 	notifyJoinRoom(func: (type: ZegoInvitationType, roomConfig: ZegoCloudRoomConfig, mode: ScenarioModel) => void) {
 		func &&
 			(this.notifyJoinRoomCallback = () => {
 				// 接收客户传递进来的roomConfig
 				const roomConfig = this.config?.onSetRoomConfigBeforeJoining?.(this.callInfo.type) || {};
+				roomConfig.language = this.config.language;
 				func(
 					this.callInfo.type,
 					roomConfig,
@@ -581,7 +601,7 @@ export class ZimManager {
 				);
 			});
 	}
-	private notifyLeaveRoomCallback = (reason: CallInvitationEndReason) => {};
+	private notifyLeaveRoomCallback = (reason: CallInvitationEndReason) => { };
 	/** 通知UI层调用leaveRoom */
 	notifyLeaveRoom(func: () => void) {
 		this.notifyLeaveRoomCallback = (reason: CallInvitationEndReason) => {
@@ -589,7 +609,7 @@ export class ZimManager {
 			this.endCall(reason);
 		};
 	}
-	private onUpdateRoomIDCallback = () => {};
+	private onUpdateRoomIDCallback = () => { };
 	/**收到邀请后需要更新roomID*/
 	onUpdateRoomID(func: (roomID: string) => void) {
 		func &&
@@ -613,7 +633,24 @@ export class ZimManager {
 	}
 	setCallInvitationConfig(config: ZegoCallInvitationConfig) {
 		this.config = Object.assign(this.config, config);
+		if (!this.languageManager) {
+			this.changeIntl();
+		}
 	}
+
+	// 改变多语言对象
+	async changeIntl() {
+		if (this.config.language) {
+			this.languageManager = createIntl(
+				{
+					locale: this.config.language,
+					messages: i18nMap[this.config.language],
+				},
+				createIntlCache()
+			);
+		}
+	}
+
 	private clearOutgoingTimer() {
 		if (this.outgoingTimer) {
 			clearTimeout(this.outgoingTimer);
@@ -626,8 +663,8 @@ export class ZimManager {
 			this.incomingTimer = null;
 		}
 	}
-	private onRoomTextMessageCallback = (msgs: ZegoSignalingInRoomTextMessage[]) => {};
-	private onRoomCommandMessageCallback = (msgs: ZegoSignalingInRoomCommandMessage[]) => {};
+	private onRoomTextMessageCallback = (msgs: ZegoSignalingInRoomTextMessage[]) => { };
+	private onRoomCommandMessageCallback = (msgs: ZegoSignalingInRoomCommandMessage[]) => { };
 	onRoomTextMessage(func: (msgs: ZegoSignalingInRoomTextMessage[]) => void) {
 		this.onRoomTextMessageCallback = func;
 	}

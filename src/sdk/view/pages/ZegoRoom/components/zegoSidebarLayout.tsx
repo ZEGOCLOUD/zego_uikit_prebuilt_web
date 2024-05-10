@@ -28,6 +28,7 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
     return (
       <div className={ZegoSidebarCss.sidebarWrapper}>
         <VideoPlayer
+          core={this.props.core}
           key={this.pinUser.userID}
           myClass={ZegoSidebarCss.bigVideo}
           userInfo={this.pinUser}
@@ -68,6 +69,7 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
               }
               return (
                 <VideoPlayer
+                  core={this.props.core}
                   key={user.userID}
                   userInfo={user}
                   muted={user.userID === this.props.selfInfo.userID}

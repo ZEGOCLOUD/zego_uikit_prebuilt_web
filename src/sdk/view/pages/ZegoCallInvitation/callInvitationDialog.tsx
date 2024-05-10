@@ -7,6 +7,7 @@ export class CallInvitationDialog extends React.Component<{
   isPc: boolean;
   refuse: Function;
   accept: Function;
+  languageManager: any,
   incomingCallUrl?: string;
 }> {
   audioRef: HTMLAudioElement | null = null;
@@ -14,11 +15,11 @@ export class CallInvitationDialog extends React.Component<{
     this.audioRef && (this.audioRef.src = "");
   }
   render(): React.ReactNode {
+    const { formatMessage } = this.props.languageManager
     return (
       <div
-        className={`${
-          this.props.isPc ? DialogCss.wrapper : DialogCss.mobileWrapper
-        }`}
+        className={`${this.props.isPc ? DialogCss.wrapper : DialogCss.mobileWrapper
+          }`}
       >
         <div className={DialogCss.centerBox}>
           <div className={DialogCss.infoWrapper}>
@@ -26,7 +27,7 @@ export class CallInvitationDialog extends React.Component<{
               {getNameFirstLetter(this.props.inviter.userName || "")}
             </div>
             <p className={DialogCss.userName}>{this.props.inviter.userName}</p>
-            <p className={DialogCss.tip}>Incoming call...</p>
+            <p className={DialogCss.tip}>{formatMessage({ id: "call.incoming" })}</p>
           </div>
 
           <div className={DialogCss.btnWrapper}>
@@ -36,7 +37,7 @@ export class CallInvitationDialog extends React.Component<{
                 this.props.refuse && this.props.refuse();
               }}
             >
-              Declined
+              {formatMessage({ id: "call.decline" })}
             </div>
             <div
               className={DialogCss.acceptBtn}
@@ -44,7 +45,7 @@ export class CallInvitationDialog extends React.Component<{
                 this.props.accept && this.props.accept();
               }}
             >
-              Accept
+              {formatMessage({ id: "call.accept" })}
             </div>
           </div>
         </div>

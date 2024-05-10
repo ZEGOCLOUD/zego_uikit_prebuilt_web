@@ -6,6 +6,7 @@ import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
 import ZegoVideo from "../../../components/zegoMedia/video";
 import ZegoAudio from "../../../components/zegoMedia/audio";
+import { FormattedMessage } from "react-intl";
 export class ZegoUserVideo extends React.PureComponent<{
   user: ZegoCloudUser;
   onLocalStreamPaused?: () => void;
@@ -57,13 +58,11 @@ export class ZegoUserVideo extends React.PureComponent<{
             <ZegoVideo
               muted={this.props.muted}
               userInfo={this.props.user}
-              classList={`${
-                zegoUserVideoCss.videoCommon
-              } zegoUserVideo_videoCommon ${
-                this.props.user.streamList[0].cameraStatus === "MUTE"
+              classList={`${zegoUserVideoCss.videoCommon
+                } zegoUserVideo_videoCommon ${this.props.user.streamList[0].cameraStatus === "MUTE"
                   ? zegoUserVideoCss.hideVideo
                   : ""
-              }`}
+                }`}
               onCanPlay={() => {
                 this.props.onCanPlay && this.props.onCanPlay();
               }}
@@ -75,44 +74,40 @@ export class ZegoUserVideo extends React.PureComponent<{
         {(!this.props.user.streamList ||
           !this.props.user.streamList[0] ||
           this.props.user.streamList[0].cameraStatus === "MUTE") && (
-          <div
-            className={`${
-              zegoUserVideoCss.noVideoWrapper
-            }  zegoUserVideo_click ${
-              this.props.bigVideo ? zegoUserVideoCss.bigVideo : ""
-            }`}
-          >
             <div
-              className={`${zegoUserVideoCss.nameWrapper} zegoUserVideo_click`}
+              className={`${zegoUserVideoCss.noVideoWrapper
+                }  zegoUserVideo_click ${this.props.bigVideo ? zegoUserVideoCss.bigVideo : ""
+                }`}
             >
               <div
-                className={`${
-                  zegoUserVideoCss.nameCircle
-                }  zegoUserVideo_click  ${
-                  this.props.circleSize === "SIDEBAR"
-                    ? zegoUserVideoCss.sidebarCircle
-                    : ""
-                }`}
-                key={this.props.user.userID}
-                style={{
-                  color: userNameColor(this.props.user.userName!),
-                }}
+                className={`${zegoUserVideoCss.nameWrapper} zegoUserVideo_click`}
               >
-                {getNameFirstLetter(this.props.user.userName || "")}
-                {this.props.user.avatar && (
-                  <img
-                    className="zegoUserVideo_click"
-                    src={this.props.user.avatar}
-                    onError={(e: any) => {
-                      e.target.style.display = "none";
-                    }}
-                    alt=""
-                  />
-                )}
+                <div
+                  className={`${zegoUserVideoCss.nameCircle
+                    }  zegoUserVideo_click  ${this.props.circleSize === "SIDEBAR"
+                      ? zegoUserVideoCss.sidebarCircle
+                      : ""
+                    }`}
+                  key={this.props.user.userID}
+                  style={{
+                    color: userNameColor(this.props.user.userName!),
+                  }}
+                >
+                  {getNameFirstLetter(this.props.user.userName || "")}
+                  {this.props.user.avatar && (
+                    <img
+                      className="zegoUserVideo_click"
+                      src={this.props.user.avatar}
+                      onError={(e: any) => {
+                        e.target.style.display = "none";
+                      }}
+                      alt=""
+                    />
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {!this.props.hiddenName && (
           <div className={zegoUserVideoCss.name}>
@@ -127,16 +122,15 @@ export class ZegoUserVideo extends React.PureComponent<{
                 {this.props.user.userName}
               </p>
               {userInfo.userID === this.props.user.userID && (
-                <span>（You）</span>
+                <span>（<FormattedMessage id="global.you" />）</span>
               )}
               {!this.props.user?.streamList?.[0]?.urlsHttpsFLV && (
                 <span
-                  className={`${zegoUserVideoCss.micIcon}  ${
-                    !this.props.user.streamList[0] ||
+                  className={`${zegoUserVideoCss.micIcon}  ${!this.props.user.streamList[0] ||
                     this.props.user.streamList[0].micStatus !== "OPEN"
-                      ? zegoUserVideoCss.close
-                      : ""
-                  }`}
+                    ? zegoUserVideoCss.close
+                    : ""
+                    }`}
                 >
                   {this.props.user?.streamList?.[0]?.micStatus === "OPEN" && (
                     <span style={{ height: height + "px" }}></span>
@@ -183,11 +177,10 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
             className={`${zegoUserVideoCss.nameWrapper} zegoUserVideo_click`}
           >
             <div
-              className={`${zegoUserVideoCss.nameCircle} zegoUserVideo_click  ${
-                this.props.circleSize === "SIDEBAR"
-                  ? zegoUserVideoCss.sidebarCircle
-                  : zegoUserVideoCss.gridCircle
-              }`}
+              className={`${zegoUserVideoCss.nameCircle} zegoUserVideo_click  ${this.props.circleSize === "SIDEBAR"
+                ? zegoUserVideoCss.sidebarCircle
+                : zegoUserVideoCss.gridCircle
+                }`}
               key={this.props.user.userID}
               style={{
                 color: userNameColor(this.props.user.userName!),
@@ -206,11 +199,10 @@ export class ZegoUserOtherVideo extends React.PureComponent<{
               )}
             </div>
             <div
-              className={`${zegoUserVideoCss.nameCircle}  zegoUserVideo_click ${
-                this.props.circleSize === "SIDEBAR"
-                  ? zegoUserVideoCss.sidebarCircle
-                  : zegoUserVideoCss.gridCircle
-              }`}
+              className={`${zegoUserVideoCss.nameCircle}  zegoUserVideo_click ${this.props.circleSize === "SIDEBAR"
+                ? zegoUserVideoCss.sidebarCircle
+                : zegoUserVideoCss.gridCircle
+                }`}
               key={this.props.nextUser.userID}
               style={{
                 color: userNameColor(this.props.nextUser.userName!),
