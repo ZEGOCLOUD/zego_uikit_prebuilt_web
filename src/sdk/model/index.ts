@@ -448,7 +448,7 @@ export const enum ReasonForRefusedInviteToCoHost {
 	Busy, // 占线拒绝
 	Timeout, // 超时拒绝
 }
-export const enum ZegoUIKitLanguage {
+export enum ZegoUIKitLanguage {
 	CHS = "zh-CN", // 中文
 	ENGLISH = "en-US", // 英文
 }
