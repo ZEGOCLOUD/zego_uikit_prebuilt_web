@@ -28,14 +28,26 @@ import { ZIM } from "zego-zim-web";
 export default class App extends React.PureComponent {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   docsLink = {
-    live_stream: "https://docs.zegocloud.com/article/14885",
-    "1on1_call": "https://docs.zegocloud.com/article/14728",
-    video_conference: "https://docs.zegocloud.com/article/14922",
-    call_invitation: "https://docs.zegocloud.com/article/15385",
+    live_stream: {
+      [ZegoUIKitLanguage.ENGLISH]: "https://docs.zegocloud.com/article/14885",
+      [ZegoUIKitLanguage.CHS]: "https://doc-zh.zego.im/article/20316",
+    },
+    "1on1_call": {
+      [ZegoUIKitLanguage.ENGLISH]: "https://docs.zegocloud.com/article/14728",
+      [ZegoUIKitLanguage.CHS]: "https://doc-zh.zego.im/article/20194",
+    },
+    video_conference: {
+      [ZegoUIKitLanguage.ENGLISH]: "https://docs.zegocloud.com/article/14922",
+      [ZegoUIKitLanguage.CHS]: "https://docs.zegocloud.com/article/14922",
+    },
+    call_invitation: {
+      [ZegoUIKitLanguage.ENGLISH]: "https://docs.zegocloud.com/article/15385",
+      [ZegoUIKitLanguage.CHS]: "https://doc-zh.zego.im/article/20194",
+    },
   };
   state: any = {
     showPreviewHeader: getUrlParams().get("preHeader") || "show",
-    docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"],
+    docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][ZegoUIKitLanguage.ENGLISH],
     showSettings: false,
     showSettingsBtn: false,
     liveStreamingMode:
@@ -644,6 +656,7 @@ export default class App extends React.PureComponent {
     this.setState({
       showLangBox: false,
       lang: language,
+      docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][language],
     })
   }
   render(): React.ReactNode {

@@ -338,4 +338,5 @@ export declare class ZegoUIKitPrebuilt {
 	sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean>;
 	sendInRoomCustomCommand(command: object, priority?: MessagePriority): Promise<ZegoSignalingInRoomCommandMessage>;
 	hangUp(): void;
+	setLanguage(language: ZegoUIKitLanguage): void;
 }
