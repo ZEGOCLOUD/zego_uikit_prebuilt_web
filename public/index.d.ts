@@ -174,7 +174,7 @@ declare interface ZegoCloudRoomConfig {
 	addInRoomMessageMessageAttributes?: () => any //  add in room message message attribute. return custom message attribute.
 	customMessageUI?: (msg: InRoomMessageInfo) => Element // Custom message UI. need return Element.
 	// 2.1.0
-	language?: ZegoUIKitLanguage
+	language?: ZegoUIKitLanguage // 设置 sdk 语言
 }
 
 export enum RightPanelExpandedType {
@@ -252,7 +252,7 @@ declare interface ZegoCallInvitationConfig {
 	//When the call exceeds the fixed time, if there are still callees who do not respond, the caller will receive the callback, convert the internal data into corresponding data and throw it.
 	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void;
 	// 2.1.0
-	language?: ZegoUIKitLanguage
+	language?: ZegoUIKitLanguage // 设置 sdk 语言
 }
 
 declare interface ZegoSignalingPluginNotificationConfig {

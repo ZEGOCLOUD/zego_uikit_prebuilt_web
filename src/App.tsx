@@ -80,10 +80,10 @@ export default class App extends React.PureComponent {
   constructor(props: any) {
     super(props);
     const userName = getUrlParams().get("UserName");
-
     const roomID = getUrlParams().get("roomID") || randomID(5);
     const userID = getUrlParams().get("userID") || randomNumID(8);
     const enableMixing = getUrlParams().get("mixing") === "1" || false;
+    const lang = getUrlParams().get("lang") || ZegoUIKitLanguage.ENGLISH;
 
     let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
@@ -128,7 +128,7 @@ export default class App extends React.PureComponent {
       console.warn("【Zego Demo】app 1on1_call");
       maxUsers = 2;
       sharedLinks.push({
-        name: "Personal link",
+        name: lang === 'zh' ? "邀请链接" : "Personal link",
         url:
           window.location.origin +
           window.location.pathname +
@@ -142,7 +142,7 @@ export default class App extends React.PureComponent {
       liveStreamingMode = this.getLiveStreamingMode();
       if (role === LiveRole.Host || role === LiveRole.Cohost) {
         sharedLinks.push({
-          name: "Join as co-host",
+          name: lang === "zh" ? "邀请用户连麦" : "Join as co-host",
           url:
             window.location.origin +
             window.location.pathname +
@@ -154,7 +154,7 @@ export default class App extends React.PureComponent {
         this.state.showSettingsBtn = true;
       }
       sharedLinks.push({
-        name: "Join as audience",
+        name: lang === "zh" ? "邀请用户观看" : "Join as audience",
         url:
           window.location.origin +
           window.location.pathname +
@@ -167,7 +167,7 @@ export default class App extends React.PureComponent {
       console.warn("【Zego Demo】app video_conference");
       mode = ScenarioModel.VideoConference;
       sharedLinks.push({
-        name: "Personal link",
+        name: lang === 'zh' ? "邀请链接" : "Personal link",
         url:
           window.location.origin +
           window.location.pathname +
@@ -233,7 +233,7 @@ export default class App extends React.PureComponent {
           container: element, // 挂载容器
           //   showPreJoinView: false,
           preJoinViewConfig: {
-            title: "Join Room",
+            title: lang === 'zh' ? "加入房间" : "Join Room",
           },
           //   showRoomDetailsButton: false,
           showTextChat: true,
@@ -476,6 +476,11 @@ export default class App extends React.PureComponent {
       document.documentElement.clientHeight || document.body.clientHeight;
 
     window.addEventListener("resize", this.onResize, { passive: false });
+    // 读取 url 语言参数
+    const lang = getUrlParams().get("lang") || ZegoUIKitLanguage.ENGLISH;
+    if (lang !== this.state.lang) {
+      this.setLanguage(lang === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH);
+    }
   }
   componentWillUnmount(): void {
     window.removeEventListener("resize", this.onResize);
@@ -652,7 +657,7 @@ export default class App extends React.PureComponent {
   }
   // 设置语言
   setLanguage(language: ZegoUIKitLanguage) {
-    window.zp.setLanguage(language);
+    window.zp && window.zp.setLanguage(language);
     this.setState({
       showLangBox: false,
       lang: language,
