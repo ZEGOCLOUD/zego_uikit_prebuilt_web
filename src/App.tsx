@@ -190,15 +190,15 @@ export default class App extends React.PureComponent {
       this.initCallInvitation(userID, roomID);
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
-        let { token } = await generateToken(randomID(5), roomID, userName || getRandomName())
-        // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        // 1484647939,
-        // "22076fd0a8388f31dc1f6e344171****",
-        //   roomID,
-        //   userID,
-        //   userName || getRandomName(),
-        //   7200
-        // );
+        // let { token } = await generateToken(randomID(5), roomID, userName || getRandomName())
+        let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+          1484647939,
+          "22076fd0a8388f31dc1f6e344171b2b1",
+          roomID,
+          userID,
+          userName || getRandomName(),
+          7200
+        );
         const zp = ZegoUIKitPrebuilt.create(token)
         //@ts-ignore // just for debugger
         window.zp = zp
@@ -339,7 +339,7 @@ export default class App extends React.PureComponent {
           // 				</p>`
           // 	return wrapper
           // },
-          // language: ZegoUIKitLanguage.ENGLISH
+          language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"
@@ -359,22 +359,22 @@ export default class App extends React.PureComponent {
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
     // this.state.showPreviewHeader = isPc() ? "show" : "hide";
-    let { token } = await generateTokenForCallInvitation(userID, roomID, "user_" + userID);
+    // let { token } = await generateTokenForCallInvitation(userID, roomID, "user_" + userID);
     // console.warn(token);
-    // let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-    //   252984006,
-    //   "16435f3bdb307f****b3f9e4259a29f0",
-    //   roomID,
-    //   userID,
-    //   "user_" + userID,
-    //   60 * 60 * 24
-    // );
+    let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+      252984006,
+      "16435f3bdb307f3020b3f9e4259a29f0",
+      roomID,
+      userID,
+      "user_" + userID,
+      60 * 60 * 24
+    );
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
     //@ts-ignore // just for debugger
     window.zp = this.zp;
     this.zp.setCallInvitationConfig({
-      // language: ZegoUIKitLanguage.CHS,
+      language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
       onConfirmDialogWhenReceiving: (callType, caller, refuse, accept, data) => {
         console.warn("【demo】onCallInvitationDialogShowed", callType, caller, refuse, accept, data);
@@ -479,11 +479,6 @@ export default class App extends React.PureComponent {
       document.documentElement.clientHeight || document.body.clientHeight;
 
     window.addEventListener("resize", this.onResize, { passive: false });
-    // 读取 url 语言参数
-    const lang = getUrlParams().get("lang") || ZegoUIKitLanguage.ENGLISH;
-    if (lang !== this.state.lang) {
-      this.setLanguage(lang === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH);
-    }
   }
   componentWillUnmount(): void {
     window.removeEventListener("resize", this.onResize);
