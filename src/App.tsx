@@ -60,7 +60,7 @@ export default class App extends React.PureComponent {
     toastText: "",
     isScreenPortrait: false,
     showLangBox: false,
-    lang: ZegoUIKitLanguage.ENGLISH,
+    lang: getUrlParams().get("lang") || "en",
   };
 
   settingsEl = null;
@@ -83,7 +83,6 @@ export default class App extends React.PureComponent {
     const roomID = getUrlParams().get("roomID") || randomID(5);
     const userID = getUrlParams().get("userID") || randomNumID(8);
     const enableMixing = getUrlParams().get("mixing") === "1" || false;
-    const lang = getUrlParams().get("lang") || "en";
 
     let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
@@ -110,7 +109,7 @@ export default class App extends React.PureComponent {
         roomID +
         "&role=Host&userID=" +
         userID +
-        "&lang=" + lang
+        "&lang=" + this.state.lang
       );
     }
 
@@ -123,14 +122,14 @@ export default class App extends React.PureComponent {
         window.location.search +
         "&userID=" +
         userID +
-        "&lang=" + lang
+        "&lang=" + this.state.lang
       );
     }
     if (process.env.REACT_APP_PATH === "1on1_call") {
       console.warn("【Zego Demo】app 1on1_call");
       maxUsers = 2;
       sharedLinks.push({
-        name: lang === 'zh' ? "邀请链接" : "Personal link",
+        name: "Personal link",
         url:
           window.location.origin +
           window.location.pathname +
@@ -144,7 +143,7 @@ export default class App extends React.PureComponent {
       liveStreamingMode = this.getLiveStreamingMode();
       if (role === LiveRole.Host || role === LiveRole.Cohost) {
         sharedLinks.push({
-          name: lang === "zh" ? "邀请用户连麦" : "Join as co-host",
+          name: "Join as co-host",
           url:
             window.location.origin +
             window.location.pathname +
@@ -156,7 +155,7 @@ export default class App extends React.PureComponent {
         this.state.showSettingsBtn = true;
       }
       sharedLinks.push({
-        name: lang === "zh" ? "邀请用户观看" : "Join as audience",
+        name: "Join as audience",
         url:
           window.location.origin +
           window.location.pathname +
@@ -169,14 +168,14 @@ export default class App extends React.PureComponent {
       console.warn("【Zego Demo】app video_conference");
       mode = ScenarioModel.VideoConference;
       sharedLinks.push({
-        name: lang === 'zh' ? "邀请链接" : "Personal link",
+        name: "Personal link",
         url:
           window.location.origin +
           window.location.pathname +
           "?roomID=" +
           roomID +
           "&role=Cohost" +
-          "&lang=" + lang,
+          "&lang=" + this.state.lang,
       });
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
@@ -236,7 +235,7 @@ export default class App extends React.PureComponent {
           container: element, // 挂载容器
           //   showPreJoinView: false,
           preJoinViewConfig: {
-            title: lang === 'zh' ? "加入房间" : "Join Room",
+            title: "Join Room",
           },
           //   showRoomDetailsButton: false,
           showTextChat: true,
@@ -339,7 +338,7 @@ export default class App extends React.PureComponent {
           // 				</p>`
           // 	return wrapper
           // },
-          language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH
+          language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"
@@ -658,7 +657,7 @@ export default class App extends React.PureComponent {
     window.zp.setLanguage(language);
     this.setState({
       showLangBox: false,
-      lang: language,
+      lang: language === ZegoUIKitLanguage.CHS ? "zh" : "en",
       docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][language],
     })
   }
@@ -688,7 +687,7 @@ export default class App extends React.PureComponent {
                     });
                   }}>
                   <span className={APP.icon_settings}></span>{" "}
-                  {isPc() && (this.state.lang === ZegoUIKitLanguage.ENGLISH ? "Settings" : "设置")}
+                  {isPc() && (this.state.lang === "en" ? "Settings" : "设置")}
                 </div>
               )}
               <a
@@ -697,7 +696,7 @@ export default class App extends React.PureComponent {
                 className={APP.link_item}
                 rel="noreferrer">
                 <span className={APP.icon__doc}></span>{" "}
-                {isPc() && (this.state.lang === ZegoUIKitLanguage.ENGLISH ? "Documentation" : "文档")}
+                {isPc() && (this.state.lang === "en" ? "Documentation" : "文档")}
               </a>
               <a
                 href="https://github.com/ZEGOCLOUD/zego_uikit_prebuilt_web/"
@@ -705,14 +704,14 @@ export default class App extends React.PureComponent {
                 className={APP.link_item}
                 rel="noreferrer">
                 <span className={APP.icon__github}></span>
-                {isPc() && (this.state.lang === ZegoUIKitLanguage.ENGLISH ? "View demo code" : "查看演示代码")}
+                {isPc() && (this.state.lang === "en" ? "View demo code" : "查看演示代码")}
               </a>
               <div
                 className={APP.link_item}
                 onClick={() => { this.setState({ showLangBox: !this.state.showLangBox }) }}
               >
                 <span className={APP.icon__doc}></span>{" "}
-                <div className={APP.text}>{isPc() && (this.state.lang === ZegoUIKitLanguage.ENGLISH ? "Language" : "语言")}</div>
+                <div className={APP.text}>{isPc() && (this.state.lang === "en" ? "Language" : "语言")}</div>
                 {this.state.showLangBox && (
                   <div className={APP.lang_box} >
                     <span onClick={this.setLanguage.bind(this, ZegoUIKitLanguage.CHS)}>中文</span>
@@ -741,9 +740,9 @@ export default class App extends React.PureComponent {
                   <span>userID: {this.state.userID}</span>
                 </div>
               </div>
-              <p className={APP.invitationTitle}>{this.state.lang === ZegoUIKitLanguage.ENGLISH ? 'Make a direct call' : '直接进行呼叫'}</p>
+              <p className={APP.invitationTitle}>{this.state.lang === "en" ? 'Make a direct call' : '直接进行呼叫'}</p>
               <p className={APP.inputPlaceholder}>
-                {this.state.lang === ZegoUIKitLanguage.ENGLISH ? "Enter invitees' user id, separate them by \",\"" : "输入受邀者的用户 ID，用“, ”分隔"}
+                {this.state.lang === "en" ? "Enter invitees' user id, separate them by \",\"" : "输入受邀者的用户 ID，用“, ”分隔"}
               </p>
               <input
                 ref={this.invitationInput}
@@ -751,8 +750,8 @@ export default class App extends React.PureComponent {
                 type="text"
                 placeholder={
                   isPc()
-                    ? this.state.lang === ZegoUIKitLanguage.ENGLISH ? 'Enter invitees\' user id, separate them by ","' : "输入受邀者的用户 ID，用“, ”分隔"
-                    : this.state.lang === ZegoUIKitLanguage.ENGLISH ? "User id" : "用户 ID"
+                    ? this.state.lang === "en" ? 'Enter invitees\' user id, separate them by ","' : "输入受邀者的用户 ID，用“, ”分隔"
+                    : this.state.lang === "en" ? "User id" : "用户 ID"
                 }
                 required
                 onInput={this.onInvitationInputChange.bind(this)}
@@ -779,12 +778,12 @@ export default class App extends React.PureComponent {
               <div
                 className={APP.invitationVideoCallBtn}
                 onClick={this.handleSendCallInvitation.bind(this, 1)}>
-                {this.state.lang === ZegoUIKitLanguage.ENGLISH ? "Video call" : "视频通话"}
+                {this.state.lang === "en" ? "Video call" : "视频通话"}
               </div>
               <div
                 className={APP.invitationVoiceCallBtn}
                 onClick={this.handleSendCallInvitation.bind(this, 0)}>
-                {this.state.lang === ZegoUIKitLanguage.ENGLISH ? "Voice call" : "语音通话"}
+                {this.state.lang === "en" ? "Voice call" : "语音通话"}
               </div>
             </div>
           </div>
@@ -792,21 +791,21 @@ export default class App extends React.PureComponent {
         <div
           className={`${APP.serviceTips}  ${isPc() ? APP.pcServiceTips : APP.mobileServiceTips
             } preView_services`}>
-          {this.state.lang === ZegoUIKitLanguage.ENGLISH ? 'By clicking "Join", you agree to' : "点击 “加入”，即表示您同意"}{!isPc() && <br />}{this.state.lang === ZegoUIKitLanguage.ENGLISH ? " our" : "我们的"}{" "}
+          {this.state.lang === "en" ? 'By clicking "Join", you agree to' : "点击 “加入”，即表示您同意"}{!isPc() && <br />}{this.state.lang === ZegoUIKitLanguage.ENGLISH ? " our" : "我们的"}{" "}
           <a
             href="https://www.zegocloud.com/policy?index=1"
             target="_blank"
             rel="noreferrer">
-            {this.state.lang === ZegoUIKitLanguage.ENGLISH ? "Terms of Services" : "服务条款"}
+            {this.state.lang === "en" ? "Terms of Services" : "服务条款"}
           </a>{" "}
-          {this.state.lang === ZegoUIKitLanguage.ENGLISH ? "and" : "和"}{" "}
+          {this.state.lang === "en" ? "and" : "和"}{" "}
           <a
             href="https://www.zegocloud.com/policy?index=0"
             target="_blank"
             rel="noreferrer">
-            {this.state.lang === ZegoUIKitLanguage.ENGLISH ? "Privacy Policy" : "隐私政策"}
+            {this.state.lang === "en" ? "Privacy Policy" : "隐私政策"}
           </a>
-          {this.state.lang === ZegoUIKitLanguage.ENGLISH ? "." : "。"}
+          {this.state.lang === "en" ? "." : "。"}
         </div>
 
         {this.state.showSettings && (
