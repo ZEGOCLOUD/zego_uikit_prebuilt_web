@@ -660,7 +660,7 @@ export default class App extends React.PureComponent {
   }
   // 设置语言
   setLanguage(language: ZegoUIKitLanguage) {
-    window.zp && window.zp.setLanguage(language);
+    window.zp.setLanguage(language);
     this.setState({
       showLangBox: false,
       lang: language,
