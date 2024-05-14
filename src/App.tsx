@@ -83,7 +83,7 @@ export default class App extends React.PureComponent {
     const roomID = getUrlParams().get("roomID") || randomID(5);
     const userID = getUrlParams().get("userID") || randomNumID(8);
     const enableMixing = getUrlParams().get("mixing") === "1" || false;
-    const lang = getUrlParams().get("lang") || ZegoUIKitLanguage.ENGLISH;
+    const lang = getUrlParams().get("lang") || "en";
 
     let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
@@ -109,7 +109,8 @@ export default class App extends React.PureComponent {
         "?roomID=" +
         roomID +
         "&role=Host&userID=" +
-        userID
+        userID +
+        "&lang=" + lang
       );
     }
 
@@ -121,7 +122,8 @@ export default class App extends React.PureComponent {
         window.location.pathname +
         window.location.search +
         "&userID=" +
-        userID
+        userID +
+        "&lang=" + lang
       );
     }
     if (process.env.REACT_APP_PATH === "1on1_call") {
@@ -173,7 +175,8 @@ export default class App extends React.PureComponent {
           window.location.pathname +
           "?roomID=" +
           roomID +
-          "&role=Cohost",
+          "&role=Cohost" +
+          "&lang=" + lang,
       });
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
