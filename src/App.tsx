@@ -29,25 +29,25 @@ export default class App extends React.PureComponent {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   docsLink = {
     live_stream: {
-      [ZegoUIKitLanguage.ENGLISH]: "https://docs.zegocloud.com/article/14885",
-      [ZegoUIKitLanguage.CHS]: "https://doc-zh.zego.im/article/20316",
+      "en": "https://docs.zegocloud.com/article/14885",
+      "zh": "https://doc-zh.zego.im/article/20316",
     },
     "1on1_call": {
-      [ZegoUIKitLanguage.ENGLISH]: "https://docs.zegocloud.com/article/14728",
-      [ZegoUIKitLanguage.CHS]: "https://doc-zh.zego.im/article/20194",
+      "en": "https://docs.zegocloud.com/article/14728",
+      "zh": "https://doc-zh.zego.im/article/20194",
     },
     video_conference: {
-      [ZegoUIKitLanguage.ENGLISH]: "https://docs.zegocloud.com/article/14922",
-      [ZegoUIKitLanguage.CHS]: "https://docs.zegocloud.com/article/14922",
+      "en": "https://docs.zegocloud.com/article/14922",
+      "zh": "https://docs.zegocloud.com/article/14922",
     },
     call_invitation: {
-      [ZegoUIKitLanguage.ENGLISH]: "https://docs.zegocloud.com/article/15385",
-      [ZegoUIKitLanguage.CHS]: "https://doc-zh.zego.im/article/20194",
+      "en": "https://docs.zegocloud.com/article/15385",
+      "zh": "https://doc-zh.zego.im/article/20194",
     },
   };
   state: any = {
     showPreviewHeader: getUrlParams().get("preHeader") || "show",
-    docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][ZegoUIKitLanguage.ENGLISH],
+    docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][getUrlParams().get("lang") || "en"],
     showSettings: false,
     showSettingsBtn: false,
     liveStreamingMode:
@@ -658,7 +658,7 @@ export default class App extends React.PureComponent {
     this.setState({
       showLangBox: false,
       lang: language === ZegoUIKitLanguage.CHS ? "zh" : "en",
-      docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][language],
+      docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][language === ZegoUIKitLanguage.CHS ? "zh" : "en"],
     })
   }
   render(): React.ReactNode {
