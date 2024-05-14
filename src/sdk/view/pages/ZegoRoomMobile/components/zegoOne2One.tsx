@@ -3,7 +3,9 @@ import zegoOne2OneCss from "./zegoOne2One.module.scss";
 import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 import { ZegoUserVideo } from "./zegoUserVideo";
 import { SoundLevelMap } from "../../../../model";
+import { ZegoCloudRTCCore } from "../../../../modules";
 export class ZegoOne2One extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   userList: ZegoCloudUserList;
   onLocalStreamPaused: () => void;
   soundLevel?: SoundLevelMap;
@@ -17,9 +19,8 @@ export class ZegoOne2One extends React.PureComponent<{
       return (
         <>
           <div
-            className={`${zegoOne2OneCss.bigVideo} ${
-              this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
-            }`}
+            className={`${zegoOne2OneCss.bigVideo} ${this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
+              }`}
           >
             <ZegoUserVideo
               muted={
@@ -56,9 +57,8 @@ export class ZegoOne2One extends React.PureComponent<{
     } else if (this.props.userList.length > 0) {
       return (
         <div
-          className={`${zegoOne2OneCss.bigVideo} ${
-            this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
-          }`}
+          className={`${zegoOne2OneCss.bigVideo} ${this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
+            }`}
         >
           <ZegoUserVideo
             muted={

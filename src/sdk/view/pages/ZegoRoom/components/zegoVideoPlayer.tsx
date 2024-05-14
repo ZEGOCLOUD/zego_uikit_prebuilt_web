@@ -5,7 +5,10 @@ import ShowManageContext, { ShowManageType } from "../../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
 import ZegoVideo from "../../../components/zegoMedia/video";
 import { UserListMenuItemType } from "../../../../model";
+import { FormattedMessage } from "react-intl";
+import { ZegoCloudRTCCore } from "../../../../modules";
 export class VideoPlayer extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   userInfo: ZegoCloudUser;
   muted: boolean;
   volume?: {
@@ -34,6 +37,7 @@ export class VideoPlayer extends React.PureComponent<{
       isShownPin,
       showRemoveCohostButton,
     } = this.context;
+    const { formatMessage } = this.props.core.intl;
     return (
       <div
         className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
@@ -90,10 +94,9 @@ export class VideoPlayer extends React.PureComponent<{
           <div className={ZegoVideoPlayerCss.name}>
             {!this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV && (
               <span
-                className={`${ZegoVideoPlayerCss.micIcon} ${
-                  this.props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
+                className={`${ZegoVideoPlayerCss.micIcon} ${this.props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
                   ZegoVideoPlayerCss.close
-                }`}
+                  }`}
               >
                 {this.props.userInfo?.streamList?.[0]?.micStatus === "OPEN" && (
                   <span style={{ height: height + "px" }}></span>
@@ -110,7 +113,7 @@ export class VideoPlayer extends React.PureComponent<{
               {this.props.userInfo.userName}
             </p>
             {this.props.muted && (
-              <span className={ZegoVideoPlayerCss.nameTag}>(You)</span>
+              <span className={ZegoVideoPlayerCss.nameTag}>(<FormattedMessage id="global.you" />)</span>
             )}
           </div>
         )}
@@ -138,7 +141,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuMicIcon}
                       ></span>
-                      <p>Mute</p>
+                      <p><FormattedMessage id="global.mute" /></p>
                     </div>
                   )}
                   {showTurnOffCameraButton!(this.props.userInfo) && (
@@ -154,7 +157,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuCameraIcon}
                       ></span>
-                      <p>Turn off camera</p>
+                      <p><FormattedMessage id="global.turnOffCamera" /></p>
                     </div>
                   )}
                   {isShownPin!(this.props.userInfo) && (
@@ -170,7 +173,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuPinIcon}
                       ></span>
-                      <p>{this.props.userInfo.pin ? "Remove Pin" : "Pin"}</p>
+                      <p>{this.props.userInfo.pin ? formatMessage({ id: "room.removePin" }) : "Pin"}</p>
                     </div>
                   )}
                   {showRemoveCohostButton!(this.props.userInfo) && (
@@ -186,7 +189,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuConnectIcon}
                       ></span>
-                      <p>End the connect</p>
+                      <p>{formatMessage({ id: "room.endConnection" })}</p>
                     </div>
                   )}
                   {showRemoveButton!(this.props.userInfo) && (
@@ -202,7 +205,7 @@ export class VideoPlayer extends React.PureComponent<{
                       <span
                         className={ZegoVideoPlayerCss.moreMenuRemoveIcon}
                       ></span>
-                      <p>Remove participant</p>
+                      <p>{formatMessage({ id: "room.remove" })}</p>
                     </div>
                   )}
                 </div>

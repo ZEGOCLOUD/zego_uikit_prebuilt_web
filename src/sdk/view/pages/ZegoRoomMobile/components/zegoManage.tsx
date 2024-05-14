@@ -2,7 +2,11 @@ import React from "react";
 import { UserListMenuItemType } from "../../../../model";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import zegoManageCss from "./zegoManage.module.scss";
+import { FormattedMessage } from "react-intl";
+import { ZegoCloudRTCCore } from "../../../../modules";
+
 export class ZegoManage extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   showPinButton: boolean;
   showMicButton: boolean;
   showCameraButton: boolean;
@@ -17,6 +21,7 @@ export class ZegoManage extends React.PureComponent<{
     this.props.selectCallback && this.props.selectCallback(type, value);
   }
   render(): React.ReactNode {
+    const { formatMessage } = this.props.core.intl;
     return (
       <div className={zegoManageCss.manageList}>
         <div className={zegoManageCss.manageHeader}>
@@ -42,7 +47,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.muteItem}`}
               >
                 <i></i>
-                <span>Mute</span>
+                <span><FormattedMessage id="global.mute" /></span>
               </div>
             </div>
           )}
@@ -57,7 +62,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.cameraItem}`}
               >
                 <i></i>
-                <span>Turn off camera</span>
+                <span><FormattedMessage id="global.turnOffCamera" /></span>
               </div>
             </div>
           )}
@@ -78,9 +83,8 @@ export class ZegoManage extends React.PureComponent<{
                 <span>Pin</span>
               </div>
               <div
-                className={`${
-                  this.props.selectedUser.pin ? zegoManageCss.selected : ""
-                } ${zegoManageCss.selectIcon}`}
+                className={`${this.props.selectedUser.pin ? zegoManageCss.selected : ""
+                  } ${zegoManageCss.selectIcon}`}
               ></div>
             </div>
           )}
@@ -95,7 +99,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.inviteItem}`}
               >
                 <i></i>
-                <span>Invite to connect</span>
+                <span>{formatMessage({ id: "room.invite" })}</span>
               </div>
             </div>
           )}
@@ -110,7 +114,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.inviteItem}`}
               >
                 <i></i>
-                <span>End the connect</span>
+                <span>{formatMessage({ id: "room.endConnection" })}</span>
               </div>
             </div>
           )}
@@ -126,7 +130,7 @@ export class ZegoManage extends React.PureComponent<{
                 className={`${zegoManageCss.manageContentLeft} ${zegoManageCss.removeItem}`}
               >
                 <i></i>
-                <span>Remove participant</span>
+                <span>{formatMessage({ id: "room.remove" })}</span>
               </div>
             </div>
           )}

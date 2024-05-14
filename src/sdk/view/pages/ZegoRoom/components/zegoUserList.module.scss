@@ -5,6 +5,7 @@
   box-sizing: border-box;
   padding: 20px 4px;
   flex: 1;
+
   .member {
     position: relative;
     display: flex;
@@ -15,16 +16,19 @@
 
     &.haveMenu:hover {
       background: rgba($color: #303341, $alpha: 0.7);
+
       //   .memberMenuWrapper {
       //     display: block;
       //   }
       .memberStatusWrapper {
         display: none;
       }
+
       .selfStatusWrapper {
         display: flex;
       }
     }
+
     &.haveMenu {
       &.showMenu {
         .memberMenuWrapper {
@@ -34,6 +38,7 @@
           visibility: visible;
         }
       }
+
       &.bottomMenu {
         .memberMenuWrapper {
           top: unset !important;
@@ -41,16 +46,20 @@
         }
       }
     }
+
     &:not(:last-of-type) {
       margin-bottom: 6px;
     }
+
     &.memberMenuShow {
       background: rgba($color: #303341, $alpha: 0.8);
+
       .memberMenuWrapper {
         display: block;
       }
     }
   }
+
   .memberNameWrapper {
     position: relative;
     display: flex;
@@ -61,7 +70,8 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 20px;
-    & > span {
+
+    &>span {
       flex: 0 0 auto;
       width: 36px;
       height: 36px;
@@ -73,14 +83,16 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 50%;
     }
-    & > img {
+
+    &>img {
       position: absolute;
       width: 36px;
       height: 36px;
       object-fit: cover;
       border-radius: 50%;
     }
-    & > p {
+
+    &>p {
       box-sizing: border-box;
       width: max-width;
       max-width: 120px;
@@ -89,12 +101,18 @@
       white-space: nowrap;
       text-overflow: ellipsis;
     }
+
+    &.zh {
+      width: 188px;
+    }
   }
+
   .memberGuestNameWrapper {
-    & > p {
+    &>p {
       max-width: 160px;
     }
   }
+
   .selfStatusWrapper {
     display: none;
     align-items: center;
@@ -105,6 +123,7 @@
     color: #fff;
     background: rgba($color: #0055ff, $alpha: 0.9);
     border-radius: 4px;
+
     span {
       width: 3px;
       height: 3px;
@@ -113,10 +132,12 @@
       border-radius: 50%;
     }
   }
+
   .memberStatusWrapper {
     display: flex;
     align-items: center;
     margin-left: 2px;
+
     span {
       width: 22px;
       height: 22px;
@@ -125,10 +146,12 @@
       background-position: center;
       background-size: cover;
     }
+
     .memberMicIcon {
       position: relative;
       background-image: url("../../../../sdkAssets/icon_member_mic_off@2x.png");
-      & > span {
+
+      &>span {
         position: absolute;
         bottom: 10px;
         left: -4px;
@@ -138,22 +161,28 @@
         border-radius: 4px;
       }
     }
+
     .memberMicIconOpen {
       background-image: url("../../../../sdkAssets/icon_member_mic@2x.png");
     }
+
     .memberCameraIcon {
       background-image: url("../../../../sdkAssets/icon_member_camera_off@2x.png");
     }
+
     .memberCameraIconOpen {
       background-image: url("../../../../sdkAssets/icon_member_camera@2x.png");
     }
+
     .memberPinIcon {
       background-image: url("../../../../sdkAssets/icon_member_pin@2x.png");
     }
+
     .memberPinIconOpen {
       background-image: url("../../../../sdkAssets/icon_member_pin_on@2x.png");
     }
   }
+
   .memberMenuWrapper {
     position: absolute;
     right: -400px;
@@ -169,6 +198,7 @@
     border-radius: 8px;
     box-shadow: 0px 3px 6px 0px rgba(23, 24, 33, 0.75);
     visibility: hidden;
+
     .memberMenuItem {
       padding: 7px 8px;
       color: #ffffff;
@@ -177,14 +207,17 @@
       line-height: 20px;
       border-radius: 4px;
       cursor: pointer;
+
       &:hover {
         background: #36394b;
       }
     }
   }
+
   .requestCohostWrapper {
     display: flex;
-    & > div {
+
+    &>div {
       padding: 4px 11px;
       font-weight: 500;
       font-size: 14px;
@@ -192,53 +225,61 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
     .disagreeBtn {
       margin-right: 10px;
       color: rgba($color: #ffffff, $alpha: 0.9);
       background-color: rgba($color: #fff, $alpha: 0.1);
     }
+
     .agreeBtn {
       color: #fff;
       background-color: #0055ff;
     }
   }
+
   .memberSearch {
-    margin:0 8px 8px 12px;
+    margin: 0 8px 8px 12px;
     height: 34px;
     display: flex;
     align-items: center;
     border-radius: 17px;
     background-color: #1f2022;
     flex: 0 0 auto;
+
     span {
-        width: 16px;
-        height: 16px;
-        background-color: #0055ff;
+      width: 16px;
+      height: 16px;
+      background-color: #0055ff;
     }
+
     .memberSearchPrefix {
-        margin-left: 14px;
-        margin-right: 6px;
-        background: url('../../../../sdkAssets/member_search.png') no-repeat center;
-        background-size: 100%;
+      margin-left: 14px;
+      margin-right: 6px;
+      background: url('../../../../sdkAssets/member_search.png') no-repeat center;
+      background-size: 100%;
     }
+
     .memberSearchSuffix {
-        margin-right: 14px;
-        margin-left: 6px;
-        background: url('../../../../sdkAssets/member_search_close.png') no-repeat center, #85878b;
-        border-radius: 50%;
-        background-size: 100%;
-        cursor: pointer;
+      margin-right: 14px;
+      margin-left: 6px;
+      background: url('../../../../sdkAssets/member_search_close.png') no-repeat center, #85878b;
+      border-radius: 50%;
+      background-size: 100%;
+      cursor: pointer;
     }
+
     input {
-        width: 240px;
-        border: none;
-        outline: none;
-        font-size: 12px;
-        color: #edf1fa;
-        background-color: #1f2022;
-        
+      width: 240px;
+      border: none;
+      outline: none;
+      font-size: 12px;
+      color: #edf1fa;
+      background-color: #1f2022;
+
     }
   }
+
   .noResult {
     display: flex;
     align-items: center;
@@ -246,18 +287,20 @@
     flex-direction: column;
     flex: 1;
     min-height: 100px;
-    & > div {
-        width: 90px;
-        height: 90px;
-        background: url('../../../../sdkAssets/member_search_empty.png') no-repeat center;
-        background-size: 100%;
-        margin-top: -14px;
+
+    &>div {
+      width: 90px;
+      height: 90px;
+      background: url('../../../../sdkAssets/member_search_empty.png') no-repeat center;
+      background-size: 100%;
+      margin-top: -14px;
     }
-    & > p {
-        font-size: 14px;
-        color: #85878b;
-        margin: 0;
-        text-align: center;
+
+    &>p {
+      font-size: 14px;
+      color: #85878b;
+      margin: 0;
+      text-align: center;
     }
   }
 }

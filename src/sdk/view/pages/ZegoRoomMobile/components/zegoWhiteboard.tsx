@@ -12,6 +12,7 @@ import {
   ZegoLoadingHide,
   ZegoLoadingShow,
 } from "../../../components/zegoLoading";
+import { FormattedMessage } from "react-intl";
 
 export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLayoutProps> {
   container: HTMLDivElement | null = null;
@@ -116,7 +117,7 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
                   this.props.onclose();
                 }}
               >
-                Stop Presenting
+                <FormattedMessage id="room.stopPresenting" />
               </div>
             )}
           </div>
@@ -186,6 +187,7 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
           </div>
 
           <ZegoWhiteboardTools
+            core={this.props.core}
             onToolChange={(type: number, fontSize?: number, color?: string) => {
               this.props.onToolChange(type, fontSize, color);
             }}

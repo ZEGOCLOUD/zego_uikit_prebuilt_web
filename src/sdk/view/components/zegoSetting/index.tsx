@@ -10,6 +10,7 @@ import { audioBase64 } from "./speakerFile";
 import { ScenarioModel, ZegoSettingsProps } from "../../../model";
 import { getVideoResolution } from "../../../util";
 import { SoundMeter } from "../../../modules/soundmeter";
+import { FormattedMessage } from "react-intl";
 export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   state: {
     visible: boolean;
@@ -29,23 +30,23 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     renderAudio: boolean;
     showNonVideo: boolean | undefined;
   } = {
-    visible: true,
-    selectTab: "AUDIO",
-    selectMic: undefined,
-    selectSpeaker: undefined,
-    selectCamera: undefined,
-    micDevices: [],
-    speakerDevices: [],
-    cameraDevices: [],
-    localVideoStream: undefined,
-    localAudioStream: undefined,
-    selectVideoResolution: "360p",
-    audioVolume: 0,
-    speakerVolume: 0,
-    isSpeakerPlaying: false,
-    renderAudio: false,
-    showNonVideo: this.props.initDevices.showNonVideoUser,
-  };
+      visible: true,
+      selectTab: "AUDIO",
+      selectMic: undefined,
+      selectSpeaker: undefined,
+      selectCamera: undefined,
+      micDevices: [],
+      speakerDevices: [],
+      cameraDevices: [],
+      localVideoStream: undefined,
+      localAudioStream: undefined,
+      selectVideoResolution: "360p",
+      audioVolume: 0,
+      speakerVolume: 0,
+      isSpeakerPlaying: false,
+      renderAudio: false,
+      showNonVideo: this.props.initDevices.showNonVideoUser,
+    };
   videoRef = React.createRef<HTMLDivElement>();
   speakerTimer: NodeJS.Timer | null = null;
   micTimer: NodeJS.Timer | null = null;
@@ -334,19 +335,18 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       .map((l) => ({ name: l, value: l }));
   }
   render(): React.ReactNode {
+    const { formatMessage } = this.props.core.intl;
     return (
       <div
-        className={`${
-          this.state.visible ? ZegoSettingsCss.frame : ZegoSettingsCss.noFrame
-        } ${
-          this.props.theme === "black"
+        className={`${this.state.visible ? ZegoSettingsCss.frame : ZegoSettingsCss.noFrame
+          } ${this.props.theme === "black"
             ? ZegoSettingsCss.blackTheme
             : ZegoSettingsCss.whiteTheme
-        } settings_audio`}
+          } settings_audio`}
       >
         <div className={ZegoSettingsCss.body}>
           <div className={ZegoSettingsCss.header}>
-            <div>Settings</div>
+            <div><FormattedMessage id="global.settings" /></div>
             <div
               onClick={() => {
                 this.close();
@@ -357,24 +357,22 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
           <div className={ZegoSettingsCss.content}>
             <div className={ZegoSettingsCss.left}>
               <div
-                className={`${ZegoSettingsCss.leftAudioTab} ${
-                  this.state.selectTab === "AUDIO" && ZegoSettingsCss.tabActive
-                }`}
+                className={`${ZegoSettingsCss.leftAudioTab} ${this.state.selectTab === "AUDIO" && ZegoSettingsCss.tabActive
+                  }`}
                 onClick={() => {
                   this.toggleTab("AUDIO");
                 }}
               >
-                Audio
+                <FormattedMessage id="settings.audio" />
               </div>
               <div
-                className={`${ZegoSettingsCss.leftVideoTab} ${
-                  this.state.selectTab === "VIDEO" && ZegoSettingsCss.tabActive
-                }`}
+                className={`${ZegoSettingsCss.leftVideoTab} ${this.state.selectTab === "VIDEO" && ZegoSettingsCss.tabActive
+                  }`}
                 onClick={() => {
                   this.toggleTab("VIDEO");
                 }}
               >
-                Video
+                <FormattedMessage id="settings.video" />
               </div>
             </div>
             <div className={`${ZegoSettingsCss.right} `}>
@@ -382,7 +380,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                 <div className={ZegoSettingsCss.rightAudio}>
                   <div className={ZegoSettingsCss.device}>
                     <ZegoSelect
-                      label="Microphone"
+                      label={formatMessage({ id: "settings.microphone" })}
                       options={this.state.micDevices.map((device) => ({
                         name: device.deviceName,
                         value: device.deviceID,
@@ -396,29 +394,27 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                     ></ZegoSelect>
                     <div className={ZegoSettingsCss.volumeWrapper}>
                       <span
-                        className={`${ZegoSettingsCss.micIcon} ${
-                          this.state.localAudioStream
-                            ? ZegoSettingsCss.micIconAcitve
-                            : ""
-                        }`}
+                        className={`${ZegoSettingsCss.micIcon} ${this.state.localAudioStream
+                          ? ZegoSettingsCss.micIconAcitve
+                          : ""
+                          }`}
                       ></span>
                       {Array(20)
                         .fill(1)
                         .map((i, index) => (
                           <span
                             key={index}
-                            className={`${
-                              this.state.audioVolume >= index + 1
-                                ? ZegoSettingsCss.volumeActive
-                                : ""
-                            } ${ZegoSettingsCss.volume}`}
+                            className={`${this.state.audioVolume >= index + 1
+                              ? ZegoSettingsCss.volumeActive
+                              : ""
+                              } ${ZegoSettingsCss.volume}`}
                           ></span>
                         ))}
                     </div>
                   </div>
                   <div className={ZegoSettingsCss.device}>
                     <ZegoSelect
-                      label="Speakers"
+                      label={formatMessage({ id: "settings.speakers" })}
                       options={this.state.speakerDevices.map((device) => ({
                         name: device.deviceName,
                         value: device.deviceID,
@@ -432,22 +428,20 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                     ></ZegoSelect>
                     <div className={ZegoSettingsCss.volumeWrapper}>
                       <span
-                        className={`${ZegoSettingsCss.speakerIcon} ${
-                          this.state.isSpeakerPlaying
-                            ? ZegoSettingsCss.speakerIconAcitve
-                            : ""
-                        }`}
+                        className={`${ZegoSettingsCss.speakerIcon} ${this.state.isSpeakerPlaying
+                          ? ZegoSettingsCss.speakerIconAcitve
+                          : ""
+                          }`}
                       ></span>
                       {Array(16)
                         .fill(1)
                         .map((i, index) => (
                           <span
                             key={index}
-                            className={`${
-                              this.state.speakerVolume >= index + 1
-                                ? ZegoSettingsCss.volumeActive
-                                : ""
-                            } ${ZegoSettingsCss.volume}`}
+                            className={`${this.state.speakerVolume >= index + 1
+                              ? ZegoSettingsCss.volumeActive
+                              : ""
+                              } ${ZegoSettingsCss.volume}`}
                           ></span>
                         ))}
                       <div
@@ -456,7 +450,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                           this.toggleSpeakerTest();
                         }}
                       >
-                        {this.state.isSpeakerPlaying ? "Stop" : "Test"}
+                        {this.state.isSpeakerPlaying ? formatMessage({ id: "global.stop" }) : formatMessage({ id: "settings.test" })}
                       </div>
                     </div>
                   </div>
@@ -466,7 +460,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                 <div className={ZegoSettingsCss.rightVideo}>
                   <div className={ZegoSettingsCss.device}>
                     <ZegoSelect
-                      label="Camera"
+                      label={formatMessage({ id: "settings.camera" })}
                       options={this.state.cameraDevices.map((device) => ({
                         name: device.deviceName,
                         value: device.deviceID,
@@ -480,7 +474,9 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                     ></ZegoSelect>
                   </div>
                   <div className={ZegoSettingsCss.device}>
-                    <label>Preview</label>
+                    <label>
+                      <FormattedMessage id="settings.preview" />
+                    </label>
                     <video
                       muted
                       autoPlay
@@ -498,7 +494,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                   </div>
                   <div className={ZegoSettingsCss.device}>
                     <ZegoSelect
-                      label="Send resolution"
+                      label={formatMessage({ id: "settings.resolution" })}
                       options={this.solutionList}
                       onChange={(value: string) => {
                         this.toggleVideoResolution(value);
@@ -511,19 +507,18 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                   {this.props.core._config.scenario?.mode !==
                     ScenarioModel.LiveStreaming &&
                     this.props.core._config.scenario?.mode !==
-                      ScenarioModel.OneONoneCall && (
+                    ScenarioModel.OneONoneCall && (
                       <div className={ZegoSettingsCss.device}>
                         <div
                           className={ZegoSettingsCss.checkboxWrapper}
                           onClick={() => this.handleShowNonVideo()}
                         >
                           <span
-                            className={`${ZegoSettingsCss.checkbox} ${
-                              this.state.showNonVideo &&
+                            className={`${ZegoSettingsCss.checkbox} ${this.state.showNonVideo &&
                               ZegoSettingsCss.selected
-                            }`}
+                              }`}
                           ></span>
-                          <p>Show non-video participant</p>
+                          <p>{formatMessage({ id: "settings.showVideo" })}</p>
                         </div>
                       </div>
                     )}
@@ -535,13 +530,13 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
             style={{ width: "1px", height: "1px" }}
             id="speakerAudioTest"
             src={audioBase64}
-            // muted
+          // muted
           ></audio>
           <audio
             style={{ width: "1px", height: "1px" }}
             id="speakerAudio"
             src={audioBase64}
-            // loop
+          // loop
           ></audio>
         </div>
       </div>

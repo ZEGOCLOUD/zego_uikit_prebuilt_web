@@ -28,6 +28,7 @@ import {
 	VideoResolution,
 	ZegoCloudRemoteMedia,
 	ZegoCloudRoomConfig,
+	ZegoUIKitLanguage,
 	ZegoUser,
 } from "../model"
 import { ZegoCloudUser, ZegoCloudUserList, ZegoCloudUserListManager } from "./tools/UserListManager"
@@ -36,6 +37,8 @@ import ZIM from "zego-zim-web"
 import { ZimManager } from "./tools/ZimManager"
 import { getVideoResolution } from "../util"
 import { EventEmitter } from "./tools/EventEmitter"
+import { createIntl, createIntlCache } from "react-intl";
+import { i18nMap } from '../locale';
 
 export class ZegoCloudRTCCore {
 	static _instance: ZegoCloudRTCCore
@@ -54,6 +57,8 @@ export class ZegoCloudRTCCore {
 	zegoSuperBoard!: ZegoSuperBoardManager
 	zegoSuperBoardView: ZegoSuperBoardView | null | undefined = undefined
 	eventEmitter = new EventEmitter()
+	// 多语言
+	intl: any
 	//   static _soundMeter: SoundMeter;
 	static getInstance(kitToken: string): ZegoCloudRTCCore {
 		const config = getConfig(kitToken)
@@ -81,10 +86,10 @@ export class ZegoCloudRTCCore {
 		speakerDeviceID?: string
 		videoResolution?: string
 	} = {
-		loginRsp: false,
-		videoRefuse: undefined,
-		audioRefuse: undefined,
-	}
+			loginRsp: false,
+			videoRefuse: undefined,
+			audioRefuse: undefined,
+		}
 	remoteStreamMap: { [index: string]: ZegoCloudRemoteMedia } = {}
 	waitingHandlerStreams: {
 		add: ZegoStreamList[]
@@ -97,85 +102,86 @@ export class ZegoCloudRTCCore {
 			ZIM?: ZIM
 		}
 	} = {
-		// @ts-ignore
-		container: undefined, // 挂载容器
-		preJoinViewConfig: {
-			title: "Join Room", // 标题设置，默认join Room
-			//   invitationLink: window.location.href, // 邀请链接，空则不显示，默认空
-		},
-		showPreJoinView: true, // 是否显示预览检测页面，默认显示
+			// @ts-ignore
+			container: undefined, // 挂载容器
+			preJoinViewConfig: {
+				title: "Join Room", // 标题设置，默认join Room
+				//   invitationLink: window.location.href, // 邀请链接，空则不显示，默认空
+			},
+			showPreJoinView: true, // 是否显示预览检测页面，默认显示
 
-		turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
-		turnOnCameraWhenJoining: true, // 是否开启自己的摄像头 ,默认开启
-		showMyCameraToggleButton: true, // 是否可以控制自己的麦克风,默认开启
-		showMyMicrophoneToggleButton: true, // 是否可以控制体自己的摄像头,默认开启
-		showAudioVideoSettingsButton: true,
+			turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+			turnOnCameraWhenJoining: true, // 是否开启自己的摄像头 ,默认开启
+			showMyCameraToggleButton: true, // 是否可以控制自己的麦克风,默认开启
+			showMyMicrophoneToggleButton: true, // 是否可以控制体自己的摄像头,默认开启
+			showAudioVideoSettingsButton: true,
 
-		showTextChat: true, // 是否开启聊天，默认开启   preJoinViewConfig: boolean，// 通话前检测页面是否需要，默认需要
-		showUserList: true, //是否显示成员列表，默认展示
-		lowerLeftNotification: {
-			showUserJoinAndLeave: true, //是否显示成员进出，默认显示
-			showTextChat: true, // 是否显示未读消息，默认显示
-		},
-		branding: {
-			logoURL: "",
-		},
+			showTextChat: true, // 是否开启聊天，默认开启   preJoinViewConfig: boolean，// 通话前检测页面是否需要，默认需要
+			showUserList: true, // 是否显示成员列表，默认展示
+			lowerLeftNotification: {
+				showUserJoinAndLeave: true, //是否显示成员进出，默认显示
+				showTextChat: true, // 是否显示未读消息，默认显示
+			},
+			branding: {
+				logoURL: "",
+			},
 
-		showLeavingView: true, // 离开房间后页面，默认有
+			showLeavingView: true, // 离开房间后页面，默认有
 
-		maxUsers: 0, // 房间人数2～20，默认2
-		layout: "Auto", // 默认Default
+			maxUsers: 0, // 房间人数2～20，默认2
+			layout: "Auto", // 默认Default
 
-		showNonVideoUser: true, // 是否显示无视频用户，默认显示
-		showOnlyAudioUser: false, // 是否显示纯音频用户，默认显示
+			showNonVideoUser: true, // 是否显示无视频用户，默认显示
+			showOnlyAudioUser: false, // 是否显示纯音频用户，默认显示
 
-		useFrontFacingCamera: true,
+			useFrontFacingCamera: true,
 
-		onJoinRoom: () => {},
-		onLeaveRoom: () => {},
-		onUserJoin: (user: ZegoUser[]) => {}, // 用户进入回调
-		onUserLeave: (user: ZegoUser[]) => {}, // 用户退入回调
-		onUserAvatarSetter: (user: ZegoUser[]) => {}, // 用户可以设置头像时机回调
-		sharedLinks: [], // 产品链接描述
-		showScreenSharingButton: true, // 是否显示屏幕共享按钮
-		scenario: {
-			mode: ScenarioModel.OneONoneCall, // 场景选择
-			config: {
-				role: LiveRole.Host,
-				liveStreamingMode: undefined,
-				enableVideoMixing: false,
-				videoMixingLayout: VideoMixinLayoutType.AutoLayout,
-				videoMixingOutputResolution: VideoMixinOutputResolution._540P,
-			}, // 对应场景专有配置
-		},
+			onJoinRoom: () => { },
+			onLeaveRoom: () => { },
+			onUserJoin: (user: ZegoUser[]) => { }, // 用户进入回调
+			onUserLeave: (user: ZegoUser[]) => { }, // 用户退入回调
+			onUserAvatarSetter: (user: ZegoUser[]) => { }, // 用户可以设置头像时机回调
+			sharedLinks: [], // 产品链接描述
+			showScreenSharingButton: true, // 是否显示屏幕共享按钮
+			scenario: {
+				mode: ScenarioModel.OneONoneCall, // 场景选择
+				config: {
+					role: LiveRole.Host,
+					liveStreamingMode: undefined,
+					enableVideoMixing: false,
+					videoMixingLayout: VideoMixinLayoutType.AutoLayout,
+					videoMixingOutputResolution: VideoMixinOutputResolution._540P,
+				}, // 对应场景专有配置
+			},
 
-		facingMode: "user",
-		joinRoomCallback: () => {}, // 点击加入房间触发
-		leaveRoomCallback: () => {}, // 退出房间回调
-		userUpdateCallback: () => {},
-		showLayoutButton: true, // 是否显示布局切换按钮
-		showPinButton: true, // 是否显pin按钮
-		whiteboardConfig: {
-			showAddImageButton: false, //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
-			showCreateAndCloseButton: true,
-		},
-		videoResolutionList: [], //视频分辨率可选列表
-		plugins: {},
-		autoLeaveRoomWhenOnlySelfInRoom: false, // 当房间内只剩一个人的时候，自动退出房间
-		showRoomTimer: false, // 是否显示房间计时器
-		videoCodec: "H264", //视频编解码器
-		showRoomDetailsButton: true,
-		showInviteToCohostButton: false, // 主播是否展示邀请观众连麦按钮
-		showRemoveCohostButton: false, // 主播是否展示移下麦按钮
-		showRequestToCohostButton: false, // 观众是否展示申请连麦按钮
-		rightPanelExpandedType: RightPanelExpandedType.None,
-		autoHideFooter: true,
-		enableStereo: false,
-		showLeaveRoomConfirmDialog: true,
-		screenSharingConfig: {
-			resolution: ScreenSharingResolution.Auto,
-		},
-	}
+			facingMode: "user",
+			joinRoomCallback: () => { }, // 点击加入房间触发
+			leaveRoomCallback: () => { }, // 退出房间回调
+			userUpdateCallback: () => { },
+			showLayoutButton: true, // 是否显示布局切换按钮
+			showPinButton: true, // 是否显pin按钮
+			whiteboardConfig: {
+				showAddImageButton: false, //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
+				showCreateAndCloseButton: true,
+			},
+			videoResolutionList: [], //视频分辨率可选列表
+			plugins: {},
+			autoLeaveRoomWhenOnlySelfInRoom: false, // 当房间内只剩一个人的时候，自动退出房间
+			showRoomTimer: false, // 是否显示房间计时器
+			videoCodec: "H264", //视频编解码器
+			showRoomDetailsButton: true,
+			showInviteToCohostButton: false, // 主播是否展示邀请观众连麦按钮
+			showRemoveCohostButton: false, // 主播是否展示移下麦按钮
+			showRequestToCohostButton: false, // 观众是否展示申请连麦按钮
+			rightPanelExpandedType: RightPanelExpandedType.None,
+			autoHideFooter: true,
+			enableStereo: false,
+			showLeaveRoomConfirmDialog: true,
+			screenSharingConfig: {
+				resolution: ScreenSharingResolution.Auto,
+			},
+			language: ZegoUIKitLanguage.ENGLISH
+		}
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage"
 	extraInfoKey = "extra_info"
 	_roomExtraInfo: { [index: string]: any } = {
@@ -188,19 +194,19 @@ export class ZegoCloudRTCCore {
 		micStatus: "OPEN" | "MUTE"
 		cameraStatus: "OPEN" | "MUTE"
 	} = {
-		streamID: "",
-		micStatus: "OPEN",
-		cameraStatus: "OPEN",
-	}
+			streamID: "",
+			micStatus: "OPEN",
+			cameraStatus: "OPEN",
+		}
 	localScreensharingStreamInfo: {
 		streamID: string
 		micStatus: "OPEN"
 		cameraStatus: "OPEN"
 	} = {
-		streamID: "",
-		micStatus: "OPEN",
-		cameraStatus: "OPEN",
-	}
+			streamID: "",
+			micStatus: "OPEN",
+			cameraStatus: "OPEN",
+		}
 	hasPublishedStream = false // 是否有已经推上去的流
 	mixStreamDomain = "" // 混流域名
 	mixUser = {} as ZegoCloudUser // 混流用户数据
@@ -513,8 +519,24 @@ export class ZegoCloudRTCCore {
 				logLevel,
 			})
 		}
+		if (this._config.language) {
+			this.changeIntl();
+		}
 
 		return true
+	}
+
+	// 改变多语言对象
+	async changeIntl() {
+		if (this._config.language) {
+			this.intl = createIntl(
+				{
+					locale: this._config.language,
+					messages: i18nMap[this._config.language],
+				},
+				createIntlCache()
+			);
+		}
 	}
 
 	// Audience变成Cohost
@@ -964,6 +986,7 @@ export class ZegoCloudRTCCore {
 				streamList: ZegoStreamList[],
 				extendedData?: string
 			) => {
+				console.warn("【ZEGOCLOUD】roomStreamUpdate", roomID, streamList, updateType, extendedData);
 				if (updateType === "ADD") {
 					this.mixStreamDomain = changeCDNUrlOrigin(streamList[0]?.urlsFLV?.replace(/[^/]+$/, "") || "")
 					this.waitingHandlerStreams.add = [...this.waitingHandlerStreams.add, ...streamList]
@@ -1108,7 +1131,7 @@ export class ZegoCloudRTCCore {
 						this.onChangeYourDeviceStatusCallback("Microphone", "CLOSE", fromUser)
 					return
 				}
-			} catch (error) {}
+			} catch (error) { }
 
 			this._config.onInRoomCommandReceived && this._config.onInRoomCommandReceived(fromUser, command)
 		})
@@ -1298,7 +1321,7 @@ export class ZegoCloudRTCCore {
 					try {
 						// 防止流附加消息为空解析报错
 						extraInfo = JSON.parse(streamInfo.extraInfo)
-					} catch (err) {}
+					} catch (err) { }
 					try {
 						if (this.isCDNLive) {
 							if (!streamInfo.urlsFLV) {
@@ -1327,15 +1350,15 @@ export class ZegoCloudRTCCore {
 										? "OPEN"
 										: "MUTE"
 									: extraInfo?.isMicrophoneOn
-									? "OPEN"
-									: "MUTE",
+										? "OPEN"
+										: "MUTE",
 								cameraStatus: stream
 									? stream.getVideoTracks().length > 0
 										? "OPEN"
 										: "MUTE"
 									: extraInfo?.isCameraOn
-									? "OPEN"
-									: "MUTE",
+										? "OPEN"
+										: "MUTE",
 								state: "PLAYING",
 								streamID: streamInfo.streamID,
 							}
@@ -1620,7 +1643,7 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.off("IMRecvCustomCommand")
 
 		ZegoCloudRTCCore._zg.setSoundLevelDelegate(false)
-		this.onNetworkStatusCallBack = () => {}
+		this.onNetworkStatusCallBack = () => { }
 		this.onRemoteMediaUpdateCallBack = async (
 			updateType: "DELETE" | "ADD" | "UPDATE",
 			streamList: ZegoCloudRemoteMedia[]
@@ -1632,10 +1655,10 @@ export class ZegoCloudRTCCore {
 			this.subscribeScreenStreamCallBack &&
 				this.subscribeScreenStreamCallBack([...this.zum.remoteScreenStreamList])
 		}
-		this.onRemoteUserUpdateCallBack = () => {}
-		this.onRoomMessageUpdateCallBack = () => {}
-		this.onRoomLiveStateUpdateCallBack = () => {}
-		this.subscribeUserListCallBack = () => {}
+		this.onRemoteUserUpdateCallBack = () => { }
+		this.onRoomMessageUpdateCallBack = () => { }
+		this.onRoomLiveStateUpdateCallBack = () => { }
+		this.subscribeUserListCallBack = () => { }
 		this.zum.reset()
 		this.localStreamInfo = {
 			streamID: "",
@@ -1983,15 +2006,15 @@ export class ZegoCloudRTCCore {
 										? 16 + (videoWidth + 10) * i
 										: Math.floor((outWidth - videoWidth) / 2)
 									: i % 2 === 0
-									? 16
-									: 16 + videoWidth + 10,
+										? 16
+										: 16 + videoWidth + 10,
 							bottom: i <= 1 ? 16 + videoHeight : outHeight - 16,
 							right:
 								len === 3 && i === 2
 									? outWidth - Math.floor((outWidth - videoWidth) / 2)
 									: i % 2 === 0
-									? 16 + videoWidth
-									: outWidth - 16,
+										? 16 + videoWidth
+										: outWidth - 16,
 						},
 						label: {
 							text: u.userName!,

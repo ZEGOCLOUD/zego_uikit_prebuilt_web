@@ -3,7 +3,10 @@ import zegoOne2OneCss from "./zegoOne2One.module.scss";
 import { VideoPlayer } from "./zegoVideoPlayer";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import { SoundLevelMap, UserListMenuItemType } from "../../../../model";
+import { ZegoCloudRTCCore } from "../../../../modules";
+
 export class ZegoOne2One extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   selfInfo: { userID: string };
   onLocalStreamPaused: () => void;
   handleMenuItem?: Function;
@@ -15,6 +18,7 @@ export class ZegoOne2One extends React.PureComponent<{
       return (
         <>
           <VideoPlayer
+            core={this.props.core}
             myClass={zegoOne2OneCss.bigVideo}
             userInfo={this.props.userList[1]}
             muted={false}
@@ -24,6 +28,7 @@ export class ZegoOne2One extends React.PureComponent<{
             volume={this.props.soundLevel![this.props.userList[1].userID] || {}}
           ></VideoPlayer>
           <VideoPlayer
+            core={this.props.core}
             onPause={() => {
               if (
                 this.props.selfInfo.userID === this.props.userList[0].userID
@@ -44,6 +49,7 @@ export class ZegoOne2One extends React.PureComponent<{
     } else if (this.props.userList.length > 0) {
       return (
         <VideoPlayer
+          core={this.props.core}
           myClass={zegoOne2OneCss.bigVideo}
           onPause={() => {
             if (this.props.selfInfo.userID === this.props.userList[0].userID) {

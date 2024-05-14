@@ -7,8 +7,10 @@ import ShowPCManageContext, {
 } from "../../../context/showManage";
 import { ZegoWhiteboardToolsTextTooTips } from "./ZegoWhiteboardToolsTextToolTips";
 import { chooseFile } from "../../../../../util";
+import { ZegoCloudRTCCore } from "../../../../../modules";
 
 export class ZegoWhiteboardTools extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   onToolChange: (type: number, fontSize?: number, color?: string) => void;
   onFontChange: (
     font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
@@ -146,6 +148,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
                 >
                   {this.state.showGraphicsTools && (
                     <ZegoWhiteboardToolsGraphicsTooTips
+                      core={this.props.core}
                       rows={this.props.rows}
                       onToolChange={(type, fontSize: number, color: string) => {
                         this.props.onToolChange(type, fontSize, color);
@@ -247,6 +250,7 @@ export class ZegoWhiteboardTools extends React.PureComponent<{
               >
                 {this.state.showGraphicsTools && (
                   <ZegoWhiteboardToolsGraphicsTooTips
+                    core={this.props.core}
                     rows={this.props.rows}
                     onToolChange={(type, fontSize: number, color: string) => {
                       this.props.onToolChange(type, fontSize, color);
