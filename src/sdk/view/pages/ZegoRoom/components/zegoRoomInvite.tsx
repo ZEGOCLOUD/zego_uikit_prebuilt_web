@@ -9,7 +9,7 @@ export class ZegoRoomInvite extends React.PureComponent<{
   handleCopy(url: string) {
     copy(url);
     ZegoToast({
-      content: "Copied",
+      content: this.props.core.intl.formatMessage({ id: "global.copied" }),
     });
   }
   render(): React.ReactNode {

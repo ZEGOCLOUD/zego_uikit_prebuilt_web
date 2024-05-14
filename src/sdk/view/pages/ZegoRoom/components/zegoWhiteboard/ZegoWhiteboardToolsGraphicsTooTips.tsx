@@ -3,8 +3,10 @@ import ShowPCManageContext, {
   ShowManageType,
 } from "../../../context/showManage";
 import ZegoWhiteboardToolsGraphicsTooTipsCss from "./ZegoWhiteboardToolsGraphicsTooTips.module.scss";
+import { ZegoCloudRTCCore } from "../../../../../modules";
 
 export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   onToolChange: (type: number, fontSize: number, color: string) => void;
   onClose: () => void;
   rows: 1 | 2 | undefined;
@@ -54,13 +56,13 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
   }
 
   render(): React.ReactNode {
+    const { formatMessage } = this.props.core.intl
     return (
       <div
-        className={`${ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools} ${
-          this.props.rows === 2
-            ? ZegoWhiteboardToolsGraphicsTooTipsCss.twoRows
-            : ""
-        } ZegoWhiteboardToolsGraphicsTooTips`}
+        className={`${ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools} ${this.props.rows === 2
+          ? ZegoWhiteboardToolsGraphicsTooTipsCss.twoRows
+          : ""
+          } ZegoWhiteboardToolsGraphicsTooTips`}
         ref={(el) => {
           // console.error("graphicsTools", el);
         }}
