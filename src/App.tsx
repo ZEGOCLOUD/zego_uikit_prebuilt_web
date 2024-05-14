@@ -121,8 +121,7 @@ export default class App extends React.PureComponent {
         window.location.pathname +
         window.location.search +
         "&userID=" +
-        userID +
-        "&lang=" + this.state.lang
+        userID
       );
     }
     if (process.env.REACT_APP_PATH === "1on1_call") {
@@ -135,7 +134,8 @@ export default class App extends React.PureComponent {
           window.location.pathname +
           "?roomID=" +
           roomID +
-          "&role=Cohost",
+          "&role=Cohost" +
+          "&lang=" + this.state.lang,
       });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       console.warn("【Zego Demo】app live_stream");
@@ -150,7 +150,8 @@ export default class App extends React.PureComponent {
             "?roomID=" +
             roomID +
             "&role=Cohost&liveStreamingMode=" +
-            liveStreamingMode,
+            liveStreamingMode +
+            "&lang=" + this.state.lang,
         });
         this.state.showSettingsBtn = true;
       }
@@ -162,7 +163,8 @@ export default class App extends React.PureComponent {
           "?roomID=" +
           roomID +
           "&role=Audience&liveStreamingMode=" +
-          liveStreamingMode,
+          liveStreamingMode +
+          "&lang=" + this.state.lang,
       });
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       console.warn("【Zego Demo】app video_conference");
