@@ -265,6 +265,18 @@ export default class App extends React.PureComponent {
             console.warn("onInRoomCustomCommandReceived", command)
           },
           //   showScreenSharingButton: true,
+          // screenSharingConfig: {
+          //   onError: (code) => {
+          //     let string = '';
+          //     switch (code) {
+          //       case 1103010: {
+          //         string = '无屏幕共享权限'
+          //         break;
+          //       }
+          //     }
+          //     return string;
+          //   }
+          // },
           lowerLeftNotification: {
             showTextChat: true,
           },
@@ -341,6 +353,9 @@ export default class App extends React.PureComponent {
           // 	return wrapper
           // },
           language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
+          // leaveRoomDialogConfig: {
+          //   descriptionText: '',
+          // }
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"
