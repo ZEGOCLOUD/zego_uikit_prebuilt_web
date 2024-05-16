@@ -854,27 +854,37 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			});
 		} catch (error: any) {
 			console.error(error);
-			if (error?.code === 1103043) {
-				ZegoModelShow(
-					{
-						header: formatMessage({ id: "global.notice" }),
-						contentText: formatMessage({ id: "global.browserNotSupportSharing" }),
-						okText: "Okay",
-					},
-					document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
-				);
-			} else if (error?.code === 1103010 && error?.msg.includes("Permission")) {
-				ZegoModelShow(
-					{
-						header: formatMessage({ id: "global.shareAuthority" }),
-						contentText: formatMessage({ id: "global.shareAuthorityDesc" }),
-						okText: "Okay",
-					},
-					document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
-				);
-			} else if (error?.code !== 1103042) {
+			if (!this.props.core._config.screenSharingConfig?.onError) {
+				if (error?.code === 1103043) {
+					ZegoModelShow(
+						{
+							header: formatMessage({ id: "global.notice" }),
+							contentText: formatMessage({ id: "global.browserNotSupportSharing" }),
+							okText: "Okay",
+						},
+						document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+					);
+				} else if (error?.code === 1103010 && error?.msg.includes("Permission")) {
+					ZegoModelShow(
+						{
+							header: formatMessage({ id: "global.shareAuthority" }),
+							contentText: formatMessage({ id: "global.shareAuthorityDesc" }),
+							okText: "Okay",
+						},
+						document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+					);
+				} else if (error?.code !== 1103042) {
+					ZegoToast({
+						content: formatMessage({ id: "room.presentingFailed" }, { code: error?.code || -1 }),
+					});
+				}
+			} else {
+				// custom toast text
+				const customToastText = this.props.core._config.screenSharingConfig?.onError(error?.code);
+				// no text, Business side customization toast
+				if (!customToastText) return;
 				ZegoToast({
-					content: formatMessage({ id: "room.presentingFailed" }, { code: error?.code || -1 }),
+					content: customToastText,
 				});
 			}
 		}
@@ -1039,8 +1049,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		} else {
 			ZegoModelShow(
 				{
-					header: this.props.core.intl.formatMessage({ id: "global.leaveDialogTitle" }),
-					contentText: this.props.core.intl.formatMessage({ id: "global.leaveDialogDesc" }),
+					header: this.props.core._config.leaveRoomDialogConfig?.titleText ?? this.props.core.intl.formatMessage({ id: "global.leaveDialogTitle" }),
+					contentText: this.props.core._config.leaveRoomDialogConfig?.descriptionText ?? this.props.core.intl.formatMessage({ id: "global.leaveDialogDesc" }),
 					okText: this.props.core.intl.formatMessage({ id: "global.confirm" }),
 					cancelText: this.props.core.intl.formatMessage({ id: "global.cancel" }),
 					onOk: () => {

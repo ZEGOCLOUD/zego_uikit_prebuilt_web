@@ -1121,8 +1121,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.confirmLeaveRoom();
     } else {
       ZegoConfirm({
-        title: this.props.core.intl.formatMessage({ id: "global.leaveDialogTitle" }),
-        content: this.props.core.intl.formatMessage({ id: "global.leaveDialogDesc" }),
+        title: this.props.core._config.leaveRoomDialogConfig?.titleText ?? this.props.core.intl.formatMessage({ id: "global.leaveDialogTitle" }),
+        content: this.props.core._config.leaveRoomDialogConfig?.descriptionText ?? this.props.core.intl.formatMessage({ id: "global.leaveDialogDesc" }),
         cancel: this.props.core.intl.formatMessage({ id: "global.cancel" }),
         confirm: this.props.core.intl.formatMessage({ id: "global.confirm" }),
         closeCallBack: (confirm: boolean) => {

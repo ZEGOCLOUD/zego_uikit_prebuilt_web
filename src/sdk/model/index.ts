@@ -189,6 +189,8 @@ export interface ZegoCloudRoomConfig {
 		height?: number
 		frameRate?: number
 		maxBitRate?: number
+		// 2.2.0
+		onError?: (errorCode: number) => string | undefined // custom screen sharing failure pop-up text or pop-up
 	}
 	// 1.11.0
 	onReturnToHomeScreenClicked?: () => void //
@@ -197,6 +199,11 @@ export interface ZegoCloudRoomConfig {
 	customMessageUI?: (msg: InRoomMessageInfo) => HTMLElement
 	// 2.1.0
 	language?: ZegoUIKitLanguage
+	// 2.2.0
+	leaveRoomDialogConfig?: {
+		titleText?: string, // custom leave room confrim dialog title
+		descriptionText?: string, // // custom leave room confrim dialog desctiption
+	}
 }
 export enum RightPanelExpandedType {
 	None = "None",
