@@ -105,6 +105,8 @@ declare interface ZegoCloudRoomConfig {
 		height?: number
 		frameRate?: number
 		maxBitRate?: number
+		// 2.2.0
+		onError?: (errorCode: number) => string | undefined // custom screen sharing failure pop-up text or pop-up
 	} // Screen sharing settings, resolution settings
 
 	// 1.2 Prejoin view
@@ -174,7 +176,12 @@ declare interface ZegoCloudRoomConfig {
 	addInRoomMessageMessageAttributes?: () => any //  add in room message message attribute. return custom message attribute.
 	customMessageUI?: (msg: InRoomMessageInfo) => Element // Custom message UI. need return Element.
 	// 2.1.0
-	language?: ZegoUIKitLanguage
+	language?: ZegoUIKitLanguage // set language
+	// 2.2.0
+	leaveRoomDialogConfig?: {
+		titleText?: string, // custom leave room confrim dialog title
+		descriptionText?: string, // // custom leave room confrim dialog desctiption
+	}
 }
 
 export enum RightPanelExpandedType {
@@ -252,7 +259,7 @@ declare interface ZegoCallInvitationConfig {
 	//When the call exceeds the fixed time, if there are still callees who do not respond, the caller will receive the callback, convert the internal data into corresponding data and throw it.
 	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void;
 	// 2.1.0
-	language?: ZegoUIKitLanguage
+	language?: ZegoUIKitLanguage // set language
 }
 
 declare interface ZegoSignalingPluginNotificationConfig {
