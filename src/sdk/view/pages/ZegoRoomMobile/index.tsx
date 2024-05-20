@@ -871,15 +871,19 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.state.localStream.getAudioTracks().length > 0
     ) {
       result = await this.props.core.muteMicrophone(this.state.micOpen);
-      await this.props.core.setStreamExtraInfo(
-        this.localStreamID as string,
-        JSON.stringify({
-          isCameraOn: this.state.cameraOpen,
-          isMicrophoneOn: !this.state.micOpen,
-          hasVideo: !this.props.core.status.videoRefuse,
-          hasAudio: !this.props.core.status.audioRefuse,
-        })
-      );
+      try {
+        await this.props.core.setStreamExtraInfo(
+          this.localStreamID as string,
+          JSON.stringify({
+            isCameraOn: this.state.cameraOpen,
+            isMicrophoneOn: !this.state.micOpen,
+            hasVideo: !this.props.core.status.videoRefuse,
+            hasAudio: !this.props.core.status.audioRefuse,
+          })
+        );
+      } catch (error: any) {
+        console.log('setStreamExtraInfo error', error);
+      }
     }
 
     this.micStatus = !this.state.micOpen ? 1 : 0;
@@ -922,15 +926,19 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.state.localStream,
         this.state.cameraOpen
       );
-      await this.props.core.setStreamExtraInfo(
-        this.localStreamID as string,
-        JSON.stringify({
-          isCameraOn: !this.state.cameraOpen,
-          isMicrophoneOn: this.state.micOpen,
-          hasVideo: !this.props.core.status.videoRefuse,
-          hasAudio: !this.props.core.status.audioRefuse,
-        })
-      );
+      try {
+        await this.props.core.setStreamExtraInfo(
+          this.localStreamID as string,
+          JSON.stringify({
+            isCameraOn: !this.state.cameraOpen,
+            isMicrophoneOn: this.state.micOpen,
+            hasVideo: !this.props.core.status.videoRefuse,
+            hasAudio: !this.props.core.status.audioRefuse,
+          })
+        );
+      } catch (error: any) {
+        console.log('setStreamExtraInfo error', error);
+      }
     }
     this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
     if (result) {
