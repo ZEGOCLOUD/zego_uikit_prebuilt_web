@@ -272,4 +272,13 @@ export class ZegoUIKitPrebuilt {
 		ZegoUIKitPrebuilt.core._zimManager.changeIntl();
 		console.warn("【ZEGOCLOUD】setLanguage", language, ZegoUIKitPrebuilt.core);
 	}
+
+	// 获取 call kit 房间ID
+	getRoomID(): string {
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return "【ZEGOCLOUD】 please call init first !!";
+		}
+		return ZegoUIKitPrebuilt.core._expressConfig.roomID;
+	}
 }
