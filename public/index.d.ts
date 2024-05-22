@@ -346,4 +346,7 @@ export declare class ZegoUIKitPrebuilt {
 	sendInRoomCustomCommand(command: object, priority?: MessagePriority): Promise<ZegoSignalingInRoomCommandMessage>;
 	hangUp(): void;
 	setLanguage(language: ZegoUIKitLanguage): void;
+	// 2.3.0
+	autoLeaveRoomWhenOnlySelfInRoom: boolean;
+	getRoomID(): string;
 }

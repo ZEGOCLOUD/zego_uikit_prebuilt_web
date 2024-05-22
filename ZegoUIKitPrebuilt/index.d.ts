@@ -106,7 +106,7 @@ declare interface ZegoCloudRoomConfig {
 		frameRate?: number
 		maxBitRate?: number
 		// 2.2.0
-		onError?: (errorCode: number) => string | undefined // custom screen sharing failure pop-up text or pop-up
+		onError?: (errorCode: number) => string | undefined // Screen sharing failure callback. If you need to customize the prompt text, you can return the corresponding string based on the error code. If you need to customize the UI, you can return an empty string.
 	} // Screen sharing settings, resolution settings
 
 	// 1.2 Prejoin view
@@ -346,4 +346,7 @@ export declare class ZegoUIKitPrebuilt {
 	sendInRoomCustomCommand(command: object, priority?: MessagePriority): Promise<ZegoSignalingInRoomCommandMessage>;
 	hangUp(): void;
 	setLanguage(language: ZegoUIKitLanguage): void;
+	// 2.3.0
+	autoLeaveRoomWhenOnlySelfInRoom: boolean;
+	getRoomID(): string;
 }
