@@ -7,6 +7,7 @@
   --selectedColor: #0055ff;
   --bgColor: #fff;
 }
+
 .blackTheme {
   --labelColor: #a6a7ad;
   --inputColor: #fff;
@@ -15,18 +16,19 @@
   --hoverBgColor: #36394b;
   --selectedColor: #fff;
   --bgColor: #2c2f3e;
+
   .optionsWrapper {
     border-color: #3d4054;
   }
+
   .selectInputWrapper {
-    & > span {
-      background: url("../../../sdkAssets/icon_settings_black_arrow.png")
-        no-repeat center/cover;
+    &>span {
+      background: url("../../../sdkAssets/icon_settings_black_arrow.png") no-repeat center/cover;
     }
+
     &.inputActived {
-      & > span {
-        background: url("../../../sdkAssets/icon_settings_black_arrow_active.png")
-          no-repeat center/cover;
+      &>span {
+        background: url("../../../sdkAssets/icon_settings_black_arrow_active.png") no-repeat center/cover;
       }
     }
   }
@@ -37,6 +39,17 @@
   display: flex;
   flex-direction: column;
 }
+
+.mobileSelectWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  .selectInputWrapper {
+    width: 224px;
+  }
+}
+
 .selectLabel {
   font-size: 12px;
   font-weight: 400;
@@ -45,6 +58,7 @@
   margin-bottom: 6px;
   padding-top: 2px;
 }
+
 .selectInputWrapper {
   width: 264px;
   height: 40px;
@@ -56,7 +70,8 @@
   justify-content: space-between;
   padding: 10px 14px;
   cursor: pointer;
-  & > p {
+
+  &>p {
     width: 208px;
     height: 20px;
     font-size: 14px;
@@ -67,24 +82,27 @@
     text-overflow: ellipsis;
     overflow: hidden;
   }
-  & > span {
+
+  &>span {
     width: 18px;
     height: 18px;
-    background: url("../../../sdkAssets/icon_settings_arrow.png") no-repeat
-      center/cover;
+    background: url("../../../sdkAssets/icon_settings_arrow.png") no-repeat center/cover;
     margin-left: 8px;
   }
+
   .noOptions {
     color: var(--placeholderColor);
   }
+
   &.inputActived {
     border-color: var(--inputSelectedColor);
-    & > span {
-      background: url("../../../sdkAssets/icon_settings_arrow_active.png")
-        no-repeat center/cover;
+
+    &>span {
+      background: url("../../../sdkAssets/icon_settings_arrow_active.png") no-repeat center/cover;
     }
   }
 }
+
 .optionsWrapper {
   position: absolute;
   top: 69px;
@@ -103,10 +121,12 @@
   box-sizing: border-box;
   flex-direction: column;
   display: none;
+
   &.showList {
     display: flex;
   }
 }
+
 .option {
   width: 252px;
   height: 34px;
@@ -122,9 +142,11 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+
   &:hover {
     background-color: var(--hoverBgColor);
   }
+
   &.optionSelected {
     color: var(--selectedColor);
   }

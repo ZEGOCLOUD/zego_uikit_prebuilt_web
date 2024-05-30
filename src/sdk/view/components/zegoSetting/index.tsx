@@ -11,6 +11,7 @@ import { ScenarioModel, ZegoSettingsProps } from "../../../model";
 import { getVideoResolution } from "../../../util";
 import { SoundMeter } from "../../../modules/soundmeter";
 import { FormattedMessage } from "react-intl";
+import { isPc } from "../../../util";
 export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   state: {
     visible: boolean;
@@ -344,7 +345,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
             : ZegoSettingsCss.whiteTheme
           } settings_audio`}
       >
-        <div className={ZegoSettingsCss.body}>
+        <div className={`${isPc() ? ZegoSettingsCss.body : ZegoSettingsCss.mobileBody}`}>
           <div className={ZegoSettingsCss.header}>
             <div><FormattedMessage id="global.settings" /></div>
             <div

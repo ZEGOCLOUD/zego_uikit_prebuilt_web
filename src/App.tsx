@@ -61,6 +61,8 @@ export default class App extends React.PureComponent {
     isScreenPortrait: false,
     showLangBox: false,
     lang: getUrlParams().get("lang") || "en",
+    showWaitingPage: false,
+    callees: []
   };
 
   settingsEl = null;
@@ -246,6 +248,7 @@ export default class App extends React.PureComponent {
           maxUsers,
           //   layout: "Auto",
           onJoinRoom: () => {
+            // sessionStorage.setItem('roomID', zp.getRoomID());
             console.log("test:leaveRoomCallback")
             window?.parent?.postMessage("leaveRoom", "*")
           }, // 退出房间回调
@@ -369,6 +372,24 @@ export default class App extends React.PureComponent {
         zp.joinRoom(param);
       };
     }
+
+    // test 通话恢复
+    // if (sessionStorage.getItem('roomID')) {
+    //   let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+    //     252984006,
+    //     "16435f3bdb307f3020b3f9e4259a29f0",
+    //     sessionStorage.getItem('roomID') as string,
+    //     userID,
+    //     "user_" + userID,
+    //     60 * 60 * 24
+    //   );
+    //   this.zp = ZegoUIKitPrebuilt.create(token);
+    //   this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
+    //   this.zp.joinRoom({
+    //     showPreJoinView: false,
+    //   });
+    //   console.log('===roomid', sessionStorage.getItem('roomID'))
+    // }
   }
   private async initCallInvitation(userID: string, roomID: string) {
     this.state.userID = userID;
@@ -396,11 +417,17 @@ export default class App extends React.PureComponent {
         console.warn("【demo】onCallInvitationDialogShowed", callType, caller, refuse, accept, data);
         this.inviter = caller;
       },
+      // enableCustomCallInvitationWaitingPage: true,
       onWaitingPageWhenSending: (callType, callees, cancel) => {
         console.warn("【demo】onCallInvitationWaitingPageShowed", callType, callees, cancel);
+        // this.setState({
+        //   callees,
+        //   showWaitingPage: true
+        // })
       },
       onSetRoomConfigBeforeJoining: (callType) => {
-        console.warn("【demo】onSetRoomConfigBeforeJoining", callType);
+        console.warn("【demo】onSetRoomConfigBeforeJoining", callType, this.zp.getRoomID());
+        // sessionStorage.setItem('roomID', this.zp.getRoomID());
         if (this.state.invitees.length > 1) {
           this.showToast("Waiting for others to join the call.");
         }
@@ -416,6 +443,7 @@ export default class App extends React.PureComponent {
           showTurnOffRemoteCameraButton: true,
           showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
+          // autoLeaveRoomWhenOnlySelfInRoom: false,
         };
       },
       onCallInvitationEnded: (reason, data) => {
@@ -893,8 +921,23 @@ export default class App extends React.PureComponent {
             </div>
           </div>
         )}
+
         {this.state.toastShow && (
           <div className={`${APP.toast}`}>{this.state.toastText}</div>
+        )}
+
+        {this.state.showWaitingPage && (
+          <div className="wait-page" style={{ position: "absolute", width: "100%", height: "100%", background: "#3b3b3b" }}>
+            {this.state.callees.map((item) => {
+              return (
+                <div>
+                  <div>{item.userID}</div>
+                  <div>{item.userName}</div>
+
+                </div>
+              )
+            })}
+          </div>
         )}
       </div>
     );

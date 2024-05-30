@@ -103,6 +103,32 @@
   box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.75);
 }
 
+.mobileBody {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 360px;
+  height: 346px;
+  background: var(--bgColor);
+  border: 1px solid var(--borderColor);
+  border-radius: 8px;
+  box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.75);
+
+  .left {
+    width: 92px;
+  }
+
+  .rightAudio,
+  .rightVideo {
+    padding: 18px 20px 18px 24px;
+  }
+
+  .previewVideo {
+    width: 220px;
+    height: 100px;
+  }
+}
+
 .header {
   display: flex;
   flex: 0 0 auto;

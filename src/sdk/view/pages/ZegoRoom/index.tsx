@@ -1720,6 +1720,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			}
 		);
 	}
+
+	// 设置扬声器 ID
 	private setAllSinkId(speakerId: string) {
 		const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
 		room?.querySelectorAll("video").forEach((video: any) => {

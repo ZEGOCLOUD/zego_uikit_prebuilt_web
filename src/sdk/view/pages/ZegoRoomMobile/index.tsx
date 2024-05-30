@@ -52,6 +52,7 @@ import ZegoAudio from "../../components/zegoMedia/audio";
 import { ZegoWhiteboard } from "./components/zegoWhiteboard";
 import { formatTime } from "../../../modules/tools/util";
 import { ZegoTimer } from "./components/zegoTimer";
+import { ZegoSettings } from "../../components/zegoSetting";
 
 import { ZegoMixPlayer } from "./components/zegoMixPlayer";
 import { ZegoBroadcastMessageInfo, ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity"
@@ -92,6 +93,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     isRequestingCohost: boolean; // 是否正在申请连麦
     unreadInviteList: Set<string>; // 是否有未读的连麦申请
     isMixing: "1" | "0"; // 是否开始混流
+    showZegoSettings: boolean;
+    selectMic: string | undefined;
+    selectCamera: string | undefined;
+    selectSpeaker: string | undefined;
+    selectVideoResolution: string;
+    showNonVideoUser: boolean;
   } = {
       micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
       cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
@@ -119,6 +126,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       isRequestingCohost: false,
       unreadInviteList: new Set(),
       isMixing: "0",
+      showZegoSettings: false,
+      selectMic: this.props.core.status.micDeviceID,
+      selectCamera: this.props.core.status.cameraDeviceID,
+      selectSpeaker: this.props.core.status.speakerDeviceID,
+      selectVideoResolution:
+        this.props.core.status.videoResolution || this.props.core._config.videoResolutionList![0],
+      showNonVideoUser: this.props.core._config.showNonVideoUser as boolean,
     };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
@@ -169,6 +183,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   componentDidMount() {
+    this.setAllSinkId(this.state.selectSpeaker || "");
     window.addEventListener(
       "orientationchange",
       this.onOrientationChange.bind(this),
@@ -731,13 +746,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       try {
         let localStream: MediaStream | null = null;
         try {
-          const solution = getVideoResolution(
-            this.props.core._config.videoResolutionList![0]
-          );
+          const solution = getVideoResolution(this.state.selectVideoResolution);
           localStream = await this.props.core.createStream({
             camera: {
               video: !this.props.core.status.videoRefuse,
               audio: !this.props.core.status.audioRefuse,
+              videoInput: this.state.selectCamera,
+              audioInput: this.state.selectMic,
               videoQuality: 4,
               facingMode: this.faceModel ? "user" : "environment",
               channelCount: this.props.core._config.enableStereo ? 2 : 1,
@@ -1202,6 +1217,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
     this.props.core.localStream = undefined;
+
+    this.props.core.status.micDeviceID = this.state.selectMic;
+    this.props.core.status.cameraDeviceID = this.state.selectCamera;
+    this.props.core.status.speakerDeviceID = this.state.selectSpeaker;
+    this.props.core.status.videoResolution = this.state.selectVideoResolution;
 
     this.props.core.leaveRoom();
     this.props.leaveRoom && this.props.leaveRoom(isKickedOut);
@@ -2207,6 +2227,25 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
     metaEl.content = content;
   }
+
+  // 打开设置弹框
+  handleSetting() {
+    this.setState({
+      showZegoSettings: true,
+    });
+  }
+
+  // 设置扬声器 ID
+  private setAllSinkId(speakerId: string) {
+    const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
+    room?.querySelectorAll("video").forEach((video: any) => {
+      video?.setSinkId?.(speakerId || "");
+    });
+    room?.querySelectorAll("audio").forEach((audio: any) => {
+      audio?.setSinkId?.(speakerId || "");
+    });
+  }
+
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
@@ -2230,6 +2269,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               !!this.props.core._config.showTurnOffRemoteMicrophoneButton ||
               !!this.props.core._config.showRemoveUserButton) &&
             this.getShownUser().length > 1,
+          speakerId: this.state.selectSpeaker,
           whiteboard_page: this.state.zegoSuperBoardView?.getCurrentSuperBoardSubView()?.getCurrentPage() || 1,
           whiteboard_toolType: this.props.core.zegoSuperBoard?.getToolType() || 0,
           whiteboard_fontSize: this.props.core.zegoSuperBoard?.getFontSize() || 0,
@@ -2404,6 +2444,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                                 <span>{formatMessage({ id: "mobileRoom.whiteboard" })}</span>
                               </div>
                             )}
+
+                          {
+                            <div onClick={() => { this.handleSetting() }}>
+                              <i className={ZegoRoomCss.settings}></i>
+                              <span>{formatMessage({ id: "global.settings" })}</span>
+                            </div>
+                          }
                         </div>
                       </div>
                     )}
@@ -2468,6 +2515,85 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 Live
               </button>
             )}
+          {this.state.showZegoSettings && (
+            <ZegoSettings
+              core={this.props.core}
+              theme={"black"}
+              initDevices={{
+                mic: this.state.selectMic,
+                cam: this.state.selectCamera,
+                speaker: this.state.selectSpeaker,
+                videoResolve: this.state.selectVideoResolution,
+                showNonVideoUser: this.state.showNonVideoUser,
+              }}
+              closeCallBack={() => {
+                this.setState({
+                  showZegoSettings: false,
+                })
+              }}
+              onMicChange={(deviceID: string) => {
+                this.setState(
+                  {
+                    selectMic: deviceID,
+                  },
+                  () => {
+                    if (this.state.localStream) {
+                      this.props.core.useMicrophoneDevice(this.state.localStream, deviceID)
+                    }
+                  }
+                )
+              }}
+              onCameraChange={(deviceID: string) => {
+                this.setState(
+                  {
+                    selectCamera: deviceID,
+                  },
+                  async () => {
+                    if (this.state.localStream) {
+                      await this.props.core.useCameraDevice(this.state.localStream, deviceID)
+                      this.setState({
+                        cameraOpen: true,
+                      })
+                    }
+                  }
+                )
+              }}
+              onSpeakerChange={(deviceID: string) => {
+                this.setState(
+                  {
+                    selectSpeaker: deviceID,
+                  },
+                  () => {
+                    this.setAllSinkId(deviceID)
+                  }
+                )
+              }}
+              onVideoResolutionChange={(level: string) => {
+                this.setState(
+                  {
+                    selectVideoResolution: level,
+                  },
+                  () => {
+                    if (this.state.localStream) {
+                      const { width, height, bitrate, frameRate } = getVideoResolution(level)
+                      this.props.core.setVideoConfig(this.state.localStream, {
+                        width,
+                        height,
+                        maxBitrate: bitrate,
+                        frameRate,
+                      })
+                    }
+                  }
+                )
+              }}
+              onShowNonVideoChange={(selected: boolean) => {
+                this.props.core._config.showNonVideoUser = selected
+                this.props.core.setShowNonVideo(selected)
+                this.setState({
+                  showNonVideoUser: selected,
+                })
+              }}></ZegoSettings>
+          )}
         </div>
       </ShowManageContext.Provider>
     )
