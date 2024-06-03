@@ -337,6 +337,7 @@ export declare class ZegoUIKitPrebuilt {
 		callees: ZegoUser[];
 		callType: ZegoInvitationType;
 		timeout?: number;
+		roomID?: string;
 		data?: string;
 		notificationConfig?: ZegoSignalingPluginNotificationConfig;
 	}): Promise<{

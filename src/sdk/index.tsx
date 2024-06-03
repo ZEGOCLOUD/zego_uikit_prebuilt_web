@@ -215,6 +215,7 @@ export class ZegoUIKitPrebuilt {
 		callees: ZegoUser[];
 		callType: ZegoInvitationType;
 		timeout?: number;
+		roomID?: string;
 		data?: string;
 		notificationConfig?: ZegoSignalingPluginNotificationConfig;
 	}): Promise<{ errorInvitees: ZegoUser[] }> {
@@ -222,7 +223,7 @@ export class ZegoUIKitPrebuilt {
 			console.error("【ZEGOCLOUD】Please add ZIM plugin first");
 			return Promise.reject("ZEGOCLOUD】Please add ZIM plugin first");
 		}
-		const { callees, callType, timeout = 60, data = "", notificationConfig } = params;
+		const { callees, callType, timeout = 60, roomID, data = "", notificationConfig } = params;
 		if (!Array.isArray(callees) || callees.length < 1) {
 			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callees !!");
 		} else if (callees.length > 9) {
@@ -232,7 +233,7 @@ export class ZegoUIKitPrebuilt {
 			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callType !!");
 		}
 
-		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation(callees, callType, timeout, data, notificationConfig);
+		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation(callees, callType, timeout, data, roomID, notificationConfig);
 	}
 
 	async sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean> {

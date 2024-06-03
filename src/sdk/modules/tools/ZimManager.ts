@@ -378,6 +378,7 @@ export class ZimManager {
 		type: number,
 		timeout: number,
 		data: string,
+		roomID?: string,
 		notificationConfig?: ZegoSignalingPluginNotificationConfig
 	): Promise<{ errorInvitees: ZegoUser[] }> {
 		if (this.callInfo.callID) return Promise.reject("You already have a call invitation!");
@@ -385,12 +386,12 @@ export class ZimManager {
 		if (this.inSendOperation) return Promise.reject("send invitation repeat !!");
 		this.inSendOperation = true;
 		const inviteesID = invitees.map((i) => i.userID);
-		const roomID = `call_${this.expressConfig.userID}_${new Date().getTime()}`;
+		const zegoRoomID = roomID || `call_${this.expressConfig.userID}_${new Date().getTime()}`;
 		if (notificationConfig) {
 			this.notificationConfig = notificationConfig;
 		}
 		const _data = {
-			call_id: roomID,
+			call_id: zegoRoomID,
 			invitees: invitees.map((u) => ({
 				user_id: u.userID,
 				user_name: u.userName,
@@ -455,7 +456,7 @@ export class ZimManager {
 					userName: this.expressConfig.userName,
 				},
 				acceptedInvitees: [],
-				roomID,
+				roomID: zegoRoomID,
 				type,
 				isGroupCall: invitees.length > 1,
 			};
