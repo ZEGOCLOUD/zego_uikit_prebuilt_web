@@ -170,11 +170,13 @@ export class ZimManager {
 								this.refuseInvitation("decline");
 								callInvitationControl.callInvitationDialogHide();
 								this.endCall(CallInvitationEndReason.Declined);
+								this.config?.onIncomingCallAcceptButtonPressed?.();
 							},
 							() => {
 								this.clearIncomingTimer();
 								this.acceptInvitation();
 								this.notifyJoinRoomCallback();
+								this.config?.onIncomingCallDeclineButtonPressed?.();
 							},
 							this.languageManager,
 							this.config?.ringtoneConfig?.incomingCallUrl
@@ -196,11 +198,13 @@ export class ZimManager {
 						this.refuseInvitation("decline", "", data);
 						callInvitationControl.callInvitationDialogHide();
 						this.endCall(CallInvitationEndReason.Declined);
+						this.config?.onIncomingCallAcceptButtonPressed?.();
 					};
 					const accept = (data?: string) => {
 						this.clearIncomingTimer();
 						this.acceptInvitation(data);
 						this.notifyJoinRoomCallback();
+						this.config?.onIncomingCallDeclineButtonPressed?.();
 					};
 					this.config?.onConfirmDialogWhenReceiving?.(
 						type,

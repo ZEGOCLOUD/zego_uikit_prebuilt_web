@@ -405,6 +405,11 @@ export interface ZegoCallInvitationConfig {
 	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void
 	// 2.1.0
 	language?: ZegoUIKitLanguage
+	// 2.6.0
+	// 被叫者点击接收按钮回调
+	onIncomingCallAcceptButtonPressed?: () => void
+	// 被叫者点击拒绝按钮回调
+	onIncomingCallDeclineButtonPressed?: () => void
 }
 export type CancelCallInvitationFunc = (data?: string) => void // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void // 接受邀请

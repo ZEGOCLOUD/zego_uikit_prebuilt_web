@@ -528,6 +528,12 @@ export default class App extends React.PureComponent {
       onOutgoingCallTimeout: (callID: string, callees: ZegoUser[]) => {
         console.warn("onOutgoingCallTimeout", callID, callees);
       },
+      onIncomingCallDeclineButtonPressed: () => {
+        console.warn('onIncomingCallDeclineButtonPressed');
+      },
+      onIncomingCallAcceptButtonPressed: () => {
+        console.warn('onIncomingCallAcceptButtonPressed');
+      }
     });
   }
   private getLiveStreamingMode(): string {
