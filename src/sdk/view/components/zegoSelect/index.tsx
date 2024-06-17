@@ -1,5 +1,6 @@
 import React from "react";
 import ZegoSelectCss from "./index.module.scss";
+import { isPc } from "../../../util";
 export interface ZegoSelectProps {
   label?: string;
   placeholder?: string;
@@ -78,11 +79,10 @@ export class ZegoSelect extends React.Component<ZegoSelectProps> {
   render(): React.ReactNode {
     return (
       <div
-        className={`${ZegoSelectCss.selectWrapper} ${
-          this.props.theme === "black"
+        className={`${isPc() ? ZegoSelectCss.selectWrapper : ZegoSelectCss.mobileSelectWrapper} ${this.props.theme === "black"
             ? ZegoSelectCss.blackTheme
             : ZegoSelectCss.whiteTheme
-        }`}
+          }`}
       >
         <label className={ZegoSelectCss.selectLabel}>{this.props.label}</label>
         <div

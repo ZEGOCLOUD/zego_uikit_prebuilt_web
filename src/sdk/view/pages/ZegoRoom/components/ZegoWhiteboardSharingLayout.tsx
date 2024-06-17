@@ -15,6 +15,7 @@ import {
   ZegoLoadingHide,
   ZegoLoadingShow,
 } from "../../../components/zegoLoading";
+import { FormattedMessage } from "react-intl";
 
 export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhiteboardSharingLayoutProps> {
   container: HTMLDivElement | null = null;
@@ -25,10 +26,10 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
     rows: 1 | 2;
     fullScreen: boolean;
   } = {
-    currentZoom: 100,
-    rows: 1,
-    fullScreen: false,
-  };
+      currentZoom: 100,
+      rows: 1,
+      fullScreen: false,
+    };
   static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
   componentDidMount() {
@@ -55,6 +56,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
         (this.state.fullScreen && this.props.userList.length > 0) ||
         this.props.userList.length === 0,
     });
+    const { formatMessage } = this.props.core.intl;
     return (
       <div className={ZegoSidebarCss.sidebarWrapper}>
         <div
@@ -92,8 +94,8 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                             preState.currentZoom - 25 > 300
                               ? 300
                               : preState.currentZoom - 25 < 100
-                              ? 100
-                              : preState.currentZoom - 25,
+                                ? 100
+                                : preState.currentZoom - 25,
                         };
                       },
                       () => {
@@ -120,8 +122,8 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                             preState.currentZoom + 25 > 300
                               ? 300
                               : preState.currentZoom + 25 < 100
-                              ? 100
-                              : preState.currentZoom + 25,
+                                ? 100
+                                : preState.currentZoom + 25,
                         };
                       },
                       () => {
@@ -165,12 +167,13 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                   this.props.onclose();
                 }}
               >
-                Stop Presenting
+                <FormattedMessage id="room.stopPresenting" />
               </div>
             )}
           </div>
           <div className={zegoWhiteboardSharingLayout.content}>
             <ZegoWhiteboardTools
+              core={this.props.core}
               rows={this.state.rows}
               onToolChange={async (
                 type: number,
@@ -259,9 +262,8 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
               }}
             ></div>
             <div
-              className={`${ZegoSidebarCss.fullScreenBtn} ${
-                this.state.fullScreen ? ZegoSidebarCss.expend : ""
-              } ${ZegoSidebarCss.whiteboardFull}`}
+              className={`${ZegoSidebarCss.fullScreenBtn} ${this.state.fullScreen ? ZegoSidebarCss.expend : ""
+                } ${ZegoSidebarCss.whiteboardFull}`}
               onClick={() => {
                 this.props.handleFullScreen &&
                   this.props.handleFullScreen(!this.state.fullScreen);
@@ -271,7 +273,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
               }}
             >
               <p>
-                {this.state.fullScreen ? "Exit full screen" : "Full screen"}
+                {this.state.fullScreen ? formatMessage({ id: "room.exitFullScreen" }) : formatMessage({ id: "room.fullScreen" })}
               </p>
             </div>
           </div>
@@ -324,6 +326,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
               }
               return (
                 <VideoPlayer
+                  core={this.props.core}
                   key={user.userID}
                   userInfo={user}
                   muted={user.userID === this.props.selfInfo.userID}

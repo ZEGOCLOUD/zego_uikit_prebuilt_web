@@ -16,6 +16,7 @@ import {
 	ZegoInvitationType,
 	ZegoSignalingInRoomCommandMessage,
 	ZegoSignalingPluginNotificationConfig,
+	ZegoUIKitLanguage,
 	ZegoUser,
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
@@ -214,6 +215,7 @@ export class ZegoUIKitPrebuilt {
 		callees: ZegoUser[];
 		callType: ZegoInvitationType;
 		timeout?: number;
+		roomID?: string;
 		data?: string;
 		notificationConfig?: ZegoSignalingPluginNotificationConfig;
 	}): Promise<{ errorInvitees: ZegoUser[] }> {
@@ -221,7 +223,7 @@ export class ZegoUIKitPrebuilt {
 			console.error("【ZEGOCLOUD】Please add ZIM plugin first");
 			return Promise.reject("ZEGOCLOUD】Please add ZIM plugin first");
 		}
-		const { callees, callType, timeout = 60, data = "", notificationConfig } = params;
+		const { callees, callType, timeout = 60, roomID, data = "", notificationConfig } = params;
 		if (!Array.isArray(callees) || callees.length < 1) {
 			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callees !!");
 		} else if (callees.length > 9) {
@@ -231,7 +233,7 @@ export class ZegoUIKitPrebuilt {
 			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callType !!");
 		}
 
-		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation(callees, callType, timeout, data, notificationConfig);
+		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation(callees, callType, timeout, data, roomID, notificationConfig);
 	}
 
 	async sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean> {
@@ -250,5 +252,34 @@ export class ZegoUIKitPrebuilt {
 	// 主动退出房间
 	hangUp() {
 		ZegoUIKitPrebuilt.core?.eventEmitter.emit("hangUp");
+	}
+
+	// 设置语言
+	setLanguage(language: ZegoUIKitLanguage): void {
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return;
+		}
+		ZegoUIKitPrebuilt.core._config.language = language;
+		ZegoUIKitPrebuilt.core.changeIntl();
+		ZegoUIKitPrebuilt.core?.eventEmitter.emit("lang", language);
+
+		if (!ZegoUIKitPrebuilt.core?._zimManager) {
+			console.error("【ZEGOCLOUD】Please add ZIM plugin first");
+			return;
+		}
+		// call
+		ZegoUIKitPrebuilt.core._zimManager.config.language = language;
+		ZegoUIKitPrebuilt.core._zimManager.changeIntl();
+		console.warn("【ZEGOCLOUD】setLanguage", language, ZegoUIKitPrebuilt.core);
+	}
+
+	// 获取 call kit 房间ID
+	getRoomID(): string {
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return "【ZEGOCLOUD】 please call init first !!";
+		}
+		return ZegoUIKitPrebuilt.core._expressConfig.roomID;
 	}
 }

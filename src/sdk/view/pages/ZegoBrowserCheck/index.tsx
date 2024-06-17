@@ -5,6 +5,8 @@ import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
 import { getVideoResolution, throttle } from "../../../util";
+import { FormattedMessage } from "react-intl";
+
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
     localStream: undefined,
@@ -289,65 +291,64 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async joinRoom() {
-
     if (!this.state.userName.length) return;
-	if (this.state.isJoining) return;
-	this.setState(
-		{
-			isJoining: true,
-		},
-		async () => {
-			this.props.core._expressConfig.userName = this.state.userName.trim().substring(0, 255);
-			this.props.core._config.turnOnMicrophoneWhenJoining = this.state.audioOpen && !this.audioRefuse;
-			this.props.core._config.turnOnCameraWhenJoining = this.state.videoOpen && !this.videoRefuse;
-			this.props.core.status.audioRefuse = this.audioRefuse;
-			this.props.core.status.videoRefuse = this.videoRefuse;
+    if (this.state.isJoining) return;
+    this.setState(
+      {
+        isJoining: true,
+      },
+      async () => {
+        this.props.core._expressConfig.userName = this.state.userName.trim().substring(0, 255);
+        this.props.core._config.turnOnMicrophoneWhenJoining = this.state.audioOpen && !this.audioRefuse;
+        this.props.core._config.turnOnCameraWhenJoining = this.state.videoOpen && !this.videoRefuse;
+        this.props.core.status.audioRefuse = this.audioRefuse;
+        this.props.core.status.videoRefuse = this.videoRefuse;
 
-			this.props.core.status.micDeviceID = this.state.selectMic;
-			this.props.core.status.cameraDeviceID = this.state.selectCamera;
-			this.props.core.status.speakerDeviceID = this.state.selectSpeaker;
-			this.props.core.status.videoResolution = this.state.selectVideoResolution;
-			this.props.core._config.showNonVideoUser = this.state.showNonVideo;
-			const loginRsp = await this.props.core.enterRoom();
+        this.props.core.status.micDeviceID = this.state.selectMic;
+        this.props.core.status.cameraDeviceID = this.state.selectCamera;
+        this.props.core.status.speakerDeviceID = this.state.selectSpeaker;
+        this.props.core.status.videoResolution = this.state.selectVideoResolution;
+        this.props.core._config.showNonVideoUser = this.state.showNonVideo;
+        const loginRsp = await this.props.core.enterRoom();
 
-			let massage = "";
-			if (loginRsp === 0) {
-				this.state.localAudioStream && this.props.core.destroyStream(this.state.localAudioStream);
-				this.state.localVideoStream && this.props.core.destroyStream(this.state.localVideoStream);
-				this.props.joinRoom && this.props.joinRoom();
-			} else if (loginRsp === 1002034) {
-				// 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
-				massage =
-					"Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
-			} else if ([1002031, 1002053].includes(loginRsp)) {
-				//登录房间超时，可能是由于网络原因导致。
-				massage = "There's something wrong with your network. Please check it and try again.";
-			} else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
-				// 登录 token 错误，
-				massage = "Failed to join the room, token authentication error.";
-			} else if (1002056 === loginRsp) {
-				// 用户重复进行登录。
-				massage = "You are on a call in another room, please leave that room first.";
-			} else {
-				massage = "Failed to join the room, please try again.(error code:" + loginRsp + ")";
-			}
-			this.setState({
-				isJoinRoomFailed: !!massage,
-				joinRoomErrorTip: massage,
-				isJoining: false,
-			});
-		}
-	);
+        let massage = "";
+        if (loginRsp === 0) {
+          this.state.localAudioStream && this.props.core.destroyStream(this.state.localAudioStream);
+          this.state.localVideoStream && this.props.core.destroyStream(this.state.localVideoStream);
+          this.props.joinRoom && this.props.joinRoom();
+        } else if (loginRsp === 1002034) {
+          // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
+          massage =
+            "Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
+        } else if ([1002031, 1002053].includes(loginRsp)) {
+          //登录房间超时，可能是由于网络原因导致。
+          massage = "There's something wrong with your network. Please check it and try again.";
+        } else if ([1102018, 1102016, 1102020].includes(loginRsp)) {
+          // 登录 token 错误，
+          massage = "Failed to join the room, token authentication error.";
+        } else if (1002056 === loginRsp) {
+          // 用户重复进行登录。
+          massage = "You are on a call in another room, please leave that room first.";
+        } else {
+          massage = "Failed to join the room, please try again.(error code:" + loginRsp + ")";
+        }
+        this.setState({
+          isJoinRoomFailed: !!massage,
+          joinRoomErrorTip: massage,
+          isJoining: false,
+        });
+      }
+    );
   }
 
   handleChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.value.length <= 1) {
-		const value = event.target.value.trim();
-		this.setState({ userName: value.length > 0 ? value : "" });
-	} else {
-		this.setState({ userName: event.target.value.substring(0, 255) });
-	}
-    
+      const value = event.target.value.trim();
+      this.setState({ userName: value.length > 0 ? value : "" });
+    } else {
+      this.setState({ userName: event.target.value.substring(0, 255) });
+    }
+
   }
 
   openSettings() {
@@ -357,11 +358,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   render(): React.ReactNode {
+    const { formatMessage } = this.props.core.intl;
     return (
       <div
-        className={`${ZegoBrowserCheckCss.support} ${
-          this.state.isSmallSize ? ZegoBrowserCheckCss.smallSize : ""
-        }`}>
+        className={`${ZegoBrowserCheckCss.support} ${this.state.isSmallSize ? ZegoBrowserCheckCss.smallSize : ""
+          }`}>
         <div className={ZegoBrowserCheckCss.supportWrapper}>
           <div className={ZegoBrowserCheckCss.videoWrapper}>
             <video
@@ -379,41 +380,39 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               )}
             {(this.props.core._config.showMyCameraToggleButton ||
               this.props.core._config.turnOnCameraWhenJoining) && (
-              <div className={ZegoBrowserCheckCss.videoTip}>
-                {!this.state.videoOpen &&
-                  !this.state.isVideoOpening &&
-                  "Camera is off"}
-                {this.state.isVideoOpening && "Camera is starting…"}
-              </div>
-            )}
+                <div className={ZegoBrowserCheckCss.videoTip}>
+                  {!this.state.videoOpen &&
+                    !this.state.isVideoOpening &&
+                    <FormattedMessage id="browserCheck.cameraDesc" />}
+                  {this.state.isVideoOpening && <FormattedMessage id="browserCheck.cameraStart" />}
+                </div>
+              )}
             <div className={ZegoBrowserCheckCss.toolsWrapper}>
               {this.props.core._config.showMyMicrophoneToggleButton && (
                 <div
-                  className={`${ZegoBrowserCheckCss.audioButton} ${
-                    !this.state.audioOpen && ZegoBrowserCheckCss.close
-                  }`}
+                  className={`${ZegoBrowserCheckCss.audioButton} ${!this.state.audioOpen && ZegoBrowserCheckCss.close
+                    }`}
                   onClick={() => {
                     this.toggleStream("audio");
                   }}>
                   <span className={ZegoBrowserCheckCss.buttonTip}>
                     {this.state.audioOpen
-                      ? "Turn off microphone"
-                      : "Turn on microphone"}
+                      ? <FormattedMessage id="global.turnOffMicrophone" />
+                      : <FormattedMessage id="global.turnOnMicrophone" />}
                   </span>
                 </div>
               )}
               {this.props.core._config.showMyCameraToggleButton && (
                 <div
-                  className={`${ZegoBrowserCheckCss.videoButton} ${
-                    !this.state.videoOpen && ZegoBrowserCheckCss.close
-                  }`}
+                  className={`${ZegoBrowserCheckCss.videoButton} ${!this.state.videoOpen && ZegoBrowserCheckCss.close
+                    }`}
                   onClick={() => {
                     this.toggleStream("video");
                   }}>
                   <span className={ZegoBrowserCheckCss.buttonTip}>
                     {this.state.videoOpen
-                      ? "Turn off camera"
-                      : "Turn on camera"}
+                      ? <FormattedMessage id="global.turnOffCamera" />
+                      : <FormattedMessage id="global.turnOnCamera" />}
                   </span>
                 </div>
               )}
@@ -424,7 +423,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                     this.openSettings();
                   }}>
                   <span className={ZegoBrowserCheckCss.buttonTip}>
-                    Settings
+                    <FormattedMessage id="global.settings" />
                   </span>
                 </div>
               )}
@@ -437,7 +436,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
               </div>
               <input
                 className={ZegoBrowserCheckCss.userName}
-                placeholder="Your Name"
+                placeholder={formatMessage({ id: 'browserCheck.placeholder' })}
                 value={this.state.userName}
                 onChange={(ev: ChangeEvent<HTMLInputElement>) => {
                   this.handleChange(ev);
@@ -455,7 +454,8 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                         ZegoBrowserCheckCss.joinRoomButtonLoading
                       }></span>
                   )}
-                  Join
+                  <FormattedMessage id="browserCheck.join" />
+                  {/* {intl.formatMessage({ id: 'browserCheck.join' })} */}
                 </button>
                 {this.state.isJoinRoomFailed && (
                   <div className={ZegoBrowserCheckCss.joinRoomButtonTip}>
@@ -467,7 +467,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
 
             {this.state?.sharedLinks && this.state?.sharedLinks?.length > 0 && (
               <div className={ZegoBrowserCheckCss.shareLinkWrapper}>
-                <div className={ZegoBrowserCheckCss.title}>Share the link</div>
+                <div className={ZegoBrowserCheckCss.title}><FormattedMessage id="browserCheck.shareTitle" /></div>
                 {this.state.sharedLinks?.map((link) => {
                   return (
                     <div

@@ -1,4 +1,5 @@
 @import "../../../var.scss";
+
 @mixin redPoint {
   position: absolute;
   top: vw(-8px);
@@ -6,11 +7,11 @@
   box-sizing: border-box;
   width: vw(22px);
   height: vw(22px);
-  background: url("../../../sdkMobileAssets/icon_hint@2x.png") no-repeat
-    center/cover;
+  background: url("../../../sdkMobileAssets/icon_hint@2x.png") no-repeat center/cover;
   border-radius: 50%;
   content: "";
 }
+
 .ZegoRoom {
   position: relative;
   display: flex;
@@ -21,6 +22,7 @@
   height: 100%;
   overflow: hidden;
   background-color: black;
+
   .footer {
     position: fixed;
     bottom: 0px;
@@ -36,6 +38,7 @@
     background: #1c1f2e;
     // border: 1px solid #1c1f2e;
     border-top: 1px solid #3d4054;
+
     a {
       box-sizing: border-box;
       width: vw(76px);
@@ -43,14 +46,17 @@
       background: #2c2f3e;
       border-radius: vw(18px);
     }
+
     .switchCamera {
       background-image: url(../../../sdkMobileAssets/Room_camera_switch@2x.png);
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
+
       &:focus {
         background-color: #3d4154;
       }
+
       &:active {
         background-color: #3d4154;
       }
@@ -62,24 +68,28 @@
       background-position: center;
       background-size: vw(56px) vw(56px);
     }
+
     .cameraClose {
       background-image: url(../../../sdkMobileAssets/Room_camera_close@2x.png);
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
     }
+
     .toggleMic {
       background-image: url(../../../sdkMobileAssets/Room_mic_open@2x.png);
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
     }
+
     .micClose {
       background-image: url(../../../sdkMobileAssets/Room_mic_close@2x.png);
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
     }
+
     .leaveRoom {
       background-color: rgba(232, 84, 59, 1);
       background-image: url(../../../sdkMobileAssets/Room_leaveRoom@2x.png);
@@ -87,12 +97,14 @@
       background-position: center;
       background-size: vw(56px) vw(56px);
     }
+
     .liveLeaveButton {
       background-image: url(../../../sdkMobileAssets/Room_leaveRoom_live@2x.png);
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
     }
+
     .goLive {
       display: flex;
       align-items: center;
@@ -105,6 +117,7 @@
       background: #0055ff;
       border-radius: vw(18px);
     }
+
     .goLiveEnabled {
       background-color: rgba(255, 74, 80, 1);
     }
@@ -115,12 +128,14 @@
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);
+
       &.moreRedPoint,
       .unread {
         &::after {
           @include redPoint;
         }
       }
+
       .popMore {
         position: fixed;
         right: vw(67px);
@@ -133,6 +148,7 @@
         border: 1px solid #3d4054;
         border-radius: vw(18px);
         box-shadow: 0px vw(3px) vw(6px) 0px rgba(23, 24, 33, 0.35);
+
         // transform: translateX(-50%);
         .popMoreContent {
           display: flex;
@@ -140,6 +156,7 @@
           justify-content: space-between;
           width: max-content;
           max-width: vw(503px);
+
           div {
             position: relative;
             display: flex;
@@ -151,6 +168,7 @@
             margin-right: vw(63px);
             margin-bottom: vw(0px);
             white-space: nowrap;
+
             i {
               width: vw(76px);
               height: vw(76px);
@@ -158,36 +176,42 @@
               background: #2c2f3e;
               border-radius: vw(18px);
             }
+
             .details {
               background-image: url(../../../sdkMobileAssets/Room_more_details@2x.png);
               background-repeat: no-repeat;
               background-position: center;
               background-size: vw(56px) vw(56px);
             }
+
             .member {
               background-image: url(../../../sdkMobileAssets/Room_more_members@2x.png);
               background-repeat: no-repeat;
               background-position: center;
               background-size: vw(56px) vw(56px);
             }
+
             .chat {
               background-image: url(../../../sdkMobileAssets/Room_more_chat@2x.png);
               background-repeat: no-repeat;
               background-position: center;
               background-size: vw(56px) vw(56px);
             }
+
             .connect {
               background-image: url(../../../sdkMobileAssets/icon_tab_connect_light@2x.png);
               background-repeat: no-repeat;
               background-position: center;
               background-size: vw(56px) vw(56px);
             }
+
             .connected {
               background-image: url(../../../sdkMobileAssets/icon_tab_connect_nor@2x.png);
               background-repeat: no-repeat;
               background-position: center;
               background-size: vw(56px) vw(56px);
             }
+
             .layout {
               background-image: url(../../../sdkMobileAssets/Room_more_layout@2x.png);
               background-repeat: no-repeat;
@@ -195,15 +219,18 @@
               background-size: contain;
               background-size: vw(56px) vw(56px);
             }
+
             .whiteboard {
               background-image: url(../../../sdkMobileAssets/icon_whiteboard_normal@2x.png);
               background-repeat: no-repeat;
               background-position: center;
               background-size: contain;
               background-size: vw(56px) vw(56px);
+
               &.sharing {
                 background-image: url(../../../sdkMobileAssets/icon_whiteboard_off@2x.png);
               }
+
               &.forbiddenSharing {
                 opacity: 0.5;
               }
@@ -216,6 +243,15 @@
               background-size: contain;
               background-size: vw(56px) vw(56px);
             }
+
+            .settings {
+              background-image: url(../../../sdkMobileAssets/icon_setting@2x.png);
+              background-repeat: no-repeat;
+              background-position: center;
+              background-size: contain;
+              background-size: vw(56px) vw(56px);
+            }
+
             span {
               position: absolute;
               bottom: 0;
@@ -225,15 +261,19 @@
               //   font-family: PingFangSC-Regular, PingFang SC;
             }
           }
+
           div:nth-child(4) {
             margin-right: 0;
           }
+
           div:nth-child(n + 5) {
             margin-top: vw(27px);
           }
+
           div:last-child {
             margin-right: 0;
           }
+
           // .roomDetail {
           //   // margin-right: vw(35px);
           // }
@@ -255,6 +295,7 @@
       }
     }
   }
+
   .notify {
     position: fixed;
     bottom: vw(146px);
@@ -266,6 +307,7 @@
     justify-content: flex-end;
     max-width: vw(499px);
     background-color: #1c1f2e00;
+
     .notifyContent {
       margin-bottom: vw(20px);
       padding: vw(20px) vw(24px) vw(16px) vw(24px);
@@ -273,11 +315,13 @@
       //   font-family: PingFangSC-Regular, PingFang SC;
       background-color: #46464666;
       border-radius: vw(18px);
+
       h5 {
         color: #ffb763;
         font-size: vw(24px);
         line-height: vw(33px);
       }
+
       span {
         display: -webkit-box;
         height: auto;
@@ -292,6 +336,7 @@
       }
     }
   }
+
   .network {
     position: absolute;
     top: vw(28px);
@@ -300,13 +345,13 @@
     width: vw(60px);
     height: vw(60px);
     background: rgba(42, 42, 42, 0.25);
-    background: url("../../../sdkAssets/icon_inner_network_poor.png") no-repeat
-        center,
+    background: url("../../../sdkAssets/icon_inner_network_poor.png") no-repeat center,
       rgba(42, 42, 42, 0.25);
     background-size: vw(46px) vw(46px);
     border-radius: vw(15px);
     backdrop-filter: blur(vw(15px));
   }
+
   .countDown {
     position: fixed;
     top: 0;
@@ -319,7 +364,8 @@
     width: 100%;
     height: 100%;
     background: rgba(42, 42, 42, 0.6);
-    & > div {
+
+    &>div {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -349,9 +395,11 @@
     border: 0;
     border-radius: vw(36px);
   }
+
   .LiveStateButtonNoFooter {
     bottom: vw(90px);
   }
+
   .liveNotStart,
   .noOneStreaming {
     display: flex;
@@ -366,26 +414,31 @@
     font-size: vw(32px);
     line-height: vw(45px);
     background: #1e2130;
+
     i {
       width: vw(90px);
       height: vw(90px);
       background-size: contain;
     }
+
     span {
       width: 70%;
       text-align: center;
     }
   }
+
   .liveNotStart {
     i {
       background-image: url(../../../sdkAssets/Room_live_notstart@2x.png);
     }
   }
+
   .noOneStreaming {
     i {
       background-image: url(../../../sdkAssets/Room_nobody_stream@2x.png);
     }
   }
+
   .screenTopBar {
     display: flex;
     align-items: center;
@@ -395,9 +448,11 @@
     height: vw(58px);
     padding: vw(10px) vw(24px);
     background: #353847;
+
     &.center {
       justify-content: center;
     }
+
     p {
       display: flex;
       align-items: center;
@@ -405,6 +460,7 @@
       font-weight: 400;
       font-size: vw(28px);
       line-height: vw(40px);
+
       span {
         display: block;
         max-width: vw(360px);
@@ -415,6 +471,7 @@
     }
   }
 }
+
 .mask {
   position: fixed;
   top: 0;
@@ -424,37 +481,44 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.3);
 }
+
 .host {
   .footer {
     padding: 0 vw(53px);
   }
 }
+
 .audience {
   .footer {
     padding: 0 vw(199px);
   }
 }
+
 .mixVideoWrapper {
   //   position: absolute;
   //   bottom: 40%;
   //   left: 0;
   width: 100%;
   height: auto;
+
   .screenTopBar {
     position: fixed;
     top: 0;
     left: 0;
-    & + div {
-      & > div {
+
+    &+div {
+      &>div {
         top: vw(84px);
       }
     }
   }
 }
+
 @media screen and(orientation: landscape) {
   .ZegoRoom {
     .footer {
       justify-content: center;
+
       a {
         margin: 0 vw(50px);
       }

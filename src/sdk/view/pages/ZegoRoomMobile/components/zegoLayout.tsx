@@ -1,6 +1,8 @@
 import React from "react";
 import zegoLayoutCss from "./zegoLayout.module.scss";
+import { ZegoCloudRTCCore } from "../../../../modules";
 export class ZegoLayout extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   selectLayout: "Sidebar" | "Grid" | "Auto";
   closeCallBac: () => void;
   selectCallBack?: (
@@ -22,6 +24,7 @@ export class ZegoLayout extends React.PureComponent<{
     }
   }
   render(): React.ReactNode {
+    const { formatMessage } = this.props.core.intl
     return (
       <div className={zegoLayoutCss.layoutList}>
         <div className={zegoLayoutCss.layoutHeader}>
@@ -32,7 +35,7 @@ export class ZegoLayout extends React.PureComponent<{
               this.props.closeCallBac && this.props.closeCallBac();
             }}
           ></div>
-          Layout
+          {formatMessage({ id: "mobileRoom.layout" })}
         </div>
 
         <div className={zegoLayoutCss.layoutListContent}>
@@ -44,7 +47,7 @@ export class ZegoLayout extends React.PureComponent<{
           >
             <div className={zegoLayoutCss.layoutContentLeft}>
               <i className={zegoLayoutCss.default}></i>
-              <span>Auto</span>
+              <span>{formatMessage({ id: "room.autoLayout" })}</span>
             </div>
             <i
               className={
@@ -62,7 +65,7 @@ export class ZegoLayout extends React.PureComponent<{
           >
             <div className={zegoLayoutCss.layoutContentLeft}>
               <i className={zegoLayoutCss.grid}></i>
-              <span>Grid</span>
+              <span>{formatMessage({ id: "room.gridLayout" })}</span>
             </div>
             <i
               className={
@@ -80,7 +83,7 @@ export class ZegoLayout extends React.PureComponent<{
           >
             <div className={zegoLayoutCss.layoutContentLeft}>
               <i className={zegoLayoutCss.sidebar}></i>
-              <span>Sidebar</span>
+              <span>{formatMessage({ id: "room.sidebarLayout" })}</span>
             </div>
             <i
               className={

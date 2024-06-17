@@ -52,21 +52,23 @@ import ZegoAudio from "../../components/zegoMedia/audio";
 import { ZegoWhiteboard } from "./components/zegoWhiteboard";
 import { formatTime } from "../../../modules/tools/util";
 import { ZegoTimer } from "./components/zegoTimer";
+import { ZegoSettings } from "../../components/zegoSetting";
 
 import { ZegoMixPlayer } from "./components/zegoMixPlayer";
 import { ZegoBroadcastMessageInfo, ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity"
+import { FormattedMessage } from "react-intl";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
     localStream: undefined | MediaStream;
     layOutStatus:
-      | "ONE_VIDEO"
-      | "INVITE"
-      | "USER_LIST"
-      | "MESSAGE"
-      | "LAYOUT"
-      | "MANAGE"
-      | "WHITEBOARD";
+    | "ONE_VIDEO"
+    | "INVITE"
+    | "USER_LIST"
+    | "MESSAGE"
+    | "LAYOUT"
+    | "MANAGE"
+    | "WHITEBOARD";
     userLayoutStatus: "Auto" | "Grid" | "Sidebar";
     zegoCloudUserList: ZegoCloudUserList;
     memberList: ZegoCloudUserList;
@@ -91,34 +93,47 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     isRequestingCohost: boolean; // 是否正在申请连麦
     unreadInviteList: Set<string>; // 是否有未读的连麦申请
     isMixing: "1" | "0"; // 是否开始混流
+    showZegoSettings: boolean;
+    selectMic: string | undefined;
+    selectCamera: string | undefined;
+    selectSpeaker: string | undefined;
+    selectVideoResolution: string;
+    showNonVideoUser: boolean;
   } = {
-    micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
-    cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
-    localStream: undefined,
-    layOutStatus: "ONE_VIDEO",
-    userLayoutStatus: this.props.core._config.layout || "Auto",
-    zegoCloudUserList: [],
-    memberList: [],
-    messageList: [],
-    notificationList: [],
-    showMore: false,
-    connecting: false,
-    firstLoading: true,
-    cameraFront: true,
-    showFooter: true,
-    isNetworkPoor: false,
-    soundLevel: {},
-    liveCountdown: -1,
-    liveStatus: "0",
-    screenSharingUserList: [],
-    zegoSuperBoardView: null, // 本地白板共享
-    isZegoWhiteboardSharing: false, // 是否开启白板共享
-    roomTime: "00:00:00",
-    isScreenPortrait: true, // 是否竖屏
-    isRequestingCohost: false,
-    unreadInviteList: new Set(),
-    isMixing: "0",
-  };
+      micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
+      cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
+      localStream: undefined,
+      layOutStatus: "ONE_VIDEO",
+      userLayoutStatus: this.props.core._config.layout || "Auto",
+      zegoCloudUserList: [],
+      memberList: [],
+      messageList: [],
+      notificationList: [],
+      showMore: false,
+      connecting: false,
+      firstLoading: true,
+      cameraFront: true,
+      showFooter: true,
+      isNetworkPoor: false,
+      soundLevel: {},
+      liveCountdown: -1,
+      liveStatus: "0",
+      screenSharingUserList: [],
+      zegoSuperBoardView: null, // 本地白板共享
+      isZegoWhiteboardSharing: false, // 是否开启白板共享
+      roomTime: "00:00:00",
+      isScreenPortrait: true, // 是否竖屏
+      isRequestingCohost: false,
+      unreadInviteList: new Set(),
+      isMixing: "0",
+      showZegoSettings: false,
+      selectMic: this.props.core.status.micDeviceID,
+      selectCamera: this.props.core.status.cameraDeviceID,
+      selectSpeaker: this.props.core.status.speakerDeviceID,
+      selectVideoResolution:
+        this.props.core.status.videoResolution || this.props.core._config.videoResolutionList![0],
+      showNonVideoUser: this.props.core._config.showNonVideoUser as boolean,
+    };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
     : 0;
@@ -145,7 +160,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
       this.props.core._config.scenario.config?.role === LiveRole.Audience &&
       (this.props.core._config.scenario.config as any).liveStreamingMode ===
-        LiveStreamingMode.LiveStreaming
+      LiveStreamingMode.LiveStreaming
     );
   }
   get showRoomTimerUI() {
@@ -168,6 +183,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   componentDidMount() {
+    this.setAllSinkId(this.state.selectSpeaker || "");
     window.addEventListener(
       "orientationchange",
       this.onOrientationChange.bind(this),
@@ -199,7 +215,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
-      this.props.core.localStream = undefined;
+    this.props.core.localStream = undefined;
 
   }
   componentDidUpdate(
@@ -221,8 +237,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.state.notificationList.length > 0 &&
         preState.notificationList[preState.notificationList.length - 1]
           .messageID !==
-          this.state.notificationList[this.state.notificationList.length - 1]
-            .messageID) ||
+        this.state.notificationList[this.state.notificationList.length - 1]
+          .messageID) ||
       (preState.notificationList.length === 0 &&
         this.state.notificationList.length > 0)
     ) {
@@ -242,6 +258,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   async initSDK() {
+    const { formatMessage } = this.props.core.intl;
     this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
       this.setState({
         isNetworkPoor: level > 2,
@@ -281,6 +298,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         allUsers: ZegoUser[]
       ) => {
         let notificationList: ZegoNotification[] = [];
+        const { formatMessage } = this.props.core.intl;
         if (
           this.props.core._config.lowerLeftNotification?.showUserJoinAndLeave
         ) {
@@ -289,8 +307,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               content:
                 u.userName +
                 " " +
-                (updateType === "ADD" ? "enter" : "quit") +
-                " the room",
+                (updateType === "ADD" ? formatMessage({ id: "global.enter" }) : formatMessage({ id: "global.quit" })) +
+                formatMessage({ id: "global.room" }),
               type: "USER",
               userName: u.userName,
               messageID: randomNumber(5),
@@ -410,9 +428,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           if (isIOS() && this.isCDNLive && this.iosLimitationNoticed === 0) {
             this.iosLimitationNoticed = 1;
             ZegoModelShow({
-              header: "Notice",
-              contentText:
-                "Your current mobile system does not support the display of multiple video screens during the live streaming.",
+              header: formatMessage({ id: "global.notice" }),
+              contentText: formatMessage({ id: "moblieRoom.systemNotSupport" }),
               okText: "Okay",
             });
           }
@@ -433,9 +450,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         if (this.safariLimitationNoticed === -1) {
           this.safariLimitationNoticed = 0;
           ZegoModelShow({
-            header: "Notice",
-            contentText:
-              "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
+            header: formatMessage({ id: "global.notice" }),
+            contentText: formatMessage({ id: "mobileRoom.browserNotSupport" }),
             okText: "Okay",
             onOk: () => {
               this.safariLimitationNoticed = 1;
@@ -528,9 +544,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.showNotSupported = 1;
         ZegoModelShow(
           {
-            header: "Notice",
-            contentText:
-              "The service is not available, please contact the live streaming service provider to resolve.",
+            header: formatMessage({ id: "global.notice" }),
+            contentText: formatMessage({ id: "global.serviceNotAvailable" }),
             okText: "Okay",
           },
           document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
@@ -542,7 +557,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.props.core._zimManager.notifyLeaveRoom(() => {
         this.state.localStream &&
           this.props.core.destroyStream(this.state.localStream);
-            this.props.core.localStream = undefined;
+        this.props.core.localStream = undefined;
 
         this.props.core.leaveRoom();
         this.props.leaveRoom && this.props.leaveRoom();
@@ -557,13 +572,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         if (type === "Camera" && status === "CLOSE" && this.state.cameraOpen) {
           await this.toggleCamera();
           ZegoToast({
-            content: `${fromUser.userName} has turned your camera off`,
+            content: formatMessage({ id: "room.turnedCameraOff" }, { user: fromUser.userName }),
           });
         }
         if (type === "Microphone" && status === "CLOSE" && this.state.micOpen) {
           await this.toggleMic();
           ZegoToast({
-            content: `${fromUser.userName} has turned your microphone off`,
+            content: formatMessage({ id: "room.turnedMicOff" }, { user: fromUser.userName }),
           });
         }
       }
@@ -582,40 +597,35 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       return;
     } else if (logInRsp === 1002034) {
       // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
-      massage =
-        "Failed to join the room, the number of people in the room has reached the maximum.(2 people)";
+      massage = formatMessage({ id: "global.joinRoomFailedDesc" });;
     } else if ([1002031, 1002053].includes(logInRsp)) {
       //登录房间超时，可能是由于网络原因导致。
-      massage =
-        "There's something wrong with your network. Please check it and try again.";
+      massage = formatMessage({ id: "global.joinRoomFailedNetwork" });
     } else if ([1102018, 1102016, 1102020].includes(logInRsp)) {
       // 登录 token 错误，
-      massage = "Failed to join the room, token authentication error.";
+      massage = formatMessage({ id: "global.joinRoomFailedToken" });
     } else if (1002056 === logInRsp) {
       // 用户重复进行登录。
-      massage =
-        "You are on a call in another room, please leave that room first.";
+      massage = formatMessage({ id: "global.joinRoomFailedRepeat" });
     } else {
-      massage =
-        "Failed to join the room, please try again.(error code:" +
-        logInRsp +
-        ")";
+      massage = formatMessage({ id: "global.joinRoomFailed" }, { code: logInRsp });
     }
     ZegoModelShow({
-      header: "Login room Failed",
+      header: formatMessage({ id: "global.loginRoomFailed" }),
       contentText: massage,
       okText: "OK",
     });
   }
   initInRoomInviteMgListener() {
     // 收到邀请上麦的通知
+    const { formatMessage } = this.props.core.intl;
     this.props.core._zimManager?._inRoomInviteMg.notifyInviteToCoHost(
       (inviterName: string) => {
         this.inviteModelRoot = ZegoConfirm({
-          title: "Invitation",
-          content: "The host invites you to have a connection.",
-          confirm: "Confirm",
-          cancel: "Disagree",
+          title: formatMessage({ id: "room.invitationDialogTitle" }),
+          content: formatMessage({ id: "room.invitationDialogDesc" }),
+          confirm: formatMessage({ id: "global.agree" }),
+          cancel: formatMessage({ id: "global.disagree" }),
           countdown: 60,
           closeCallBack: async (confirm: boolean) => {
             if (confirm) {
@@ -641,11 +651,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         const { inviteeName, inviteeID } = user;
         if (reason === ReasonForRefusedInviteToCoHost.Disagree) {
           ZegoToast({
-            content: `${inviteeName} disagreed with the invitation.`,
+            content: formatMessage({ id: "room.disagreedInvitationToast" }, { user: inviteeName }),
           });
         } else if (reason === ReasonForRefusedInviteToCoHost.Busy) {
           ZegoToast({
-            content: `Invitation has been sent.`,
+            content: formatMessage({ id: "room.InvitationSent" }),
           });
         } else if (reason === ReasonForRefusedInviteToCoHost.Timeout) {
         }
@@ -662,7 +672,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         // 左侧通知
         if (state === 1) {
           const notify = {
-            content: `${inviter.userName} is requesting a connection with you.`,
+            content: formatMessage({ id: "room.requestingConnectionToast" }, { user: inviter.userName }),
             type: "INVITE",
             userName: inviter.userName,
             messageID: randomNumber(5),
@@ -700,7 +710,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           }
         } else if (respond === 1) {
           ZegoToast({
-            content: "The host has rejected your request.",
+            content: formatMessage({ id: "room.rejectedRequestToast" }),
           });
         } else if (respond === 2) {
           this.inviteModelRoot?.unmount();
@@ -736,13 +746,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       try {
         let localStream: MediaStream | null = null;
         try {
-          const solution = getVideoResolution(
-            this.props.core._config.videoResolutionList![0]
-          );
+          const solution = getVideoResolution(this.state.selectVideoResolution);
           localStream = await this.props.core.createStream({
             camera: {
               video: !this.props.core.status.videoRefuse,
               audio: !this.props.core.status.audioRefuse,
+              videoInput: this.state.selectCamera,
+              audioInput: this.state.selectMic,
               videoQuality: 4,
               facingMode: this.faceModel ? "user" : "environment",
               channelCount: this.props.core._config.enableStereo ? 2 : 1,
@@ -823,8 +833,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         );
         if (error?.code === 1103065 || error?.code === 1103061) {
           ZegoToast({
-            content:
-              "The audio and video equipment is being occupied by another application.",
+            content: this.props.core.intl.formatMessage({ id: "room.occupiedToast" }),
           });
         }
         if (error?.code === 1103064) {
@@ -877,21 +886,25 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.state.localStream.getAudioTracks().length > 0
     ) {
       result = await this.props.core.muteMicrophone(this.state.micOpen);
-      await this.props.core.setStreamExtraInfo(
-        this.localStreamID as string,
-        JSON.stringify({
-          isCameraOn: this.state.cameraOpen,
-          isMicrophoneOn: !this.state.micOpen,
-          hasVideo: !this.props.core.status.videoRefuse,
-          hasAudio: !this.props.core.status.audioRefuse,
-        })
-      );
+      try {
+        await this.props.core.setStreamExtraInfo(
+          this.localStreamID as string,
+          JSON.stringify({
+            isCameraOn: this.state.cameraOpen,
+            isMicrophoneOn: !this.state.micOpen,
+            hasVideo: !this.props.core.status.videoRefuse,
+            hasAudio: !this.props.core.status.audioRefuse,
+          })
+        );
+      } catch (error: any) {
+        console.log('setStreamExtraInfo error', error);
+      }
     }
 
     this.micStatus = !this.state.micOpen ? 1 : 0;
     if (result) {
       ZegoToast({
-        content: "The microphone is " + (this.micStatus ? "on" : "off"),
+        content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.micStatus ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
       });
       result &&
         this.setState(
@@ -928,20 +941,24 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.state.localStream,
         this.state.cameraOpen
       );
-      await this.props.core.setStreamExtraInfo(
-        this.localStreamID as string,
-        JSON.stringify({
-          isCameraOn: !this.state.cameraOpen,
-          isMicrophoneOn: this.state.micOpen,
-          hasVideo: !this.props.core.status.videoRefuse,
-          hasAudio: !this.props.core.status.audioRefuse,
-        })
-      );
+      try {
+        await this.props.core.setStreamExtraInfo(
+          this.localStreamID as string,
+          JSON.stringify({
+            isCameraOn: !this.state.cameraOpen,
+            isMicrophoneOn: this.state.micOpen,
+            hasVideo: !this.props.core.status.videoRefuse,
+            hasAudio: !this.props.core.status.audioRefuse,
+          })
+        );
+      } catch (error: any) {
+        console.log('setStreamExtraInfo error', error);
+      }
     }
     this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
     if (result) {
       ZegoToast({
-        content: "The camera is " + (this.cameraStatus ? "on" : "off"),
+        content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.cameraStatus ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
       });
       result &&
         this.setState(
@@ -1027,12 +1044,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.setState(
       (state: {
         layOutStatus:
-          | "ONE_VIDEO"
-          | "INVITE"
-          | "USER_LIST"
-          | "MESSAGE"
-          | "LAYOUT"
-          | "WHITEBOARD";
+        | "ONE_VIDEO"
+        | "INVITE"
+        | "USER_LIST"
+        | "MESSAGE"
+        | "LAYOUT"
+        | "WHITEBOARD";
         showMore: boolean;
       }) => {
         return {
@@ -1065,17 +1082,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     });
     let resp = {} as any;
     try {
-        let message
-		if (this.props.core._config.addInRoomMessageAttributes) {
-			message = JSON.stringify({
-				msg,
-				attrs: this.props.core._config.addInRoomMessageAttributes(),
-			})
-		} else {
-			message = msg
-		}
+      let message
+      if (this.props.core._config.addInRoomMessageAttributes) {
+        message = JSON.stringify({
+          msg,
+          attrs: this.props.core._config.addInRoomMessageAttributes(),
+        })
+      } else {
+        message = msg
+      }
 
-		resp = await this.props.core.sendRoomMessage(message)
+      resp = await this.props.core.sendRoomMessage(message)
     } catch (err) {
       console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
     }
@@ -1124,21 +1141,21 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   leaveRoom() {
     if (!this.props.core._config.showLeaveRoomConfirmDialog) {
-		this.confirmLeaveRoom();
-	} else {
-		ZegoConfirm({
-			title: "Leave the room",
-			content: "Are you sure to leave the room?",
-			cancel: "Cancel",
-			confirm: "Confirm",
-			closeCallBack: (confirm: boolean) => {
-				if (confirm) {
-					this.confirmLeaveRoom();
-				}
-			},
-		});
-	}
-    
+      this.confirmLeaveRoom();
+    } else {
+      ZegoConfirm({
+        title: this.props.core._config.leaveRoomDialogConfig?.titleText ?? this.props.core.intl.formatMessage({ id: "global.leaveDialogTitle" }),
+        content: this.props.core._config.leaveRoomDialogConfig?.descriptionText ?? this.props.core.intl.formatMessage({ id: "global.leaveDialogDesc" }),
+        cancel: this.props.core.intl.formatMessage({ id: "global.cancel" }),
+        confirm: this.props.core.intl.formatMessage({ id: "global.confirm" }),
+        closeCallBack: (confirm: boolean) => {
+          if (confirm) {
+            this.confirmLeaveRoom();
+          }
+        },
+      });
+    }
+
   }
   private cohostToBeAudience() {
     this.stopPublish();
@@ -1149,6 +1166,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core.changeCohostToAudienceInLiveStream();
   }
   async handleRequestCohost() {
+    const { formatMessage } = this.props.core.intl;
     if (this.state.isRequestingCohost) {
       await this.props.core._zimManager?._inRoomInviteMg.audienceCancelRequest();
       this.setState({
@@ -1159,18 +1177,18 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         await this.props.core._zimManager?._inRoomInviteMg.requestCohost();
       if (res?.code === 0) {
         ZegoToast({
-          content: `You've applied for connection, please wait for the host's confirmation.`,
+          content: formatMessage({ id: "room.appliedConnectionToast" }),
         });
         this.setState({
           isRequestingCohost: true,
         });
       } else if (res?.code === 1) {
         ZegoToast({
-          content: `The host has left the room.`,
+          content: formatMessage({ id: "room.hostLeftToast" }),
         });
       } else {
         ZegoToast({
-          content: `Failed to send application, please try again.`,
+          content: formatMessage({ id: "room.appliedFailToast" }),
         });
       }
     }
@@ -1198,7 +1216,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core._zimManager?._inRoomInviteMg?.audienceCancelRequest();
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
-      this.props.core.localStream = undefined;
+    this.props.core.localStream = undefined;
+
+    this.props.core.status.micDeviceID = this.state.selectMic;
+    this.props.core.status.cameraDeviceID = this.state.selectCamera;
+    this.props.core.status.speakerDeviceID = this.state.selectSpeaker;
+    this.props.core.status.videoResolution = this.state.selectVideoResolution;
 
     this.props.core.leaveRoom();
     this.props.leaveRoom && this.props.leaveRoom(isKickedOut);
@@ -1367,7 +1390,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
       res &&
         ZegoToast({
-          content: "Turned off the microphone successfully.",
+          content: this.props.core.intl.formatMessage({ id: "room.turnOffMicToast" }),
         });
     },
     [UserListMenuItemType.MuteCamera]: async () => {
@@ -1387,18 +1410,19 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
       res &&
         ZegoToast({
-          content: "Turned off the camera successfully.",
+          content: this.props.core.intl.formatMessage({ id: "room.turnOffCameraToast" }),
         });
     },
     [UserListMenuItemType.RemoveUser]: () => {
       this.setState({
         layOutStatus: "ONE_VIDEO",
       });
+      const { formatMessage } = this.props.core.intl;
       ZegoConfirm({
-        title: "Remove participant",
-        content: "Are you sure to remove " + this._selectedUser.userName + " ?",
-        cancel: "Cancel",
-        confirm: "Confirm",
+        title: formatMessage({ id: "room.remove" }),
+        content: formatMessage({ id: "room.removeDesc" }, { user: this._selectedUser.userName }),
+        cancel: formatMessage({ id: "global.cancel" }),
+        confirm: formatMessage({ id: "global.confirm" }),
         closeCallBack: (confirm: boolean) => {
           if (confirm) {
             this.props.core.removeMember(this._selectedUser.userID);
@@ -1418,11 +1442,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.updateUserAttr(this._selectedUser.userID, "invited", true);
       let text = "";
       if (res?.code === 2) {
-        text = "Invitation has been sent.";
+        text = this.props.core.intl.formatMessage({ id: "room.sendInvitation" });;
       } else if (res?.code === 0) {
-        text = "Sent the invitation successfully.";
+        text = this.props.core.intl.formatMessage({ id: "room.sendInvitationSuccessToast" });
       } else {
-        text = "Failed to send the invitation, please try again.";
+        text = this.props.core.intl.formatMessage({ id: "room.sendInvitationFailToast" });
       }
       ZegoToast({
         content: text,
@@ -1434,15 +1458,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       });
       const isSelf =
         this._selectedUser.userID === this.props.core._expressConfig.userID;
+      const { formatMessage } = this.props.core.intl;
       ZegoConfirm({
-        title: "End the connection",
+        title: formatMessage({ id: "room.endConnection" }),
         content: isSelf
-          ? `Are you sure to end the connection with the host?`
-          : "Are you sure to end the connection with " +
-            this._selectedUser.userName +
-            " ?",
-        cancel: "Cancel",
-        confirm: "Yes",
+          ? formatMessage({ id: "room.endConnectionDesc" }, { user: "the host" })
+          : formatMessage({ id: "room.endConnectionDesc" }, { user: this._selectedUser.userName }),
+        cancel: formatMessage({ id: "global.cancel" }),
+        confirm: formatMessage({ id: "global.confirm" }),
         closeCallBack: (confirm: boolean) => {
           if (confirm) {
             if (isSelf) {
@@ -1475,7 +1498,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         );
       if (res?.code === 6000276) {
         ZegoToast({
-          content: "The request for connecting has expired.",
+          content: this.props.core.intl.formatMessage({ id: "room.requestExpired" }),
         });
       }
       this.updateUserAttr(this._selectedUser.userID, "requestCohost", "");
@@ -1641,6 +1664,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     } else if (this.state.layOutStatus === "MESSAGE") {
       pages = (
         <ZegoMessage
+          core={this.props.core}
           userID={this.props.core._expressConfig.userID}
           messageList={this.state.messageList}
           sendMessage={(msg: string) => {
@@ -1661,6 +1685,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     } else if (this.state.layOutStatus === "LAYOUT") {
       pages = (
         <ZegoLayout
+          core={this.props.core}
           selectLayout={this.state.userLayoutStatus}
           closeCallBac={() => {
             this.setState({
@@ -1672,6 +1697,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     } else if (this.state.layOutStatus === "MANAGE") {
       pages = (
         <ZegoManage
+          core={this.props.core}
           closeCallback={() => {
             this.setState({
               layOutStatus: "ONE_VIDEO",
@@ -1729,7 +1755,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           return (
             <div className={`${ZegoRoomCss.liveNotStart} zegoUserVideo_click`}>
               <i></i>
-              <span>The Live has not started yet</span>
+              <span>{this.props.core.intl.formatMessage({ id: "room.liveNotStarted" })}</span>
             </div>
           );
         } else if (
@@ -1743,10 +1769,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 this.state.screenSharingUserList.length > 0 && (
                   <div className={ZegoRoomCss.screenTopBar}>
                     <p>
-                      <span>
-                        {this.state.screenSharingUserList[0].userName}
-                      </span>{" "}
-                      is presenting.
+                      {this.props.core.intl.formatMessage({ id: "mobileRoom.presenting" }, { user: this.state.screenSharingUserList[0].userName })}
                     </p>
                   </div>
                 )}
@@ -1765,7 +1788,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         return (
           <div className={`${ZegoRoomCss.noOneStreaming} zegoUserVideo_click`}>
             <i></i>
-            <span>No one has turned on the camera or microphone yet.</span>
+            <FormattedMessage id="room.noOneStreaming" />
           </div>
         );
       }
@@ -1786,6 +1809,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             </div>
           )}
           <ZegoScreen
+            core={this.props.core}
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
             }}
@@ -1798,6 +1822,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
 
     if (this.state.isZegoWhiteboardSharing) {
+      const { formatMessage } = this.props.core.intl;
       return (
         <>
           {this.state.isScreenPortrait && this.showRoomTimerUI && (
@@ -1807,6 +1832,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             </div>
           )}
           <ZegoWhiteboard
+            core={this.props.core}
             userList={this.getShownUser()}
             videoShowNumber={5}
             selfInfo={{
@@ -1835,9 +1861,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                   console.error("createAndPublishWhiteboard", error);
                   ZegoModelShow(
                     {
-                      header: "Notice",
-                      contentText:
-                        "Operation too frequent, failed to load the whiteboard.",
+                      header: formatMessage({ id: "global.notice" }),
+                      contentText: formatMessage({ id: "global.tooFrequent" }),
                       okText: "Okay",
                     },
                     document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
@@ -1871,7 +1896,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             ) => {
               this.props.core.setWhiteboardFont(font, fontSize, color);
             }}
-            onImageAdd={async () => {}}
+            onImageAdd={async () => { }}
             zegoSuperBoardView={this.state.zegoSuperBoardView}></ZegoWhiteboard>
         </>
       );
@@ -1891,6 +1916,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             </div>
           )}
           <ZegoOne2One
+            core={this.props.core}
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
             }}
@@ -1923,6 +1949,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             </div>
           )}
           <ZegoGrid
+            core={this.props.core}
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
             }}
@@ -1944,6 +1971,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             </div>
           )}
           <ZegoSidebar
+            core={this.props.core}
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
             }}
@@ -1994,7 +2022,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             this.setState({
               showFooter:
                 this.state.isZegoWhiteboardSharing &&
-                !this.state.isScreenPortrait
+                  !this.state.isScreenPortrait
                   ? false
                   : !this.props.core._config.autoHideFooter,
               showMore: false,
@@ -2028,11 +2056,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   async setLive() {
     if (this.state.liveCountdown === 0) {
+      const { formatMessage } = this.props.core.intl;
       ZegoModelShow({
-        header: "Stop broadcast",
-        contentText: "Are you sure to stop broadcasting?",
-        okText: "Stop",
-        cancelText: "Cancel",
+        header: formatMessage({ id: "room.stopLive" }),
+        contentText: formatMessage({ id: "room.stopLiveDesc" }),
+        okText: formatMessage({ id: "global.stop" }),
+        cancelText: formatMessage({ id: "global.cancel" }),
         onOk: async () => {
           // stop live
           await this.props.core.setLive("stop");
@@ -2085,18 +2114,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   isCreatingWhiteboardSharing = false;
   async createWhiteboardSharing() {
+    const { formatMessage } = this.props.core.intl;
     if (this.state.screenSharingUserList.length > 0) {
       ZegoToast({
-        content: `${this.state.screenSharingUserList[0].userName} is presenting now. You cannot share your whiteboard.`,
+        content: formatMessage({ id: "room.otherScreenPresentingToast" }, { user: this.state.screenSharingUserList[0].userName }),
       });
 
       return;
     } else if (this.state.zegoSuperBoardView) {
       ZegoToast({
-        content: `${
-          this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.getModel
-            .name
-        } is presenting now. You cannot share your whiteboard.`,
+        content: formatMessage({ id: "room.otherWhiteboardPresentingToast" }, { user: this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.getModel.name }),
       });
       return;
     }
@@ -2200,277 +2227,375 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
     metaEl.content = content;
   }
+
+  // 打开设置弹框
+  handleSetting() {
+    this.setState({
+      showZegoSettings: true,
+    });
+  }
+
+  // 设置扬声器 ID
+  private setAllSinkId(speakerId: string) {
+    const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
+    room?.querySelectorAll("video").forEach((video: any) => {
+      video?.setSinkId?.(speakerId || "");
+    });
+    room?.querySelectorAll("audio").forEach((audio: any) => {
+      audio?.setSinkId?.(speakerId || "");
+    });
+  }
+
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
         ? 0
         : this.state.notificationList.length - 2;
-
+    const { formatMessage } = this.props.core.intl
     return (
-		<ShowManageContext.Provider
-			value={{
-				enableVideoMixing: this.props.core._config.scenario?.config?.enableVideoMixing,
-				show: (_user: ZegoCloudUser) => {
-					_user && (this._selectedUser = _user)
-					this.setState({
-						layOutStatus: this.showManager(_user) ? "MANAGE" : "ONE_VIDEO",
-					})
-				},
-				liveStatus: this.state.liveStatus,
-				showPinButton:
-					(!!this.props.core._config.showPinButton ||
-						!!this.props.core._config.showTurnOffRemoteCameraButton ||
-						!!this.props.core._config.showTurnOffRemoteMicrophoneButton ||
-						!!this.props.core._config.showRemoveUserButton) &&
-					this.getShownUser().length > 1,
-				whiteboard_page: this.state.zegoSuperBoardView?.getCurrentSuperBoardSubView()?.getCurrentPage() || 1,
-				whiteboard_toolType: this.props.core.zegoSuperBoard?.getToolType() || 0,
-				whiteboard_fontSize: this.props.core.zegoSuperBoard?.getFontSize() || 0,
-				whiteboard_brushSize: this.props.core.zegoSuperBoard?.getBrushSize() || 0,
-				whiteboard_brushColor: this.props.core.zegoSuperBoard?.getBrushColor() || "",
-				whiteboard_isFontBold: this.props.core.zegoSuperBoard?.isFontBold(),
-				whiteboard_isFontItalic: this.props.core.zegoSuperBoard?.isFontItalic(),
-				whiteboard_showAddImage: this.props.core._config.whiteboardConfig?.showAddImageButton,
-				whiteboard_showCreateClose: this.props.core._config.whiteboardConfig?.showCreateAndCloseButton,
-				userInfo: { userID: this.props.core._expressConfig.userID },
-			}}>
-			<div
-				className={`${ZegoRoomCss.ZegoRoom}  ZegoRoomMobile_ZegoRoom ${
-					this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
-						? this.props.core._config.scenario?.config?.role === LiveRole.Host
-							? ZegoRoomCss.host
-							: this.props.core._config.scenario?.config?.role === LiveRole.Audience
-							? ZegoRoomCss.audience
-							: ""
-						: ""
-				}`}
-				onClick={(e) => {
-					// @ts-ignore
-					this.clickVideo(e)
-				}}>
-				{this.getLayoutScreen()}
-				{this.state.isNetworkPoor && <div className={ZegoRoomCss.network}></div>}
-				{(this.state.showFooter || false) && (
-					<div className={ZegoRoomCss.footer}>
-						{this.props.core._config.showMyCameraToggleButton &&
-							(this.props.core._config.scenario?.mode !== ScenarioModel.LiveStreaming ||
-								this.props.core._config.scenario?.config?.role === LiveRole.Cohost) && (
-								<a
-									className={`${ZegoRoomCss.switchCamera}`}
-									onClick={() => {
-										this.switchCamera()
-									}}></a>
-							)}
+      <ShowManageContext.Provider
+        value={{
+          enableVideoMixing: this.props.core._config.scenario?.config?.enableVideoMixing,
+          show: (_user: ZegoCloudUser) => {
+            _user && (this._selectedUser = _user)
+            this.setState({
+              layOutStatus: this.showManager(_user) ? "MANAGE" : "ONE_VIDEO",
+            })
+          },
+          liveStatus: this.state.liveStatus,
+          showPinButton:
+            (!!this.props.core._config.showPinButton ||
+              !!this.props.core._config.showTurnOffRemoteCameraButton ||
+              !!this.props.core._config.showTurnOffRemoteMicrophoneButton ||
+              !!this.props.core._config.showRemoveUserButton) &&
+            this.getShownUser().length > 1,
+          speakerId: this.state.selectSpeaker,
+          whiteboard_page: this.state.zegoSuperBoardView?.getCurrentSuperBoardSubView()?.getCurrentPage() || 1,
+          whiteboard_toolType: this.props.core.zegoSuperBoard?.getToolType() || 0,
+          whiteboard_fontSize: this.props.core.zegoSuperBoard?.getFontSize() || 0,
+          whiteboard_brushSize: this.props.core.zegoSuperBoard?.getBrushSize() || 0,
+          whiteboard_brushColor: this.props.core.zegoSuperBoard?.getBrushColor() || "",
+          whiteboard_isFontBold: this.props.core.zegoSuperBoard?.isFontBold(),
+          whiteboard_isFontItalic: this.props.core.zegoSuperBoard?.isFontItalic(),
+          whiteboard_showAddImage: this.props.core._config.whiteboardConfig?.showAddImageButton,
+          whiteboard_showCreateClose: this.props.core._config.whiteboardConfig?.showCreateAndCloseButton,
+          userInfo: { userID: this.props.core._expressConfig.userID },
+        }}>
+        <div
+          className={`${ZegoRoomCss.ZegoRoom}  ZegoRoomMobile_ZegoRoom ${this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
+            ? this.props.core._config.scenario?.config?.role === LiveRole.Host
+              ? ZegoRoomCss.host
+              : this.props.core._config.scenario?.config?.role === LiveRole.Audience
+                ? ZegoRoomCss.audience
+                : ""
+            : ""
+            }`}
+          onClick={(e) => {
+            // @ts-ignore
+            this.clickVideo(e)
+          }}>
+          {this.getLayoutScreen()}
+          {this.state.isNetworkPoor && <div className={ZegoRoomCss.network}></div>}
+          {(this.state.showFooter || false) && (
+            <div className={ZegoRoomCss.footer}>
+              {this.props.core._config.showMyCameraToggleButton &&
+                (this.props.core._config.scenario?.mode !== ScenarioModel.LiveStreaming ||
+                  this.props.core._config.scenario?.config?.role === LiveRole.Cohost) && (
+                  <a
+                    className={`${ZegoRoomCss.switchCamera}`}
+                    onClick={() => {
+                      this.switchCamera()
+                    }}></a>
+                )}
 
-						{this.props.core._config.showMyCameraToggleButton && (
-							<a
-								className={this.state.cameraOpen ? ZegoRoomCss.toggleCamera : ZegoRoomCss.cameraClose}
-								onClick={() => {
-									this.toggleCamera()
-								}}></a>
-						)}
+              {this.props.core._config.showMyCameraToggleButton && (
+                <a
+                  className={this.state.cameraOpen ? ZegoRoomCss.toggleCamera : ZegoRoomCss.cameraClose}
+                  onClick={() => {
+                    this.toggleCamera()
+                  }}></a>
+              )}
 
-						{this.props.core._config.showMyMicrophoneToggleButton && (
-							<a
-								className={this.state.micOpen ? ZegoRoomCss.toggleMic : ZegoRoomCss.micClose}
-								onClick={() => {
-									this.toggleMic()
-								}}></a>
-						)}
+              {this.props.core._config.showMyMicrophoneToggleButton && (
+                <a
+                  className={this.state.micOpen ? ZegoRoomCss.toggleMic : ZegoRoomCss.micClose}
+                  onClick={() => {
+                    this.toggleMic()
+                  }}></a>
+              )}
 
-						<a
-							className={
-								this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
-									? ZegoRoomCss.liveLeaveButton
-									: ZegoRoomCss.leaveRoom
-							}
-							onClick={() => {
-								this.leaveRoom()
-							}}></a>
+              <a
+                className={
+                  this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
+                    ? ZegoRoomCss.liveLeaveButton
+                    : ZegoRoomCss.leaveRoom
+                }
+                onClick={() => {
+                  this.leaveRoom()
+                }}></a>
 
-						{(this.props.core._config.showTextChat ||
-							this.props.core._config.showUserList ||
-							this.props.core._config.sharedLinks) && (
-							<a
-								id="ZegoRoomCssMobileMore"
-								className={`${ZegoRoomCss.more} ${
-									!this.state.showMore && this.state.unreadInviteList.size > 0
-										? ZegoRoomCss.moreRedPoint
-										: ""
-								}`}
-								onClick={() => {
-									this.openMore()
-								}}>
-								{(this.state.showMore || false) && (
-									<div
-										id="ZegoRoomCssMobilePopMore"
-										className={`${ZegoRoomCss.popMore} ${ZegoRoomCss.popLiveMore}`}>
-										<div className={ZegoRoomCss.popMoreContent}>
-											{this.props.core._config.showMyCameraToggleButton &&
-												this.props.core._config.scenario?.mode ===
-													ScenarioModel.LiveStreaming &&
-												this.props.core._config.scenario.config?.role === LiveRole.Host && (
-													<div
-														className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}
-														onClick={() => {
-															this.switchCamera()
-														}}>
-														<i
-															className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}></i>
-														<span>Flip</span>
-													</div>
-												)}
+              {(this.props.core._config.showTextChat ||
+                this.props.core._config.showUserList ||
+                this.props.core._config.sharedLinks) && (
+                  <a
+                    id="ZegoRoomCssMobileMore"
+                    className={`${ZegoRoomCss.more} ${!this.state.showMore && this.state.unreadInviteList.size > 0
+                      ? ZegoRoomCss.moreRedPoint
+                      : ""
+                      }`}
+                    onClick={() => {
+                      this.openMore()
+                    }}>
+                    {(this.state.showMore || false) && (
+                      <div
+                        id="ZegoRoomCssMobilePopMore"
+                        className={`${ZegoRoomCss.popMore} ${ZegoRoomCss.popLiveMore}`}>
+                        <div className={ZegoRoomCss.popMoreContent}>
+                          {this.props.core._config.showMyCameraToggleButton &&
+                            this.props.core._config.scenario?.mode ===
+                            ScenarioModel.LiveStreaming &&
+                            this.props.core._config.scenario.config?.role === LiveRole.Host && (
+                              <div
+                                className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}
+                                onClick={() => {
+                                  this.switchCamera()
+                                }}>
+                                <i
+                                  className={`${ZegoRoomCss.switchCamera} zegoUserVideo_click`}></i>
+                                <span>{formatMessage({ id: "global.flip" })}</span>
+                              </div>
+                            )}
 
-											{this.props.core._config.showRoomDetailsButton && (
-												<div
-													className={ZegoRoomCss.roomDetail}
-													onClick={(ev) => {
-														ev.stopPropagation()
-														this.toggleLayOut("INVITE")
-													}}>
-													<i className={ZegoRoomCss.details}></i>
-													<span>Room details</span>
-												</div>
-											)}
+                          {this.props.core._config.showRoomDetailsButton && (
+                            <div
+                              className={ZegoRoomCss.roomDetail}
+                              onClick={(ev) => {
+                                ev.stopPropagation()
+                                this.toggleLayOut("INVITE")
+                              }}>
+                              <i className={ZegoRoomCss.details}></i>
+                              <span>{formatMessage({ id: "global.roomDetails" })}</span>
+                            </div>
+                          )}
 
-											{this.props.core._config.showUserList && (
-												<div
-													className={`${
-														this.state.unreadInviteList.size > 0 ? ZegoRoomCss.unread : ""
-													}`}
-													onClick={(ev) => {
-														ev.stopPropagation()
-														this.toggleLayOut("USER_LIST")
-													}}>
-													<i className={ZegoRoomCss.member}></i>
-													<span>Member</span>
-												</div>
-											)}
-											{this.props.core._config.showTextChat && (
-												<div
-													onClick={(ev) => {
-														ev.stopPropagation()
-														this.toggleLayOut("MESSAGE")
-													}}>
-													<i className={ZegoRoomCss.chat}></i>
-													<span>Chat</span>
-												</div>
-											)}
-											{this.props.core._config.showLayoutButton && (
-												<div
-													onClick={(ev) => {
-														ev.stopPropagation()
-														this.toggleLayOut("LAYOUT")
-													}}>
-													<i className={ZegoRoomCss.layout}></i>
-													<span>Layout</span>
-												</div>
-											)}
-											{this.showRequestToCohostButton && (
-												<div
-													onClick={(ev) => {
-														ev.stopPropagation()
-														this.handleRequestCohost()
-													}}>
-													<i
-														className={`${
-															this.state.isRequestingCohost
-																? ZegoRoomCss.connected
-																: ZegoRoomCss.connect
-														} `}></i>
-													<span>Connect</span>
-												</div>
-											)}
+                          {this.props.core._config.showUserList && (
+                            <div
+                              className={`${this.state.unreadInviteList.size > 0 ? ZegoRoomCss.unread : ""
+                                }`}
+                              onClick={(ev) => {
+                                ev.stopPropagation()
+                                this.toggleLayOut("USER_LIST")
+                              }}>
+                              <i className={ZegoRoomCss.member}></i>
+                              <span>{formatMessage({ id: "mobileRoom.member" })}</span>
+                            </div>
+                          )}
+                          {this.props.core._config.showTextChat && (
+                            <div
+                              onClick={(ev) => {
+                                ev.stopPropagation()
+                                this.toggleLayOut("MESSAGE")
+                              }}>
+                              <i className={ZegoRoomCss.chat}></i>
+                              <span>{formatMessage({ id: "mobileRoom.chat" })}</span>
+                            </div>
+                          )}
+                          {this.props.core._config.showLayoutButton && (
+                            <div
+                              onClick={(ev) => {
+                                ev.stopPropagation()
+                                this.toggleLayOut("LAYOUT")
+                              }}>
+                              <i className={ZegoRoomCss.layout}></i>
+                              <span>{formatMessage({ id: "mobileRoom.layout" })}</span>
+                            </div>
+                          )}
+                          {this.showRequestToCohostButton && (
+                            <div
+                              onClick={(ev) => {
+                                ev.stopPropagation()
+                                this.handleRequestCohost()
+                              }}>
+                              <i
+                                className={`${this.state.isRequestingCohost
+                                  ? ZegoRoomCss.connected
+                                  : ZegoRoomCss.connect
+                                  } `}></i>
+                              <span>Connect</span>
+                            </div>
+                          )}
 
-											{this.props.core._config.plugins?.ZegoSuperBoardManager &&
-												this.props.core._config.whiteboardConfig?.showCreateAndCloseButton && (
-													<div
-														onClick={(ev) => {
-															ev.stopPropagation()
-															this.toggleLayOut("WHITEBOARD")
-															this.toggleWhiteboardSharing()
-														}}>
-														<i
-															className={`${ZegoRoomCss.whiteboard} ${
-																this.state.isZegoWhiteboardSharing
-																	? ZegoRoomCss.sharing
-																	: ""
-															} ${
-																this.state.screenSharingUserList.length > 0
-																	? ZegoRoomCss.forbiddenSharing
-																	: ""
-															}`}></i>
-														<span>Whiteboard</span>
-													</div>
-												)}
-										</div>
-									</div>
-								)}
-								{(this.state.showMore || false) && <div className={ZegoRoomCss.popMoreArray}></div>}
-							</a>
-						)}
+                          {this.props.core._config.plugins?.ZegoSuperBoardManager &&
+                            this.props.core._config.whiteboardConfig?.showCreateAndCloseButton && (
+                              <div
+                                onClick={(ev) => {
+                                  ev.stopPropagation()
+                                  this.toggleLayOut("WHITEBOARD")
+                                  this.toggleWhiteboardSharing()
+                                }}>
+                                <i
+                                  className={`${ZegoRoomCss.whiteboard} ${this.state.isZegoWhiteboardSharing
+                                    ? ZegoRoomCss.sharing
+                                    : ""
+                                    } ${this.state.screenSharingUserList.length > 0
+                                      ? ZegoRoomCss.forbiddenSharing
+                                      : ""
+                                    }`}></i>
+                                <span>{formatMessage({ id: "mobileRoom.whiteboard" })}</span>
+                              </div>
+                            )}
 
-						{this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-							this.props.core._config.scenario.config?.role === LiveRole.Host && (
-								<a
-									className={`${ZegoRoomCss.goLive}  ${
-										this.state.liveCountdown === 0 ? ZegoRoomCss.goLiveEnabled : ""
-									}`}
-									id="ZegoLiveButton"
-									onClick={() => {
-										this.setLive()
-									}}>
-									{this.state.liveCountdown === 3 || this.state.liveCountdown === -1
-										? "Go Live"
-										: this.state.liveCountdown === 0
-										? "Stop"
-										: "Go Live"}
-								</a>
-							)}
-					</div>
-				)}
-				{this.getListScreen()}
-				<>{this.getHiddenUser()}</>
-				<div className={ZegoRoomCss.notify} id="zego_left_notify_wrapper">
-					{this.state.notificationList.slice(startIndex).map((notify) => {
-						if (notify.type === "MSG") {
-							return (
-								<div key={notify.content} className={ZegoRoomCss.notifyContent}>
-									<h5>{notify.userName}</h5>
-									<span>{notify.content}</span>
-								</div>
-							)
-						} else {
-							return (
-								<div key={notify.content} className={ZegoRoomCss.notifyContent}>
-									<span>{notify.content}</span>
-								</div>
-							)
-						}
-					})}
-				</div>
-				{this.state.liveCountdown > 0 && (
-					<div className={ZegoRoomCss.countDown}>
-						<div>{this.state.liveCountdown}</div>
-					</div>
-				)}
-				{(this.state.connecting || false) && (
-					<ZegoReconnect
-						content={
-							this.state.firstLoading || false ? "Joining Room" : "Trying to reconnect..."
-						}></ZegoReconnect>
-				)}
-				{this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-					(this.state.liveCountdown === 0 || this.state.liveStatus === "1") && (
-						<button
-							className={`${ZegoRoomCss.LiveStateButton}  ${
-								this.state.showFooter ? "" : ZegoRoomCss.LiveStateButtonNoFooter
-							}`}>
-							Live
-						</button>
-					)}
-			</div>
-		</ShowManageContext.Provider>
-	)
+                          {
+                            <div onClick={() => { this.handleSetting() }}>
+                              <i className={ZegoRoomCss.settings}></i>
+                              <span>{formatMessage({ id: "global.settings" })}</span>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    )}
+                    {(this.state.showMore || false) && <div className={ZegoRoomCss.popMoreArray}></div>}
+                  </a>
+                )}
+
+              {this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+                this.props.core._config.scenario.config?.role === LiveRole.Host && (
+                  <a
+                    className={`${ZegoRoomCss.goLive}  ${this.state.liveCountdown === 0 ? ZegoRoomCss.goLiveEnabled : ""
+                      }`}
+                    id="ZegoLiveButton"
+                    onClick={() => {
+                      this.setLive()
+                    }}>
+                    {this.state.liveCountdown === 3 || this.state.liveCountdown === -1
+                      ? <FormattedMessage id="room.live" />
+                      : this.state.liveCountdown === 0
+                        ? <FormattedMessage id="global.stop" />
+                        : <FormattedMessage id="room.live" />}
+                  </a>
+                )}
+            </div>
+          )}
+          {this.getListScreen()}
+          <>{this.getHiddenUser()}</>
+          <div className={ZegoRoomCss.notify} id="zego_left_notify_wrapper">
+            {this.state.notificationList.slice(startIndex).map((notify) => {
+              if (notify.type === "MSG") {
+                return (
+                  <div key={notify.content} className={ZegoRoomCss.notifyContent}>
+                    <h5>{notify.userName}</h5>
+                    <span>{notify.content}</span>
+                  </div>
+                )
+              } else {
+                return (
+                  <div key={notify.content} className={ZegoRoomCss.notifyContent}>
+                    <span>{notify.content}</span>
+                  </div>
+                )
+              }
+            })}
+          </div>
+          {this.state.liveCountdown > 0 && (
+            <div className={ZegoRoomCss.countDown}>
+              <div>{this.state.liveCountdown}</div>
+            </div>
+          )}
+          {(this.state.connecting || false) && (
+            <ZegoReconnect
+              content={
+                this.state.firstLoading || false ? formatMessage({ id: "global.joining" }) : formatMessage({ id: "global.networkMobile" })
+              }></ZegoReconnect>
+          )}
+          {this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+            (this.state.liveCountdown === 0 || this.state.liveStatus === "1") && (
+              <button
+                className={`${ZegoRoomCss.LiveStateButton}  ${this.state.showFooter ? "" : ZegoRoomCss.LiveStateButtonNoFooter
+                  }`}>
+                Live
+              </button>
+            )}
+          {this.state.showZegoSettings && (
+            <ZegoSettings
+              core={this.props.core}
+              theme={"black"}
+              initDevices={{
+                mic: this.state.selectMic,
+                cam: this.state.selectCamera,
+                speaker: this.state.selectSpeaker,
+                videoResolve: this.state.selectVideoResolution,
+                showNonVideoUser: this.state.showNonVideoUser,
+              }}
+              closeCallBack={() => {
+                this.setState({
+                  showZegoSettings: false,
+                })
+              }}
+              onMicChange={(deviceID: string) => {
+                this.setState(
+                  {
+                    selectMic: deviceID,
+                  },
+                  () => {
+                    if (this.state.localStream) {
+                      this.props.core.useMicrophoneDevice(this.state.localStream, deviceID)
+                    }
+                  }
+                )
+              }}
+              onCameraChange={(deviceID: string) => {
+                this.setState(
+                  {
+                    selectCamera: deviceID,
+                  },
+                  async () => {
+                    if (this.state.localStream) {
+                      await this.props.core.useCameraDevice(this.state.localStream, deviceID)
+                      this.setState({
+                        cameraOpen: true,
+                      })
+                    }
+                  }
+                )
+              }}
+              onSpeakerChange={(deviceID: string) => {
+                this.setState(
+                  {
+                    selectSpeaker: deviceID,
+                  },
+                  () => {
+                    this.setAllSinkId(deviceID)
+                  }
+                )
+              }}
+              onVideoResolutionChange={(level: string) => {
+                this.setState(
+                  {
+                    selectVideoResolution: level,
+                  },
+                  () => {
+                    if (this.state.localStream) {
+                      const { width, height, bitrate, frameRate } = getVideoResolution(level)
+                      this.props.core.setVideoConfig(this.state.localStream, {
+                        width,
+                        height,
+                        maxBitrate: bitrate,
+                        frameRate,
+                      })
+                    }
+                  }
+                )
+              }}
+              onShowNonVideoChange={(selected: boolean) => {
+                this.props.core._config.showNonVideoUser = selected
+                this.props.core.setShowNonVideo(selected)
+                this.setState({
+                  showNonVideoUser: selected,
+                })
+              }}></ZegoSettings>
+          )}
+        </div>
+      </ShowManageContext.Provider>
+    )
   }
 }

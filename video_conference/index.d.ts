@@ -1,75 +1,75 @@
 declare type ZegoCloudRTCCore = {};
 declare type ZegoExpressEngine = {};
 declare interface ZegoUser {
-  userID: string;
-  userName?: string;
-  setUserAvatar?: (avatar: string) => void;
+	userID: string;
+	userName?: string;
+	setUserAvatar?: (avatar: string) => void;
 }
 declare enum LiveRole {
-  Host = "Host",
-  Cohost = "Cohost",
-  Audience = "Audience",
+	Host = "Host",
+	Cohost = "Cohost",
+	Audience = "Audience",
 }
 declare enum ScenarioModel {
-  OneONoneCall = "OneONoneCall",
-  GroupCall = "GroupCall",
-  VideoConference = "VideoConference",
-  LiveStreaming = "LiveStreaming",
+	OneONoneCall = "OneONoneCall",
+	GroupCall = "GroupCall",
+	VideoConference = "VideoConference",
+	LiveStreaming = "LiveStreaming",
 }
 declare enum VideoResolution {
-  _180P = "180p",
-  _360P = "360p",
-  _480P = "480p",
-  _720P = "720p",
+	_180P = "180p",
+	_360P = "360p",
+	_480P = "480p",
+	_720P = "720p",
 }
 export enum VideoMixinLayoutType {
-  AutoLayout = 0,
+	AutoLayout = 0,
 }
 export enum VideoMixinOutputResolution {
-  _180P = "180p",
-  _360P = "360p",
-  _540P = "540p",
-  _720P = "720p",
-  _1080P = "1080p",
+	_180P = "180p",
+	_360P = "360p",
+	_540P = "540p",
+	_720P = "720p",
+	_1080P = "1080p",
 }
 declare interface ScenarioConfig {
-  [ScenarioModel.LiveStreaming]: {
-    role: LiveRole;
-    liveStreamingMode: LiveStreamingMode;
-    enableVideoMixing?: boolean;
-    // videoMixingLayout?: VideoMixinLayoutType;
-    videoMixingOutputResolution?: VideoMixinOutputResolution;
-  };
-  [ScenarioModel.OneONoneCall]: {
-    role: LiveRole;
-  };
-  [ScenarioModel.GroupCall]: {
-    role: LiveRole;
-  };
-  [ScenarioModel.VideoConference]: {
-    role: LiveRole;
-  };
+	[ScenarioModel.LiveStreaming]: {
+		role: LiveRole;
+		liveStreamingMode: LiveStreamingMode;
+		enableVideoMixing?: boolean;
+		// videoMixingLayout?: VideoMixinLayoutType;
+		videoMixingOutputResolution?: VideoMixinOutputResolution;
+	};
+	[ScenarioModel.OneONoneCall]: {
+		role: LiveRole;
+	};
+	[ScenarioModel.GroupCall]: {
+		role: LiveRole;
+	};
+	[ScenarioModel.VideoConference]: {
+		role: LiveRole;
+	};
 }
 declare enum LiveStreamingMode {
-  /**
-   * @Deprecated  StanderLive will be removed, please use LiveStreaming instead
-   */
-  StanderLive = "LiveStreaming",
-  /**
-   * @Deprecated  PremiumLive will be removed, please use InteractiveLiveStreaming instead
-   */
-  PremiumLive = "InteractiveLiveStreaming",
-  LiveStreaming = "LiveStreaming", // CDN
-  InteractiveLiveStreaming = "InteractiveLiveStreaming", // L3
-  RealTimeLive = "RealTimeLive", //RTC
+	/**
+	 * @Deprecated  StanderLive will be removed, please use LiveStreaming instead
+	 */
+	StanderLive = "LiveStreaming",
+	/**
+	 * @Deprecated  PremiumLive will be removed, please use InteractiveLiveStreaming instead
+	 */
+	PremiumLive = "InteractiveLiveStreaming",
+	LiveStreaming = "LiveStreaming", // CDN
+	InteractiveLiveStreaming = "InteractiveLiveStreaming", // L3
+	RealTimeLive = "RealTimeLive", //RTC
 }
 
 declare enum ConsoleLevel {
-  Debug = "Debug",
-  Info = "Info",
-  Warning = "Warning",
-  Error = "Error",
-  None = "None",
+	Debug = "Debug",
+	Info = "Info",
+	Warning = "Warning",
+	Error = "Error",
+	None = "None",
 }
 declare interface InRoomMessageInfo {
 	fromUser: ZegoUser
@@ -105,6 +105,8 @@ declare interface ZegoCloudRoomConfig {
 		height?: number
 		frameRate?: number
 		maxBitRate?: number
+		// 2.2.0
+		onError?: (errorCode: number) => string | undefined // Screen sharing failure callback. If you need to customize the prompt text, you can return the corresponding string based on the error code. If you need to customize the UI, you can return an empty string.
 	} // Screen sharing settings, resolution settings
 
 	// 1.2 Prejoin view
@@ -173,6 +175,13 @@ declare interface ZegoCloudRoomConfig {
 	onReturnToHomeScreenClicked?: () => void // Callback for click return to home screen button.
 	addInRoomMessageMessageAttributes?: () => any //  add in room message message attribute. return custom message attribute.
 	customMessageUI?: (msg: InRoomMessageInfo) => Element // Custom message UI. need return Element.
+	// 2.1.0
+	language?: ZegoUIKitLanguage // set language
+	// 2.2.0
+	leaveRoomDialogConfig?: {
+		titleText?: string, // custom leave room confrim dialog title
+		descriptionText?: string, // // custom leave room confrim dialog desctiption
+	}
 }
 
 export enum RightPanelExpandedType {
@@ -249,6 +258,8 @@ declare interface ZegoCallInvitationConfig {
 	onIncomingCallTimeout?: (callID: string, caller: ZegoUser) => void;
 	//When the call exceeds the fixed time, if there are still callees who do not respond, the caller will receive the callback, convert the internal data into corresponding data and throw it.
 	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void;
+	// 2.1.0
+	language?: ZegoUIKitLanguage // set language
 }
 
 declare interface ZegoSignalingPluginNotificationConfig {
@@ -271,6 +282,11 @@ declare enum MessagePriority {
 	Low = 1,
 	Medium = 2,
 	High = 3,
+}
+
+export enum ZegoUIKitLanguage {
+	CHS = "zh-CN", // 中文
+	ENGLISH = "en-US", // 英文
 }
 export declare class ZegoUIKitPrebuilt {
 	static core: ZegoCloudRTCCore | undefined;
@@ -321,6 +337,7 @@ export declare class ZegoUIKitPrebuilt {
 		callees: ZegoUser[];
 		callType: ZegoInvitationType;
 		timeout?: number;
+		roomID?: string;
 		data?: string;
 		notificationConfig?: ZegoSignalingPluginNotificationConfig;
 	}): Promise<{
@@ -329,4 +346,8 @@ export declare class ZegoUIKitPrebuilt {
 	sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean>;
 	sendInRoomCustomCommand(command: object, priority?: MessagePriority): Promise<ZegoSignalingInRoomCommandMessage>;
 	hangUp(): void;
+	setLanguage(language: ZegoUIKitLanguage): void;
+	// 2.3.0
+	autoLeaveRoomWhenOnlySelfInRoom: boolean;
+	getRoomID(): string;
 }

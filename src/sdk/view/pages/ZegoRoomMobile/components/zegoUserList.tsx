@@ -5,6 +5,7 @@ import { ZegoCloudRTCCore } from "../../../../modules"
 import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/UserListManager"
 import { ScenarioModel, UserListMenuItemType } from "../../../../model"
 import ShowManageContext, { ShowManageType } from "../../context/showManage"
+import { FormattedMessage } from "react-intl";
 export class ZegoUserList extends React.Component<{
 	userList: ZegoCloudUserList
 	core: ZegoCloudRTCCore
@@ -16,10 +17,10 @@ export class ZegoUserList extends React.Component<{
 		searchList: ZegoCloudUser[]
 		searchText: string
 	} = {
-		message: "",
-		searchList: [],
-		searchText: "",
-	}
+			message: "",
+			searchList: [],
+			searchText: "",
+		}
 
 	static contextType?: React.Context<ShowManageType> = ShowManageContext
 	context!: React.ContextType<typeof ShowManageContext>
@@ -84,6 +85,7 @@ export class ZegoUserList extends React.Component<{
 		)
 	}
 	render(): React.ReactNode {
+		const { formatMessage } = this.props.core.intl
 		return (
 			<div className={zegoUserListCss.memberList}>
 				<div className={zegoUserListCss.memberListHeader}>
@@ -93,7 +95,7 @@ export class ZegoUserList extends React.Component<{
 							ev.stopPropagation()
 							this.props.closeCallBack()
 						}}></div>
-					Member
+					<FormattedMessage id="mobileRoom.member" />
 				</div>
 				<div className={zegoUserListCss.memberListContent}>
 					{this.props.core._config.enableUserSearch && (
@@ -101,7 +103,7 @@ export class ZegoUserList extends React.Component<{
 							<span className={zegoUserListCss.memberSearchPrefix}></span>
 							<input
 								type="text"
-								placeholder="Search"
+								placeholder={formatMessage({ id: "global.search" })}
 								onInput={(e) => {
 									this.onInput(e)
 								}}
@@ -148,33 +150,33 @@ export class ZegoUserList extends React.Component<{
 											{user.userName}
 										</span>
 										{this.props.core._expressConfig.userID === user.userID && (
-											<span key={user.userID + "_me"}> (You) </span>
+											<span key={user.userID + "_me"}> (<FormattedMessage id="global.you" />) </span>
 										)}
 									</div>
 									{(user.streamList[0].media ||
 										(this.context.liveStatus === "1" && user.streamList[0].streamID)) && (
-										<div className={zegoUserListCss.memberHandlers}>
-											{this.isShownPin(user) && user.pin && (
-												<i className={zegoUserListCss.memberUnPin}></i>
-											)}
-											<i
-												className={
-													user.streamList &&
-													user.streamList[0] &&
-													user.streamList[0].micStatus === "OPEN"
-														? zegoUserListCss.memberMicOpen
-														: zegoUserListCss.memberMicMute
-												}></i>
-											<i
-												className={
-													user.streamList &&
-													user.streamList[0] &&
-													user.streamList[0].cameraStatus === "OPEN"
-														? zegoUserListCss.memberCameraOpen
-														: zegoUserListCss.memberCameraMute
-												}></i>
-										</div>
-									)}
+											<div className={zegoUserListCss.memberHandlers}>
+												{this.isShownPin(user) && user.pin && (
+													<i className={zegoUserListCss.memberUnPin}></i>
+												)}
+												<i
+													className={
+														user.streamList &&
+															user.streamList[0] &&
+															user.streamList[0].micStatus === "OPEN"
+															? zegoUserListCss.memberMicOpen
+															: zegoUserListCss.memberMicMute
+													}></i>
+												<i
+													className={
+														user.streamList &&
+															user.streamList[0] &&
+															user.streamList[0].cameraStatus === "OPEN"
+															? zegoUserListCss.memberCameraOpen
+															: zegoUserListCss.memberCameraMute
+													}></i>
+											</div>
+										)}
 								</div>
 							)
 						})
@@ -207,14 +209,14 @@ export class ZegoUserList extends React.Component<{
 											style={{
 												maxWidth:
 													this.props.core._expressConfig.userID === user.userID ||
-													user.requestCohost
+														user.requestCohost
 														? "30vw"
 														: "45vw",
 											}}>
 											{user.userName}
 										</span>
 										{this.props.core._expressConfig.userID === user.userID && (
-											<span key={user.userID + "_me"}> (You) </span>
+											<span key={user.userID + "_me"}> (<FormattedMessage id="global.you" />) </span>
 										)}
 									</div>
 									{!user.streamList?.[0]?.media && user.invited && !user.requestCohost && (
@@ -231,7 +233,7 @@ export class ZegoUserList extends React.Component<{
 													)
 													ev.stopPropagation()
 												}}>
-												Disagree
+												{formatMessage({ id: "global.disagree" })}
 											</div>
 											<div
 												className={zegoUserListCss.agreeBtn}
@@ -242,7 +244,7 @@ export class ZegoUserList extends React.Component<{
 													)
 													ev.stopPropagation()
 												}}>
-												Agree
+												{formatMessage({ id: "global.agree" })}
 											</div>
 										</div>
 									)}
@@ -253,7 +255,7 @@ export class ZegoUserList extends React.Component<{
 					{this.state.searchText.length > 0 && this.state.searchList.length === 0 && (
 						<div className={zegoUserListCss.noResult}>
 							<div></div>
-							<p>No search results</p>
+							<p>{formatMessage({ id: "global.noSearchResults" })}</p>
 						</div>
 					)}
 				</div>

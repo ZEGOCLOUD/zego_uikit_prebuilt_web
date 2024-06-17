@@ -3,6 +3,7 @@ import ZegoMessageCss from "./zegoMessage.module.scss"
 import { DateFormat } from "../../../../util"
 import { ZegoBroadcastMessageInfo2 } from "../../../../model"
 import { ZegoToast } from "../../../components/zegoToast"
+import { ZegoCloudRTCCore } from "../../../../modules";
 // @ts-ignore
 function convertDomNodeToReactElement(domNode: Element) {
 	if (!(domNode instanceof Element)) {
@@ -23,6 +24,7 @@ function convertDomNodeToReactElement(domNode: Element) {
 	return React.createElement(tag, attrs, ...children)
 }
 export class ZegoMessage extends React.Component<{
+	core: ZegoCloudRTCCore
 	messageList: ZegoBroadcastMessageInfo2[]
 	sendMessage: (msg: string) => void
 	selfUserID: string
@@ -67,6 +69,7 @@ export class ZegoMessage extends React.Component<{
 		})
 	}
 	render(): React.ReactNode {
+		const { formatMessage } = this.props.core.intl;
 		return (
 			<div className={ZegoMessageCss.msgContentWrapper}>
 				<div className={ZegoMessageCss.msgList} ref={this.msgListRef}>
@@ -89,9 +92,8 @@ export class ZegoMessage extends React.Component<{
 									</span>
 								</div>
 								<p
-									className={`${msg.status === "SENDING" && ZegoMessageCss.loading} ${
-										msg.status === "FAILED" && ZegoMessageCss.error
-									}`}>
+									className={`${msg.status === "SENDING" && ZegoMessageCss.loading} ${msg.status === "FAILED" && ZegoMessageCss.error
+										}`}>
 									{msg.message}
 								</p>
 							</div>
@@ -104,7 +106,7 @@ export class ZegoMessage extends React.Component<{
 						onChange={(event) => {
 							this.messageInput(event)
 						}}
-						placeholder="Send a message to everyone"
+						placeholder={formatMessage({ id: "global.send" })}
 						onKeyPress={(event) => {
 							if (event.key === "Enter") {
 								this.handleSend()

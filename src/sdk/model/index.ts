@@ -95,12 +95,12 @@ export interface ZegoCloudRoomConfig {
 	showPreJoinView?: boolean // 是否显示预览检测页面，默认显示
 	turnOnMicrophoneWhenJoining?: boolean // 是否开启自己的麦克风,默认开启
 	turnOnCameraWhenJoining?: boolean // 是否开启自己的摄像头 ,默认开启
-	showMyCameraToggleButton?: boolean // 是否显示控制自己的麦克风按钮,默认显示
-	showMyMicrophoneToggleButton?: boolean // 是否显示控制自己摄像头按钮,默认显示
+	showMyCameraToggleButton?: boolean // 是否显示控制自己的摄像头按钮,默认显示
+	showMyMicrophoneToggleButton?: boolean // 是否显示控制自己麦克风按钮,默认显示
 	showAudioVideoSettingsButton?: boolean // 是否显示音视频设置按钮,默认显示
 
 	showTextChat?: boolean // 是否开启聊天，默认开启
-	showUserList?: boolean //是否显示成员列表，默认不展示
+	showUserList?: boolean // 是否显示成员列表，默认显示
 	lowerLeftNotification?: {
 		showUserJoinAndLeave?: boolean //是否显示成员进出，默认不显示
 		showTextChat?: boolean // 是否显示未读消息，默认不显示
@@ -129,7 +129,7 @@ export interface ZegoCloudRoomConfig {
 		config?: ScenarioConfig // 对应场景专有配置
 	}
 	showLayoutButton?: boolean // 是否显示布局切换按钮
-	showPinButton?: boolean // 是否显pin按钮
+	showPinButton?: boolean // 是否显示 pin 按钮，默认false
 	onUserAvatarSetter?: (user: ZegoUser[]) => void //是否可以设置用户头像回调
 	videoResolutionList?: VideoResolution[] // 视频分辨率列表（默认使用第一个）
 	videoResolutionDefault?: VideoResolution // 默认视频分辨率
@@ -166,21 +166,21 @@ export interface ZegoCloudRoomConfig {
 	onYouRemovedFromRoom?: () => void // 自己被移出房间回调
 	videoCodec?: "H264" | "VP8" // 视频编解码器
 	//   1.7.3
-	showRoomDetailsButton?: boolean // 是否显示RoomDetail
+	showRoomDetailsButton?: boolean // 是否显示RoomDetail，默认true
 	onInRoomMessageReceived?: (messageInfo: InRoomMessageInfo) => void
 	onInRoomCommandReceived?: (fromUser: ZegoUser, command: string) => void // 房间自定义消息回调
 	onInRoomTextMessageReceived?: (messages: ZegoSignalingInRoomTextMessage[]) => void // zim房间文本消息回调
 	//   1.8.0
-	showInviteToCohostButton?: boolean // 主播是否展示邀请观众连麦按钮
-	showRemoveCohostButton?: boolean // 主播是否展示移下麦按钮
-	showRequestToCohostButton?: boolean // 观众是否展示申请连麦按钮
+	showInviteToCohostButton?: boolean // 主播是否展示邀请观众连麦按钮，默认false
+	showRemoveCohostButton?: boolean // 主播是否展示移下麦按钮，默认false
+	showRequestToCohostButton?: boolean // 观众是否展示申请连麦按钮，默认false
 	rightPanelExpandedType?: RightPanelExpandedType // 右侧面板展开状态
 	enableStereo?: boolean // 是否开启双声道
-	autoHideFooter?: boolean // 是否自动隐藏底部工具栏
+	autoHideFooter?: boolean // 是否自动隐藏底部工具栏，默认true
 	// 1.8.11
 	enableUserSearch?: boolean // 是否开启用户搜索, 默认false
 	// 1.9.0
-	onInRoomCustomCommandReceived?: (command: ZegoSignalingInRoomCommandMessage[]) => void //
+	onInRoomCustomCommandReceived?: (command: ZegoSignalingInRoomCommandMessage[]) => void // 收到 zim 房间自定义消息回调
 	// 1.10.0
 	showLeaveRoomConfirmDialog?: boolean // default true
 	screenSharingConfig?: {
@@ -189,12 +189,21 @@ export interface ZegoCloudRoomConfig {
 		height?: number
 		frameRate?: number
 		maxBitRate?: number
+		// 2.2.0
+		onError?: (errorCode: number) => string | undefined // custom screen sharing failure pop-up text or pop-up
 	}
 	// 1.11.0
 	onReturnToHomeScreenClicked?: () => void //
 	// 1.12.0
 	addInRoomMessageAttributes?: () => any //  add in room message message attribute. return custom message attribute.
 	customMessageUI?: (msg: InRoomMessageInfo) => HTMLElement
+	// 2.1.0
+	language?: ZegoUIKitLanguage
+	// 2.2.0
+	leaveRoomDialogConfig?: {
+		titleText?: string, // custom leave room confrim dialog title
+		descriptionText?: string, // // custom leave room confrim dialog desctiption
+	}
 }
 export enum RightPanelExpandedType {
 	None = "None",
@@ -262,6 +271,7 @@ export interface ZegoSettingsProps {
 }
 
 export interface ZegoGridLayoutProps {
+	core: ZegoCloudRTCCore
 	userList: ZegoCloudUserList
 	videoShowNumber: number
 	gridRowNumber?: number
@@ -274,6 +284,7 @@ export interface ZegoGridLayoutProps {
 }
 
 export interface ZegoSidebarLayoutProps {
+	core: ZegoCloudRTCCore
 	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
 	userList: ZegoCloudUserList
@@ -284,6 +295,7 @@ export interface ZegoSidebarLayoutProps {
 	soundLevel?: SoundLevelMap
 }
 export interface ZegoScreenSharingLayoutProps {
+	core: ZegoCloudRTCCore
 	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
 	userList: ZegoCloudUserList
@@ -297,6 +309,7 @@ export interface ZegoScreenSharingLayoutProps {
 	handleFullScreen?: (fullScreen: boolean) => void
 }
 export interface ZegoWhiteboardSharingLayoutProps {
+	core: ZegoCloudRTCCore
 	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 	handleSetPin?: (userID: string) => void
 	userList: ZegoCloudUserList
@@ -390,6 +403,8 @@ export interface ZegoCallInvitationConfig {
 	onIncomingCallTimeout?: (callID: string, caller: ZegoUser) => void
 	//当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
 	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void
+	// 2.1.0
+	language?: ZegoUIKitLanguage
 }
 export type CancelCallInvitationFunc = (data?: string) => void // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void // 接受邀请
@@ -439,4 +454,8 @@ export const enum ReasonForRefusedInviteToCoHost {
 	Disagree, // 主动拒绝
 	Busy, // 占线拒绝
 	Timeout, // 超时拒绝
+}
+export enum ZegoUIKitLanguage {
+	CHS = "zh-CN", // 中文
+	ENGLISH = "en-US", // 英文
 }

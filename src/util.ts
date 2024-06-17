@@ -7,36 +7,57 @@ declare function generatePrebuiltToken(
 ): string;
 // 生成token
 export function generateToken(
+  appID: number,
   userID: string,
   roomID: string,
   userName: string
 ): Promise<{ token: string }> {
   console.log("generateToken:", process.env);
-  if (process.env.REACT_APP_ENV === "test") {
-    return fetch(
-      `https://nextjs-token-7berndqqr-choui666.vercel.app/api/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=86400`,
-      {
-        method: "GET",
-      }
-    ).then((res) => res.json());
-  } else {
-    return fetch("https://console-api.zegocloud.com/demo/prebuilt_token", {
-      method: "POST",
-      body: JSON.stringify({
-        user_id: userID,
-        room_id: roomID,
-        user_name: encodeURIComponent(userName),
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then(async (res) => {
-      const result = await res.json();
-      return {
-        token: result.data.token,
-      };
-    });
-  }
+  // if (process.env.REACT_APP_ENV === "test") {
+  //   return fetch(
+  //     `https://nextjs-token-7berndqqr-choui666.vercel.app/api/access_token?userID=${userID}&userName=${userName}&roomID=${roomID}&expired_ts=86400`,
+  //     {
+  //       method: "GET",
+  //     }
+  //   ).then((res) => res.json());
+  // } else {
+  //   return fetch("https://console-api.zegocloud.com/demo/prebuilt_token", {
+  //     method: "POST",
+  //     body: JSON.stringify({
+  //       user_id: userID,
+  //       room_id: roomID,
+  //       user_name: encodeURIComponent(userName),
+  //     }),
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   }).then(async (res) => {
+  //     const result = await res.json();
+  //     return {
+  //       token: result.data.token,
+  //     };
+  //   });
+  // }
+  return fetch('https://mini-game-test-server.zego.im/api/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      app_id: appID,
+      user_id: userID,
+    })
+  }).then(async (res) => {
+    const result = await res.text();
+    return {
+      token: result + '#' + window.btoa(JSON.stringify({
+        userID,
+        roomID,
+        userName: encodeURIComponent(userName),
+        appID,
+      }))
+    };
+  });
 }
 export function generateTokenForCallInvitation(
   userID: string,
@@ -156,3 +177,5 @@ export function getUrlParams(
   let urlStr = url.split("?")[1];
   return new URLSearchParams(urlStr);
 }
+
+// 生成token
