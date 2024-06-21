@@ -62,7 +62,9 @@ export default class App extends React.PureComponent {
     showLangBox: false,
     lang: getUrlParams().get("lang") || "en",
     showWaitingPage: false,
-    callees: []
+    callees: [],
+    roomTimer: null,
+    roomTime: 0,
   };
 
   settingsEl = null;
@@ -101,6 +103,7 @@ export default class App extends React.PureComponent {
     let showNonVideoUser = getUrlParams().get("showNonVideoUser") || undefined;
     let liveStreamingMode;
     let mode = ScenarioModel.OneONoneCall;
+
     //@ts-ignore // just for debugger
     window.ZegoUIKitPrebuilt = ZegoUIKitPrebuilt;
     if (urlToken) {
@@ -268,11 +271,26 @@ export default class App extends React.PureComponent {
           //   layout: "Auto",
           onJoinRoom: () => {
             // sessionStorage.setItem('roomID', zp.getRoomID());
-            console.log("test:leaveRoomCallback")
+            console.warn("join room callback");
             window?.parent?.postMessage("leaveRoom", "*")
+            // demo 设置5分钟体验限制
+            this.state.roomTimer = setInterval(() => {
+              this.state.roomTime = ++this.state.roomTime;
+              if (this.state.roomTime === 300) {
+                this.showToast(this.state.lang === "en" ? "Only for functional experience, not for commercial use. Each session should not exceed 5 minutes." : "仅功能体验，不作商业用途。每次不超过5分钟。");
+                zp.hangUp();
+              }
+            }, 1000);
           }, // 退出房间回调
           onLeaveRoom: () => {
+            console.warn("leave room callback");
             window?.parent?.postMessage("joinRoom", "*")
+            // 刷新 5分钟限制
+            if (this.state.roomTimer) {
+              clearInterval(this.state.roomTimer);
+              this.state.roomTimer = null;
+              this.state.roomTime = 0;
+            }
           },
           onInRoomMessageReceived: (messageInfo) => {
             console.warn("onInRoomMessageReceived", messageInfo)
@@ -451,6 +469,14 @@ export default class App extends React.PureComponent {
         if (this.state.invitees.length > 1) {
           this.showToast("Waiting for others to join the call.");
         }
+        // demo 设置5分钟体验限制
+        this.state.roomTimer = setInterval(() => {
+          this.state.roomTime = ++this.state.roomTime;
+          if (this.state.roomTime === 300) {
+            this.showToast(this.state.lang === "en" ? "Only for functional experience, not for commercial use. Each session should not exceed 5 minutes." : "仅功能体验，不作商业用途。每次不超过5分钟。");
+            this.zp.hangUp();
+          }
+        }, 1000);
         return {
           branding: {
             logoURL: require("./assets/zegocloud_logo.png"),
@@ -494,6 +520,13 @@ export default class App extends React.PureComponent {
         document.querySelector(".preView_services") &&
           // @ts-ignore
           (document.querySelector(".preView_services")!.style.display = "block");
+
+        // 刷新 5分钟限制
+        if (this.state.roomTimer) {
+          clearInterval(this.state.roomTimer);
+          this.state.roomTimer = null;
+          this.state.roomTime = 0;
+        }
       },
       // Prebuilt内部收到呼叫邀请后，将内部数据转成对应数据后抛出
       onIncomingCallReceived: (
@@ -864,14 +897,14 @@ export default class App extends React.PureComponent {
             } preView_services`}>
           {this.state.lang === "en" ? 'By clicking "Join", you agree to' : "点击 “加入”，即表示您同意"}{!isPc() && <br />}{this.state.lang === ZegoUIKitLanguage.ENGLISH ? " our" : "我们的"}{" "}
           <a
-            href="https://www.zegocloud.com/policy?index=1"
+            href={this.state.lang === "en" ? "https://www.zegocloud.com/policy?index=1" : "https://www.zego.im/terms"}
             target="_blank"
             rel="noreferrer">
             {this.state.lang === "en" ? "Terms of Services" : "服务条款"}
           </a>{" "}
           {this.state.lang === "en" ? "and" : "和"}{" "}
           <a
-            href="https://www.zegocloud.com/policy?index=0"
+            href={this.state.lang === "en" ? "https://www.zegocloud.com/policy?index=0" : "https://www.zego.im/privacy"}
             target="_blank"
             rel="noreferrer">
             {this.state.lang === "en" ? "Privacy Policy" : "隐私政策"}
