@@ -295,7 +295,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                         ref={(el) => {
                           el &&
                             el.srcObject !== user?.streamList?.[0]?.media &&
-                            (el.srcObject = user?.streamList?.[0]?.media!);
+                            (el.srcObject = user?.streamList?.[0]?.media! as any);
                           el &&
                             (el as any)?.setSinkId?.(
                               this.context.speakerId || ""
@@ -314,7 +314,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                       ref={(el: HTMLAudioElement) => {
                         el &&
                           el.srcObject !== user?.streamList?.[0]?.media &&
-                          (el.srcObject = user?.streamList?.[0]?.media!);
+                          (el.srcObject = user?.streamList?.[0]?.media! as any);
                         el &&
                           (el as any)?.setSinkId?.(
                             this.context.speakerId || ""

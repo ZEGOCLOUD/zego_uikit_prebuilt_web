@@ -23,7 +23,7 @@ export default class ZegoAudio extends React.PureComponent<{
       }
       if (this.props.userInfo?.streamList?.[0]?.media) {
         el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
-          (el.srcObject = this.props.userInfo?.streamList?.[0]?.media!);
+          (el.srcObject = this.props.userInfo?.streamList?.[0]?.media! as any);
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
         if (this.isSafari()) {
           el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS! &&

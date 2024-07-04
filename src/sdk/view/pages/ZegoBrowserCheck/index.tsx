@@ -6,6 +6,7 @@ import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
 import { getVideoResolution, throttle } from "../../../util";
 import { FormattedMessage } from "react-intl";
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
 
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
@@ -36,6 +37,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     showZegoSettings: false,
     isSmallSize: false,
   };
+  localVideoRef: RefObject<HTMLDivElement>;
   videoRef: RefObject<HTMLVideoElement>;
   inviteRef: RefObject<HTMLInputElement>;
 
@@ -46,6 +48,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     super(props);
     this.videoRef = React.createRef();
     this.inviteRef = React.createRef();
+    this.localVideoRef = React.createRef();
   }
 
   async componentDidMount() {
@@ -155,7 +158,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     videoOpen: boolean,
     audioOpen: boolean
   ): Promise<MediaStream> {
-    let localVideoStream,
+    let localVideoStream: ZegoLocalStream,
       localAudioStream,
       localStream = new MediaStream();
     try {
@@ -166,14 +169,16 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         const solution = getVideoResolution(this.state.selectVideoResolution);
         localVideoStream = await this.props.core.createStream({
           camera: {
-            video: true,
+            video: {
+              input: this.state.selectCamera,
+              quality: 4,
+              ...solution,
+            },
             audio: false,
-            videoInput: this.state.selectCamera,
-            videoQuality: 4,
-
-            ...solution,
           },
+          videoBitrate: solution.bitrate
         });
+        console.log('===localvideostream', localVideoStream);
         localVideoStream?.getVideoTracks().forEach((track) => {
           localStream.addTrack(track);
         });
@@ -201,8 +206,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         localAudioStream = await this.props.core.createStream({
           camera: {
             video: false,
-            audio: true,
-            audioInput: this.state.selectMic,
+            audio: { input: this.state.selectMic },
           },
         });
         localAudioStream?.getAudioTracks().forEach((track) => {
@@ -228,8 +232,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         isVideoOpening: false,
       },
       () => {
-        if (this.videoRef.current && localStream) {
-          this.videoRef.current.srcObject = localStream;
+        // if (this.videoRef.current && localStream) {
+        //   this.videoRef.current.srcObject = localStream;
+        // }
+        if (this.localVideoRef.current && localVideoStream) {
+          localVideoStream.playVideo(this.localVideoRef.current, { objectFit: 'cover' });
         }
       }
     );
@@ -365,11 +372,13 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           }`}>
         <div className={ZegoBrowserCheckCss.supportWrapper}>
           <div className={ZegoBrowserCheckCss.videoWrapper}>
-            <video
+            <div ref={this.localVideoRef}
+              className={ZegoBrowserCheckCss.video}></div>
+            {/* <video
               className={ZegoBrowserCheckCss.video}
               autoPlay
               muted
-              ref={this.videoRef}></video>
+              ref={this.videoRef}></video> */}
             {!this.props.core._config.showMyCameraToggleButton &&
               !this.props.core._config.turnOnCameraWhenJoining && (
                 <div className={ZegoBrowserCheckCss.noCamera}>

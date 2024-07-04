@@ -57,10 +57,11 @@ import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoMixPlayer } from "./components/zegoMixPlayer";
 import { ZegoBroadcastMessageInfo, ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity"
 import { FormattedMessage } from "react-intl";
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
-    localStream: undefined | MediaStream;
+    localStream: undefined | MediaStream | ZegoLocalStream;
     layOutStatus:
     | "ONE_VIDEO"
     | "INVITE"
@@ -744,34 +745,35 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       !this.props.core.status.audioRefuse
     ) {
       try {
-        let localStream: MediaStream | null = null;
+        let localStream: ZegoLocalStream | MediaStream | null = null;
         try {
           const solution = getVideoResolution(this.state.selectVideoResolution);
           localStream = await this.props.core.createStream({
             camera: {
-              video: !this.props.core.status.videoRefuse,
-              audio: !this.props.core.status.audioRefuse,
-              videoInput: this.state.selectCamera,
-              audioInput: this.state.selectMic,
-              videoQuality: 4,
-              facingMode: this.faceModel ? "user" : "environment",
-              channelCount: this.props.core._config.enableStereo ? 2 : 1,
-              ...solution,
-              //   width: 640,
-              //   height: 360,
-              //   bitrate: 400,
-              //   frameRate: 15,
+              video: !this.props.core.status.videoRefuse ? {
+                input: this.state.selectCamera,
+                quality: 4,
+                facingMode: this.faceModel ? "user" : "environment",
+                ...solution,
+              } : false,
+              audio: !this.props.core.status.audioRefuse ? {
+                input: this.state.selectMic,
+                channelCount: this.props.core._config.enableStereo ? 2 : 1,
+              } : false,
             },
+            videoBitrate: solution.bitrate
           });
           this.props.core.localStream = localStream;
         } catch (error: any) {
           if (JSON.stringify(error).includes("constrain")) {
             localStream = await this.props.core.createStream({
               camera: {
-                video: !this.props.core.status.videoRefuse,
-                audio: !this.props.core.status.audioRefuse,
-                facingMode: this.faceModel ? "user" : "environment",
-                channelCount: this.props.core._config.enableStereo ? 2 : 1,
+                video: !this.props.core.status.videoRefuse ? {
+                  facingMode: this.faceModel ? "user" : "environment",
+                } : false,
+                audio: !this.props.core.status.audioRefuse ? {
+                  channelCount: this.props.core._config.enableStereo ? 2 : 1,
+                } : false,
               },
             });
             this.props.core.localStream = localStream;
@@ -1005,17 +1007,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       );
       const stream = await this.props.core.createStream({
         camera: {
-          video: !this.props.core.status.videoRefuse,
-          audio: !this.props.core.status.audioRefuse,
-          videoQuality: 4,
-          facingMode: !this.state.cameraFront ? "user" : "environment",
-          channelCount: this.props.core._config.enableStereo ? 2 : 1,
-          ...solution,
-          //   width: 640,
-          //   height: 360,
-          //   bitrate: 400,
-          //   frameRate: 15,
+          video: !this.props.core.status.videoRefuse ? {
+            quality: 4,
+            facingMode: !this.state.cameraFront ? "user" : "environment",
+            ...solution,
+          } : false,
+          audio: !this.props.core.status.audioRefuse ? {
+            channelCount: this.props.core._config.enableStereo ? 2 : 1,
+          } : false,
         },
+        videoBitrate: solution.bitrate
       });
       let videoTrack = stream.getVideoTracks()[0];
       !this.state.cameraOpen && (videoTrack.enabled = false);

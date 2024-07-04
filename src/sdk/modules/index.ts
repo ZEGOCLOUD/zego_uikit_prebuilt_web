@@ -1,5 +1,7 @@
 import { generateStreamID, getConfig, changeCDNUrlOrigin, throttle, transformMsg, compareVersion } from "./tools/util"
 import { ZegoExpressEngine } from "zego-express-engine-webrtc"
+import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity"
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
 import {
 	ZegoDeviceInfo,
 	ZegoLocalStreamConfig,
@@ -43,7 +45,7 @@ import { i18nMap } from '../locale';
 export class ZegoCloudRTCCore {
 	static _instance: ZegoCloudRTCCore
 	static _zg: ZegoExpressEngine
-	localStream: MediaStream | undefined
+	localStream: ZegoLocalStream | undefined
 	_zimManager: ZimManager | null = null
 	zum!: ZegoCloudUserListManager
 	_expressConfig!: {
@@ -716,8 +718,8 @@ export class ZegoCloudRTCCore {
 		media.volume = volume
 	}
 
-	async createStream(source?: ZegoLocalStreamConfig): Promise<MediaStream> {
-		return ZegoCloudRTCCore._zg.createStream(source)
+	async createStream(source?: ZegoStreamOptions): Promise<ZegoLocalStream> {
+		return ZegoCloudRTCCore._zg.createZegoStream(source)
 	}
 
 	async createAndPublishWhiteboard(parentDom: HTMLDivElement, name: string): Promise<ZegoSuperBoardView> {
@@ -765,7 +767,7 @@ export class ZegoCloudRTCCore {
 		color && this.zegoSuperBoard.setBrushColor(color)
 	}
 
-	async setVideoConfig(media: MediaStream, constraints: ZegoPublishStreamConfig) {
+	async setVideoConfig(media: MediaStream | ZegoLocalStream, constraints: ZegoPublishStreamConfig) {
 		return ZegoCloudRTCCore._zg.setVideoConfig(media, constraints)
 	}
 	stopPublishingStream(streamID: string): boolean {
@@ -779,7 +781,7 @@ export class ZegoCloudRTCCore {
 		}
 		return ZegoCloudRTCCore._zg.stopPublishingStream(streamID)
 	}
-	destroyStream(stream: MediaStream): void {
+	destroyStream(stream: MediaStream | ZegoLocalStream): void {
 		ZegoCloudRTCCore._zg.destroyStream(stream)
 	}
 
@@ -797,11 +799,11 @@ export class ZegoCloudRTCCore {
 		}
 	}
 
-	useCameraDevice(media: MediaStream, deviceID: string): Promise<ZegoServerResponse> {
+	useCameraDevice(media: ZegoLocalStream | MediaStream, deviceID: string): Promise<ZegoServerResponse> {
 		return ZegoCloudRTCCore._zg.useVideoDevice(media, deviceID)
 	}
 
-	useMicrophoneDevice(media: MediaStream, deviceID: string): Promise<ZegoServerResponse> {
+	useMicrophoneDevice(media: MediaStream | ZegoLocalStream, deviceID: string): Promise<ZegoServerResponse> {
 		return ZegoCloudRTCCore._zg.useAudioDevice(media, deviceID)
 	}
 
@@ -818,13 +820,13 @@ export class ZegoCloudRTCCore {
 		}
 	}
 
-	async enableVideoCaptureDevice(localStream: MediaStream, enable: boolean): Promise<boolean> {
+	async enableVideoCaptureDevice(localStream: MediaStream | ZegoLocalStream, enable: boolean): Promise<boolean> {
 		this.localStreamInfo.cameraStatus = !enable ? "MUTE" : "OPEN"
 		this.startAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.enableVideoCaptureDevice(localStream, enable)
 	}
 
-	async mutePublishStreamVideo(localStream: MediaStream, enable: boolean): Promise<boolean> {
+	async mutePublishStreamVideo(localStream: MediaStream | ZegoLocalStream, enable: boolean): Promise<boolean> {
 		this.localStreamInfo.cameraStatus = enable ? "MUTE" : "OPEN"
 		this.startAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.mutePublishStreamVideo(localStream, enable)
@@ -1438,7 +1440,7 @@ export class ZegoCloudRTCCore {
 	}
 
 	publishLocalStream(
-		media: MediaStream,
+		media: ZegoLocalStream,
 		streamType?: "main" | "media" | "screensharing",
 		extraInfo?: string
 	): boolean | string {
@@ -1463,8 +1465,8 @@ export class ZegoCloudRTCCore {
 		return res && streamID
 	}
 
-	async replaceTrack(media: MediaStream, mediaStreamTrack: MediaStreamTrack): Promise<ZegoServerResponse> {
-		return ZegoCloudRTCCore._zg.replaceTrack(media, mediaStreamTrack)
+	async replaceTrack(media: MediaStream | ZegoLocalStream, mediaStreamTrack: MediaStreamTrack): Promise<ZegoServerResponse> {
+		return ZegoCloudRTCCore._zg.replaceTrack(media as any, mediaStreamTrack)
 	}
 
 	private subscribeUserListCallBack!: (userList: ZegoCloudUserList) => void

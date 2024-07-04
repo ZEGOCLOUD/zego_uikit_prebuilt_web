@@ -7,7 +7,7 @@ import { ZegoConfirm } from "../../components/mobile/zegoConfirm";
 import { ZegoLoading } from "./components/ZegoLoading";
 import { isAndroid, isIOS } from "../../../util";
 import { FormattedMessage } from "react-intl";
-
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
 export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
 	state = {
 		localStream: undefined,
@@ -28,6 +28,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		}),
 		isScreenPortrait: false,
 	};
+	localVideoRef: RefObject<HTMLDivElement> = React.createRef();
 	videoRef: RefObject<HTMLVideoElement> = React.createRef();
 	inviteRef: RefObject<HTMLInputElement> = React.createRef();
 	nameInputRef: RefObject<HTMLInputElement> = React.createRef();
@@ -65,7 +66,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		window.removeEventListener("resize", this.onResize);
 	}
 	async createStream(videoOpen: boolean, audioOpen: boolean): Promise<MediaStream> {
-		let localVideoStream,
+		let localVideoStream: ZegoLocalStream,
 			localAudioStream,
 			localStream = new MediaStream();
 
@@ -74,11 +75,12 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 				this.setState({
 					isVideoOpening: true,
 				});
-				localStream = await this.props.core.createStream({
+				localVideoStream = await this.props.core.createStream({
 					camera: {
-						video: true,
+						video: {
+							facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
+						},
 						audio: true,
-						facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
 					},
 				});
 			}
@@ -90,14 +92,10 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					});
 					localVideoStream = await this.props.core.createStream({
 						camera: {
-							video: true,
+							video: {
+								facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
+							},
 							audio: false,
-							facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
-							// videoQuality: 4,
-							// width: 640,
-							// height: 360,
-							// bitrate: 400,
-							// frameRate: 15,
 						},
 					});
 					localVideoStream?.getVideoTracks().forEach((track) => {
@@ -144,8 +142,11 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 				isVideoOpening: false,
 			},
 			() => {
-				if (this.videoRef.current && localStream) {
-					this.videoRef.current.srcObject = localStream;
+				// if (this.videoRef.current && localStream) {
+				// 	this.videoRef.current.srcObject = localStream;
+				// }
+				if (this.localVideoRef.current && localVideoStream) {
+					localVideoStream.playVideo(this.localVideoRef.current, { objectFit: 'cover' });
 				}
 			}
 		);
@@ -355,13 +356,16 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		return (
 			<div className={ZegoBrowserCheckCss.ZegoBrowserCheckSupport}>
 				<div className={ZegoBrowserCheckCss.videoScree}>
-					<video
+					<div
+						ref={this.localVideoRef}
+						className={`${ZegoBrowserCheckCss.video} ${this.isIOS ? ZegoBrowserCheckCss.fill : ""} ${this.state.videoOpen ? "" : ZegoBrowserCheckCss.hideVideo}`}></div>
+					{/* <video
 						playsInline={true}
 						className={`${ZegoBrowserCheckCss.video} ${this.isIOS ? ZegoBrowserCheckCss.fill : ""} ${this.state.videoOpen ? "" : ZegoBrowserCheckCss.hideVideo
 							}`}
 						autoPlay
 						muted
-						ref={this.videoRef}></video>
+						ref={this.videoRef}></video> */}
 					{!this.props.core._config.showMyCameraToggleButton &&
 						!this.props.core._config.turnOnCameraWhenJoining && (
 							<div className={ZegoBrowserCheckCss.noCamera}>

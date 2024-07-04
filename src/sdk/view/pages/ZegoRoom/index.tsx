@@ -37,9 +37,10 @@ import ShowManageContext from "../context/showManage";
 import ZegoAudio from "../../components/zegoMedia/audio";
 import { ZegoMixPlayer } from "./components/zegoMixPlayer";
 import { FormattedMessage } from "react-intl";
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	state: {
-		localStream: undefined | MediaStream;
+		localStream: undefined | MediaStream | ZegoLocalStream;
 		layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
 		zegoCloudUserList: ZegoCloudUserList;
 		messageList: ZegoBroadcastMessageInfo2[];
@@ -65,7 +66,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		liveStatus: "1" | "0";
 		isScreenSharingBySelf: boolean; // 自己是否正在屏幕共享
 
-		screenSharingStream: undefined | MediaStream; // 本地屏幕共享流
+		screenSharingStream: undefined | MediaStream | ZegoLocalStream; // 本地屏幕共享流
 		zegoSuperBoardView: ZegoSuperBoardView | null; // 本地白板共享
 		isZegoWhiteboardSharing: boolean; // 是否开启白板共享
 		screenSharingUserList: ZegoCloudUserList; // 屏幕共享列表
@@ -612,14 +613,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				const solution = getVideoResolution(this.state.selectVideoResolution);
 				const localStream = await this.props.core.createStream({
 					camera: {
-						video: !this.props.core.status.videoRefuse,
-						audio: !this.props.core.status.audioRefuse,
-						videoInput: this.state.selectCamera,
-						audioInput: this.state.selectMic,
-						videoQuality: 4,
-						channelCount: this.props.core._config.enableStereo ? 2 : 1,
-						...solution,
+						video: !this.props.core.status.videoRefuse ? {
+							input: this.state.selectCamera,
+							quality: 4,
+							...solution,
+						} : false,
+						audio: !this.props.core.status.audioRefuse ? {
+							input: this.state.selectMic,
+							channelCount: this.props.core._config.enableStereo ? 2 : 1,
+						} : false,
 					},
+					videoBitrate: solution.bitrate,
 				});
 				this.props.core.localStream = localStream;
 				this.props.core.enableVideoCaptureDevice(

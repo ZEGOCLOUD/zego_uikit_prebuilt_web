@@ -210,7 +210,7 @@ export default class App extends React.PureComponent {
         false
       );
       this.onOrientationChange();
-      this.initCallInvitation(urlAppID, userID, roomID, urlToken);
+      this.initCallInvitation(urlAppID ? urlAppID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken);
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
         let token;
@@ -429,6 +429,7 @@ export default class App extends React.PureComponent {
     // }
   }
   private async initCallInvitation(appID: number, userID: string, roomID: string, urlToken: string) {
+    console.log('===init', appID, userID);
     this.state.userID = userID;
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
@@ -442,7 +443,7 @@ export default class App extends React.PureComponent {
         appID,
       }));
     } else {
-      token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+      token = (await generateToken(appID, userID, roomID, "user_" + userID)).token;
     }
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
@@ -895,7 +896,7 @@ export default class App extends React.PureComponent {
         <div
           className={`${APP.serviceTips}  ${isPc() ? APP.pcServiceTips : APP.mobileServiceTips
             } preView_services`}>
-          {this.state.lang === "en" ? 'By clicking "Join", you agree to' : "点击 “加入”，即表示您同意"}{!isPc() && <br />}{this.state.lang === ZegoUIKitLanguage.ENGLISH ? " our" : "我们的"}{" "}
+          {this.state.lang === "en" ? 'By clicking "Join", you agree to' : "点击 “加入”，即表示您同意"}{!isPc() && <br />}{this.state.lang === "en" ? " our" : "我们的"}{" "}
           <a
             href={this.state.lang === "en" ? "https://www.zegocloud.com/policy?index=1" : "https://www.zego.im/terms"}
             target="_blank"

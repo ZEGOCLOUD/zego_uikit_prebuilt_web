@@ -2,8 +2,9 @@ import { ZegoSuperBoardView } from "zego-superboard-web"
 import type { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity"
 import { ZegoCloudRTCCore } from "../modules"
 import { ZegoCloudUser, ZegoCloudUserList } from "../modules/tools/UserListManager"
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
 export interface ZegoCloudRemoteMedia {
-	media: MediaStream | undefined
+	media: ZegoLocalStream | MediaStream | undefined
 	fromUser: ZegoUser
 	micStatus: "OPEN" | "MUTE"
 	cameraStatus: "OPEN" | "MUTE"

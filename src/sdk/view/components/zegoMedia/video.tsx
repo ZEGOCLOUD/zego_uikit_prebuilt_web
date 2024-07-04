@@ -1,7 +1,7 @@
 import React from "react";
 import { ZegoCloudUser } from "../../../modules/tools/UserListManager";
 import ShowManageContext, {
-  ShowManageType,
+	ShowManageType,
 } from "../../pages/context/showManage";
 // @ts-ignore
 import flvjs from "flv.js/dist/flv.min.js";
@@ -32,8 +32,8 @@ export default class ZegoVideo extends React.PureComponent<{
 	state: {
 		isPaused: boolean
 	} = {
-		isPaused: false,
-	}
+			isPaused: false,
+		}
 	hasVideo: undefined | boolean = undefined
 	hasAudio: undefined | boolean = undefined
 	playPureAudioFlv: null | Function = null
@@ -59,12 +59,12 @@ export default class ZegoVideo extends React.PureComponent<{
 			!this.videoRef && (this.videoRef = el)
 			el.muted !== this.props.muted && (el.muted = this.props.muted)
 			if ((el as any)?.sinkId !== this.context?.speakerId) {
-				;(el as any)?.setSinkId?.(this.context?.speakerId || "")
+				; (el as any)?.setSinkId?.(this.context?.speakerId || "")
 			}
 			if (this.props.userInfo?.streamList?.[0]?.media?.id) {
 				if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
 					el.src = ""
-					el.srcObject = this.props.userInfo?.streamList?.[0]?.media!
+					el.srcObject = this.props.userInfo?.streamList?.[0]?.media! as any
 					el.setAttribute("cameraOpen", this.props.userInfo?.streamList?.[0]?.cameraStatus)
 					this.safariAutoPlayTimer()
 				} else {
@@ -251,12 +251,11 @@ export default class ZegoVideo extends React.PureComponent<{
 			<>
 				<video
 					autoPlay
-					className={`${ZegoVideoCss.video}  ${
-						this.context.userInfo.userID === this.props.userInfo.userID &&
-						this.props.userInfo.streamList?.[0]?.streamID?.includes("_main")
+					className={`${ZegoVideoCss.video}  ${this.context.userInfo.userID === this.props.userInfo.userID &&
+							this.props.userInfo.streamList?.[0]?.streamID?.includes("_main")
 							? ZegoVideoCss.mirror
 							: ""
-					} ${this.props.classList}`}
+						} ${this.props.classList}`}
 					playsInline={true}
 					ref={(el: HTMLVideoElement) => {
 						el && this.props.videoRefs?.(el);
