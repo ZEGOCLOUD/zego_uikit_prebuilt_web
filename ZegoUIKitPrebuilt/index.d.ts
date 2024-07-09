@@ -260,10 +260,6 @@ declare interface ZegoCallInvitationConfig {
 	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void;
 	// 2.1.0
 	language?: ZegoUIKitLanguage // set language
-	// Callee clicks receive button callback
-	onIncomingCallAcceptButtonPressed?: () => void
-	// Callee clicks the reject button to callback
-	onIncomingCallDeclineButtonPressed?: () => void
 }
 
 declare interface ZegoSignalingPluginNotificationConfig {
