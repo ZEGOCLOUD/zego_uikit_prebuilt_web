@@ -152,7 +152,11 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
                   this.setState({ step: 0 });
                 }
               } else {
-                this.props.core._config.showLeavingView && this.nextPage();
+                if (this.props.core._config.showLeavingView) {
+                  this.nextPage();
+                } else {
+                  this.props.core._config.showPreJoinView && this.setState({ step: 0 });
+                }
               }
               setTimeout(() => {
                 if (!isKickedOut) {
