@@ -61,7 +61,7 @@ const en = {
     "room.presentingMirrorTip": " To avoid an infinity mirror, we suggest you not to share your entire screen or browser window.",
     "room.ignore": "Ignore",
     "room.live": "Go Live",
-    "room.stopLive": "Stop broadcase",
+    "room.stopLive": "Stop broadcast",
     "room.living": "Start stream...",
     "room.stopLiveDesc": "Are you sure to stop broadcasting?",
     "room.turnOffMicToast": "Turned off the microphone successfully.",
