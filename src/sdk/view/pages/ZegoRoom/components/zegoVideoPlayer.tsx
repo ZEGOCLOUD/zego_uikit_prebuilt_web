@@ -26,6 +26,36 @@ export class VideoPlayer extends React.PureComponent<{
   state = {
     hovered: false,
   };
+  get avatarConfig() {
+    const turnOffCameraConfig = this.props.core._config.turnOffCameraConfig || []
+    const { avatar, userID } = this.props.userInfo
+    const _avatarConfig = turnOffCameraConfig.find(({ appointUserID }) => !appointUserID || appointUserID === userID)
+    const visiblity = _avatarConfig?.showAvatar !== false
+    return {
+      visiblity,
+      url: _avatarConfig?.avatarUrl || avatar,
+    }
+  }
+
+  get isCameraOpen() {
+    return this.props.userInfo?.streamList?.[0]?.cameraStatus === "OPEN";
+  }
+
+  get videoPlayerWrapperStyle() {
+    const { videoBackgroundUrl = '' } = this.props.core._config
+    return {
+      backgroundImage: !this.isCameraOpen ? `url(${videoBackgroundUrl})` : '',
+    }
+  }
+
+  get videoClassName() {
+    const { videoBackgroundUrl = '' } = this.props.core._config
+    if (!this.isCameraOpen && videoBackgroundUrl) {
+      return ZegoVideoPlayerCss.hidden;
+    }
+    return ''
+  }
+
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.userInfo?.streamList?.[0]?.streamID];
@@ -41,6 +71,7 @@ export class VideoPlayer extends React.PureComponent<{
     return (
       <div
         className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
+        style={this.videoPlayerWrapperStyle}
         onMouseEnter={() => {
           this.setState({
             hovered: true,
@@ -54,7 +85,7 @@ export class VideoPlayer extends React.PureComponent<{
       >
         <ZegoVideo
           muted={this.props.muted}
-          classList={ZegoVideoPlayerCss.videoCommon}
+          classList={`${ZegoVideoPlayerCss.videoCommon} ${this.videoClassName}`}
           userInfo={this.props.userInfo}
           onPause={() => {
             this.props.onPause && this.props.onPause();
@@ -63,32 +94,35 @@ export class VideoPlayer extends React.PureComponent<{
             this.props.onCanPlay && this.props.onCanPlay();
           }}
         ></ZegoVideo>
-        <div
-          className={ZegoVideoPlayerCss.cameraMask}
-          style={{
-            display:
-              this.props.userInfo?.streamList?.[0]?.cameraStatus === "OPEN"
-                ? "none"
-                : "flex",
-          }}
-        >
-          {this.props.userInfo.avatar && (
-            <img
-              src={this.props.userInfo.avatar}
-              onError={(e: any) => {
-                e.target.style.display = "none";
-              }}
-              alt=""
-            />
-          )}
+        {this.avatarConfig.visiblity &&
           <div
+            className={ZegoVideoPlayerCss.cameraMask}
             style={{
-              color: userNameColor(this.props.userInfo?.userName as string),
+              display:
+                this.isCameraOpen
+                  ? "none"
+                  : "flex",
             }}
           >
-            {getNameFirstLetter(this.props.userInfo?.userName || "")}
+
+            {this.avatarConfig.url && (
+              <img
+                src={this.avatarConfig.url}
+                onError={(e: any) => {
+                  e.target.style.display = "none";
+                }}
+                alt=""
+              />
+            )}
+            <div
+              style={{
+                color: userNameColor(this.props.userInfo?.userName as string),
+              }}
+            >
+              {getNameFirstLetter(this.props.userInfo?.userName || "")}
+            </div>
           </div>
-        </div>
+        }
 
         {!this.props.hiddenName && (
           <div className={ZegoVideoPlayerCss.name}>

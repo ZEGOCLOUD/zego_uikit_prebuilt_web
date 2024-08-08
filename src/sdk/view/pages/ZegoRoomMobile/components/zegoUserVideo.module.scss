@@ -4,6 +4,7 @@
   height: 100%;
   overflow: hidden;
   border-radius: vw(14px);
+  background: no-repeat center/cover;
   .videoCommon {
     display: block;
     width: 100%;
@@ -12,24 +13,23 @@
     background: #242736;
     border-radius: vw(14px);
   }
-//   .hideVideo {
-//     width: 1px;
-//     height: 1px;
-//   }
+  //   .hideVideo {
+  //     width: 1px;
+  //     height: 1px;
+  //   }
   .noVideoWrapper {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 10;
     display: flex;
     flex-direction: column;
     align-content: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
     // background: #171821;
     background: #242736;
-    border-radius: vw(14px);
+    border-radius: 50%;
     .nameWrapper {
       position: relative;
       display: flex;
@@ -43,7 +43,7 @@
         box-sizing: border-box;
         width: vw(160px);
         height: vw(160px);
-        margin-bottom: vw(16px);
+        // margin-bottom: vw(16px);
         font-weight: 600;
         font-size: vw(35px);
         line-height: vw(49px);
@@ -186,4 +186,7 @@
     background-position: center;
     background-size: 100%;
   }
+}
+.hidden {
+  display: none;
 }

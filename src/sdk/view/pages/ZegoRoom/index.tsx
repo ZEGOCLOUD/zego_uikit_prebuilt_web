@@ -1212,8 +1212,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			...this.state.zegoCloudUserList,
 		];
 	}
+
+	get hiddenVideoUserIDList() {
+		const { hiddenVideoUserIDList } = this.props.core._config
+		return hiddenVideoUserIDList || []
+	}
+
 	getShownUser(forceShowNonVideoUser = false) {
 		const shownUser = this.getAllUser().filter((item) => {
+			if (this.hiddenVideoUserIDList.includes(item.userID)) {
+				return false
+			}
 			if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
 				if (
 					item.streamList &&
@@ -1234,7 +1243,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				return true;
 			}
 		});
-
 		return shownUser as ZegoCloudUserList;
 	}
 	get getScreenSharingUser(): ZegoCloudUserList {

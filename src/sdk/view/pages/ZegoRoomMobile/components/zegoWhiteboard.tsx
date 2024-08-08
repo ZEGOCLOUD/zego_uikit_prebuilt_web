@@ -21,8 +21,8 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
   state: {
     currentZoom: number;
   } = {
-    currentZoom: 100,
-  };
+      currentZoom: 100,
+    };
   static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
   componentDidMount() {
@@ -37,11 +37,9 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
   render(): React.ReactNode {
     return (
       <div
-        className={`${ZegoSidebarCss.sidebarWrapper} ${
-          ZegoSidebarCss.landscape
-        }  ${
-          this.props.userList.length === 0 ? ZegoSidebarCss.fullScreen : ""
-        }`}
+        className={`${ZegoSidebarCss.sidebarWrapper} ${ZegoSidebarCss.landscape
+          }  ${this.props.userList.length === 0 ? ZegoSidebarCss.fullScreen : ""
+          }`}
         style={{ padding: 0 }}
       >
         <div
@@ -76,6 +74,7 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
             }
             return (
               <ZegoUserVideo
+                core={this.props.core}
                 muted={this.props?.selfInfo?.userID === value.userID}
                 user={value}
                 circleSize="SIDEBAR"
@@ -152,12 +151,11 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
           <div className={zegoWhiteboardSharingLayout.page}>
             <div>
               <p
-                className={`${zegoWhiteboardSharingLayout.page_sub}  ${
-                  this.context.whiteboard_page &&
+                className={`${zegoWhiteboardSharingLayout.page_sub}  ${this.context.whiteboard_page &&
                   this.context.whiteboard_page > 1
-                    ? zegoWhiteboardSharingLayout.active
-                    : ""
-                }`}
+                  ? zegoWhiteboardSharingLayout.active
+                  : ""
+                  }`}
                 onClick={() => {
                   this.props.zegoSuperBoardView
                     ?.getCurrentSuperBoardSubView()
@@ -171,12 +169,11 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
                 /5
               </span>
               <p
-                className={`${zegoWhiteboardSharingLayout.page_add} ${
-                  this.context.whiteboard_page &&
+                className={`${zegoWhiteboardSharingLayout.page_add} ${this.context.whiteboard_page &&
                   this.context.whiteboard_page < 5
-                    ? zegoWhiteboardSharingLayout.active
-                    : ""
-                }`}
+                  ? zegoWhiteboardSharingLayout.active
+                  : ""
+                  }`}
                 onClick={() => {
                   this.props.zegoSuperBoardView
                     ?.getCurrentSuperBoardSubView()

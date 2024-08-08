@@ -14,6 +14,13 @@ export class ZegoOne2One extends React.PureComponent<{
   };
   showTimerUI?: boolean;
 }> {
+  get moreBtnVisible() {
+    return !!this.props.core._config.showMoreButton
+  }
+
+  get userNameVisible() {
+    return !!this.props.core._config.showUserName
+  }
   getVideoScreen() {
     if (this.props.userList.length > 1) {
       return (
@@ -23,6 +30,7 @@ export class ZegoOne2One extends React.PureComponent<{
               }`}
           >
             <ZegoUserVideo
+              core={this.props.core}
               muted={
                 this.props?.selfInfo?.userID === this.props.userList[1].userID
               }
@@ -35,10 +43,13 @@ export class ZegoOne2One extends React.PureComponent<{
                 this.props.soundLevel![this.props.userList[1].userID] || {}
               }
               bigVideo={true}
+              hiddenMore={!this.moreBtnVisible}
+              hiddenName={!this.userNameVisible}
             ></ZegoUserVideo>
           </div>
           <div className={zegoOne2OneCss.smallVideo}>
             <ZegoUserVideo
+              core={this.props.core}
               muted={
                 this.props?.selfInfo?.userID === this.props.userList[0].userID
               }
@@ -50,6 +61,8 @@ export class ZegoOne2One extends React.PureComponent<{
                 this.props.onLocalStreamPaused &&
                   this.props.onLocalStreamPaused();
               }}
+              hiddenMore={!this.moreBtnVisible}
+              hiddenName={!this.userNameVisible}
             ></ZegoUserVideo>
           </div>
         </>
@@ -61,6 +74,7 @@ export class ZegoOne2One extends React.PureComponent<{
             }`}
         >
           <ZegoUserVideo
+            core={this.props.core}
             muted={
               this.props?.selfInfo?.userID === this.props.userList[0].userID
             }
@@ -71,6 +85,8 @@ export class ZegoOne2One extends React.PureComponent<{
                 this.props.onLocalStreamPaused();
             }}
             bigVideo={true}
+            hiddenMore={!this.moreBtnVisible}
+            hiddenName={!this.userNameVisible}
           ></ZegoUserVideo>
         </div>
       );

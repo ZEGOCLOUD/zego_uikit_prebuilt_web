@@ -1277,8 +1277,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     ];
   }
 
+  get hiddenVideoUserIDList() {
+    const { hiddenVideoUserIDList } = this.props.core._config
+    return hiddenVideoUserIDList || []
+  }
+
   getShownUser() {
     const shownUser = this.getAllUser().filter((item) => {
+      if (this.hiddenVideoUserIDList.includes(item.userID)) {
+        return false
+      }
       if (!this.props.core._config.showNonVideoUser) {
         if (
           item.streamList &&
@@ -1911,7 +1919,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         <>
           {this.showRoomTimerUI && (
             <div
-              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}>
+              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center} ${ZegoRoomCss.flexStart}`}>
               <ZegoTimer time={this.state.roomTime}></ZegoTimer>
             </div>
           )}
@@ -1944,7 +1952,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         <>
           {this.showRoomTimerUI && (
             <div
-              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}>
+              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center} ${ZegoRoomCss.flexStart}`}>
               <ZegoTimer time={this.state.roomTime}></ZegoTimer>
             </div>
           )}
@@ -1966,7 +1974,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         <>
           {this.showRoomTimerUI && (
             <div
-              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center}`}>
+              className={`${ZegoRoomCss.screenTopBar} ${ZegoRoomCss.center} ${ZegoRoomCss.flexStart}`}>
               <ZegoTimer time={this.state.roomTime}></ZegoTimer>
             </div>
           )}

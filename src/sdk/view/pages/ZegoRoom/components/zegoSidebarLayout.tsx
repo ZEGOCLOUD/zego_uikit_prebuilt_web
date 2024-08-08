@@ -16,6 +16,12 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
       index > -1 ? index : this.props.userList.length - 1
     ];
   }
+  get moreBtnVisible() {
+    return !!this.props.core._config.showMoreButton;
+  }
+  get userNameVisible() {
+    return !!this.props.core._config.showUserName
+  }
   render(): React.ReactNode {
     let wrapClassName = clsx({
       [ZegoSidebarCss.rightWrapper]: true,
@@ -37,6 +43,8 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
           }}
           muted={this.pinUser.userID === this.props.selfInfo.userID}
           volume={this.props.soundLevel![this.pinUser.userID] || {}}
+          hiddenMore={!this.moreBtnVisible}
+          hiddenName={!this.userNameVisible}
         ></VideoPlayer>
         <div className={wrapClassName}>
           {this.props.userList
@@ -77,6 +85,8 @@ export class ZegoSidebarLayout extends React.PureComponent<ZegoSidebarLayoutProp
                     this.props.handleMenuItem!(type, user);
                   }}
                   volume={this.props.soundLevel![user.userID] || {}}
+                  hiddenMore={!this.moreBtnVisible}
+                  hiddenName={!this.userNameVisible}
                 ></VideoPlayer>
               );
             })}
