@@ -350,6 +350,7 @@ export enum ZegoStreamType {
 export interface ZegoUser {
 	userID: string
 	userName?: string
+	avatar?: string
 	setUserAvatar?: (avatar: string) => void
 }
 export enum CoreError {
