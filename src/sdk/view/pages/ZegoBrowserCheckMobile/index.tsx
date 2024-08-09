@@ -69,72 +69,72 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 			localAudioStream,
 			localStream = new MediaStream();
 
+		// try {
+		// if (videoOpen && audioOpen) {
+		// 	this.setState({
+		// 		isVideoOpening: true,
+		// 	});
+		// 	localStream = await this.props.core.createStream({
+		// 		camera: {
+		// 			video: true,
+		// 			audio: true,
+		// 			facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
+		// 		},
+		// 	});
+		// }
+		// } catch (error) {
 		try {
-			if (videoOpen && audioOpen) {
+			if (videoOpen) {
 				this.setState({
 					isVideoOpening: true,
 				});
-				localStream = await this.props.core.createStream({
+				localVideoStream = await this.props.core.createStream({
 					camera: {
 						video: true,
-						audio: true,
+						audio: false,
 						facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
+						// videoQuality: 4,
+						// width: 640,
+						// height: 360,
+						// bitrate: 400,
+						// frameRate: 15,
 					},
+				});
+				localVideoStream?.getVideoTracks().forEach((track) => {
+					localStream.addTrack(track);
+				});
+				this.setState({
+					localVideoStream,
 				});
 			}
 		} catch (error) {
-			try {
-				if (videoOpen) {
-					this.setState({
-						isVideoOpening: true,
-					});
-					localVideoStream = await this.props.core.createStream({
-						camera: {
-							video: true,
-							audio: false,
-							facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
-							// videoQuality: 4,
-							// width: 640,
-							// height: 360,
-							// bitrate: 400,
-							// frameRate: 15,
-						},
-					});
-					localVideoStream?.getVideoTracks().forEach((track) => {
-						localStream.addTrack(track);
-					});
-					this.setState({
-						localVideoStream,
-					});
-				}
-			} catch (error) {
-				this.videoRefuse = true;
-				this.setState({
-					isVideoOpening: false,
-				});
-				console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(error));
-			}
-
-			try {
-				if (audioOpen) {
-					localAudioStream = await this.props.core.createStream({
-						camera: {
-							video: false,
-							audio: true,
-						},
-					});
-					localAudioStream?.getAudioTracks().forEach((track) => {
-						localStream.addTrack(track);
-					});
-					this.setState({
-						localAudioStream,
-					});
-				}
-			} catch (error) {
-				this.audioRefuse = true;
-				console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(error));
-			}
+			this.videoRefuse = true;
+			this.setState({
+				isVideoOpening: false,
+			});
+			console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(error));
 		}
+
+		try {
+			if (audioOpen) {
+				localAudioStream = await this.props.core.createStream({
+					camera: {
+						video: false,
+						audio: true,
+					},
+				});
+				localAudioStream?.getAudioTracks().forEach((track) => {
+					localStream.addTrack(track);
+				});
+				this.setState({
+					localAudioStream,
+				});
+			}
+		} catch (error) {
+			this.audioRefuse = true;
+			console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(error));
+		}
+		// }
 
 		this.setState(
 			{
