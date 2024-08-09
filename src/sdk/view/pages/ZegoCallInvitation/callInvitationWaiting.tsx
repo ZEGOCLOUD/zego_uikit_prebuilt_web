@@ -14,12 +14,9 @@ export class CallInvitationWaiting extends React.PureComponent<{
   componentWillUnmount(): void {
     this.audioRef && (this.audioRef.src = "");
   }
+
   get inviteeInfo(): ZegoUser {
     return this.props.invitee;
-  }
-
-  setAvatar(url: string) {
-    this.props.invitee.avatar = url
   }
 
   render(): React.ReactNode {
@@ -39,12 +36,12 @@ export class CallInvitationWaiting extends React.PureComponent<{
               <img
                 src={this.inviteeInfo.avatar}
                 onError={(e: any) => {
-                  this.setAvatar('')
+                  e.target.style.display = "none";
                 }}
                 alt=""
               />
             )}
-            {!this.inviteeInfo.avatar && getNameFirstLetter(this.inviteeInfo.userName || "")}
+            {getNameFirstLetter(this.inviteeInfo.userName || "")}
           </div>
           <p className={WaitingCss.userName}>{this.inviteeInfo.userName}</p>
         </div>
