@@ -33,7 +33,7 @@ export class VideoPlayer extends React.PureComponent<{
     const visiblity = _avatarConfig?.showAvatar !== false
     return {
       visiblity,
-      url: _avatarConfig?.avatarUrl || avatar,
+      url: avatar,
     }
   }
 
@@ -41,19 +41,13 @@ export class VideoPlayer extends React.PureComponent<{
     return this.props.userInfo?.streamList?.[0]?.cameraStatus === "OPEN";
   }
 
-  get videoPlayerWrapperStyle() {
-    const { videoBackgroundUrl = '' } = this.props.core._config
-    return {
-      backgroundImage: !this.isCameraOpen ? `url(${videoBackgroundUrl})` : '',
-    }
+  get hiddenVideoUserIDList() {
+    const { hiddenVideoUserIDList } = this.props.core._config
+    return hiddenVideoUserIDList || []
   }
 
-  get videoClassName() {
-    const { videoBackgroundUrl = '' } = this.props.core._config
-    if (!this.isCameraOpen && videoBackgroundUrl) {
-      return ZegoVideoPlayerCss.hidden;
-    }
-    return ''
+  get isHiddenVideo() {
+    return this.hiddenVideoUserIDList.includes(this.props.userInfo.userID)
   }
 
   render(): React.ReactNode {
@@ -70,8 +64,7 @@ export class VideoPlayer extends React.PureComponent<{
     const { formatMessage } = this.props.core.intl;
     return (
       <div
-        className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
-        style={this.videoPlayerWrapperStyle}
+        className={`${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass} ${this.isHiddenVideo && ZegoVideoPlayerCss.hidden}`}
         onMouseEnter={() => {
           this.setState({
             hovered: true,
@@ -85,7 +78,7 @@ export class VideoPlayer extends React.PureComponent<{
       >
         <ZegoVideo
           muted={this.props.muted}
-          classList={`${ZegoVideoPlayerCss.videoCommon} ${this.videoClassName}`}
+          classList={`${ZegoVideoPlayerCss.videoCommon}`}
           userInfo={this.props.userInfo}
           onPause={() => {
             this.props.onPause && this.props.onPause();

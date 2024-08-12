@@ -1213,16 +1213,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		];
 	}
 
-	get hiddenVideoUserIDList() {
-		const { hiddenVideoUserIDList } = this.props.core._config
-		return hiddenVideoUserIDList || []
-	}
 
 	getShownUser(forceShowNonVideoUser = false) {
 		const shownUser = this.getAllUser().filter((item) => {
-			if (this.hiddenVideoUserIDList.includes(item.userID)) {
-				return false
-			}
 			if (!this.props.core._config.showNonVideoUser && !forceShowNonVideoUser) {
 				if (
 					item.streamList &&
@@ -1813,6 +1806,18 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				return "ONE_VIDEO";
 		}
 	}
+	get backgroundUrl() {
+		return this.props.core._config.backgroundUrl || "";
+	}
+
+	get contentStyle() {
+		const { backgroundUrl } = this.props.core._config;
+		return {
+			backgroundImage: backgroundUrl ? `url(${backgroundUrl})` : '',
+			paddingTop: this.showHeader ? 0 : "16px",
+		}
+	}
+
 	render(): React.ReactNode {
 		const startIndex = this.state.notificationList.length < 4 ? 0 : this.state.notificationList.length - 2;
 		const { formatMessage } = this.props.core.intl
@@ -1879,8 +1884,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 								)}
 						</div>
 					)}
-					<div className={ZegoRoomCss.content} style={{ paddingTop: this.showHeader ? 0 : "16px" }}>
-						<div className={ZegoRoomCss.contentLeft}>
+					<div className={ZegoRoomCss.content} style={this.contentStyle}>
+						<div className={`${ZegoRoomCss.contentLeft} ${this.backgroundUrl && ZegoRoomCss.transparent}`}>
 							{this.getLayoutScreen()}
 							{this.getHiddenUser()}
 							<div className={ZegoRoomCss.notify} id="zego_left_notify_wrapper">

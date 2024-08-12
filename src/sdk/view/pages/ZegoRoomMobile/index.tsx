@@ -1277,16 +1277,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     ];
   }
 
-  get hiddenVideoUserIDList() {
-    const { hiddenVideoUserIDList } = this.props.core._config
-    return hiddenVideoUserIDList || []
-  }
-
   getShownUser() {
     const shownUser = this.getAllUser().filter((item) => {
-      if (this.hiddenVideoUserIDList.includes(item.userID)) {
-        return false
-      }
       if (!this.props.core._config.showNonVideoUser) {
         if (
           item.streamList &&
@@ -1569,6 +1561,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.state.screenSharingUserList.length > 0 ? false : sidebarEnabled,
         stopUpdateUser
       );
+      resolve(true)
     });
   }
   get showTurnOffMicrophoneButton() {
@@ -1958,6 +1951,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           )}
           <ZegoGrid
             core={this.props.core}
+            myClass={this.backgroundUrl && ZegoRoomCss.transparent}
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
             }}
@@ -1980,6 +1974,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           )}
           <ZegoSidebar
             core={this.props.core}
+            myClass={this.backgroundUrl && ZegoRoomCss.transparent}
             selfInfo={{
               userID: this.props.core._expressConfig.userID,
             }}
@@ -2254,6 +2249,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     });
   }
 
+  get backgroundUrl() {
+    return this.props.core._config.backgroundUrl || "";
+  }
+
+  get contentStyle() {
+    const { backgroundUrl } = this.props.core._config;
+    return {
+      backgroundImage: backgroundUrl ? `url(${backgroundUrl})` : '',
+    }
+  }
+
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
@@ -2290,14 +2296,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           userInfo: { userID: this.props.core._expressConfig.userID },
         }}>
         <div
-          className={`${ZegoRoomCss.ZegoRoom}  ZegoRoomMobile_ZegoRoom ${this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
+          className={`${ZegoRoomCss.ZegoRoom} ZegoRoomMobile_ZegoRoom ${this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
             ? this.props.core._config.scenario?.config?.role === LiveRole.Host
               ? ZegoRoomCss.host
               : this.props.core._config.scenario?.config?.role === LiveRole.Audience
                 ? ZegoRoomCss.audience
                 : ""
             : ""
-            }`}
+            } `}
+          style={this.contentStyle}
           onClick={(e) => {
             // @ts-ignore
             this.clickVideo(e)

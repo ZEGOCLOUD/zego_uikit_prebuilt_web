@@ -210,9 +210,8 @@ export interface ZegoCloudRoomConfig {
 	turnOffCameraConfig?: { // 关闭摄像头配置
 		appointUserID?: string; // 指定生效的用户ID， 不指定默认对所有用户生效
 		showAvatar?: boolean; // 是否显示用户头像，默认true
-		avatarUrl?: string; // 自定义用户头像地址
 	}[];
-	videoBackgroundUrl?: string; // 视频框背景图
+	backgroundUrl?: string; // 背景图
 }
 export enum RightPanelExpandedType {
 	None = "None",
@@ -290,6 +289,7 @@ export interface ZegoGridLayoutProps {
 	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
 	soundLevel?: SoundLevelMap
+	myClass?: string
 }
 
 export interface ZegoSidebarLayoutProps {

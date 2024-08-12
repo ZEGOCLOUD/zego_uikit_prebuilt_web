@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
 import ZegoAudio from "../../../components/zegoMedia/audio";
 export class ZegoGrid extends React.PureComponent<ZegoGridLayoutProps> {
+  myClass?: string;
   get moreBtnVisible() {
     return !!this.props.core._config.showMoreButton
   }
@@ -23,7 +24,7 @@ export class ZegoGrid extends React.PureComponent<ZegoGridLayoutProps> {
     });
 
     return (
-      <div className={`${wrapClassName} zegoUserVideo_click`}>
+      <div className={`${wrapClassName} ${this.props.myClass} zegoUserVideo_click`}>
         {this.props.userList.map((value, index, arr) => {
           if (arr.length > this.props.videoShowNumber) {
             if (index === this.props.videoShowNumber - 1) {

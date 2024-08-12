@@ -11,6 +11,7 @@ import { ZegoCloudRTCCore } from "../../../../modules";
 export class ZegoUserVideo extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   user: ZegoCloudUser;
+  myClass?: string;
   onLocalStreamPaused?: () => void;
   onCanPlay?: () => void;
   volume: {
@@ -52,7 +53,7 @@ export class ZegoUserVideo extends React.PureComponent<{
     const visiblity = _avatarConfig?.showAvatar !== false
     return {
       visiblity,
-      url: _avatarConfig?.avatarUrl || avatar,
+      url: avatar,
     }
   }
 
@@ -60,21 +61,15 @@ export class ZegoUserVideo extends React.PureComponent<{
     return this.props.user.streamList[0]?.cameraStatus === "MUTE";
   }
 
-  get containerStyle() {
-    const { videoBackgroundUrl = '' } = this.props.core._config
-    console.log(`%c[info] isCameraMute`, 'color: #000', this.isCameraMute)
-    return {
-      backgroundImage: this.isCameraMute ? `url(${videoBackgroundUrl})` : '',
-    }
+  get hiddenVideoUserIDList() {
+    const { hiddenVideoUserIDList } = this.props.core._config
+    return hiddenVideoUserIDList || []
   }
 
-  get videoClassName() {
-    const { videoBackgroundUrl = '' } = this.props.core._config
-    if (this.isCameraMute && videoBackgroundUrl) {
-      return zegoUserVideoCss.hidden;
-    }
-    return ''
+  get isHiddenVideo() {
+    return this.hiddenVideoUserIDList.includes(this.props.user.userID)
   }
+
 
   render(): React.ReactNode {
     const volume =
@@ -84,8 +79,7 @@ export class ZegoUserVideo extends React.PureComponent<{
 
     return (
       <div
-        className={`${zegoUserVideoCss.container} zegoUserVideo_click`}
-        style={this.containerStyle}
+        className={`${zegoUserVideoCss.container} ${this.props.myClass} ${this.isHiddenVideo && zegoUserVideoCss.hidden}`}
       >
         {this.props.user.streamList &&
           this.props.user.streamList[0] &&
@@ -98,7 +92,7 @@ export class ZegoUserVideo extends React.PureComponent<{
                 } zegoUserVideo_videoCommon ${this.isCameraMute
                   ? zegoUserVideoCss.hideVideo
                   : ""
-                } ${this.videoClassName}`}
+                }`}
               onCanPlay={() => {
                 this.props.onCanPlay && this.props.onCanPlay();
               }}

@@ -181,10 +181,10 @@ export class ZegoCloudRTCCore {
 				resolution: ScreenSharingResolution.Auto,
 			},
 			language: ZegoUIKitLanguage.ENGLISH,
-			showMoreButton: false, // 是否显示更多按钮
-			showUserName: false, // 是否显示用户名
+			showMoreButton: true, // 是否显示更多按钮
+			showUserName: true, // 是否显示用户名
 			hiddenVideoUserIDList: [],
-			videoBackgroundUrl: '',
+			backgroundUrl: '',
 		}
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage"
 	extraInfoKey = "extra_info"

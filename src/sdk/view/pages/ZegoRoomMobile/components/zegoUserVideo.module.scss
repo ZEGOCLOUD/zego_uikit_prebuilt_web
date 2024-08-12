@@ -4,7 +4,6 @@
   height: 100%;
   overflow: hidden;
   border-radius: vw(14px);
-  background: no-repeat center/cover;
   .videoCommon {
     display: block;
     width: 100%;
@@ -19,17 +18,18 @@
   //   }
   .noVideoWrapper {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
     z-index: 10;
     display: flex;
     flex-direction: column;
     align-content: center;
     justify-content: center;
+    width: 100%;
+    height: 100%;
     // background: #171821;
     background: #242736;
-    border-radius: 50%;
+    border-radius: vw(14px);
     .nameWrapper {
       position: relative;
       display: flex;
@@ -188,5 +188,5 @@
   }
 }
 .hidden {
-  display: none;
+  display: none !important;
 }

@@ -6,7 +6,6 @@
 }
 .videoPlayerWrapper {
   position: relative;
-  background: no-repeat center/cover;
   .name {
     position: absolute;
     right: 10px;
@@ -67,33 +66,33 @@
   }
   .cameraMask {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 94px;
-    height: 94px;
+    width: 100%;
+    height: 100%;
     background-color: #242736;
     border-radius: 14px;
-    border-radius: 50%;
     overflow: hidden;
     & > div {
-      width: 100%;
-      height: 100%;
+      width: 94px;
+      height: 94px;
       font-weight: 600;
       font-size: 32px;
       line-height: 94px;
       text-align: center;
       background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
     }
     & > img {
       position: absolute;
-      width: 100%;
-      height: 100%;
+      width: 94px;
+      height: 94px;
       object-fit: cover;
+      border-radius: 50%;
     }
   }
   .moreWrapperMask {
@@ -197,6 +196,11 @@
   background: #242736;
   border-radius: 14px;
 }
+
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+.transparent {
+  background-color: transparent;
 }

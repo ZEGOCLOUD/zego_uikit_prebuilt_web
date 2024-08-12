@@ -33,7 +33,7 @@ export class ZegoSidebar extends React.PureComponent<ZegoGridLayoutProps> {
 
   render(): React.ReactNode {
     return (
-      <div className={ZegoSidebarCss.sidebarWrapper}>
+      <div className={`${ZegoSidebarCss.sidebarWrapper} ${this.props.myClass}`}>
         <div className={ZegoSidebarCss.upWrapper}>
           {this.userList.map((value, index, arr) => {
             if (arr.length > this.props.videoShowNumber - 1) {
