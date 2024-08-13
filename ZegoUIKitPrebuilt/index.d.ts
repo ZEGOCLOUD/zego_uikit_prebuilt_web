@@ -161,10 +161,10 @@ declare interface ZegoCloudRoomConfig {
 	showLeaveRoomConfirmDialog?: boolean // When leaving the room, whether to display a confirmation pop-up window, the default is true
 	showMoreButton?: boolean; // Whether to enable the more button, true by default.
 	showUserName?: boolean; // Whether to display the user name on chat. true by default
-	hiddenVideoUserIDList?: string[]; // List of user ids that need to hide the video box
-	turnOffCameraConfig?: { // Camera off configuration
-		appointUserID?: string; // Specifies the valid user ID. If the ID is not specified, it takes effect for all users by default
-		showAvatar?: boolean; // Whether to display the user profile picture. true by default
+	hideUsersById?: string[]; // Hide the screen corresponding to the user id
+	videoViewConfig?: {
+		userID?: string; // user ID
+		showAvatarWhenCameraOff?: boolean; // Whether to display the user profile picture when the camera is off. The default value is true
 	}[];
 	backgroundUrl?: string; // background
 

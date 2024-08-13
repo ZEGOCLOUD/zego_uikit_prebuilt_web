@@ -183,7 +183,7 @@ export class ZegoCloudRTCCore {
 			language: ZegoUIKitLanguage.ENGLISH,
 			showMoreButton: true, // 是否显示更多按钮
 			showUserName: true, // 是否显示用户名
-			hiddenVideoUserIDList: [],
+			hideUsersById: [],
 			backgroundUrl: '',
 		}
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage"
