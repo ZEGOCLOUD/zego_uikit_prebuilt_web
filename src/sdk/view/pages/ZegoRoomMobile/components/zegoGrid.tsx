@@ -5,6 +5,15 @@ import clsx from "clsx";
 import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
 import ZegoAudio from "../../../components/zegoMedia/audio";
 export class ZegoGrid extends React.PureComponent<ZegoGridLayoutProps> {
+  myClass?: string;
+  get moreBtnVisible() {
+    return !!this.props.core._config.showMoreButton
+  }
+
+  get userNameVisible() {
+    return !!this.props.core._config.showUserName
+  }
+
   render(): React.ReactNode {
     let wrapClassName = clsx({
       [ZegoGridCss.gridWrapper]: true,
@@ -15,7 +24,7 @@ export class ZegoGrid extends React.PureComponent<ZegoGridLayoutProps> {
     });
 
     return (
-      <div className={`${wrapClassName} zegoUserVideo_click`}>
+      <div className={`${wrapClassName} ${this.props.myClass} zegoUserVideo_click`}>
         {this.props.userList.map((value, index, arr) => {
           if (arr.length > this.props.videoShowNumber) {
             if (index === this.props.videoShowNumber - 1) {
@@ -45,10 +54,13 @@ export class ZegoGrid extends React.PureComponent<ZegoGridLayoutProps> {
           }
           return (
             <ZegoUserVideo
+              core={this.props.core}
               muted={this.props?.selfInfo?.userID === value.userID}
               volume={this.props.soundLevel![value.userID] || {}}
               user={value}
               key={value.userID + "_video"}
+              hiddenMore={!this.moreBtnVisible}
+              hiddenName={!this.userNameVisible}
             ></ZegoUserVideo>
           );
         })}

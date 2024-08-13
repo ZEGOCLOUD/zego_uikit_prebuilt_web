@@ -203,7 +203,15 @@ export interface ZegoCloudRoomConfig {
 	leaveRoomDialogConfig?: {
 		titleText?: string, // custom leave room confrim dialog title
 		descriptionText?: string, // // custom leave room confrim dialog desctiption
-	}
+	},
+	showMoreButton?: boolean; // 是否显示更多按钮，默认true
+	showUserName?: boolean; // 是否显示用户名称，默认true
+	hiddenVideoUserIDList?: string[]; // 需要隐藏视频框的用户ID列表
+	turnOffCameraConfig?: { // 关闭摄像头配置
+		appointUserID?: string; // 指定生效的用户ID， 不指定默认对所有用户生效
+		showAvatar?: boolean; // 是否显示用户头像，默认true
+	}[];
+	backgroundUrl?: string; // 背景图
 }
 export enum RightPanelExpandedType {
 	None = "None",
@@ -281,6 +289,7 @@ export interface ZegoGridLayoutProps {
 	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
 	soundLevel?: SoundLevelMap
+	myClass?: string
 }
 
 export interface ZegoSidebarLayoutProps {
@@ -341,6 +350,7 @@ export enum ZegoStreamType {
 export interface ZegoUser {
 	userID: string
 	userName?: string
+	avatar?: string
 	setUserAvatar?: (avatar: string) => void
 }
 export enum CoreError {

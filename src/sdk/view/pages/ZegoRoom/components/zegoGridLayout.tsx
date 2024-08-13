@@ -38,6 +38,12 @@ export class ZegoGridLayout extends React.PureComponent<ZegoGridLayoutProps> {
       [ZegoGridCss.singleRow]: true,
     });
   }
+  get moreBtnVisible() {
+    return !!this.props.core._config.showMoreButton
+  }
+  get userNameVisible() {
+    return !!this.props.core._config.showUserName
+  }
   render(): React.ReactNode {
     return (
       <>
@@ -73,6 +79,8 @@ export class ZegoGridLayout extends React.PureComponent<ZegoGridLayoutProps> {
                   this.props.handleMenuItem!(type, user);
                 }}
                 volume={this.props.soundLevel![user.userID] || {}}
+                hiddenMore={!this.moreBtnVisible}
+                hiddenName={!this.userNameVisible}
               ></VideoPlayer>
             );
           })}

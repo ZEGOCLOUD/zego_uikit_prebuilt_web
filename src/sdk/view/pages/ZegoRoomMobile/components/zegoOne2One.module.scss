@@ -86,8 +86,8 @@
   top: vw(90px);
   right: vw(24px);
   z-index: 13;
-  width: vw(190px);
-  height: vw(338px);
+  width: vw(190px) !important;
+  height: vw(338px) !important;
   overflow: hidden;
   border: 1px solid #3d4054;
   border-radius: vw(14px);

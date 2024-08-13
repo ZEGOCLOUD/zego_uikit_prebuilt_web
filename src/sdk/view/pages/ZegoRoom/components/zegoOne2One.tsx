@@ -14,6 +14,7 @@ export class ZegoOne2One extends React.PureComponent<{
   userList: ZegoCloudUser[];
 }> {
   getVideoScreen() {
+    const { showMoreButton, showUserName } = this.props.core._config;
     if (this.props.userList.length > 1) {
       return (
         <>
@@ -26,6 +27,8 @@ export class ZegoOne2One extends React.PureComponent<{
               this.props.handleMenuItem!(type, this.props.userList[1]);
             }}
             volume={this.props.soundLevel![this.props.userList[1].userID] || {}}
+            hiddenMore={!showMoreButton}
+            hiddenName={!showUserName}
           ></VideoPlayer>
           <VideoPlayer
             core={this.props.core}
@@ -43,6 +46,8 @@ export class ZegoOne2One extends React.PureComponent<{
               this.props.handleMenuItem!(type, this.props.userList[0]);
             }}
             volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
+            hiddenMore={!showMoreButton}
+            hiddenName={!showUserName}
           ></VideoPlayer>
         </>
       );
@@ -62,6 +67,8 @@ export class ZegoOne2One extends React.PureComponent<{
           }
           muted={this.props.selfInfo.userID === this.props.userList[0].userID}
           volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
+          hiddenMore={!showMoreButton}
+          hiddenName={!showUserName}
         ></VideoPlayer>
       );
     } else {

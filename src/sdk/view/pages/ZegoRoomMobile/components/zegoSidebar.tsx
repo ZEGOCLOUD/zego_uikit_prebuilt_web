@@ -23,9 +23,17 @@ export class ZegoSidebar extends React.PureComponent<ZegoGridLayoutProps> {
     return userList[userList.length - 1];
   }
 
+  get moreBtnVisible() {
+    return !!this.props.core._config.showMoreButton
+  }
+
+  get userNameVisible() {
+    return !!this.props.core._config.showUserName
+  }
+
   render(): React.ReactNode {
     return (
-      <div className={ZegoSidebarCss.sidebarWrapper}>
+      <div className={`${ZegoSidebarCss.sidebarWrapper} ${this.props.myClass}`}>
         <div className={ZegoSidebarCss.upWrapper}>
           {this.userList.map((value, index, arr) => {
             if (arr.length > this.props.videoShowNumber - 1) {
@@ -60,21 +68,27 @@ export class ZegoSidebar extends React.PureComponent<ZegoGridLayoutProps> {
             }
             return (
               <ZegoUserVideo
+                core={this.props.core}
                 muted={this.props?.selfInfo?.userID === value.userID}
                 user={value}
                 circleSize="SIDEBAR"
                 key={value.userID + "_video"}
                 volume={this.props.soundLevel![value.userID] || {}}
+                hiddenMore={!this.moreBtnVisible}
+                hiddenName={!this.userNameVisible}
               ></ZegoUserVideo>
             );
           })}
         </div>
         <div className={ZegoSidebarCss.bottomWrapper}>
           <ZegoUserVideo
+            core={this.props.core}
             muted={this.props?.selfInfo?.userID === this.pinUser.userID}
             user={this.pinUser}
             key={this.pinUser.userID + "_video"}
             volume={this.props.soundLevel![this.pinUser.userID] || {}}
+            hiddenMore={!this.moreBtnVisible}
+            hiddenName={!this.userNameVisible}
           ></ZegoUserVideo>
           ;
         </div>

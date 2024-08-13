@@ -14,65 +14,86 @@ export class ZegoOne2One extends React.PureComponent<{
   };
   showTimerUI?: boolean;
 }> {
+  get moreBtnVisible() {
+    return !!this.props.core._config.showMoreButton
+  }
+
+  get userNameVisible() {
+    return !!this.props.core._config.showUserName
+  }
   getVideoScreen() {
     if (this.props.userList.length > 1) {
       return (
         <>
-          <div
+          {/* <div
             className={`${zegoOne2OneCss.bigVideo} ${this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
               }`}
-          >
-            <ZegoUserVideo
-              muted={
-                this.props?.selfInfo?.userID === this.props.userList[1].userID
-              }
-              user={this.props.userList[1]}
-              onLocalStreamPaused={() => {
-                this.props.onLocalStreamPaused &&
-                  this.props.onLocalStreamPaused();
-              }}
-              volume={
-                this.props.soundLevel![this.props.userList[1].userID] || {}
-              }
-              bigVideo={true}
-            ></ZegoUserVideo>
-          </div>
-          <div className={zegoOne2OneCss.smallVideo}>
-            <ZegoUserVideo
-              muted={
-                this.props?.selfInfo?.userID === this.props.userList[0].userID
-              }
-              volume={
-                this.props.soundLevel![this.props.userList[0].userID] || {}
-              }
-              user={this.props.userList[0]}
-              onLocalStreamPaused={() => {
-                this.props.onLocalStreamPaused &&
-                  this.props.onLocalStreamPaused();
-              }}
-            ></ZegoUserVideo>
-          </div>
-        </>
-      );
-    } else if (this.props.userList.length > 0) {
-      return (
-        <div
-          className={`${zegoOne2OneCss.bigVideo} ${this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
-            }`}
-        >
+          > */}
           <ZegoUserVideo
+            core={this.props.core}
+            myClass={`${zegoOne2OneCss.bigVideo} ${this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
+              }`}
+            muted={
+              this.props?.selfInfo?.userID === this.props.userList[1].userID
+            }
+            user={this.props.userList[1]}
+            onLocalStreamPaused={() => {
+              this.props.onLocalStreamPaused &&
+                this.props.onLocalStreamPaused();
+            }}
+            volume={
+              this.props.soundLevel![this.props.userList[1].userID] || {}
+            }
+            bigVideo={true}
+            hiddenMore={!this.moreBtnVisible}
+            hiddenName={!this.userNameVisible}
+          ></ZegoUserVideo>
+          {/* </div> */}
+          {/* <div className={zegoOne2OneCss.smallVideo}> */}
+          <ZegoUserVideo
+            core={this.props.core}
+            myClass={zegoOne2OneCss.smallVideo}
             muted={
               this.props?.selfInfo?.userID === this.props.userList[0].userID
             }
-            volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
+            volume={
+              this.props.soundLevel![this.props.userList[0].userID] || {}
+            }
             user={this.props.userList[0]}
             onLocalStreamPaused={() => {
               this.props.onLocalStreamPaused &&
                 this.props.onLocalStreamPaused();
             }}
-            bigVideo={true}
+            hiddenMore={!this.moreBtnVisible}
+            hiddenName={!this.userNameVisible}
           ></ZegoUserVideo>
-        </div>
+          {/* </div> */}
+        </>
+      );
+    } else if (this.props.userList.length > 0) {
+      return (
+        // <div
+        //   className={`${zegoOne2OneCss.bigVideo} ${this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
+        //     }`}
+        // >
+        <ZegoUserVideo
+          core={this.props.core}
+          myClass={`${zegoOne2OneCss.bigVideo} ${this.props.showTimerUI ? zegoOne2OneCss.hasTimer : ""
+            }`}
+          muted={
+            this.props?.selfInfo?.userID === this.props.userList[0].userID
+          }
+          volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
+          user={this.props.userList[0]}
+          onLocalStreamPaused={() => {
+            this.props.onLocalStreamPaused &&
+              this.props.onLocalStreamPaused();
+          }}
+          bigVideo={true}
+          hiddenMore={!this.moreBtnVisible}
+          hiddenName={!this.userNameVisible}
+        ></ZegoUserVideo>
+        // </div>
       );
     }
   }
