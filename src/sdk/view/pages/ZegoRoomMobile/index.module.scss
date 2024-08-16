@@ -118,6 +118,11 @@
       line-height: vw(33px);
       background: #0055ff;
       border-radius: vw(18px);
+      span {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
     }
 
     .goLiveEnabled {

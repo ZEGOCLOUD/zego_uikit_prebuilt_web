@@ -1306,6 +1306,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			return this.getScreenSharingUser.length > 0;
 		}
 	}
+
+	getLiveNotStartedText() {
+		const { _config: { liveNotStartedTextForAudience }, intl } = this.props.core
+		return liveNotStartedTextForAudience || intl.formatMessage({ id: "room.liveNotStarted" })
+	}
+
 	getLayoutScreen() {
 		if (this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming) {
 			const hasVideo = [...this.getAllUser(), ...this.getScreenSharingUser].some((u) => {
@@ -1321,7 +1327,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					return (
 						<div className={ZegoRoomCss.liveNotStart}>
 							<i></i>
-							<span>{this.props.core.intl.formatMessage({ id: "room.liveNotStarted" })}</span>
+							<span>{this.getLiveNotStartedText()}</span>
 						</div>
 					);
 				} else if (
@@ -1818,6 +1824,18 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		}
 	}
 
+	getLiveButtonText() {
+		const { liveCountdown } = this.state
+		const { startLiveButtonText } = this.props.core._config
+		if ([-1, 3].includes(liveCountdown)) {
+			return startLiveButtonText || <FormattedMessage id="room.live" />
+		}
+		if (liveCountdown === 0) {
+			return <FormattedMessage id="room.stopLive" />
+		}
+		return <FormattedMessage id="room.living" />
+	}
+
 	render(): React.ReactNode {
 		const startIndex = this.state.notificationList.length < 4 ? 0 : this.state.notificationList.length - 2;
 		const { formatMessage } = this.props.core.intl
@@ -1875,11 +1893,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 										onClick={() => {
 											this.setLive()
 										}}>
-										{this.state.liveCountdown === 3 || this.state.liveCountdown === -1
-											? <FormattedMessage id="room.live" />
-											: this.state.liveCountdown === 0
-												? <FormattedMessage id="room.stopLive" />
-												: <FormattedMessage id="room.living" />}
+										{this.getLiveButtonText()}
 									</button>
 								)}
 						</div>

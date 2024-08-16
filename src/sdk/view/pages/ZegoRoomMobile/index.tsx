@@ -1734,6 +1734,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
   }
 
+  getLiveNotStartedText() {
+    const { _config: { liveNotStartedTextForAudience }, intl } = this.props.core
+    return liveNotStartedTextForAudience || intl.formatMessage({ id: "room.liveNotStarted" })
+  }
+
   getLayoutScreen() {
     if (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
@@ -1756,7 +1761,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           return (
             <div className={`${ZegoRoomCss.liveNotStart} zegoUserVideo_click`}>
               <i></i>
-              <span>{this.props.core.intl.formatMessage({ id: "room.liveNotStarted" })}</span>
+              <span>{this.getLiveNotStartedText()}</span>
             </div>
           );
         } else if (
@@ -2260,6 +2265,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
   }
 
+  getLiveButtonText() {
+    const { liveCountdown } = this.state
+    const { startLiveButtonText } = this.props.core._config
+    if (liveCountdown === 0) {
+      return <FormattedMessage id="global.stop" />
+    }
+    return startLiveButtonText || <FormattedMessage id="room.live" />
+  }
+
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
@@ -2482,11 +2496,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                     onClick={() => {
                       this.setLive()
                     }}>
-                    {this.state.liveCountdown === 3 || this.state.liveCountdown === -1
-                      ? <FormattedMessage id="room.live" />
-                      : this.state.liveCountdown === 0
-                        ? <FormattedMessage id="global.stop" />
-                        : <FormattedMessage id="room.live" />}
+                    <span>
+                      {this.getLiveButtonText()}
+                    </span>
                   </a>
                 )}
             </div>
