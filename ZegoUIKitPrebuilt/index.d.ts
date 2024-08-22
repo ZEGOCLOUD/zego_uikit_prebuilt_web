@@ -3,6 +3,7 @@ declare type ZegoExpressEngine = {};
 declare interface ZegoUser {
 	userID: string;
 	userName?: string;
+	avatar?: string;
 	setUserAvatar?: (avatar: string) => void;
 }
 declare enum LiveRole {
@@ -182,6 +183,18 @@ declare interface ZegoCloudRoomConfig {
 		titleText?: string, // custom leave room confrim dialog title
 		descriptionText?: string, // // custom leave room confrim dialog desctiption
 	}
+	// 2.7.0
+	showMoreButton?: boolean; // Whether to enable the more button, true by default.
+	showUserName?: boolean; // Whether to display the user name on chat. true by default
+	hideUsersById?: string[]; // Hide the screen corresponding to the user id
+	videoViewConfig?: {
+		userID?: string; // user ID
+		showAvatarWhenCameraOff?: boolean; // Whether to display the user profile picture when the camera is off. The default value is true
+	}[];
+	backgroundUrl?: string; // background
+	// 2.8.0
+	liveNotStartedTextForAudience?: string; // Custom text displayed for the audience before the live broadcast starts.
+	startLiveButtonText?: string; // Custom Start Live button Text.
 }
 
 export enum RightPanelExpandedType {

@@ -27,10 +27,10 @@ export class VideoPlayer extends React.PureComponent<{
     hovered: false,
   };
   get avatarConfig() {
-    const turnOffCameraConfig = this.props.core._config.turnOffCameraConfig || []
+    const videoViewConfig = this.props.core._config.videoViewConfig || []
     const { avatar, userID } = this.props.userInfo
-    const _avatarConfig = turnOffCameraConfig.find(({ appointUserID }) => !appointUserID || appointUserID === userID)
-    const visiblity = _avatarConfig?.showAvatar !== false
+    const _avatarConfig = videoViewConfig.find((config) => config.userID === userID)
+    const visiblity = _avatarConfig?.showAvatarWhenCameraOff !== false
     return {
       visiblity,
       url: avatar,
@@ -41,13 +41,13 @@ export class VideoPlayer extends React.PureComponent<{
     return this.props.userInfo?.streamList?.[0]?.cameraStatus === "OPEN";
   }
 
-  get hiddenVideoUserIDList() {
-    const { hiddenVideoUserIDList } = this.props.core._config
-    return hiddenVideoUserIDList || []
+  get hideUsersById() {
+    const { hideUsersById } = this.props.core._config
+    return hideUsersById || []
   }
 
   get isHiddenVideo() {
-    return this.hiddenVideoUserIDList.includes(this.props.userInfo.userID)
+    return this.hideUsersById.includes(this.props.userInfo.userID)
   }
 
   render(): React.ReactNode {

@@ -47,10 +47,10 @@ export class ZegoUserVideo extends React.PureComponent<{
     }
   }
   get avatarConfig() {
-    const turnOffCameraConfig = this.props.core._config.turnOffCameraConfig || []
+    const videoViewConfig = this.props.core._config.videoViewConfig || []
     const { avatar, userID } = this.props.user
-    const _avatarConfig = turnOffCameraConfig.find(({ appointUserID }) => !appointUserID || appointUserID === userID)
-    const visiblity = _avatarConfig?.showAvatar !== false
+    const _avatarConfig = videoViewConfig.find((config) => config.userID === userID)
+    const visiblity = _avatarConfig?.showAvatarWhenCameraOff !== false
     return {
       visiblity,
       url: avatar,
@@ -61,13 +61,13 @@ export class ZegoUserVideo extends React.PureComponent<{
     return this.props.user.streamList[0]?.cameraStatus === "MUTE";
   }
 
-  get hiddenVideoUserIDList() {
-    const { hiddenVideoUserIDList } = this.props.core._config
-    return hiddenVideoUserIDList || []
+  get hideUsersById() {
+    const { hideUsersById } = this.props.core._config
+    return hideUsersById || []
   }
 
   get isHiddenVideo() {
-    return this.hiddenVideoUserIDList.includes(this.props.user.userID)
+    return this.hideUsersById.includes(this.props.user.userID)
   }
 
 
