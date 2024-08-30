@@ -4,7 +4,7 @@ import { getNameFirstLetter, userNameColor } from "../../../../util";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
 import ZegoVideo from "../../../components/zegoMedia/video";
-import { UserListMenuItemType } from "../../../../model";
+import { UserListMenuItemType, UserTypeEnum } from "../../../../model";
 import { FormattedMessage } from "react-intl";
 import { ZegoCloudRTCCore } from "../../../../modules";
 export class VideoPlayer extends React.PureComponent<{
@@ -48,6 +48,14 @@ export class VideoPlayer extends React.PureComponent<{
 
   get isHiddenVideo() {
     return this.hideUsersById.includes(this.props.userInfo.userID)
+  }
+
+  get isWaitingUser() {
+    return this.props.userInfo.type === UserTypeEnum.CALLING_WAITTING
+  }
+
+  cancelCall() {
+    this.props.core._zimManager?.cancelInvitation(void 0, [this.props.userInfo], false)
   }
 
   render(): React.ReactNode {
@@ -117,6 +125,14 @@ export class VideoPlayer extends React.PureComponent<{
           </div>
         }
 
+        {
+          this.isWaitingUser && (
+            <div className={ZegoVideoPlayerCss.cancelBtn} onClick={() => this.cancelCall()}>
+              <FormattedMessage id="call.cancelCall" />
+            </div>
+          )
+        }
+
         {!this.props.hiddenName && (
           <div className={ZegoVideoPlayerCss.name}>
             {!this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV && (
@@ -144,7 +160,7 @@ export class VideoPlayer extends React.PureComponent<{
             )}
           </div>
         )}
-        {!this.props.hiddenMore &&
+        {(!this.props.hiddenMore && !this.isWaitingUser) &&
           (showTurnOffMicrophoneButton!(this.props.userInfo) ||
             showTurnOffCameraButton!(this.props.userInfo) ||
             isShownPin!(this.props.userInfo) ||

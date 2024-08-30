@@ -1,0 +1,108 @@
+.invitationListWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 20px 4px;
+  flex: 1;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #3d4054;
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .member {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 8px 8px 12px;
+    border-radius: 8px;
+
+    &:not(:last-of-type) {
+      margin-bottom: 6px;
+    }
+  }
+
+  .memberNameWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    overflow: hidden;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+
+    & > span {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+      margin-right: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 36px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    & > img {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    & > p {
+      box-sizing: border-box;
+      width: max-width;
+      padding-right: 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .checkWrapper {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+.callWrapper {
+  margin-bottom: 8px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #3d4054;
+  border-radius: 8px;
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.notAllowed {
+  cursor: not-allowed;
+}

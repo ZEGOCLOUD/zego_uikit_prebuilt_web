@@ -45,6 +45,8 @@ const zh = {
     "global.joinRoomFailedToken": "加入房间失败，token 验证错误。",
     "global.joinRoomFailedRepeat": "您在另一个房间，请先离开那个房间。",
     "global.joinRoomFailed": "加入房间失败，请重试。（错误码：{code}）",
+    "global.invitation": "邀请",
+    "global.invitees": "受邀请人",
 
     "browserCheck.join": "加入",
     "browserCheck.placeholder": "您的姓名",
@@ -131,5 +133,6 @@ const zh = {
     "call.cancelled": "已取消邀请",
     "call.incomingVoice": "{group}语音来电...",
     "call.incomingVideo": "{group}视频来电...",
+    "call.cancelCall": "取消通话",
 };
 export default zh;

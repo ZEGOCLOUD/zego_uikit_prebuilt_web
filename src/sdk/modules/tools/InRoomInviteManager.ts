@@ -1,4 +1,5 @@
-import ZIM, {
+import {
+  ZIM,
   ZIMCallInvitationSentResult,
   ZIMCallInviteConfig,
 } from "zego-zim-web";
@@ -67,7 +68,7 @@ export default class InRoomInviteManager {
         [inviteeID],
         config
       );
-      if (!res.errorInvitees.length) {
+      if (!res.errorUserList.length) {
         this.inviteToCoHostInfoMap.set(inviteeID, {
           callID: res.callID,
           inviter: this.expressConfig,
@@ -79,7 +80,7 @@ export default class InRoomInviteManager {
         });
       }
       return {
-        code: res.errorInvitees.length, // 0：正常， 1：用户不在线，2：重复邀请，3：发送失败
+        code: res.errorUserList.length, // 0：正常， 1：用户不在线，2：重复邀请，3：发送失败
         msg: "",
       };
     } catch (error) {
@@ -121,14 +122,14 @@ export default class InRoomInviteManager {
         [this.roomExtraInfo.host],
         config
       );
-      if (!res.errorInvitees.length) {
+      if (!res.errorUserList.length) {
         this.requestCohostInfo.callID = res.callID;
       } else {
         this.requestCohostInfo = {} as InRoomInvitationInfo;
       }
       return {
-        code: res.errorInvitees.length,
-        msg: res.errorInvitees.length > 0 ? "The host has left the room" : "",
+        code: res.errorUserList.length,
+        msg: res.errorUserList.length > 0 ? "The host has left the room" : "",
       };
     } catch (error: any) {
       console.error("【ZEGOCLOUD】requestCohost failed:", error);
@@ -153,7 +154,7 @@ export default class InRoomInviteManager {
       [inviteeID],
       config
     );
-    return res.errorInvitees.length === 0;
+    return res.errorUserList.length === 0;
   }
   async audienceAcceptInvitation(callID?: string) {
     try {

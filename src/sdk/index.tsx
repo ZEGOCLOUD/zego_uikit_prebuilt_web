@@ -3,6 +3,7 @@ import type { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
 import ZIM from "zego-zim-web";
 import {
+	CallingInvitationListConfig,
 	ConsoleLevel,
 	LiveRole,
 	LiveStreamingMode,
@@ -184,10 +185,12 @@ export class ZegoUIKitPrebuilt {
 						this.root?.unmount();
 						this.root = undefined;
 						this.hasJoinedRoom = false;
+						ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(false)
 						div && div.remove();
 					}}></ZegoCloudRTCKitComponent>
 			);
 			this.hasJoinedRoom = true;
+			ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(true)
 		} else {
 			console.error("【ZEGOCLOUD】joinRoom parameter error !!");
 		}
@@ -195,6 +198,7 @@ export class ZegoUIKitPrebuilt {
 
 	destroy() {
 		ZegoUIKitPrebuilt.core?.leaveRoom?.();
+		ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(false)
 		ZegoUIKitPrebuilt.core = undefined;
 		// @ts-ignore
 		ZegoCloudRTCCore._instance = undefined;
@@ -233,7 +237,14 @@ export class ZegoUIKitPrebuilt {
 			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callType !!");
 		}
 
-		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation(callees, callType, timeout, data, roomID, notificationConfig);
+		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation({
+			invitees: callees,
+			type: callType,
+			timeout,
+			data,
+			roomID,
+			notificationConfig,
+		});
 	}
 
 	async sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean> {
@@ -281,5 +292,14 @@ export class ZegoUIKitPrebuilt {
 			return "【ZEGOCLOUD】 please call init first !!";
 		}
 		return ZegoUIKitPrebuilt.core._expressConfig.roomID;
+	}
+
+	// 更新通话中邀请用户配置
+	updateCallingInvitationListConfig(config: CallingInvitationListConfig) {
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return;
+		}
+		ZegoUIKitPrebuilt.core.updateCallingInvitationListConfig(config);
 	}
 }

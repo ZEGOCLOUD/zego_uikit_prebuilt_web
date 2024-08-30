@@ -188,6 +188,22 @@
       background-image: url("../../../../sdkAssets/icon_member_connect@2x.png");
     }
   }
+  .cancelBtn {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    z-index: 1;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 40px;
+    font-size: 16px;
+    text-align: center;
+    color: #ffffff;
+    line-height: 40px;
+    background: #e8543b;
+    border-radius: 10px;
+    cursor: pointer;
+  }
 }
 .videoCommon {
   display: block;

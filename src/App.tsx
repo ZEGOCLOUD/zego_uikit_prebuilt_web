@@ -24,7 +24,7 @@ import {
   generateTokenForCallInvitation,
 } from "./util";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
-import { ZIM } from "zego-zim-web";
+import ZIM from "zego-zim-web";
 export default class App extends React.PureComponent {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   docsLink = {
@@ -244,7 +244,7 @@ export default class App extends React.PureComponent {
           zp.addPlugins({ ZegoSuperBoardManager })
         } else {
           zp.addPlugins({ ZIM })
-          ZIM.getInstance().setLogConfig({
+          ZIM.ZIM.getInstance().setLogConfig({
             logLevel: "error",
           })
         }
@@ -451,6 +451,9 @@ export default class App extends React.PureComponent {
     this.zp.setCallInvitationConfig({
       language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
+      // canInvitingInCalling: true,
+      // endCallWhenInitiatorLeave: true,
+      // onlyInitiatorCanInvite: true,
       onConfirmDialogWhenReceiving: (callType, caller, refuse, accept, data) => {
         console.warn("【demo】onCallInvitationDialogShowed", callType, caller, data);
         this.inviter = caller;
@@ -489,6 +492,17 @@ export default class App extends React.PureComponent {
           showTurnOffRemoteCameraButton: true,
           showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
+          // callingInvitationListConfig: {
+          //   waitingSelectUsers: [
+          //     { userName: "123", userID: '123' },
+          //     { userName: "456", userID: '456' },
+          //     { userName: "789", userID: '789' },
+          //     { userName: "7891", userID: '7891' },
+          //   ],
+          //   defaultChecked: false
+          // },
+          // turnOnCameraWhenJoining: false,
+          // turnOnMicrophoneWhenJoining: false,
           // autoLeaveRoomWhenOnlySelfInRoom: false,
         };
       },

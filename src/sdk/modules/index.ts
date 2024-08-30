@@ -17,6 +17,7 @@ import {
 
 import { ZegoBroadcastMessageInfo, ZegoRoomExtraInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d"
 import {
+	CallingInvitationListConfig,
 	CoreError,
 	LiveRole,
 	LiveStreamingMode,
@@ -33,7 +34,7 @@ import {
 } from "../model"
 import { ZegoCloudUser, ZegoCloudUserList, ZegoCloudUserListManager } from "./tools/UserListManager"
 import { ZegoSuperBoardManager, ZegoSuperBoardSubViewModel, ZegoSuperBoardView } from "zego-superboard-web"
-import ZIM from "zego-zim-web"
+import { ZIM } from "zego-zim-web"
 import { ZimManager } from "./tools/ZimManager"
 import { getVideoResolution } from "../util"
 import { EventEmitter } from "./tools/EventEmitter"
@@ -185,6 +186,11 @@ export class ZegoCloudRTCCore {
 			showUserName: true, // 是否显示用户名
 			hideUsersById: [],
 			backgroundUrl: '',
+			showWaitingCallAcceptAudioVideoView: true,
+			callingInvitationListConfig: {
+				waitingSelectUsers: [],
+				defaultChecked: true,
+			}
 		}
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage"
 	extraInfoKey = "extra_info"
@@ -2228,5 +2234,13 @@ export class ZegoCloudRTCCore {
 			ZegoCloudRTCCore._zg.stopPlayingStream(this.mixUser.streamList[0].streamID)
 		}
 		this.mixUser.streamList = []
+	}
+
+	// 更新通话中邀请用户配置
+	updateCallingInvitationListConfig(config: CallingInvitationListConfig) {
+		this._config.callingInvitationListConfig = {
+			...this._config.callingInvitationListConfig || {},
+			...config,
+		}
 	}
 }

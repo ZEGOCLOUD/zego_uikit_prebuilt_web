@@ -45,6 +45,8 @@ const en = {
     "global.joinRoomFailedToken": "Failed to join the room, token authentication error.",
     "global.joinRoomFailedRepeat": "You are on a call in another room, please leave that room first.",
     "global.joinRoomFailed": "加入房间失败，请重试。（错误码：{code}）",
+    "global.invitation": "invitation",
+    "global.invitees": "invitees",
 
     'browserCheck.join': "Join",
     "browserCheck.placeholder": "Your name",
@@ -136,6 +138,7 @@ const en = {
     "call.cancelled": "Cancelled invitation",
     "call.incomingVoice": "Incoming {group}voice call...",
     "call.incomingVideo": "Incoming {group}video call...",
+    "call.cancelCall": "Cancel call",
 
 }
 export default en;

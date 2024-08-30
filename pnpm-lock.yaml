@@ -51,8 +51,8 @@ dependencies:
     specifier: 2.15.3
     version: 2.15.3
   zego-zim-web:
-    specifier: 2.9.0
-    version: 2.9.0
+    specifier: 2.16.0
+    version: 2.16.0
 
 devDependencies:
   '@formatjs/cli':
@@ -12892,8 +12892,8 @@ packages:
     resolution: {integrity: sha512-REymICgGTPCaa2FBeFeLyWJOeF/h5ZygyNbl1rklKUlrHmechG61EgU8v7E+WQMq32uPNrM3JQRwVq2woIR6Rg==}
     dev: false
 
-  /zego-zim-web@2.9.0:
-    resolution: {integrity: sha512-ugRUq/7qJjWl6u2aJmQkVoyDJ9f29dq4JtejPdjh4NoTEXX/l0PLgZ4hI5lO0rdyDzHeNoIjiwuN02IAZliiNg==}
+  /zego-zim-web@2.16.0:
+    resolution: {integrity: sha512-7qdSh9+EcgIl41oAz5xgc21sqOfuKPOhbPg2eyWObuneq4f145Z2RwtSEdbqaNzvl9EpK5Tk3+7cChcdsG3fzw==}
     dependencies:
       crypto-js: 4.2.0
       js-base64: 3.7.7
