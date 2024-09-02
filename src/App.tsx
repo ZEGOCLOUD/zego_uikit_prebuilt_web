@@ -50,6 +50,7 @@ export default class App extends React.PureComponent {
     docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][getUrlParams().get("lang") || "en"],
     showSettings: false,
     showSettingsBtn: false,
+    showInvitationSettings: false,
     liveStreamingMode:
       getUrlParams().get("liveStreamingMode") || "RealTimeLive",
     userID: "",
@@ -65,6 +66,10 @@ export default class App extends React.PureComponent {
     callees: [],
     roomTimer: null,
     roomTime: 0,
+    canInvitingInCalling: false,
+    endCallWhenInitiatorLeave: false,
+    onlyInitiatorCanInvite: false,
+    waitingUsers: [],
   };
 
   settingsEl = null;
@@ -211,6 +216,7 @@ export default class App extends React.PureComponent {
       );
       this.onOrientationChange();
       this.initCallInvitation(urlAppID, userID, roomID, urlToken);
+      this.state.showSettingsBtn = true;
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
         let token;
@@ -432,6 +438,7 @@ export default class App extends React.PureComponent {
     this.state.userID = userID;
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
+    const { canInvitingInCalling, endCallWhenInitiatorLeave, onlyInitiatorCanInvite } = this.state
     // this.state.showPreviewHeader = isPc() ? "show" : "hide";
     let token;
     if (urlToken) {
@@ -451,9 +458,9 @@ export default class App extends React.PureComponent {
     this.zp.setCallInvitationConfig({
       language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
-      // canInvitingInCalling: true,
-      // endCallWhenInitiatorLeave: true,
-      // onlyInitiatorCanInvite: true,
+      canInvitingInCalling,
+      endCallWhenInitiatorLeave,
+      onlyInitiatorCanInvite,
       onConfirmDialogWhenReceiving: (callType, caller, refuse, accept, data) => {
         console.warn("【demo】onCallInvitationDialogShowed", callType, caller, data);
         this.inviter = caller;
@@ -469,7 +476,8 @@ export default class App extends React.PureComponent {
       onSetRoomConfigBeforeJoining: (callType) => {
         console.warn("【demo】onSetRoomConfigBeforeJoining", callType, this.zp.getRoomID());
         // sessionStorage.setItem('roomID', this.zp.getRoomID());
-        if (this.state.invitees.length > 1) {
+        const { waitingUsers, invitees } = this.state
+        if (invitees.length > 1) {
           this.showToast("Waiting for others to join the call.");
         }
         // demo 设置5分钟体验限制
@@ -480,6 +488,10 @@ export default class App extends React.PureComponent {
             this.zp.hangUp();
           }
         }, 1000);
+        const waitingSelectUsers = waitingUsers.map((id) => ({
+          userID: id,
+          userName: `user_${id}`,
+        }));
         return {
           branding: {
             logoURL: require("./assets/zegocloud_logo.png"),
@@ -492,15 +504,10 @@ export default class App extends React.PureComponent {
           showTurnOffRemoteCameraButton: true,
           showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
-          // callingInvitationListConfig: {
-          //   waitingSelectUsers: [
-          //     { userName: "123", userID: '123' },
-          //     { userName: "456", userID: '456' },
-          //     { userName: "789", userID: '789' },
-          //     { userName: "7891", userID: '7891' },
-          //   ],
-          //   defaultChecked: false
-          // },
+          callingInvitationListConfig: {
+            waitingSelectUsers,
+            defaultChecked: true
+          },
           // turnOnCameraWhenJoining: false,
           // turnOnMicrophoneWhenJoining: false,
           // autoLeaveRoomWhenOnlySelfInRoom: false,
@@ -632,6 +639,13 @@ export default class App extends React.PureComponent {
   }
   onInvitationInputChange(e: ChangeEvent<HTMLInputElement>) {
     e.target.value = e.target.value.replace(/[^\d,]/gi, "");
+  }
+  onWaitingUsersChange(e: ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value.replace(/[^\d,]/gi, "");
+    const waitingUsers = value.split(",");
+    this.setState({
+      waitingUsers,
+    })
   }
   handleSendCallInvitation(type: number) {
     if (this.inOperation) return;
@@ -772,12 +786,21 @@ export default class App extends React.PureComponent {
   }
   // 设置语言
   setLanguage(language: ZegoUIKitLanguage) {
-    window.zp.setLanguage(language);
+    this.zp.setLanguage(language);
     this.setState({
       showLangBox: false,
       lang: language === ZegoUIKitLanguage.CHS ? "zh" : "en",
       docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][language === ZegoUIKitLanguage.CHS ? "zh" : "en"],
     })
+  }
+
+  updateInvitationConfig() {
+    const { canInvitingInCalling, onlyInitiatorCanInvite, endCallWhenInitiatorLeave } = this.state;
+    this.zp.setCallInvitationConfig({
+      canInvitingInCalling,
+      onlyInitiatorCanInvite,
+      endCallWhenInitiatorLeave,
+    });
   }
   render(): React.ReactNode {
     return (
@@ -797,6 +820,12 @@ export default class App extends React.PureComponent {
                 <div
                   className={APP.link_item}
                   onClick={() => {
+                    if (process.env.REACT_APP_PATH === "call_invitation") {
+                      this.setState({
+                        showInvitationSettings: true
+                      })
+                      return
+                    }
                     this.setState({
                       showSettings: true,
                       liveStreamingMode:
@@ -909,7 +938,7 @@ export default class App extends React.PureComponent {
         <div
           className={`${APP.serviceTips}  ${isPc() ? APP.pcServiceTips : APP.mobileServiceTips
             } preView_services`}>
-          {this.state.lang === "en" ? 'By clicking "Join", you agree to' : "点击 “加入”，即表示您同意"}{!isPc() && <br />}{this.state.lang === ZegoUIKitLanguage.ENGLISH ? " our" : "我们的"}{" "}
+          {this.state.lang === "en" ? 'By clicking "Join", you agree to' : "点击 “加入”，即表示您同意"}{!isPc() && <br />}{this.state.lang === "en" ? " our" : "我们的"}{" "}
           <a
             href={this.state.lang === "en" ? "https://www.zegocloud.com/policy?index=1" : "https://www.zego.im/terms"}
             target="_blank"
@@ -990,6 +1019,101 @@ export default class App extends React.PureComponent {
                     Confirm
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+        {this.state.showInvitationSettings && (
+          <div
+            className={`${isPc() ? APP.pcSettingsModel : APP.mobileSettingsModel
+              }`}>
+            <div className={APP.settingsWrapper}>
+              <div className={APP.settingsHeader}>
+                <p>{this.state.lang === "en" ? 'call out settings' : '呼叫设置'}</p>
+                <span
+                  className={APP.settingsClose}
+                  onClick={() => {
+                    this.setState({
+                      showInvitationSettings: false,
+                    });
+                  }}></span>
+              </div>
+              <div className={APP.settingsBody}>
+                <div className={APP.settingsModeList}>
+                  <div
+                    className={`${APP.settingsModeItem} ${this.state.canInvitingInCalling
+                      ? APP.settingsModeItemSelected
+                      : ""
+                      }`}
+                    onClick={() => {
+                      this.setState({
+                        canInvitingInCalling: !this.state.canInvitingInCalling
+                      }, () => {
+                        this.updateInvitationConfig()
+                      })
+                    }}>
+                    <p>canInvitingInCalling</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${this.state.onlyInitiatorCanInvite
+                      ? APP.settingsModeItemSelected
+                      : ""
+                      }`}
+                    onClick={() => {
+                      this.setState({
+                        onlyInitiatorCanInvite: !this.state.onlyInitiatorCanInvite
+                      }, () => {
+                        this.updateInvitationConfig()
+                      })
+                    }}>
+                    <p>onlyInitiatorCanInvite</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${this.state.endCallWhenInitiatorLeave
+                      ? APP.settingsModeItemSelected
+                      : ""
+                      }`}
+                    onClick={() => {
+                      this.setState({
+                        endCallWhenInitiatorLeave: !this.state.endCallWhenInitiatorLeave
+                      }, () => {
+                        this.updateInvitationConfig()
+                      })
+                    }}>
+                    <p>endCallWhenInitiatorLeave</p>
+                    <span></span>
+                  </div>
+                </div>
+                <input
+                  className={APP.invitationInput}
+                  type="text"
+                  placeholder={
+                    this.state.lang === "en" ? 'invitees user id, separate by ","' : "受邀者的 ID，用“, ”分隔"
+                  }
+                  value={this.state.waitingUsers}
+                  onInput={this.onWaitingUsersChange.bind(this)}
+                  onChange={this.onWaitingUsersChange.bind(this)}
+                  onFocus={(ev: ChangeEvent<HTMLInputElement>) => {
+                    this.isIOS &&
+                      !isPc() &&
+                      setTimeout(() => {
+                        ev.target.scrollIntoView({
+                          block: "start",
+                        });
+                      }, 50);
+                  }}
+                  onBlur={(ev: ChangeEvent<HTMLInputElement>) => {
+                    this.isAndroid &&
+                      !isPc() &&
+                      setTimeout(() => {
+                        ev.target.scrollIntoView({
+                          block: "start",
+                        });
+                      }, 100);
+                  }}
+                />
               </div>
             </div>
           </div>

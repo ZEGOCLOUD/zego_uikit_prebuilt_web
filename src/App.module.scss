@@ -183,11 +183,13 @@
         .settingsClose {
           width: 18px;
           height: 18px;
-          background: url("./assets/icon_settings_close.png") no-repeat center/cover;
+          background: url("./assets/icon_settings_close.png") no-repeat
+            center/cover;
           cursor: pointer;
 
           &:hover {
-            background: url("./assets/icon_settings_close_hover.png") no-repeat center/cover;
+            background: url("./assets/icon_settings_close_hover.png") no-repeat
+              center/cover;
           }
         }
       }
@@ -236,7 +238,8 @@
         span {
           width: 15px;
           height: 16px;
-          background: url("./assets/icon_check_off@2x.png") no-repeat center/cover;
+          background: url("./assets/icon_check_off@2x.png") no-repeat
+            center/cover;
         }
 
         &.settingsModeItemSelected {
@@ -245,7 +248,8 @@
           }
 
           span {
-            background: url("./assets/icon_check_on@2x.png") no-repeat center/cover;
+            background: url("./assets/icon_check_on@2x.png") no-repeat
+              center/cover;
           }
         }
       }
@@ -263,6 +267,37 @@
         background: #0055ff;
         border-radius: 6px;
         cursor: pointer;
+      }
+
+      .invitationInput {
+        box-sizing: border-box;
+        width: calc(100% - 10px);
+        height: 32px;
+        margin: 16px 5px;
+        padding: 10px;
+        color: #333333;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 22px;
+        border: 1px solid #333333;
+        border-radius: 6px;
+
+        &::placeholder {
+          color: #ababb5;
+          font-weight: 500;
+          font-size: 16px;
+          line-height: 22px;
+          outline: none;
+        }
+
+        &:focus {
+          outline: none;
+        }
+
+        &:valid ~ div {
+          cursor: pointer;
+          opacity: 1;
+        }
       }
     }
   }
@@ -369,7 +404,7 @@
           outline: none;
         }
 
-        &:valid~div {
+        &:valid ~ div {
           cursor: pointer;
           opacity: 1;
         }
@@ -527,7 +562,8 @@
           width: vw(70px);
           height: vw(70px);
           margin-right: vw(16px);
-          background: url("./assets/icon_close_down_m.png") no-repeat center/cover;
+          background: url("./assets/icon_close_down_m.png") no-repeat
+            center/cover;
           cursor: pointer;
         }
       }
@@ -564,8 +600,40 @@
           }
 
           span {
-            background: url("./assets/icon_checked_m.png") no-repeat center/cover;
+            background: url("./assets/icon_checked_m.png") no-repeat
+              center/cover;
           }
+        }
+      }
+
+      .invitationInput {
+        box-sizing: border-box;
+        width: calc(100% - 29px);
+        height: vw(60px);
+        margin: 0 vw(29px);
+        padding: vw(23px) vw(28px);
+        color: #2a2a2a;
+        font-weight: 500;
+        font-size: vw(32px);
+        line-height: vw(32px);
+        border: vw(1px) solid #333333;
+        border-radius: vw(10px);
+
+        &::placeholder {
+          color: #ababb5;
+          font-weight: 500;
+          font-size: vw(32px);
+          line-height: vw(32px);
+          outline: none;
+        }
+
+        &:focus {
+          outline: none;
+        }
+
+        &:valid ~ div {
+          cursor: pointer;
+          opacity: 1;
         }
       }
     }
@@ -671,7 +739,7 @@
           outline: none;
         }
 
-        &:valid~div {
+        &:valid ~ div {
           cursor: pointer;
           opacity: 1;
         }
