@@ -9,6 +9,7 @@ import {
   ScenarioModel,
   SoundLevelMap,
   UserListMenuItemType,
+  UserTypeEnum,
   ZegoBroadcastMessageInfo2,
   ZegoBrowserCheckProp,
   ZegoNotification,
@@ -57,18 +58,14 @@ import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoMixPlayer } from "./components/zegoMixPlayer";
 import { ZegoBroadcastMessageInfo, ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity"
 import { FormattedMessage } from "react-intl";
+import { ZegoInvitationList } from "./components/zegoInvitationList";
+
+type LayOutStatus = "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE" | "WHITEBOARD" | "INVITE_LIST";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
     localStream: undefined | MediaStream;
-    layOutStatus:
-    | "ONE_VIDEO"
-    | "INVITE"
-    | "USER_LIST"
-    | "MESSAGE"
-    | "LAYOUT"
-    | "MANAGE"
-    | "WHITEBOARD";
+    layOutStatus: LayOutStatus;
     userLayoutStatus: "Auto" | "Grid" | "Sidebar";
     zegoCloudUserList: ZegoCloudUserList;
     memberList: ZegoCloudUserList;
@@ -322,6 +319,13 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             allUsers.length === 0
           ) {
             this.confirmLeaveRoom();
+            return;
+          }
+          // 当呼叫发起者离开通话时，整个通话要结束时，离开房间
+          const inviterID = this.props.core._zimManager?.callInfo?.inviter?.userID
+          const endCallWhenInitiatorLeave = this.props.core._zimManager?.config?.endCallWhenInitiatorLeave
+          if (endCallWhenInitiatorLeave && userList.some(({ userID }) => userID === inviterID)) {
+            this.confirmLeaveRoom(false, false);
             return;
           }
         }
@@ -1033,23 +1037,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   toggleLayOut(
-    layOutStatus:
-      | "ONE_VIDEO"
-      | "INVITE"
-      | "USER_LIST"
-      | "MESSAGE"
-      | "LAYOUT"
-      | "WHITEBOARD"
+    layOutStatus: LayOutStatus
   ) {
     this.setState(
       (state: {
-        layOutStatus:
-        | "ONE_VIDEO"
-        | "INVITE"
-        | "USER_LIST"
-        | "MESSAGE"
-        | "LAYOUT"
-        | "WHITEBOARD";
+        layOutStatus: LayOutStatus;
         showMore: boolean;
       }) => {
         return {
@@ -1208,7 +1200,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       zegoCloudUserList: userList,
     });
   }
-  private confirmLeaveRoom(isKickedOut = false) {
+  private confirmLeaveRoom(isKickedOut = false, isCallQuit = true) {
     if (this.props.core._config.scenario?.config?.role !== LiveRole.Audience) {
       this.props.core._config.turnOnCameraWhenJoining = this.state.cameraOpen;
       this.props.core._config.turnOnMicrophoneWhenJoining = this.state.micOpen;
@@ -1224,7 +1216,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.props.core.status.videoResolution = this.state.selectVideoResolution;
 
     this.props.core.leaveRoom();
-    this.props.leaveRoom && this.props.leaveRoom(isKickedOut);
+    this.props.leaveRoom && this.props.leaveRoom(isKickedOut, isCallQuit);
   }
 
   getAllUser(): ZegoCloudUserList {
@@ -1277,7 +1269,23 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     ];
   }
 
-  getShownUser() {
+  getWaitingUser(): ZegoCloudUserList {
+    if (!this.props.core._zimManager) return []
+    const { callInfo } = this.props.core._zimManager
+    const { showWaitingCallAcceptAudioVideoView } = this.props.core._config
+    const waitingUsers = showWaitingCallAcceptAudioVideoView
+      ? callInfo.waitingUsers || []
+      : []
+    return waitingUsers
+      .filter(({ type }) => type === UserTypeEnum.CALLING_WAITTING)
+      .map((waitingUser) => ({
+        ...waitingUser,
+        streamList: [],
+        pin: false,
+      }))
+  }
+
+  getShownUser(showWaitingUser = true) {
     const shownUser = this.getAllUser().filter((item) => {
       if (!this.props.core._config.showNonVideoUser) {
         if (
@@ -1315,6 +1323,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     //   });
     // }
 
+    if (showWaitingUser) {
+      const waittingUser = this.getWaitingUser()
+      return [...shownUser, ...waittingUser] as ZegoCloudUserList;
+    }
     return shownUser as ZegoCloudUserList;
   }
 
@@ -1712,6 +1724,22 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           showRemoveButton={this.showRemoveButton}
           showRemoveCohostButton={this.showRemoveCohostButton}
           showInviteToCohostButton={this.showInviteToCohostButton}></ZegoManage>
+      );
+    } else if (this.state.layOutStatus === "INVITE_LIST") {
+      pages = (
+        <ZegoInvitationList
+          core={this.props.core}
+          callingInvitationListConfig={this.getCallingInvitationListConfig()}
+          userList={this.getShownUser()}
+          handleInvitation={(invitees: ZegoUser[]) => {
+            this.handleInvitation(invitees)
+          }}
+          closeCallBack={() => {
+            this.setState({
+              layOutStatus: "ONE_VIDEO",
+            });
+          }}
+        />
       );
     }
 
@@ -2274,6 +2302,37 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     return startLiveButtonText || <FormattedMessage id="room.live" />
   }
 
+  showInvitationButton() {
+    if (!this.props.core._zimManager) return false
+    const { config, callInfo } = this.props.core._zimManager
+    const { userID } = this.props.core._expressConfig
+    if (!config.canInvitingInCalling) return false
+    if (!config.onlyInitiatorCanInvite) return true
+    return userID === callInfo.inviter?.userID
+  }
+
+  getCallingInvitationListConfig() {
+    return this.props.core._config.callingInvitationListConfig || {
+      defaultChecked: true,
+      waitingSelectUsers: [],
+    }
+  }
+
+  handleInvitation(invitees: ZegoUser[]) {
+    if (invitees.length) {
+      const { formatMessage } = this.props.core.intl;
+      this.props.core._zimManager?.addInvitation?.(invitees, {})
+        ?.catch((err) => {
+          ZegoToast({
+            content: formatMessage({ id: "room.sendInvitationFailToast" }),
+          });
+        })
+    }
+    this.setState({
+      layOutStatus: "ONE_VIDEO",
+    })
+  }
+
   render(): React.ReactNode {
     const startIndex =
       this.state.notificationList.length < 4
@@ -2480,6 +2539,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                               <span>{formatMessage({ id: "global.settings" })}</span>
                             </div>
                           }
+                          {this.showInvitationButton() && (
+                            <div
+                              onClick={(ev) => {
+                                ev.stopPropagation()
+                                this.toggleLayOut("INVITE_LIST")
+                              }}>
+                              <i className={ZegoRoomCss.member}></i>
+                              <span>{formatMessage({ id: "global.invitation" })}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}

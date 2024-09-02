@@ -179,7 +179,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         ) : (
           <ZegoRoomMobile
             core={this.props.core}
-            leaveRoom={(isKickedOut = false) => {
+            leaveRoom={(isKickedOut = false, isCallQuit = true) => {
               if (isKickedOut) {
                 // 被踢出房间回到预览页
                 if (this.props.core._config.showPreJoinView) {
@@ -201,7 +201,8 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
                 // 主动退出房间，呼叫邀请结束
                 this.props.core._zimManager?.callInfo?.callID &&
                   this.props.core._zimManager.endCall(
-                    CallInvitationEndReason.LeaveRoom
+                    CallInvitationEndReason.LeaveRoom,
+                    isCallQuit
                   );
               }, 0);
             }}

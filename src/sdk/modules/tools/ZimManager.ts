@@ -33,6 +33,7 @@ import { callInvitationControl } from "../../view/pages/ZegoCallInvitation/callI
 import InRoomInviteManager from "./InRoomInviteManager";
 import { createIntl, createIntlCache } from "react-intl";
 import { i18nMap } from '../../locale';
+import { typeIsBoolean } from "../../util";
 
 export class ZimManager {
 	_zim: ZIM | null;
@@ -146,9 +147,9 @@ export class ZimManager {
 				} else {
 					const { inviter_name, type, data, canInvitingInCalling, onlyInitiatorCanInvite, endCallWhenInitiatorLeave } = JSON.parse(extendedData);
 					const { call_id, invitees, custom_data, inviter: _inviter } = JSON.parse(data);
-					this.config.canInvitingInCalling = canInvitingInCalling;
-					this.config.onlyInitiatorCanInvite = onlyInitiatorCanInvite;
-					this.config.endCallWhenInitiatorLeave = endCallWhenInitiatorLeave;
+					typeIsBoolean(canInvitingInCalling) && (this.config.canInvitingInCalling = canInvitingInCalling);
+					typeIsBoolean(onlyInitiatorCanInvite) && (this.config.onlyInitiatorCanInvite = onlyInitiatorCanInvite);
+					typeIsBoolean(endCallWhenInitiatorLeave) && (this.config.endCallWhenInitiatorLeave = endCallWhenInitiatorLeave);
 					this.callInfo = {
 						callID,
 						invitees: invitees.map((i: { user_id: any; user_name: any }) => ({
@@ -162,7 +163,7 @@ export class ZimManager {
 						acceptedInvitees: [],
 						roomID: call_id,
 						type: type,
-						isGroupCall: canInvitingInCalling || invitees.length > 1,
+						isGroupCall: this.config.canInvitingInCalling || invitees.length > 1,
 					};
 					this.onUpdateRoomIDCallback();
 					//   设置来电计时器，当断网等收不到消息时以超时为由结束call

@@ -186,6 +186,22 @@
     background-position: center;
     background-size: 100%;
   }
+  .cancelBtn {
+    position: absolute;
+    bottom: vw(20px);
+    left: 50%;
+    z-index: 10;
+    transform: translateX(-50%);
+    width: vw(80px);
+    height: vw(80px);
+    text-align: center;
+    color: #ffffff;
+    background: #e8543b;
+    border-radius: 50%;
+    background: url("../../../../sdkMobileAssets/icon_Decline_nor@2x.png")
+      no-repeat;
+    background-size: 100%;
+  }
 }
 .hidden {
   display: none !important;

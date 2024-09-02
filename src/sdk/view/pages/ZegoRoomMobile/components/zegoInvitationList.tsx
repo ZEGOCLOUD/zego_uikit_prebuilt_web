@@ -1,19 +1,22 @@
 import React from "react";
-import { ZegoCloudRTCCore } from "../../../../modules";
-import ZegoInvitationListCss from "./zegoInvitationList.module.scss"
+import zegoInvitationListCss from "./zegoInvitationList.module.scss";
+import { ZegoCloudRTCCore } from "../../../../modules"
+import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager"
+import ShowManageContext, { ShowManageType } from "../../context/showManage"
+import { FormattedMessage } from "react-intl";
 import { CallingInvitationListConfig, ZegoUser } from "../../../../model";
 import { getNameFirstLetter, userNameColor } from "../../../../util";
-import { ZegoCloudUserList } from "../../../../modules/tools/UserListManager";
 
 type Invitation = ZegoUser & {
   checked: boolean
   canEdit: boolean
 }
 
-export class ZegoInvitationList extends React.PureComponent<{
+export class ZegoInvitationList extends React.Component<{
+  userList: ZegoCloudUserList
   core: ZegoCloudRTCCore
   callingInvitationListConfig: CallingInvitationListConfig
-  userList: ZegoCloudUserList
+  closeCallBack: () => void
   handleInvitation: (invitees: ZegoUser[]) => void
 }> {
   state: {
@@ -21,6 +24,9 @@ export class ZegoInvitationList extends React.PureComponent<{
   } = {
       waitingSelectUsers: []
     };
+
+  static contextType?: React.Context<ShowManageType> = ShowManageContext
+  context!: React.ContextType<typeof ShowManageContext>
   setWaitingSelectUsers() {
     const defaultChecked = this.props.callingInvitationListConfig.defaultChecked ?? true
     const list = (this.props.callingInvitationListConfig.waitingSelectUsers || []).map((waitingUser) => {
@@ -62,7 +68,7 @@ export class ZegoInvitationList extends React.PureComponent<{
   }
 
   sendInvitation() {
-    const invitees = this.invationList
+    const invitees = this.state.waitingSelectUsers
       .filter((item) => item.canEdit && item.checked)
       .map((item) => {
         return {
@@ -79,33 +85,45 @@ export class ZegoInvitationList extends React.PureComponent<{
 
   render(): React.ReactNode {
     return (
-      <>
-        <div className={ZegoInvitationListCss.invitationListWrapper}>
+      <div className={zegoInvitationListCss.invitationListWrapper}>
+        <div className={zegoInvitationListCss.invitationListHeader}>
+          <div
+            className={zegoInvitationListCss.invitationHide}
+            onClick={(ev) => {
+              ev.stopPropagation()
+              this.props.closeCallBack()
+            }}></div>
+          <FormattedMessage id="global.invitees" />
+        </div>
+        <div className={zegoInvitationListCss.invitationListContent}>
           {this.invationList.map((item, index) => {
             return (
               <div
-                className={`${ZegoInvitationListCss.member} ${item.canEdit ? ZegoInvitationListCss.pointer : ZegoInvitationListCss.notAllowed}`}
                 key={item.userID}
-                onClick={() => this.handleSelectUser(item, index)}
-              >
-                <div
-                  className={`${ZegoInvitationListCss.memberNameWrapper}`}>
-                  {item.avatar && (
-                    <img
-                      src={item.avatar}
-                      onError={(e: any) => {
-                        e.target.style.display = "none"
-                      }}
-                      alt=""
-                    />
-                  )}
-                  <span style={{ color: userNameColor(item.userName || "") }}>
+                className={zegoInvitationListCss.member}
+                onClick={(ev) => {
+                  ev.stopPropagation()
+                  this.handleSelectUser(item, index)
+                }}>
+                <div className={zegoInvitationListCss.memberName}>
+                  <i style={{ color: userNameColor(item.userName!) }}>
                     {getNameFirstLetter(item.userName || "")}
+                    {item.avatar && (
+                      <img
+                        src={item.avatar}
+                        onError={(e: any) => {
+                          e.target.style.display = "none"
+                        }}
+                        alt=""
+                      />
+                    )}
+                  </i>
+                  <span
+                    key={item.userID}>
+                    {item.userName}
                   </span>
-
-                  <p>{item.userName}</p>
                 </div>
-                <div className={ZegoInvitationListCss.checkWrapper}>
+                <div className={`${zegoInvitationListCss.checkWrapper} ${!item.canEdit && zegoInvitationListCss.checked}`}>
                   {!item.canEdit && (
                     <img src={require("../../../../../assets/icon_checked.png")} alt="" />
                   )}
@@ -117,10 +135,10 @@ export class ZegoInvitationList extends React.PureComponent<{
             )
           })}
         </div>
-        <div className={`${ZegoInvitationListCss.callWrapper} ${ZegoInvitationListCss.pointer}`} onClick={() => this.sendInvitation()}>
+        <div className={zegoInvitationListCss.callWrapper} onClick={() => this.sendInvitation()}>
           <img src={require('../../../../sdkAssets/icon_call.png')} alt="" />
         </div>
-      </>
+      </div>
     )
   }
 }

@@ -8,6 +8,7 @@ import ZegoVideo from "../../../components/zegoMedia/video";
 import ZegoAudio from "../../../components/zegoMedia/audio";
 import { FormattedMessage } from "react-intl";
 import { ZegoCloudRTCCore } from "../../../../modules";
+import { UserTypeEnum } from "../../../../model";
 export class ZegoUserVideo extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   user: ZegoCloudUser;
@@ -46,6 +47,11 @@ export class ZegoUserVideo extends React.PureComponent<{
       this.videoEl?.webkitEnterFullscreen?.();
     }
   }
+
+  cancelCall() {
+    this.props.core._zimManager?.cancelInvitation(void 0, [this.props.user], false)
+  }
+
   get avatarConfig() {
     const videoViewConfig = this.props.core._config.videoViewConfig || []
     const { avatar, userID } = this.props.user
@@ -68,6 +74,10 @@ export class ZegoUserVideo extends React.PureComponent<{
 
   get isHiddenVideo() {
     return this.hideUsersById.includes(this.props.user.userID)
+  }
+
+  get isWaitingUser() {
+    return this.props.user.type === UserTypeEnum.CALLING_WAITTING
   }
 
 
@@ -172,7 +182,13 @@ export class ZegoUserVideo extends React.PureComponent<{
             </div>
           </div>
         )}
-        {!this.props.hiddenMore && <ZegoMore user={this.props.user} />}
+        {
+          this.isWaitingUser && (
+            <div className={zegoUserVideoCss.cancelBtn} onClick={() => this.cancelCall()}>
+            </div>
+          )
+        }
+        {(!this.props.hiddenMore && !this.isWaitingUser) && <ZegoMore user={this.props.user} />}
         {this.props.showFullScreen && (
           <div
             className={`${zegoUserVideoCss.fullScreenBtn}`}

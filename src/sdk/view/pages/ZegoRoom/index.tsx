@@ -2039,7 +2039,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 										core={this.props.core}
 										callingInvitationListConfig={this.getCallingInvitationListConfig()}
 										userList={this.getShownUser(true)}
-										selfUserID={this.props.core._expressConfig.userID}
 										handleInvitation={(invitees: ZegoUser[]) => {
 											this.handleInvitation(invitees)
 										}}
