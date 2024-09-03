@@ -202,10 +202,10 @@ declare interface ZegoCloudRoomConfig {
 	liveNotStartedTextForAudience?: string; // Custom text displayed for the audience before the live broadcast starts.
 	startLiveButtonText?: string; // Custom Start Live button Text.
 	// 2.9.0
-	// When a user is invited to a call, the Invite User window will appear on the inviting party, if you want to hide this view, set it to false. Display by default.
+	// When a user is invited during a call, the Invite User window appears on the inviting party. If you want to hide this view, set it to false. Display by default.
 	// You can cancel the invitation to this user in this view.
 	showWaitingCallAcceptAudioVideoView?: boolean;
-	// Call Invitation List Configuration
+	// Configure the call invitation list during a call
 	callingInvitationListConfig?: CallingInvitationListConfig;
 }
 

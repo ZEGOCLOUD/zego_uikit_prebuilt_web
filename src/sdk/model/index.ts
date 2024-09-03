@@ -223,10 +223,10 @@ export interface ZegoCloudRoomConfig {
 	liveNotStartedTextForAudience?: string; // 自定义观众端直播开始前展示的文本
 	startLiveButtonText?: string; // 自定义开始直播按钮文本
 	// 2.9.0
-	// 当邀请用户通话时，邀请用户窗口将出现在邀请方，如果您想隐藏此视图，请将其设置为false。默认展示。
+	// 通话中邀请用户时，邀请用户窗口将出现在邀请方，如果您想隐藏此视图，请将其设置为false。默认展示。
 	// 您可以在此视图中取消对此用户的邀请。
 	showWaitingCallAcceptAudioVideoView?: boolean;
-	// 呼叫邀请列表配置
+	// 通话中呼叫邀请列表配置
 	callingInvitationListConfig?: CallingInvitationListConfig;
 }
 export enum RightPanelExpandedType {
