@@ -69,6 +69,7 @@ export default class App extends React.PureComponent {
     canInvitingInCalling: false,
     endCallWhenInitiatorLeave: false,
     onlyInitiatorCanInvite: false,
+    showWaitingCallAcceptAudioVideoView: false,
     waitingUsers: [],
   };
 
@@ -476,8 +477,7 @@ export default class App extends React.PureComponent {
       onSetRoomConfigBeforeJoining: (callType) => {
         console.warn("【demo】onSetRoomConfigBeforeJoining", callType, this.zp.getRoomID());
         // sessionStorage.setItem('roomID', this.zp.getRoomID());
-        const { waitingUsers, invitees } = this.state
-        if (invitees.length > 1) {
+        if (this.state.invitees.length > 1) {
           this.showToast("Waiting for others to join the call.");
         }
         // demo 设置5分钟体验限制
@@ -488,7 +488,7 @@ export default class App extends React.PureComponent {
             this.zp.hangUp();
           }
         }, 1000);
-        const waitingSelectUsers = waitingUsers.map((id) => ({
+        const waitingSelectUsers = this.state.waitingUsers.map((id) => ({
           userID: id,
           userName: `user_${id}`,
         }));
@@ -504,6 +504,7 @@ export default class App extends React.PureComponent {
           showTurnOffRemoteCameraButton: true,
           showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
+          showWaitingCallAcceptAudioVideoView: this.state.showWaitingCallAcceptAudioVideoView,
           callingInvitationListConfig: {
             waitingSelectUsers,
             defaultChecked: true
@@ -1083,6 +1084,19 @@ export default class App extends React.PureComponent {
                       })
                     }}>
                     <p>endCallWhenInitiatorLeave</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${this.state.showWaitingCallAcceptAudioVideoView
+                      ? APP.settingsModeItemSelected
+                      : ""
+                      }`}
+                    onClick={() => {
+                      this.setState({
+                        showWaitingCallAcceptAudioVideoView: !this.state.showWaitingCallAcceptAudioVideoView
+                      })
+                    }}>
+                    <p>showWaitingCallAcceptAudioVideoView</p>
                     <span></span>
                   </div>
                 </div>
