@@ -2546,7 +2546,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                                 this.toggleLayOut("INVITE_LIST")
                               }}>
                               <i className={ZegoRoomCss.member}></i>
-                              <span>{formatMessage({ id: "global.invitation" })}</span>
+                              <span>{formatMessage({ id: "global.inviteMembers" })}</span>
                             </div>
                           )}
                         </div>

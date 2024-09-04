@@ -2126,7 +2126,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 												<div onClick={() => this.handleSetting()}><FormattedMessage id="global.settings" /></div>
 											)}
 											{this.showInvitationButton() && (
-												<div onClick={() => this.toggleLayOut("INVITE_LIST")}><FormattedMessage id="global.invitation" /></div>
+												<div onClick={() => this.toggleLayOut("INVITE_LIST")}><FormattedMessage id="global.inviteMembers" /></div>
 											)}
 										</div>
 									</div>

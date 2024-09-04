@@ -44,9 +44,9 @@ const en = {
     "global.joinRoomFailedNetwork": "There's something wrong with your network. Please check it and try again.",
     "global.joinRoomFailedToken": "Failed to join the room, token authentication error.",
     "global.joinRoomFailedRepeat": "You are on a call in another room, please leave that room first.",
-    "global.joinRoomFailed": "加入房间失败，请重试。（错误码：{code}）",
-    "global.invitation": "invitation",
-    "global.invitees": "invitees",
+    "global.joinRoomFailed": "Failed to join the room, please try again.（error code: {code}）",
+    "global.inviteMembers": "Invite members",
+    "global.invitees": "Invitees",
 
     'browserCheck.join': "Join",
     "browserCheck.placeholder": "Your name",

@@ -45,7 +45,7 @@ const zh = {
     "global.joinRoomFailedToken": "加入房间失败，token 验证错误。",
     "global.joinRoomFailedRepeat": "您在另一个房间，请先离开那个房间。",
     "global.joinRoomFailed": "加入房间失败，请重试。（错误码：{code}）",
-    "global.invitation": "邀请",
+    "global.inviteMembers": "邀请成员",
     "global.invitees": "受邀请人",
 
     "browserCheck.join": "加入",
