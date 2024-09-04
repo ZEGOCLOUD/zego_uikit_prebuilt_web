@@ -3,6 +3,7 @@ declare type ZegoExpressEngine = {};
 declare interface ZegoUser {
 	userID: string;
 	userName?: string;
+	avatar?: string;
 	setUserAvatar?: (avatar: string) => void;
 }
 declare enum LiveRole {
@@ -89,6 +90,12 @@ declare enum ScreenSharingResolution {
 	Auto = "auto",
 	Custom = "custom",
 }
+
+interface CallingInvitationListConfig {
+	waitingSelectUsers: ZegoUser[]; // Waiting for selected members
+	defaultChecked?: boolean; // Whether it is selected by default, the default value is true
+}
+
 declare interface ZegoCloudRoomConfig {
 	// 1 UI controls
 	// 1.1 Global
@@ -182,6 +189,24 @@ declare interface ZegoCloudRoomConfig {
 		titleText?: string, // custom leave room confrim dialog title
 		descriptionText?: string, // // custom leave room confrim dialog desctiption
 	}
+	// 2.7.0
+	showMoreButton?: boolean; // Whether to enable the more button, true by default.
+	showUserName?: boolean; // Whether to display the user name on chat. true by default
+	hideUsersById?: string[]; // Hide the screen corresponding to the user id
+	videoViewConfig?: {
+		userID?: string; // user ID
+		showAvatarWhenCameraOff?: boolean; // Whether to display the user profile picture when the camera is off. The default value is true
+	}[];
+	backgroundUrl?: string; // background
+	// 2.8.0
+	liveNotStartedTextForAudience?: string; // Custom text displayed for the audience before the live broadcast starts.
+	startLiveButtonText?: string; // Custom Start Live button Text.
+	// 2.9.0
+	// When a user is invited during a call, the Invite User window appears on the inviting party. If you want to hide this view, set it to false. Display by default.
+	// You can cancel the invitation to this user in this view.
+	showWaitingCallAcceptAudioVideoView?: boolean;
+	// Configure the call invitation list during a call
+	callingInvitationListConfig?: CallingInvitationListConfig;
 }
 
 export enum RightPanelExpandedType {
@@ -260,6 +285,15 @@ declare interface ZegoCallInvitationConfig {
 	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void;
 	// 2.1.0
 	language?: ZegoUIKitLanguage // set language
+	// 2.9.0
+	// Whether to allow invitations to be sent during a call, The default value is false.
+	canInvitingInCalling?: boolean;
+	// Whether only the call initiator has the permission to invite others to join the call, The default value is false.
+	// If it is set to false, all participants in the call can invite others.
+	onlyInitiatorCanInvite?: boolean;
+	// Whether the whole call should end when the call originator leaves the call (causing other participants to leave together), The default value is false.
+	// If it is set to false, the call can continue even if the initiator leaves.
+	endCallWhenInitiatorLeave?: boolean;
 }
 
 declare interface ZegoSignalingPluginNotificationConfig {
@@ -350,4 +384,6 @@ export declare class ZegoUIKitPrebuilt {
 	// 2.3.0
 	autoLeaveRoomWhenOnlySelfInRoom: boolean;
 	getRoomID(): string;
+	// 2.9.0
+	updateCallingInvitationListConfig(config: CallingInvitationListConfig): void
 }
