@@ -778,6 +778,9 @@ export class ZimManager {
 		if (canInvitingInCalling && reason === CallInvitationEndReason.LeaveRoom) {
 			if (endCallWhenInitiatorLeave && isInviter) {
 				this.callEnd()
+				if (!this.callInfo.waitingUsers?.length) return
+				// 主呼叫人离开 取消所有未接受的邀请
+				this.cancelInvitation(void 0, this.callInfo.waitingUsers)
 			} else {
 				isCallQuit && this.callQuit()
 			}
