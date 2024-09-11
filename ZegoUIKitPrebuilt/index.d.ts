@@ -182,6 +182,8 @@ declare interface ZegoCloudRoomConfig {
 	leaveRoomDialogConfig?: {
 		titleText?: string, // custom leave room confrim dialog title
 		descriptionText?: string, // // custom leave room confrim dialog desctiption
+		// 2.9.0
+		confirmCallback?: () => void, // custom leave room confirm callback
 	}
 	// 2.7.0
 	showMoreButton?: boolean; // Whether to enable the more button, true by default.

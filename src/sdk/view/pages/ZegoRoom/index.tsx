@@ -1063,6 +1063,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					cancelText: this.props.core.intl.formatMessage({ id: "global.cancel" }),
 					onOk: () => {
 						this.confirmLeaveRoom();
+						this.props.core._config.leaveRoomDialogConfig?.confirmCallback && this.props.core._config.leaveRoomDialogConfig.confirmCallback();
 					},
 				},
 				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
