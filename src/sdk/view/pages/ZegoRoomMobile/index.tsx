@@ -2355,6 +2355,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               )}
 
               <a
+                id="ZegoRoomMobileLeaveButton"
                 className={
                   this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
                     ? ZegoRoomCss.liveLeaveButton
