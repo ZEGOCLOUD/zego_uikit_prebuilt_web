@@ -44,9 +44,9 @@ const config: webpack.Configuration = {
 			//   use: ["style-loader", "css-loader"],
 			// },
 			/* {
-                test: /\.(png|jpg|gif)$/, // 图片后缀名
-                loader: 'url-loader?limit=8192&name=images/[hash:8].[name].[ext]',
-            }, */
+				test: /\.(png|jpg|gif)$/, // 图片后缀名
+				loader: 'url-loader?limit=8192&name=images/[hash:8].[name].[ext]',
+			}, */
 
 			{
 				test: /\.scss$/,
@@ -102,6 +102,8 @@ const config: webpack.Configuration = {
 					compress: {
 						drop_console: ["log", "info", "warn"],
 					},
+					// compress: false,
+					// keep_fnames: true
 				},
 			}),
 		],
