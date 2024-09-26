@@ -1143,6 +1143,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         closeCallBack: (confirm: boolean) => {
           if (confirm) {
             this.confirmLeaveRoom();
+            this.props.core._config.leaveRoomDialogConfig?.confirmCallback && this.props.core._config.leaveRoomDialogConfig.confirmCallback();
           }
         },
       });
@@ -2413,6 +2414,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               )}
 
               <a
+                id="ZegoRoomMobileLeaveButton"
                 className={
                   this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
                     ? ZegoRoomCss.liveLeaveButton

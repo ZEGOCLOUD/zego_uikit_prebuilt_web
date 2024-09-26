@@ -62,6 +62,7 @@ export class ZegoUIKitPrebuilt {
 	public express: ZegoExpressEngine | undefined;
 	constructor() {
 		this.express = ZegoCloudRTCCore._zg;
+		console.log('ZegoUIKitPrebuilt version: 2.9.3')
 	}
 	get localStream() {
 		return ZegoUIKitPrebuilt.core?.localStream;
@@ -165,6 +166,7 @@ export class ZegoUIKitPrebuilt {
 			div.style.zIndex = "100";
 			div.style.backgroundColor = "#FFFFFF";
 			div.style.overflow = "auto";
+			div.id = "zego-container";
 			document.body.appendChild(div);
 			roomConfig = {
 				...roomConfig,

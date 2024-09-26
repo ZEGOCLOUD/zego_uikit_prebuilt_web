@@ -63,6 +63,7 @@ export default class App extends React.PureComponent {
     showLangBox: false,
     lang: getUrlParams().get("lang") || "en",
     showWaitingPage: false,
+    // showConfirmDialog: false,
     callees: [],
     roomTimer: null,
     roomTime: 0,
@@ -72,7 +73,7 @@ export default class App extends React.PureComponent {
     showWaitingCallAcceptAudioVideoView: false,
     waitingUsers: [],
   };
-
+  refuseBtn = React.createRef();
   settingsEl = null;
   invitationInput: RefObject<HTMLInputElement> = React.createRef();
   zp: ZegoUIKitPrebuilt;
@@ -403,7 +404,14 @@ export default class App extends React.PureComponent {
           language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
           // leaveRoomDialogConfig: {
           //   descriptionText: '',
-          // }
+          //   confirmCallback: () => {
+          //     console.log('===demo confirmCallback');
+          //   }
+          // },
+          whiteboardConfig: {
+            // showAddImageButton: true,
+            // showCreateAndCloseButton: true,
+          }
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"
@@ -458,14 +466,24 @@ export default class App extends React.PureComponent {
     //@ts-ignore // just for debugger
     window.zp = this.zp;
     this.zp.setCallInvitationConfig({
+      // enableCustomCallInvitationDialog: true,
       language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
       canInvitingInCalling,
       endCallWhenInitiatorLeave,
       onlyInitiatorCanInvite,
       onConfirmDialogWhenReceiving: (callType, caller, refuse, accept, data) => {
-        console.warn("【demo】onCallInvitationDialogShowed", callType, caller, data);
+        console.warn("【demo】onCallInvitationDialogShowed", callType, caller, data, refuse);
         this.inviter = caller;
+        // this.setState({
+        //   showConfirmDialog: true,
+        // })
+        // console.warn("【demo】onCallInvitationDialogShowed", document.querySelector('.refuse-btn'), this.refuseBtn.current);
+        // const refuseBtn = document.querySelector('.refuse-btn') as HTMLElement;
+        // refuseBtn && (refuseBtn.onclick = () => {
+        //   console.log('====click refuse')
+        //   refuse();
+        // })
       },
       // enableCustomCallInvitationWaitingPage: true,
       onWaitingPageWhenSending: (callType, callees, cancel) => {
@@ -1151,6 +1169,12 @@ export default class App extends React.PureComponent {
             })}
           </div>
         )}
+
+        {/* {(
+          <div className="confirm-dialog" style={{ position: "absolute", top: 0, width: "100px", height: "100px", background: "#3b3b3b" }}>
+            <div ref={this.refuseBtn} className="refuse-btn" style={{ width: "100px", height: "40px", backgroundColor: "#fff" }}>refuse</div>
+          </div>
+        )} */}
       </div>
     );
   }

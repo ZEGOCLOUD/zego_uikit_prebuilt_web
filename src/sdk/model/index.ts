@@ -209,6 +209,8 @@ export interface ZegoCloudRoomConfig {
 	leaveRoomDialogConfig?: {
 		titleText?: string, // custom leave room confrim dialog title
 		descriptionText?: string, // // custom leave room confrim dialog desctiption
+		// 2.9.0
+		confirmCallback?: () => void, // custom leave room confirm callback
 	},
 	// 2.7.0
 	showMoreButton?: boolean; // 是否显示更多按钮，默认true
@@ -222,7 +224,7 @@ export interface ZegoCloudRoomConfig {
 	// 2.8.0
 	liveNotStartedTextForAudience?: string; // 自定义观众端直播开始前展示的文本
 	startLiveButtonText?: string; // 自定义开始直播按钮文本
-	// 2.9.0
+	// 2.10.0
 	// 通话中邀请用户时，邀请用户窗口将出现在邀请方，如果您想隐藏此视图，请将其设置为false。默认展示。
 	// 您可以在此视图中取消对此用户的邀请。
 	showWaitingCallAcceptAudioVideoView?: boolean;
@@ -436,7 +438,7 @@ export interface ZegoCallInvitationConfig {
 	onIncomingCallAcceptButtonPressed?: () => void
 	// 被叫者点击拒绝按钮回调
 	onIncomingCallDeclineButtonPressed?: () => void
-	// 2.9.0
+	// 2.10.0
 	// 是否允许在通话中发送邀请
   // 默认值为false。
   canInvitingInCalling?: boolean;
