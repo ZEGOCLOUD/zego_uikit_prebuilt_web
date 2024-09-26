@@ -251,7 +251,8 @@ export default class App extends React.PureComponent {
           zp.addPlugins({ ZegoSuperBoardManager })
         } else {
           zp.addPlugins({ ZIM })
-          ZIM.ZIM.getInstance().setLogConfig({
+          // @ts-ignore
+          ZIM.getInstance().setLogConfig({
             logLevel: "error",
           })
         }
