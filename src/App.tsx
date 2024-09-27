@@ -508,6 +508,8 @@ export default class App extends React.PureComponent {
           showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
           // autoLeaveRoomWhenOnlySelfInRoom: false,
+          // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+          // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
         };
       },
       onCallInvitationEnded: (reason, data) => {
