@@ -996,32 +996,33 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     } else if (this.faceModel === 0) {
       targetModel = true;
     }
-    this.faceModel = -1;
-    this.state.localStream.getVideoTracks()[0].stop();
-    this.state.localStream.getAudioTracks()[0].stop();
+    // this.faceModel = -1;
+    // this.state.localStream.getVideoTracks()[0].stop();
+    // this.state.localStream.getAudioTracks()[0].stop();
     try {
-      const solution = getVideoResolution(
-        this.props.core._config.videoResolutionList![0]
-      );
-      const stream = await this.props.core.createStream({
-        camera: {
-          video: !this.props.core.status.videoRefuse,
-          audio: !this.props.core.status.audioRefuse,
-          videoQuality: 4,
-          facingMode: !this.state.cameraFront ? "user" : "environment",
-          channelCount: this.props.core._config.enableStereo ? 2 : 1,
-          ...solution,
-          //   width: 640,
-          //   height: 360,
-          //   bitrate: 400,
-          //   frameRate: 15,
-        },
-      });
-      let videoTrack = stream.getVideoTracks()[0];
-      !this.state.cameraOpen && (videoTrack.enabled = false);
-      let audioTrack = stream.getAudioTracks()[0];
-      await this.props.core.replaceTrack(this.state.localStream, videoTrack);
-      await this.props.core.replaceTrack(this.state.localStream, audioTrack);
+      this.props.core.useFrontCamera(this.state.localStream, targetModel);
+      // const solution = getVideoResolution(
+      //   this.props.core._config.videoResolutionList![0]
+      // );
+      // const stream = await this.props.core.createStream({
+      //   camera: {
+      //     video: !this.props.core.status.videoRefuse,
+      //     audio: !this.props.core.status.audioRefuse,
+      //     videoQuality: 4,
+      //     facingMode: !this.state.cameraFront ? "user" : "environment",
+      //     channelCount: this.props.core._config.enableStereo ? 2 : 1,
+      //     ...solution,
+      //     //   width: 640,
+      //     //   height: 360,
+      //     //   bitrate: 400,
+      //     //   frameRate: 15,
+      //   },
+      // });
+      // let videoTrack = stream.getVideoTracks()[0];
+      // !this.state.cameraOpen && (videoTrack.enabled = false);
+      // let audioTrack = stream.getAudioTracks()[0];
+      // await this.props.core.replaceTrack(this.state.localStream, videoTrack);
+      // await this.props.core.replaceTrack(this.state.localStream, audioTrack);
     } catch (error) {
       console.error("【ZEGOCLOUD】switch camera failed!", error);
     }

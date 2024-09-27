@@ -716,6 +716,10 @@ export class ZegoCloudRTCCore {
 		return ZegoCloudRTCCore._zg.getSpeakers()
 	}
 
+	useFrontCamera(localStream: MediaStream, enable: boolean): Promise<ZegoServerResponse> {
+		return ZegoCloudRTCCore._zg.useFrontCamera(localStream, enable);
+	}
+
 	setVolume(media: HTMLVideoElement, volume: number): void {
 		media.volume = volume
 	}
@@ -1292,7 +1296,7 @@ export class ZegoCloudRTCCore {
 				this._config.onUserAvatarSetter && this._config.onUserAvatarSetter([user])
 
 				// @ts-ignore 日志上报
-				ZegoCloudRTCCore._zg.logger.error("zu.jr " + JSON.stringify(this.originConfig))
+				ZegoCloudRTCCore._zg.logger.info("zu.jr " + JSON.stringify(this.originConfig))
 			} catch (error) {
 				console.error(error)
 			}
