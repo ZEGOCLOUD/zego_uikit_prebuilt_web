@@ -2017,8 +2017,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 										this.toggleScreenSharing()
 									}}></div>
 							)}
-							{this.props.core._config.plugins?.ZegoSuperBoardManager &&
-								this.props.core._config.whiteboardConfig?.showCreateAndCloseButton && (
+							{(this.props.core._config.plugins?.ZegoSuperBoardManager &&
+								this.props.core._config.whiteboardConfig?.showCreateAndCloseButton &&
+								!(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+									this.props.core._config.scenario?.config?.role === LiveRole.Audience)) && (
 									<div
 										className={`${ZegoRoomCss.whiteboardButton} ${this.state.isZegoWhiteboardSharing && ZegoRoomCss.sharing
 											}  ${this.getScreenSharingUser.length > 0 && ZegoRoomCss.forbidden}`}
