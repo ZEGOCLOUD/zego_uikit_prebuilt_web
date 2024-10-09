@@ -168,9 +168,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		//   this.props.core._config.scenario?.config?.role === LiveRole.Audience &&
 		//   this.toggleLayOut("MESSAGE");
 		// if(this.props.core._zimManager && )
-		console.log('===123',
-			this.props.core._config.whiteboardConfig?.showCreateAndCloseButton || (this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-				this.props.core._config.scenario?.config?.role !== LiveRole.Audience))
 	}
 	componentDidUpdate(
 		preProps: ZegoBrowserCheckProp,

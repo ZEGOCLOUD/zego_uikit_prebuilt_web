@@ -42,8 +42,6 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
     this.setState({
       currentZoom: currentZoom ? currentZoom * 100 : 100,
     });
-    console.log('===', this.props.core._config, this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-      this.props.core._config.scenario?.config?.role !== LiveRole.Audience);
   }
   componentWillUnmount(): void {
     this.props?.handleFullScreen?.(false);
