@@ -3,6 +3,8 @@ import clsx from "clsx";
 import {
   UserListMenuItemType,
   ZegoWhiteboardSharingLayoutProps,
+  LiveRole,
+  ScenarioModel
 } from "../../../../model";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import zegoWhiteboardSharingLayout from "./zegoWhiteboardSharingLayout.module.scss";
@@ -40,6 +42,8 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
     this.setState({
       currentZoom: currentZoom ? currentZoom * 100 : 100,
     });
+    console.log('===', this.props.core._config, this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+      this.props.core._config.scenario?.config?.role !== LiveRole.Audience);
   }
   componentWillUnmount(): void {
     this.props?.handleFullScreen?.(false);
@@ -160,16 +164,18 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                 ></i>
               </div>
             </div>
-            {this.context.whiteboard_showCreateClose && (
-              <div
-                className={zegoWhiteboardSharingLayout.stop}
-                onClick={() => {
-                  this.props.onclose();
-                }}
-              >
-                <FormattedMessage id="room.stopPresenting" />
-              </div>
-            )}
+            {(this.context.whiteboard_showCreateClose &&
+              !(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+                this.props.core._config.scenario?.config?.role === LiveRole.Audience)) && (
+                <div
+                  className={zegoWhiteboardSharingLayout.stop}
+                  onClick={() => {
+                    this.props.onclose();
+                  }}
+                >
+                  <FormattedMessage id="room.stopPresenting" />
+                </div>
+              )}
           </div>
           <div className={zegoWhiteboardSharingLayout.content}>
             <ZegoWhiteboardTools
