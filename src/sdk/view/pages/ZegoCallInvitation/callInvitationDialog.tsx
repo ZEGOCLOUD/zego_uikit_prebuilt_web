@@ -1,8 +1,7 @@
 import React from "react";
-// import { ZegoUser } from "zego-express-engine-webrtc/sdk/src/common/zego.entity";
 import { getNameFirstLetter } from "../../../util";
 import DialogCss from "./callInvitationDialog.module.scss";
-import { ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity";
+import { ZegoUser } from "../../../model";
 export class CallInvitationDialog extends React.Component<{
   inviter: ZegoUser;
   isPc: boolean;
