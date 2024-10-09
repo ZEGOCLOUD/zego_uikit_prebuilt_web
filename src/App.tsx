@@ -90,7 +90,7 @@ export default class App extends React.PureComponent {
   viewportHeight = 0;
   constructor(props: any) {
     super(props);
-    const userName = getUrlParams().get("UserName");
+    const userName = getUrlParams().get("userName");
     const roomID = getUrlParams().get("roomID") || randomID(5);
     const userID = getUrlParams().get("userID") || randomNumID(8);
     const enableMixing = getUrlParams().get("mixing") === "1" || false;
@@ -281,19 +281,25 @@ export default class App extends React.PureComponent {
           onJoinRoom: () => {
             // sessionStorage.setItem('roomID', zp.getRoomID());
             console.warn("join room callback");
-            window?.parent?.postMessage("leaveRoom", "*")
-            // demo 设置5分钟体验限制
+            // window?.parent?.postMessage("joinRoom", "*")
+            this.postMessage({ type: 'joinRoom', data: null })
+            // demo 设置5分钟体验限制 
+            // goenjoy 直播体验设置为20分钟
+            const inGoEnjoyExperience = process.env.REACT_APP_PATH === "live_stream" && this.inIframe()
+            const experienceTime = inGoEnjoyExperience ? 1200 : 300
+            const experienceTimeTip = inGoEnjoyExperience ? 5 : 20
             this.state.roomTimer = setInterval(() => {
               this.state.roomTime = ++this.state.roomTime;
-              if (this.state.roomTime === 300) {
-                this.showToast(this.state.lang === "en" ? "Only for functional experience, not for commercial use. Each session should not exceed 5 minutes." : "仅功能体验，不作商业用途。每次不超过5分钟。");
+              if (this.state.roomTime === experienceTime) {
+                this.showToast(this.state.lang === "en" ? `Only for functional experience, not for commercial use. Each session should not exceed ${experienceTimeTip} minutes.` : `仅功能体验，不作商业用途。每次不超过${experienceTimeTip}分钟。`);
                 zp.hangUp();
               }
             }, 1000);
           }, // 退出房间回调
           onLeaveRoom: () => {
             console.warn("leave room callback");
-            window?.parent?.postMessage("joinRoom", "*")
+            // window?.parent?.postMessage("joinRoom", "*")
+            this.postMessage({ type: 'leaveRoom', data: null })
             // 刷新 5分钟限制
             if (this.state.roomTimer) {
               clearInterval(this.state.roomTimer);
@@ -364,6 +370,7 @@ export default class App extends React.PureComponent {
           },
           onLiveEnd: (user) => {
             console.warn("onLiveEnd", user)
+            this.postMessage({ type: 'onLiveEnd', data: user })
           },
           onYouRemovedFromRoom: () => {
             console.warn("【demo】onYouRemovedFromRoom")
@@ -531,6 +538,8 @@ export default class App extends React.PureComponent {
           // turnOnCameraWhenJoining: false,
           // turnOnMicrophoneWhenJoining: false,
           // autoLeaveRoomWhenOnlySelfInRoom: false,
+          // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+          // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
         };
       },
       onCallInvitationEnded: (reason, data) => {
@@ -821,6 +830,16 @@ export default class App extends React.PureComponent {
       onlyInitiatorCanInvite,
       endCallWhenInitiatorLeave,
     });
+  }
+  inIframe() {
+    const isInIframe = window.self !== window.top
+    return isInIframe
+  }
+  postMessage = ({ type, data }) => {
+    const _win = window.parent
+    if (!this.inIframe() || !_win) return
+    console.log('postMessage', JSON.stringify({ type, data }))
+    _win.postMessage(JSON.stringify({ type, data }), '*')
   }
   render(): React.ReactNode {
     return (
