@@ -34,6 +34,7 @@ import InRoomInviteManager from "./InRoomInviteManager";
 import { createIntl, createIntlCache } from "react-intl";
 import { i18nMap } from '../../locale';
 import { typeIsBoolean } from "../../util";
+import { ZegoUIKitPrebuilt } from "../..";
 
 export class ZimManager {
 	_zim: ZIM | null;
@@ -283,6 +284,18 @@ export class ZimManager {
 				}
 				if (state === ZIMCallUserState.Timeout) {
 					this.callInviteesAnsweredTimeout({ callID, invitees: [userID] })
+				}
+				if (state === ZIMCallUserState.Ended) {
+					if (callInvitationControl.isDialogShow) {
+						callInvitationControl.callInvitationDialogHide();
+						this.clearIncomingTimer();
+						this.endCall(CallInvitationEndReason.Canceled);
+						this.config?.onCallInvitationEnded?.(CallInvitationEndReason.Canceled, "");
+					}
+				}
+				// @ts-ignore
+				if (state === ZIMCallUserState.BeCancelled) {
+					this.removeWaitingUser(userID);
 				}
 			})
 		})
@@ -601,6 +614,7 @@ export class ZimManager {
 			const errorInvitees = res.errorUserList.map((i: { userID: string }) => {
 				return invitees.find((u) => u.userID === i.userID) as ZegoUser;
 			});
+			console.log(`%c[info] errorInvitees`, 'font-weight: 600', errorInvitees)
 			if (res.errorUserList.length >= invitees.length) {
 				// 全部邀请失败，中断流程
 				return Promise.resolve({ errorInvitees });
@@ -653,6 +667,7 @@ export class ZimManager {
 		}
 		try {
 			const callCancelRes = await this._zim?.callCancel(_invitees, this.callInfo.callID, config);
+			console.log(`%c[info] callCancelRes`, 'font-weight: 600', callCancelRes)
 			// 过滤掉取消失败的用户
 			const onlineInvitee = invitees.filter(
 				(i) => !(callCancelRes?.errorInvitees || []).find((id) => id === i.userID)
@@ -662,10 +677,13 @@ export class ZimManager {
 			});
 			callInvitationControl.callInvitationWaitingPageHide();
 			clearCallInfo && this.clearCallInfo();
+			ZegoUIKitPrebuilt.core?.eventEmitter.emit("cancelCall");
+			return Promise.resolve(onlineInvitee);
 		} catch (error) {
 			console.error("【ZEGOCLOUD】cancelInvitation", error);
+		} finally {
+			this.inCancelOperation = false;
 		}
-		this.inCancelOperation = false;
 	}
 	async refuseInvitation(reason?: string, callID?: string, data?: string) {
 		if (this.inRefuseOperation) return;
@@ -764,7 +782,7 @@ export class ZimManager {
 		}
 	}
 	/**结束 call,清除 callInfo */
-	endCall(reason: CallInvitationEndReason, isCallQuit = true) {
+	async endCall(reason: CallInvitationEndReason, isCallQuit = true) {
 		const { canInvitingInCalling ,endCallWhenInitiatorLeave } = this.config
 		const isInviter = this.callInfo.inviter.userID === this.expressConfig.userID
 		if (
@@ -773,15 +791,19 @@ export class ZimManager {
 			isInviter
 		) {
 			// 主叫人如果在所有人接收邀请前离开房间，则取消所有人的邀请
-			this.cancelInvitation();
+			try {
+				await this.cancelInvitation();
+			} catch(error) {
+				console.error(`%c[error] cancelInvitation error`, 'font-weight: 600', error)
+			};
 		}
 		if (canInvitingInCalling && reason === CallInvitationEndReason.LeaveRoom) {
 			if (endCallWhenInitiatorLeave && isInviter) {
-				this.callEnd()
 				if (this.callInfo.waitingUsers?.length) {
 					// 主呼叫人离开 取消所有未接受的邀请
 					this.cancelInvitation(void 0, this.callInfo.waitingUsers)
 				}
+				this.callEnd()
 			} else {
 				isCallQuit && this.callQuit()
 			}

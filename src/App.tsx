@@ -506,6 +506,10 @@ export default class App extends React.PureComponent {
         if (this.state.invitees.length > 1) {
           this.showToast("Waiting for others to join the call.");
         }
+        const waitingSelectUsers = this.state.waitingUsers.map((id) => ({
+          userID: id,
+          userName: `user_${id}`,
+        }));
         // demo 设置5分钟体验限制
         this.state.roomTimer = setInterval(() => {
           this.state.roomTime = ++this.state.roomTime;
@@ -514,10 +518,6 @@ export default class App extends React.PureComponent {
             this.zp.hangUp();
           }
         }, 1000);
-        const waitingSelectUsers = this.state.waitingUsers.map((id) => ({
-          userID: id,
-          userName: `user_${id}`,
-        }));
         return {
           branding: {
             logoURL: require("./assets/zegocloud_logo.png"),
@@ -544,18 +544,18 @@ export default class App extends React.PureComponent {
       },
       onCallInvitationEnded: (reason, data) => {
         console.warn("【demo】onCallInvitationEnded", reason, data);
-        if (reason === "Canceled") {
-          this.showToast("The call has been canceled.");
-        }
-        if (this.state.invitees.length === 1) {
-          // 单人呼叫提示
-          if (reason === "Busy" || (reason === "Timeout" && this.inviter?.userID === this.state.userID)) {
-            this.showToast(this.state.invitees[0].userName + " is busy now.");
-          }
-          if (reason === "Declined" && this.inviter?.userID === this.state.userID) {
-            this.showToast(this.state.invitees[0].userName + " declined the call.");
-          }
-        }
+        // if (reason === "Canceled") {
+        //   this.showToast("The call has been canceled.");
+        // }
+        // if (this.state.invitees.length === 1) {
+        //   // 单人呼叫提示
+        //   if (reason === "Busy" || (reason === "Timeout" && this.inviter?.userID === this.state.userID)) {
+        //     this.showToast(this.state.invitees[0].userName + " is busy now.");
+        //   }
+        //   if (reason === "Declined" && this.inviter?.userID === this.state.userID) {
+        //     this.showToast(this.state.invitees[0].userName + " declined the call.");
+        //   }
+        // }
 
         if (isPc()) {
           const nav = document.querySelector(`.${APP.nav}`) as HTMLDivElement;
@@ -590,18 +590,20 @@ export default class App extends React.PureComponent {
       // 当呼叫者取消呼叫后，将内部数据转成对应数据后抛出。
       onIncomingCallCanceled: (callID: string, caller: ZegoUser) => {
         console.warn("onIncomingCallCanceled", callID, caller);
+        this.showToast("The call has been canceled.");
       },
       // 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-      onOutgoingCallAccepted: (callID: string, callee: ZegoUser) => {
-        console.warn("onOutgoingCallAccepted", callID, callee);
+      onOutgoingCallAccepted: (callID: string, caller: ZegoUser) => {
+        console.warn("onOutgoingCallAccepted", callID, caller);
       },
       // 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-      onOutgoingCallRejected: (callID: string, callee: ZegoUser) => {
-        console.warn("onOutgoingCallRejected", callID, callee);
+      onOutgoingCallRejected: (callID: string, caller: ZegoUser) => {
+        console.warn("onOutgoingCallRejected", callID, caller);
+        this.showToast(caller.userName + " is busy now.");
       },
       // 当被叫者主动拒绝通话时，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
       onOutgoingCallDeclined: (callID: string, callee: ZegoUser) => {
-        console.warn("onOutgoingCallDeclined", callID, callee);
+        console.warn("onOutgoingCallDeclined", callID, callee); this.showToast(callee.userName + " declined the call.");
       },
       //当被叫者超时没回应邀请时，被叫者会收到该回调，将内部数据转成对应数据后抛出。
       onIncomingCallTimeout: (callID: string, caller: ZegoUser) => {
@@ -610,6 +612,7 @@ export default class App extends React.PureComponent {
       //当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
       onOutgoingCallTimeout: (callID: string, callees: ZegoUser[]) => {
         console.warn("onOutgoingCallTimeout", callID, callees);
+        this.showToast(callees[0].userName + " is busy now.");
       },
       onIncomingCallDeclineButtonPressed: () => {
         console.warn('onIncomingCallDeclineButtonPressed');
@@ -672,6 +675,7 @@ export default class App extends React.PureComponent {
   onWaitingUsersChange(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value.replace(/[^\d,]/gi, "");
     const waitingUsers = value.split(",");
+    console.log(`%c[info] waitingUsers`, 'font-weight: 600', waitingUsers)
     this.setState({
       waitingUsers,
     })
@@ -714,7 +718,9 @@ export default class App extends React.PureComponent {
         .catch((err) => {
           if (err === "The call invitation service has not been activated.") {
             this.showToast(err);
+            return
           }
+          err && this.showToast(err);
         })
         .finally(() => {
           this.inOperation = false;

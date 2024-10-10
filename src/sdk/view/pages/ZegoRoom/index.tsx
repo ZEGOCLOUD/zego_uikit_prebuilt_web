@@ -152,6 +152,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			this.props.core._config?.showRequestToCohostButton
 		)
 	}
+	forceUpdateView = () => {
+		this.forceUpdate()
+	}
 	userUpdateCallBack = () => { };
 	componentDidMount() {
 		this.setAllSinkId(this.state.selectSpeaker || "");
@@ -164,6 +167,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.props.core.eventEmitter.on("hangUp", () => {
 			this.leaveRoom();
 		});
+		this.props.core.eventEmitter.on("cancelCall", this.forceUpdateView)
 		// 点击其他区域时, 隐藏更多弹窗)
 		document.addEventListener("click", this.onOpenSettings);
 		window.addEventListener("resize", this.onWindowResize.bind(this));
@@ -225,6 +229,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.state.isScreenSharingBySelf && this.closeScreenSharing();
 		this.state.localStream && this.props.core.destroyStream(this.state.localStream);
 		this.props.core.localStream = undefined;
+		this.props.core.eventEmitter.off("cancelCall", this.forceUpdateView)
 	}
 	async initSDK() {
 		const { formatMessage } = this.props.core.intl;
@@ -235,6 +240,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		});
 		this.props.core.onNetworkStatus(
 			(roomID: string, type: "ROOM" | "STREAM", status: "DISCONNECTED" | "CONNECTING" | "CONNECTED") => {
+				console.log(`%c[info] onNetworkStatus`, 'font-weight: 600', status)
 				if (status === "DISCONNECTED" && type === "ROOM") {
 					this.setState({
 						connecting: false,
@@ -260,6 +266,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			(roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[], allUsers: ZegoUser[]) => {
 				let notificationList: ZegoNotification[] = [];
 				const { formatMessage } = this.props.core.intl;
+				console.log(`%c[info] onRemoteUserUpdate`, 'font-weight: 600', updateType, userList)
 				if (this.props.core._config.lowerLeftNotification?.showUserJoinAndLeave) {
 					userList.forEach((u) => {
 						notificationList.push({
@@ -1052,18 +1059,30 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	handleInvitation(invitees: ZegoUser[]) {
-		if (invitees.length) {
-			const { formatMessage } = this.props.core.intl;
-			this.props.core._zimManager?.addInvitation?.(invitees, {})
-				?.catch((err) => {
-					ZegoToast({
-						content: formatMessage({ id: "room.sendInvitationFailToast" }),
-					});
-				})
+		if (!invitees?.length) {
+			this.setState({
+				layOutStatus: "ONE_VIDEO",
+			})
+			return
 		}
-		this.setState({
-			layOutStatus: "ONE_VIDEO",
-		})
+		const { formatMessage } = this.props.core.intl;
+		this.props.core._zimManager?.addInvitation?.(invitees, {})
+			?.then(({ errorInvitees = [] }) => {
+				const errorUserNames = errorInvitees.map(({ userName }) => userName).join(",")
+				errorUserNames && ZegoToast({
+					content: `${errorUserNames} ${formatMessage({ id: "room.sendInvitationFailToast" })}`,
+				});
+			})
+			?.catch((err) => {
+				ZegoToast({
+					content: formatMessage({ id: "room.sendInvitationFailToast" }),
+				});
+			})
+			?.finally(() => {
+				this.setState({
+					layOutStatus: "ONE_VIDEO",
+				})
+			})
 	}
 
 	confirmLeaveRoom() {

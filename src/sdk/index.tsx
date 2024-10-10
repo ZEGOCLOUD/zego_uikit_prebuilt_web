@@ -117,13 +117,13 @@ export class ZegoUIKitPrebuilt {
 					if (config.autoLeaveRoomWhenOnlySelfInRoom === undefined) {
 						config.autoLeaveRoomWhenOnlySelfInRoom = mode === ScenarioModel.OneONoneCall;
 					}
-					// config.turnOnMicrophoneWhenJoining = config.turnOnCameraWhenJoining ?? true;
+					config.turnOnMicrophoneWhenJoining = config.turnOnMicrophoneWhenJoining ?? true;
 					if (type === ZegoInvitationType.VoiceCall) {
 						config.turnOnCameraWhenJoining = config.turnOnCameraWhenJoining ?? false;
 					}
-					// if (type === ZegoInvitationType.VideoCall) {
-					// 	config.turnOnCameraWhenJoining = config.turnOnCameraWhenJoining ?? true;
-					// }
+					if (type === ZegoInvitationType.VideoCall) {
+						config.turnOnCameraWhenJoining = config.turnOnCameraWhenJoining ?? true;
+					}
 					//   ZegoCloudRoomConfig部分参数不允许自定义
 					let roomConfig = Object.assign(config, {
 						showPreJoinView: false,

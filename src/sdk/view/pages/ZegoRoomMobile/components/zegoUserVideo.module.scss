@@ -188,9 +188,9 @@
   }
   .cancelBtn {
     position: absolute;
-    bottom: vw(20px);
+    bottom: vw(40px);
     left: 50%;
-    z-index: 10;
+    z-index: 100;
     transform: translateX(-50%);
     width: vw(80px);
     height: vw(80px);

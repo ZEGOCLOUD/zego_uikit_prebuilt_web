@@ -179,6 +179,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     return this.props.core.isHost(this.props.core._expressConfig.userID);
   }
 
+  forceUpdateView = () => {
+    this.forceUpdate()
+  }
+
   componentDidMount() {
     this.setAllSinkId(this.state.selectSpeaker || "");
     window.addEventListener(
@@ -198,6 +202,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         showFooter: !this.props.core._config.autoHideFooter,
       });
     }, 5000);
+    this.props.core.eventEmitter.on("cancelCall", this.forceUpdateView)
   }
   componentWillUnmount() {
     window.removeEventListener(
@@ -213,6 +218,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
     this.props.core.localStream = undefined;
+    this.props.core.eventEmitter.off("cancelCall", this.forceUpdateView)
 
   }
   componentDidUpdate(
@@ -2321,18 +2327,30 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   handleInvitation(invitees: ZegoUser[]) {
-    if (invitees.length) {
-      const { formatMessage } = this.props.core.intl;
-      this.props.core._zimManager?.addInvitation?.(invitees, {})
-        ?.catch((err) => {
-          ZegoToast({
-            content: formatMessage({ id: "room.sendInvitationFailToast" }),
-          });
-        })
+    if (!invitees?.length) {
+      this.setState({
+        layOutStatus: "ONE_VIDEO",
+      })
+      return
     }
-    this.setState({
-      layOutStatus: "ONE_VIDEO",
-    })
+    const { formatMessage } = this.props.core.intl;
+    this.props.core._zimManager?.addInvitation?.(invitees, {})
+      ?.then(({ errorInvitees = [] }) => {
+        const errorUserNames = errorInvitees.map(({ userName }) => userName).join(",")
+        errorUserNames && ZegoToast({
+          content: `${errorUserNames} ${formatMessage({ id: "room.sendInvitationFailToast" })}`
+        });
+      })
+      ?.catch((err) => {
+        ZegoToast({
+          content: formatMessage({ id: "room.sendInvitationFailToast" }),
+        });
+      })
+      ?.finally(() => {
+        this.setState({
+          layOutStatus: "ONE_VIDEO",
+        })
+      })
   }
 
   render(): React.ReactNode {

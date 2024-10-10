@@ -531,5 +531,6 @@ export enum UserTypeEnum {
 	Timeout = 6,
 	Quit = 7,
 	Ended = 8,
-	NotYetReceived = 9
+	NotYetReceived = 9,
+	BeCancelled = 10,
 }
