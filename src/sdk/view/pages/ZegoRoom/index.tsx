@@ -240,7 +240,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		});
 		this.props.core.onNetworkStatus(
 			(roomID: string, type: "ROOM" | "STREAM", status: "DISCONNECTED" | "CONNECTING" | "CONNECTED") => {
-				console.log(`%c[info] onNetworkStatus`, 'font-weight: 600', status)
 				if (status === "DISCONNECTED" && type === "ROOM") {
 					this.setState({
 						connecting: false,
@@ -251,7 +250,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					this.setState({
 						connecting: true,
 					});
-				} else {
+				} else if (status === "CONNECTED") {
 					this.setState({
 						connecting: false,
 						firstLoading: false,
