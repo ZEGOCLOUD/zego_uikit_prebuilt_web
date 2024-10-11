@@ -273,7 +273,7 @@ export class ZimManager {
 		});
 		// 呼叫邀请相关用户的状态变化 （邀请者）
 		this._zim!.on('callUserStateChanged', (zim: ZIM, { callUserList, callID }: ZIMEventOfCallUserStateChangedResult) => {
-			console.log(`%c[info] callUserStateChanged`, 'color: #000; font-weight: 600', callUserList)
+			console.log("【ZEGOCLOUD】callUserStateChanged", callUserList, callID);
 			callUserList.forEach(({ state, userID, extendedData }) => {
 				if (userID === this.expressConfig.userID) return
 				if (state === ZIMCallUserState.Rejected) {
@@ -441,7 +441,7 @@ export class ZimManager {
 	}
 
 	updateJoinRoomState(isJoin: boolean) {
-		console.log(`%c[info] updateJoinRoomState`, 'color: #000', isJoin)
+		console.log("【ZEGOCLOUD】updateJoinRoomState", isJoin);
 		this.hasJoinedRoom = isJoin
 	}
 
@@ -614,7 +614,7 @@ export class ZimManager {
 			const errorInvitees = res.errorUserList.map((i: { userID: string }) => {
 				return invitees.find((u) => u.userID === i.userID) as ZegoUser;
 			});
-			console.log(`%c[info] errorInvitees`, 'font-weight: 600', errorInvitees)
+			console.log("【ZEGOCLOUD】addInvitationRes", res);
 			if (res.errorUserList.length >= invitees.length) {
 				// 全部邀请失败，中断流程
 				return Promise.resolve({ errorInvitees });
@@ -641,7 +641,10 @@ export class ZimManager {
 	// 仅进阶模式可以单独取消某个用户
 	async cancelInvitation(data?: string, invitees = this.callInfo.invitees, clearCallInfo = true) {
 		if (this.inCancelOperation) return;
-		if (!this.callInfo.callID) return;
+		if (!this.callInfo.callID) {
+			console.warn("【ZEGOCLOUD】cancelInvitation has not callID");
+			return
+		};
 		this.inCancelOperation = true;
 		this.clearOutgoingTimer();
 		const _invitees = invitees.map((i) => i.userID);
@@ -667,7 +670,7 @@ export class ZimManager {
 		}
 		try {
 			const callCancelRes = await this._zim?.callCancel(_invitees, this.callInfo.callID, config);
-			console.log(`%c[info] callCancelRes`, 'font-weight: 600', callCancelRes)
+			console.log("【ZEGOCLOUD】callCancelRes", callCancelRes);
 			// 过滤掉取消失败的用户
 			const onlineInvitee = invitees.filter(
 				(i) => !(callCancelRes?.errorInvitees || []).find((id) => id === i.userID)
@@ -678,7 +681,6 @@ export class ZimManager {
 			callInvitationControl.callInvitationWaitingPageHide();
 			clearCallInfo && this.clearCallInfo();
 			ZegoUIKitPrebuilt.core?.eventEmitter.emit("cancelCall");
-			return Promise.resolve(onlineInvitee);
 		} catch (error) {
 			console.error("【ZEGOCLOUD】cancelInvitation", error);
 		} finally {

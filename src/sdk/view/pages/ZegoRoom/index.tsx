@@ -265,7 +265,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			(roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[], allUsers: ZegoUser[]) => {
 				let notificationList: ZegoNotification[] = [];
 				const { formatMessage } = this.props.core.intl;
-				console.log(`%c[info] onRemoteUserUpdate`, 'font-weight: 600', updateType, userList)
+				console.log("【ZEGOCLOUD】onRemoteUserUpdate", updateType, userList);
 				if (this.props.core._config.lowerLeftNotification?.showUserJoinAndLeave) {
 					userList.forEach((u) => {
 						notificationList.push({

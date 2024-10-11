@@ -675,7 +675,6 @@ export default class App extends React.PureComponent {
   onWaitingUsersChange(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value.replace(/[^\d,]/gi, "");
     const waitingUsers = value.split(",");
-    console.log(`%c[info] waitingUsers`, 'font-weight: 600', waitingUsers)
     this.setState({
       waitingUsers,
     })
