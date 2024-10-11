@@ -158,7 +158,7 @@ export class ZimManager {
 							userName: i.user_name,
 						})),
 						inviter: {
-							userID: _inviter.id || inviter,
+							userID: _inviter?.id || inviter,
 							userName: inviter_name,
 						},
 						acceptedInvitees: [],
