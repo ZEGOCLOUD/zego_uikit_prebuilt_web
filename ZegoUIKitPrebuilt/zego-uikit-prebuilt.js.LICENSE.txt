@@ -13,8 +13,6 @@
  * @version   v4.2.8+1e68dce6
  */
 
-/*! pako 2.0.4 https://github.com/nodeca/pako @license (MIT AND Zlib) */
-
 /**
    * @license
    * Copyright 2009 The Closure Library Authors
