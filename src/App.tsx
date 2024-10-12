@@ -612,7 +612,7 @@ export default class App extends React.PureComponent {
       //当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
       onOutgoingCallTimeout: (callID: string, callees: ZegoUser[]) => {
         console.warn("onOutgoingCallTimeout", callID, callees);
-        this.showToast(callees[0].userName + " is busy now.");
+        this.showToast(`call ${callees[0].userName} timeout`);
       },
       onIncomingCallDeclineButtonPressed: () => {
         console.warn('onIncomingCallDeclineButtonPressed');
