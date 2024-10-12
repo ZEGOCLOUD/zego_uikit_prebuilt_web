@@ -648,7 +648,11 @@ export class ZimManager {
 		this.inCancelOperation = true;
 		this.clearOutgoingTimer();
 		const _invitees = invitees.map((i) => i.userID);
-		const extendedData: any = {};
+		const _data = {
+			call_id: this.callInfo.roomID,
+			operation_type: "cancel_invitation",
+		}
+		const extendedData: Record<string, string> = {..._data};
 		if (data) {
 			extendedData.custom_data = data;
 		}
@@ -661,10 +665,7 @@ export class ZimManager {
 				title: this.notificationConfig?.title || this.expressConfig.userName,
 				content: this.notificationConfig?.message || formatMessage({ id: "call.cancelled" }),
 				resourcesID: this.notificationConfig?.resourcesID ?? "zegouikit_call",
-				payload: JSON.stringify({
-					call_id: this.callInfo.roomID,
-					operation_type: "cancel_invitation",
-				}),
+				payload: JSON.stringify(_data),
 			} as ZIMPushConfig;
 			console.log("cancelInvitation", config);
 		}
@@ -796,7 +797,7 @@ export class ZimManager {
 			try {
 				await this.cancelInvitation();
 			} catch(error) {
-				console.error(`%c[error] cancelInvitation error`, 'font-weight: 600', error)
+				console.error("【ZEGOCLOUD】cancelInvitation error", error)
 			};
 		}
 		if (canInvitingInCalling && reason === CallInvitationEndReason.LeaveRoom) {
