@@ -1204,6 +1204,10 @@ export class ZegoCloudRTCCore {
 				this.zegoSuperBoard.setFontBold(false)
 				this.zegoSuperBoard.setFontSize(24)
 				this.zegoSuperBoardView = this.zegoSuperBoard.getSuperBoardView()
+				if (this.zegoSuperBoardView !== undefined) {
+					this.subscribeWhiteBoardCallBack(this.zegoSuperBoardView)
+					this.zegoSuperBoardView = undefined
+				}
 			})
 
 			// 监听远端销毁白板
@@ -1289,6 +1293,10 @@ export class ZegoCloudRTCCore {
 					this.zegoSuperBoard.setFontSize(24)
 					const result: ZegoSuperBoardSubViewModel[] = await this.zegoSuperBoard.querySuperBoardSubViewList()
 					result.length > 0 && (this.zegoSuperBoardView = this.zegoSuperBoard.getSuperBoardView())
+					if (this.zegoSuperBoardView !== undefined) {
+						this.subscribeWhiteBoardCallBack(this.zegoSuperBoardView)
+						this.zegoSuperBoardView = undefined
+					}
 				}
 				const user = {
 					userID: ZegoCloudRTCCore._instance._expressConfig.userID,
@@ -1304,7 +1312,7 @@ export class ZegoCloudRTCCore {
 				// @ts-ignore 日志上报
 				ZegoCloudRTCCore._zg.logger.info("zu.jr " + JSON.stringify(this.originConfig))
 			} catch (error) {
-				console.error(error)
+				console.error('login', error)
 			}
 		})
 		this._zimManager?.enterRoom()
@@ -1337,7 +1345,9 @@ export class ZegoCloudRTCCore {
 						extraInfo = JSON.parse(streamInfo.extraInfo)
 					} catch (err) { }
 					try {
+						console.log('===isCDNLive', this.isCDNLive);
 						if (this.isCDNLive) {
+							console.log('===streaminfo', streamInfo);
 							if (!streamInfo.urlsFLV) {
 								this.coreErrorCallback(CoreError.notSupportCDNLive, "urlsFLV is empty")
 							}

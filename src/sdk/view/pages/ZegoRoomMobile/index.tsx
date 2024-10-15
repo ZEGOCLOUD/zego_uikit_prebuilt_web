@@ -1916,6 +1916,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                 const uniqueID = this.state.zegoSuperBoardView
                   .getCurrentSuperBoardSubView()
                   ?.getModel().uniqueID;
+                // 禁止操作白板
+                if (this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming && this.props.core._config.scenario?.config?.role === LiveRole.Audience) {
+                  this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.setOperationMode(1);
+                }
                 uniqueID &&
                   this.state.zegoSuperBoardView.switchSuperBoardSubView(
                     uniqueID
