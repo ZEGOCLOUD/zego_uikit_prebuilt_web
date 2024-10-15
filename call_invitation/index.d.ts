@@ -287,7 +287,7 @@ declare interface ZegoCallInvitationConfig {
 	onOutgoingCallTimeout?: (callID: string, callees: ZegoUser[]) => void;
 	// 2.1.0
 	language?: ZegoUIKitLanguage // set language
-	// 2.9.0
+	// 2.11.0
 	// Whether to allow invitations to be sent during a call, The default value is false.
 	canInvitingInCalling?: boolean;
 	// Whether only the call initiator has the permission to invite others to join the call, The default value is false.
@@ -386,6 +386,6 @@ export declare class ZegoUIKitPrebuilt {
 	// 2.3.0
 	autoLeaveRoomWhenOnlySelfInRoom: boolean;
 	getRoomID(): string;
-	// 2.9.0
+	// 2.11.0
 	updateCallingInvitationListConfig(config: CallingInvitationListConfig): void
 }
