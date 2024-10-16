@@ -283,15 +283,15 @@ export default class App extends React.PureComponent {
             console.warn("join room callback");
             // window?.parent?.postMessage("joinRoom", "*")
             this.postMessage({ type: 'joinRoom', data: null })
-            // demo 设置5分钟体验限制 
+            // demo 和 goenjoy 都设置20分钟体验限制 
             // goenjoy 直播体验设置为20分钟
-            const inGoEnjoyExperience = process.env.REACT_APP_PATH === "live_stream" && this.inIframe()
-            const experienceTime = inGoEnjoyExperience ? 1200 : 300
-            const experienceTimeTip = inGoEnjoyExperience ? 5 : 20
+            // const inGoEnjoyExperience = process.env.REACT_APP_PATH === "live_stream" && this.inIframe()
+            // const experienceTime = inGoEnjoyExperience ? 1200 : 300
+            // const experienceTimeTip = inGoEnjoyExperience ? 5 : 20
             this.state.roomTimer = setInterval(() => {
               this.state.roomTime = ++this.state.roomTime;
-              if (this.state.roomTime === experienceTime) {
-                this.showToast(this.state.lang === "en" ? `Only for functional experience, not for commercial use. Each session should not exceed ${experienceTimeTip} minutes.` : `仅功能体验，不作商业用途。每次不超过${experienceTimeTip}分钟。`);
+              if (this.state.roomTime === 1200) {
+                this.showToast(this.state.lang === "en" ? `Only for functional experience, not for commercial use. Each session should not exceed 20 minutes.` : `仅功能体验，不作商业用途。每次不超过 20 分钟。`);
                 zp.hangUp();
               }
             }, 1000);
@@ -300,7 +300,7 @@ export default class App extends React.PureComponent {
             console.warn("leave room callback");
             // window?.parent?.postMessage("joinRoom", "*")
             this.postMessage({ type: 'leaveRoom', data: null })
-            // 刷新 5分钟限制
+            // 刷新20分钟限制
             if (this.state.roomTimer) {
               clearInterval(this.state.roomTimer);
               this.state.roomTimer = null;
@@ -510,11 +510,11 @@ export default class App extends React.PureComponent {
           userID: id,
           userName: `user_${id}`,
         }));
-        // demo 设置5分钟体验限制
+        // demo 设置20分钟体验限制
         this.state.roomTimer = setInterval(() => {
           this.state.roomTime = ++this.state.roomTime;
-          if (this.state.roomTime === 300) {
-            this.showToast(this.state.lang === "en" ? "Only for functional experience, not for commercial use. Each session should not exceed 5 minutes." : "仅功能体验，不作商业用途。每次不超过5分钟。");
+          if (this.state.roomTime === 1200) {
+            this.showToast(this.state.lang === "en" ? "Only for functional experience, not for commercial use. Each session should not exceed 20 minutes." : "仅功能体验，不作商业用途。每次不超过 20 分钟。");
             this.zp.hangUp();
           }
         }, 1000);
