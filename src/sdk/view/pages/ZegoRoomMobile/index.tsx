@@ -1917,7 +1917,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                   .getCurrentSuperBoardSubView()
                   ?.getModel().uniqueID;
                 // 禁止操作白板
-                if (this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming && this.props.core._config.scenario?.config?.role === LiveRole.Audience) {
+                if (this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming && this.props.core._config.scenario?.config?.role !== LiveRole.Host) {
                   this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.setOperationMode(1);
                 }
                 uniqueID &&
@@ -2538,8 +2538,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                             </div>
                           )}
 
-                          {this.props.core._config.plugins?.ZegoSuperBoardManager &&
-                            this.props.core._config.whiteboardConfig?.showCreateAndCloseButton && (
+                          {(this.props.core._config.plugins?.ZegoSuperBoardManager &&
+                            this.props.core._config.whiteboardConfig?.showCreateAndCloseButton &&
+                            !(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+                              this.props.core._config.scenario?.config?.role !== LiveRole.Host)) && (
                               <div
                                 onClick={(ev) => {
                                   ev.stopPropagation()

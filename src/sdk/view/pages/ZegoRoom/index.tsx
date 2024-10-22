@@ -1482,7 +1482,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 								.getCurrentSuperBoardSubView()
 								?.getModel().uniqueID;
 							// 禁止操作白板
-							if (this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming && this.props.core._config.scenario?.config?.role === LiveRole.Audience) {
+							if (this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming && this.props.core._config.scenario?.config?.role !== LiveRole.Host) {
 								this.state.zegoSuperBoardView.getCurrentSuperBoardSubView()?.setOperationMode(1);
 							}
 							uniqueID && this.state.zegoSuperBoardView?.switchSuperBoardSubView(uniqueID);
@@ -2119,7 +2119,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 							{(this.props.core._config.plugins?.ZegoSuperBoardManager &&
 								this.props.core._config.whiteboardConfig?.showCreateAndCloseButton &&
 								!(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-									this.props.core._config.scenario?.config?.role === LiveRole.Audience)) && (
+									this.props.core._config.scenario?.config?.role !== LiveRole.Host)) && (
 									<div
 										className={`${ZegoRoomCss.whiteboardButton} ${this.state.isZegoWhiteboardSharing && ZegoRoomCss.sharing
 											}  ${this.getScreenSharingUser.length > 0 && ZegoRoomCss.forbidden}`}

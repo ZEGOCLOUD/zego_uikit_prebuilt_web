@@ -65,7 +65,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
           className={`${ZegoSidebarCss.bigVideoWrapper}  ${zegoWhiteboardSharingLayout.whiteboardWrapper}`}
         >
           {!(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-            this.props.core._config.scenario?.config?.role === LiveRole.Audience) && (
+            this.props.core._config.scenario?.config?.role !== LiveRole.Host) && (
               <div className={zegoWhiteboardSharingLayout.top}>
                 <div className={zegoWhiteboardSharingLayout.toolLeft}>
                   <div
@@ -166,7 +166,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                 </div>
                 {(this.context.whiteboard_showCreateClose &&
                   !(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-                    this.props.core._config.scenario?.config?.role === LiveRole.Audience)) && (
+                    this.props.core._config.scenario?.config?.role !== LiveRole.Host)) && (
                     <div
                       className={zegoWhiteboardSharingLayout.stop}
                       onClick={() => {
@@ -179,7 +179,7 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
               </div>)}
           <div className={zegoWhiteboardSharingLayout.content}>
             {!(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
-              this.props.core._config.scenario?.config?.role === LiveRole.Audience) && (
+              this.props.core._config.scenario?.config?.role !== LiveRole.Host) && (
                 <ZegoWhiteboardTools
                   core={this.props.core}
                   rows={this.state.rows}
