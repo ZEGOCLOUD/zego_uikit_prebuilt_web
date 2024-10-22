@@ -118,6 +118,7 @@ const en = {
     "mobileRoom.presenting": "{user} is presenting.",
     "mobileRoom.systemNotSupport": "Your current mobile system does not support the display of multiple video screens during the live streaming.",
     "mobileRoom.browserNotSupport": "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
+    "mobileRoom.connect": "Connect",
 
     "settings.audio": "Audio",
     "settings.video": "Video",

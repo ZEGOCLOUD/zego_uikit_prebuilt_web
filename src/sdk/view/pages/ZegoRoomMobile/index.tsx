@@ -2534,7 +2534,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                                   ? ZegoRoomCss.connected
                                   : ZegoRoomCss.connect
                                   } `}></i>
-                              <span>Connect</span>
+                              <span>{formatMessage({ id: "mobileRoom.connect" })}</span>
                             </div>
                           )}
 

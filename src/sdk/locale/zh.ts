@@ -113,6 +113,7 @@ const zh = {
     "mobileRoom.layout": "布局",
     "mobileRoom.presenting": "{user} 正在共享",
     "mobileRoom.browserNotSupport": "当前浏览器不支持显示多个视频屏幕，建议您更改浏览器。",
+    "mobileRoom.connect": "申请连麦",
 
     "settings.audio": "音频",
     "settings.video": "视频",
