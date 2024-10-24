@@ -467,6 +467,8 @@ export default class App extends React.PureComponent {
       }));
     } else {
       token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+      // @ts-ignore
+      // token = ZegoUIKitPrebuilt.generateKitTokenForTest(550374443, '6402e3cadb20e8d4c4937faf614e1434', 1, '610', 'mes')
     }
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
