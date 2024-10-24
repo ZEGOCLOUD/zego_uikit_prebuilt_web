@@ -2113,6 +2113,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         onOk: async () => {
           // stop live
           await this.props.core.setLive("stop");
+          // 结束所有连麦
+          this.getAllUser().forEach((user) => {
+            if (user.userID !== this.props.core._expressConfig.userID && user.streamList.length) {
+              this.props.core._zimManager?._inRoomInviteMg.removeCohost(user.userID);
+            }
+          })
           this.setState({
             liveCountdown: -1,
           });
