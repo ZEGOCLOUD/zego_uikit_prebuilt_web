@@ -232,7 +232,7 @@ export default class App extends React.PureComponent {
         } else {
           token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, userName || getRandomName())).token;
         }
-        const zp = ZegoUIKitPrebuilt.create(token);
+        const zp = ZegoUIKitPrebuilt.create(token, { proxyList: [{ hostName: 'access-webproxy-alpha.zego.im' }] });
         //@ts-ignore // just for debugger
         window.zp = zp
         zp.express!.on("audioDeviceStateChanged", async (updateType, deviceType, deviceInfo) => {

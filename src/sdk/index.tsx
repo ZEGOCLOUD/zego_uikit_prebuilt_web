@@ -99,7 +99,7 @@ export class ZegoUIKitPrebuilt {
 		);
 	}
 
-	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port: number }[] }): ZegoUIKitPrebuilt {
+	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt {
 		if (!ZegoUIKitPrebuilt.core && kitToken) {
 			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, cloudProxyConfig);
 			ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();

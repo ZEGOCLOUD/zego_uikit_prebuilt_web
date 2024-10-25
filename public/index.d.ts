@@ -364,7 +364,7 @@ export declare class ZegoUIKitPrebuilt {
 		userID: string,
 		userName?: string
 	): string;
-	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port: number }[] }): ZegoUIKitPrebuilt;
+	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt;
 	addPlugins(plugins?: { ZegoSuperBoardManager?: any; ZIM?: any }): void;
 	joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
 	destroy(): void;
