@@ -62,7 +62,7 @@ export class ZegoUIKitPrebuilt {
 	public express: ZegoExpressEngine | undefined;
 	constructor() {
 		this.express = ZegoCloudRTCCore._zg;
-		console.log('ZegoUIKitPrebuilt version: 2.10.0');
+		console.log('ZegoUIKitPrebuilt version: 2.11.1');
 	}
 	get localStream() {
 		return ZegoUIKitPrebuilt.core?.localStream;
@@ -99,9 +99,9 @@ export class ZegoUIKitPrebuilt {
 		);
 	}
 
-	static create(kitToken: string): ZegoUIKitPrebuilt {
+	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt {
 		if (!ZegoUIKitPrebuilt.core && kitToken) {
-			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken);
+			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, cloudProxyConfig);
 			ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
 		}
 		return ZegoUIKitPrebuilt._instance;

@@ -61,9 +61,12 @@ export class ZegoCloudRTCCore {
 	// 多语言
 	intl: any
 	//   static _soundMeter: SoundMeter;
-	static getInstance(kitToken: string): ZegoCloudRTCCore {
+	static getInstance(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoCloudRTCCore {
 		const config = getConfig(kitToken)
 		if (!ZegoCloudRTCCore._instance && config) {
+			if (cloudProxyConfig) {
+				ZegoExpressEngine.setCloudProxyConfig(cloudProxyConfig.proxyList, config.token, true);
+			}
 			ZegoCloudRTCCore._instance = new ZegoCloudRTCCore()
 			ZegoCloudRTCCore._instance._expressConfig = config
 			//   ZegoCloudRTCCore._soundMeter = new SoundMeter();
