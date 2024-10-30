@@ -1481,6 +1481,7 @@ export class ZegoCloudRTCCore {
 		if (extraInfo) {
 			publishOption = {
 				extraInfo,
+				trafficControlFocusOnMode: 1,
 			}
 		}
 		const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media, {
