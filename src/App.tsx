@@ -24,7 +24,7 @@ import {
   generateTokenForCallInvitation,
 } from "./util";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
-import { ZIM } from "zego-zim-web";
+import ZIM from "zego-zim-web";
 export default class App extends React.PureComponent {
   myMeeting: (element: HTMLDivElement) => Promise<void>;
   docsLink = {
@@ -50,6 +50,7 @@ export default class App extends React.PureComponent {
     docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][getUrlParams().get("lang") || "en"],
     showSettings: false,
     showSettingsBtn: false,
+    showInvitationSettings: false,
     liveStreamingMode:
       getUrlParams().get("liveStreamingMode") || "RealTimeLive",
     userID: "",
@@ -62,11 +63,17 @@ export default class App extends React.PureComponent {
     showLangBox: false,
     lang: getUrlParams().get("lang") || "en",
     showWaitingPage: false,
+    // showConfirmDialog: false,
     callees: [],
     roomTimer: null,
     roomTime: 0,
+    canInvitingInCalling: false,
+    endCallWhenInitiatorLeave: false,
+    onlyInitiatorCanInvite: false,
+    showWaitingCallAcceptAudioVideoView: false,
+    waitingUsers: [],
   };
-
+  refuseBtn = React.createRef();
   settingsEl = null;
   invitationInput: RefObject<HTMLInputElement> = React.createRef();
   zp: ZegoUIKitPrebuilt;
@@ -83,7 +90,7 @@ export default class App extends React.PureComponent {
   viewportHeight = 0;
   constructor(props: any) {
     super(props);
-    const userName = getUrlParams().get("UserName");
+    const userName = getUrlParams().get("userName");
     const roomID = getUrlParams().get("roomID") || randomID(5);
     const userID = getUrlParams().get("userID") || randomNumID(8);
     const enableMixing = getUrlParams().get("mixing") === "1" || false;
@@ -211,6 +218,7 @@ export default class App extends React.PureComponent {
       );
       this.onOrientationChange();
       this.initCallInvitation(urlAppID ? urlAppID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken);
+      this.state.showSettingsBtn = true;
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
         let token;
@@ -244,6 +252,7 @@ export default class App extends React.PureComponent {
           zp.addPlugins({ ZegoSuperBoardManager })
         } else {
           zp.addPlugins({ ZIM })
+          // @ts-ignore
           ZIM.getInstance().setLogConfig({
             logLevel: "error",
           })
@@ -272,20 +281,26 @@ export default class App extends React.PureComponent {
           onJoinRoom: () => {
             // sessionStorage.setItem('roomID', zp.getRoomID());
             console.warn("join room callback");
-            window?.parent?.postMessage("leaveRoom", "*")
-            // demo 设置5分钟体验限制
+            // window?.parent?.postMessage("joinRoom", "*")
+            this.postMessage({ type: 'joinRoom', data: null })
+            // demo 和 goenjoy 都设置20分钟体验限制 
+            // goenjoy 直播体验设置为20分钟
+            // const inGoEnjoyExperience = process.env.REACT_APP_PATH === "live_stream" && this.inIframe()
+            // const experienceTime = inGoEnjoyExperience ? 1200 : 300
+            // const experienceTimeTip = inGoEnjoyExperience ? 5 : 20
             this.state.roomTimer = setInterval(() => {
               this.state.roomTime = ++this.state.roomTime;
-              if (this.state.roomTime === 300) {
-                this.showToast(this.state.lang === "en" ? "Only for functional experience, not for commercial use. Each session should not exceed 5 minutes." : "仅功能体验，不作商业用途。每次不超过5分钟。");
+              if (this.state.roomTime === 1200) {
+                this.showToast(this.state.lang === "en" ? `Only for functional experience, not for commercial use. Each session should not exceed 20 minutes.` : `仅功能体验，不作商业用途。每次不超过 20 分钟。`);
                 zp.hangUp();
               }
             }, 1000);
           }, // 退出房间回调
           onLeaveRoom: () => {
             console.warn("leave room callback");
-            window?.parent?.postMessage("joinRoom", "*")
-            // 刷新 5分钟限制
+            // window?.parent?.postMessage("joinRoom", "*")
+            this.postMessage({ type: 'leaveRoom', data: null })
+            // 刷新20分钟限制
             if (this.state.roomTimer) {
               clearInterval(this.state.roomTimer);
               this.state.roomTimer = null;
@@ -355,6 +370,7 @@ export default class App extends React.PureComponent {
           },
           onLiveEnd: (user) => {
             console.warn("onLiveEnd", user)
+            this.postMessage({ type: 'onLiveEnd', data: user })
           },
           onYouRemovedFromRoom: () => {
             console.warn("【demo】onYouRemovedFromRoom")
@@ -395,7 +411,14 @@ export default class App extends React.PureComponent {
           language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
           // leaveRoomDialogConfig: {
           //   descriptionText: '',
-          // }
+          //   confirmCallback: () => {
+          //     console.log('===demo confirmCallback');
+          //   }
+          // },
+          whiteboardConfig: {
+            // showAddImageButton: true,
+            // showCreateAndCloseButton: true,
+          }
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"
@@ -433,6 +456,7 @@ export default class App extends React.PureComponent {
     this.state.userID = userID;
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
+    const { canInvitingInCalling, endCallWhenInitiatorLeave, onlyInitiatorCanInvite } = this.state
     // this.state.showPreviewHeader = isPc() ? "show" : "hide";
     let token;
     if (urlToken) {
@@ -443,18 +467,33 @@ export default class App extends React.PureComponent {
         appID,
       }));
     } else {
-      token = (await generateToken(appID, userID, roomID, "user_" + userID)).token;
+      token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+      // @ts-ignore
+      // token = ZegoUIKitPrebuilt.generateKitTokenForTest(550374443, '6402e3cadb20e8d4c4937faf614e1434', 1, '610', 'mes')
     }
     this.zp = ZegoUIKitPrebuilt.create(token);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
     //@ts-ignore // just for debugger
     window.zp = this.zp;
     this.zp.setCallInvitationConfig({
+      // enableCustomCallInvitationDialog: true,
       language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
+      canInvitingInCalling,
+      endCallWhenInitiatorLeave,
+      onlyInitiatorCanInvite,
       onConfirmDialogWhenReceiving: (callType, caller, refuse, accept, data) => {
-        console.warn("【demo】onCallInvitationDialogShowed", callType, caller, data);
+        console.warn("【demo】onCallInvitationDialogShowed", callType, caller, data, refuse);
         this.inviter = caller;
+        // this.setState({
+        //   showConfirmDialog: true,
+        // })
+        // console.warn("【demo】onCallInvitationDialogShowed", document.querySelector('.refuse-btn'), this.refuseBtn.current);
+        // const refuseBtn = document.querySelector('.refuse-btn') as HTMLElement;
+        // refuseBtn && (refuseBtn.onclick = () => {
+        //   console.log('====click refuse')
+        //   refuse();
+        // })
       },
       // enableCustomCallInvitationWaitingPage: true,
       onWaitingPageWhenSending: (callType, callees, cancel) => {
@@ -470,11 +509,15 @@ export default class App extends React.PureComponent {
         if (this.state.invitees.length > 1) {
           this.showToast("Waiting for others to join the call.");
         }
-        // demo 设置5分钟体验限制
+        const waitingSelectUsers = this.state.waitingUsers.map((id) => ({
+          userID: id,
+          userName: `user_${id}`,
+        }));
+        // demo 设置20分钟体验限制
         this.state.roomTimer = setInterval(() => {
           this.state.roomTime = ++this.state.roomTime;
-          if (this.state.roomTime === 300) {
-            this.showToast(this.state.lang === "en" ? "Only for functional experience, not for commercial use. Each session should not exceed 5 minutes." : "仅功能体验，不作商业用途。每次不超过5分钟。");
+          if (this.state.roomTime === 1200) {
+            this.showToast(this.state.lang === "en" ? "Only for functional experience, not for commercial use. Each session should not exceed 20 minutes." : "仅功能体验，不作商业用途。每次不超过 20 分钟。");
             this.zp.hangUp();
           }
         }, 1000);
@@ -490,23 +533,32 @@ export default class App extends React.PureComponent {
           showTurnOffRemoteCameraButton: true,
           showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
+          showWaitingCallAcceptAudioVideoView: this.state.showWaitingCallAcceptAudioVideoView,
+          callingInvitationListConfig: {
+            waitingSelectUsers,
+            defaultChecked: true
+          },
+          // turnOnCameraWhenJoining: false,
+          // turnOnMicrophoneWhenJoining: false,
           // autoLeaveRoomWhenOnlySelfInRoom: false,
+          // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+          // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
         };
       },
       onCallInvitationEnded: (reason, data) => {
         console.warn("【demo】onCallInvitationEnded", reason, data);
-        if (reason === "Canceled") {
-          this.showToast("The call has been canceled.");
-        }
-        if (this.state.invitees.length === 1) {
-          // 单人呼叫提示
-          if (reason === "Busy" || (reason === "Timeout" && this.inviter?.userID === this.state.userID)) {
-            this.showToast(this.state.invitees[0].userName + " is busy now.");
-          }
-          if (reason === "Declined" && this.inviter?.userID === this.state.userID) {
-            this.showToast(this.state.invitees[0].userName + " declined the call.");
-          }
-        }
+        // if (reason === "Canceled") {
+        //   this.showToast("The call has been canceled.");
+        // }
+        // if (this.state.invitees.length === 1) {
+        //   // 单人呼叫提示
+        //   if (reason === "Busy" || (reason === "Timeout" && this.inviter?.userID === this.state.userID)) {
+        //     this.showToast(this.state.invitees[0].userName + " is busy now.");
+        //   }
+        //   if (reason === "Declined" && this.inviter?.userID === this.state.userID) {
+        //     this.showToast(this.state.invitees[0].userName + " declined the call.");
+        //   }
+        // }
 
         if (isPc()) {
           const nav = document.querySelector(`.${APP.nav}`) as HTMLDivElement;
@@ -541,18 +593,20 @@ export default class App extends React.PureComponent {
       // 当呼叫者取消呼叫后，将内部数据转成对应数据后抛出。
       onIncomingCallCanceled: (callID: string, caller: ZegoUser) => {
         console.warn("onIncomingCallCanceled", callID, caller);
+        this.showToast("The call has been canceled.");
       },
       // 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-      onOutgoingCallAccepted: (callID: string, callee: ZegoUser) => {
-        console.warn("onOutgoingCallAccepted", callID, callee);
+      onOutgoingCallAccepted: (callID: string, caller: ZegoUser) => {
+        console.warn("onOutgoingCallAccepted", callID, caller);
       },
       // 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
-      onOutgoingCallRejected: (callID: string, callee: ZegoUser) => {
-        console.warn("onOutgoingCallRejected", callID, callee);
+      onOutgoingCallRejected: (callID: string, caller: ZegoUser) => {
+        console.warn("onOutgoingCallRejected", callID, caller);
+        this.showToast(caller.userName + " is busy now.");
       },
       // 当被叫者主动拒绝通话时，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
       onOutgoingCallDeclined: (callID: string, callee: ZegoUser) => {
-        console.warn("onOutgoingCallDeclined", callID, callee);
+        console.warn("onOutgoingCallDeclined", callID, callee); this.showToast(callee.userName + " declined the call.");
       },
       //当被叫者超时没回应邀请时，被叫者会收到该回调，将内部数据转成对应数据后抛出。
       onIncomingCallTimeout: (callID: string, caller: ZegoUser) => {
@@ -561,6 +615,7 @@ export default class App extends React.PureComponent {
       //当呼叫超过固定时间后，如果还有被叫者没有响应，则呼叫者会收到该回调，将内部数据转成对应数据后抛出。
       onOutgoingCallTimeout: (callID: string, callees: ZegoUser[]) => {
         console.warn("onOutgoingCallTimeout", callID, callees);
+        this.showToast(`call ${callees[0].userName} timeout`);
       },
       onIncomingCallDeclineButtonPressed: () => {
         console.warn('onIncomingCallDeclineButtonPressed');
@@ -620,6 +675,13 @@ export default class App extends React.PureComponent {
   onInvitationInputChange(e: ChangeEvent<HTMLInputElement>) {
     e.target.value = e.target.value.replace(/[^\d,]/gi, "");
   }
+  onWaitingUsersChange(e: ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value.replace(/[^\d,]/gi, "");
+    const waitingUsers = value.split(",");
+    this.setState({
+      waitingUsers,
+    })
+  }
   handleSendCallInvitation(type: number) {
     if (this.inOperation) return;
     if (this.invitationInput.current?.value) {
@@ -658,7 +720,9 @@ export default class App extends React.PureComponent {
         .catch((err) => {
           if (err === "The call invitation service has not been activated.") {
             this.showToast(err);
+            return
           }
+          err && this.showToast(err);
         })
         .finally(() => {
           this.inOperation = false;
@@ -759,12 +823,32 @@ export default class App extends React.PureComponent {
   }
   // 设置语言
   setLanguage(language: ZegoUIKitLanguage) {
-    window.zp.setLanguage(language);
+    // @ts-ignore
+    this.zp ? this.zp.setLanguage(language) : window.zp.setLanguage(language);
     this.setState({
       showLangBox: false,
       lang: language === ZegoUIKitLanguage.CHS ? "zh" : "en",
       docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][language === ZegoUIKitLanguage.CHS ? "zh" : "en"],
     })
+  }
+
+  updateInvitationConfig() {
+    const { canInvitingInCalling, onlyInitiatorCanInvite, endCallWhenInitiatorLeave } = this.state;
+    this.zp.setCallInvitationConfig({
+      canInvitingInCalling,
+      onlyInitiatorCanInvite,
+      endCallWhenInitiatorLeave,
+    });
+  }
+  inIframe() {
+    const isInIframe = window.self !== window.top
+    return isInIframe
+  }
+  postMessage = ({ type, data }) => {
+    const _win = window.parent
+    if (!this.inIframe() || !_win) return
+    console.log('postMessage', JSON.stringify({ type, data }))
+    _win.postMessage(JSON.stringify({ type, data }), '*')
   }
   render(): React.ReactNode {
     return (
@@ -784,6 +868,12 @@ export default class App extends React.PureComponent {
                 <div
                   className={APP.link_item}
                   onClick={() => {
+                    if (process.env.REACT_APP_PATH === "call_invitation") {
+                      this.setState({
+                        showInvitationSettings: true
+                      })
+                      return
+                    }
                     this.setState({
                       showSettings: true,
                       liveStreamingMode:
@@ -981,6 +1071,114 @@ export default class App extends React.PureComponent {
             </div>
           </div>
         )}
+        {this.state.showInvitationSettings && (
+          <div
+            className={`${isPc() ? APP.pcSettingsModel : APP.mobileSettingsModel
+              }`}>
+            <div className={APP.settingsWrapper}>
+              <div className={APP.settingsHeader}>
+                <p>{this.state.lang === "en" ? 'call out settings' : '呼叫设置'}</p>
+                <span
+                  className={APP.settingsClose}
+                  onClick={() => {
+                    this.setState({
+                      showInvitationSettings: false,
+                    });
+                  }}></span>
+              </div>
+              <div className={APP.settingsBody}>
+                <div className={APP.settingsModeList}>
+                  <div
+                    className={`${APP.settingsModeItem} ${this.state.canInvitingInCalling
+                      ? APP.settingsModeItemSelected
+                      : ""
+                      }`}
+                    onClick={() => {
+                      this.setState({
+                        canInvitingInCalling: !this.state.canInvitingInCalling
+                      }, () => {
+                        this.updateInvitationConfig()
+                      })
+                    }}>
+                    <p>canInvitingInCalling</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${this.state.onlyInitiatorCanInvite
+                      ? APP.settingsModeItemSelected
+                      : ""
+                      }`}
+                    onClick={() => {
+                      this.setState({
+                        onlyInitiatorCanInvite: !this.state.onlyInitiatorCanInvite
+                      }, () => {
+                        this.updateInvitationConfig()
+                      })
+                    }}>
+                    <p>onlyInitiatorCanInvite</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${this.state.endCallWhenInitiatorLeave
+                      ? APP.settingsModeItemSelected
+                      : ""
+                      }`}
+                    onClick={() => {
+                      this.setState({
+                        endCallWhenInitiatorLeave: !this.state.endCallWhenInitiatorLeave
+                      }, () => {
+                        this.updateInvitationConfig()
+                      })
+                    }}>
+                    <p>endCallWhenInitiatorLeave</p>
+                    <span></span>
+                  </div>
+                  <div
+                    className={`${APP.settingsModeItem} ${this.state.showWaitingCallAcceptAudioVideoView
+                      ? APP.settingsModeItemSelected
+                      : ""
+                      }`}
+                    onClick={() => {
+                      this.setState({
+                        showWaitingCallAcceptAudioVideoView: !this.state.showWaitingCallAcceptAudioVideoView
+                      })
+                    }}>
+                    <p>showWaitingCallAcceptAudioVideoView</p>
+                    <span></span>
+                  </div>
+                </div>
+                <input
+                  className={APP.invitationInput}
+                  type="text"
+                  placeholder={
+                    this.state.lang === "en" ? 'invitees user id, separate by ","' : "受邀者的 ID，用“, ”分隔"
+                  }
+                  value={this.state.waitingUsers}
+                  onInput={this.onWaitingUsersChange.bind(this)}
+                  onChange={this.onWaitingUsersChange.bind(this)}
+                  onFocus={(ev: ChangeEvent<HTMLInputElement>) => {
+                    this.isIOS &&
+                      !isPc() &&
+                      setTimeout(() => {
+                        ev.target.scrollIntoView({
+                          block: "start",
+                        });
+                      }, 50);
+                  }}
+                  onBlur={(ev: ChangeEvent<HTMLInputElement>) => {
+                    this.isAndroid &&
+                      !isPc() &&
+                      setTimeout(() => {
+                        ev.target.scrollIntoView({
+                          block: "start",
+                        });
+                      }, 100);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         {this.state.toastShow && (
           <div className={`${APP.toast}`}>{this.state.toastText}</div>
@@ -999,6 +1197,12 @@ export default class App extends React.PureComponent {
             })}
           </div>
         )}
+
+        {/* {(
+          <div className="confirm-dialog" style={{ position: "absolute", top: 0, width: "100px", height: "100px", background: "#3b3b3b" }}>
+            <div ref={this.refuseBtn} className="refuse-btn" style={{ width: "100px", height: "40px", backgroundColor: "#fff" }}>refuse</div>
+          </div>
+        )} */}
       </div>
     );
   }

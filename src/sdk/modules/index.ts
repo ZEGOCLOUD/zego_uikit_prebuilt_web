@@ -19,6 +19,7 @@ import {
 
 import { ZegoBroadcastMessageInfo, ZegoRoomExtraInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d"
 import {
+	CallingInvitationListConfig,
 	CoreError,
 	LiveRole,
 	LiveStreamingMode,
@@ -35,7 +36,7 @@ import {
 } from "../model"
 import { ZegoCloudUser, ZegoCloudUserList, ZegoCloudUserListManager } from "./tools/UserListManager"
 import { ZegoSuperBoardManager, ZegoSuperBoardSubViewModel, ZegoSuperBoardView } from "zego-superboard-web"
-import ZIM from "zego-zim-web"
+import { ZIM } from "zego-zim-web"
 import { ZimManager } from "./tools/ZimManager"
 import { getVideoResolution } from "../util"
 import { EventEmitter } from "./tools/EventEmitter"
@@ -62,9 +63,12 @@ export class ZegoCloudRTCCore {
 	// 多语言
 	intl: any
 	//   static _soundMeter: SoundMeter;
-	static getInstance(kitToken: string): ZegoCloudRTCCore {
+	static getInstance(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoCloudRTCCore {
 		const config = getConfig(kitToken)
 		if (!ZegoCloudRTCCore._instance && config) {
+			if (cloudProxyConfig) {
+				ZegoExpressEngine.setCloudProxyConfig(cloudProxyConfig.proxyList, config.token, true);
+			}
 			ZegoCloudRTCCore._instance = new ZegoCloudRTCCore()
 			ZegoCloudRTCCore._instance._expressConfig = config
 			//   ZegoCloudRTCCore._soundMeter = new SoundMeter();
@@ -182,7 +186,16 @@ export class ZegoCloudRTCCore {
 			screenSharingConfig: {
 				resolution: ScreenSharingResolution.Auto,
 			},
-			language: ZegoUIKitLanguage.ENGLISH
+			language: ZegoUIKitLanguage.ENGLISH,
+			showMoreButton: true, // 是否显示更多按钮
+			showUserName: true, // 是否显示用户名
+			hideUsersById: [],
+			backgroundUrl: '',
+			showWaitingCallAcceptAudioVideoView: true,
+			callingInvitationListConfig: {
+				waitingSelectUsers: [],
+				defaultChecked: true,
+			}
 		}
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage"
 	extraInfoKey = "extra_info"
@@ -714,6 +727,10 @@ export class ZegoCloudRTCCore {
 		return ZegoCloudRTCCore._zg.getSpeakers()
 	}
 
+	useFrontCamera(localStream: MediaStream | ZegoLocalStream, enable: boolean): Promise<ZegoServerResponse> {
+		return ZegoCloudRTCCore._zg.useFrontCamera(localStream, enable);
+	}
+
 	setVolume(media: HTMLVideoElement, volume: number): void {
 		media.volume = volume
 	}
@@ -1192,6 +1209,10 @@ export class ZegoCloudRTCCore {
 				this.zegoSuperBoard.setFontBold(false)
 				this.zegoSuperBoard.setFontSize(24)
 				this.zegoSuperBoardView = this.zegoSuperBoard.getSuperBoardView()
+				if (this.zegoSuperBoardView !== undefined) {
+					this.subscribeWhiteBoardCallBack(this.zegoSuperBoardView)
+					this.zegoSuperBoardView = undefined
+				}
 			})
 
 			// 监听远端销毁白板
@@ -1277,6 +1298,10 @@ export class ZegoCloudRTCCore {
 					this.zegoSuperBoard.setFontSize(24)
 					const result: ZegoSuperBoardSubViewModel[] = await this.zegoSuperBoard.querySuperBoardSubViewList()
 					result.length > 0 && (this.zegoSuperBoardView = this.zegoSuperBoard.getSuperBoardView())
+					if (this.zegoSuperBoardView !== undefined) {
+						this.subscribeWhiteBoardCallBack(this.zegoSuperBoardView)
+						this.zegoSuperBoardView = undefined
+					}
 				}
 				const user = {
 					userID: ZegoCloudRTCCore._instance._expressConfig.userID,
@@ -1290,9 +1315,9 @@ export class ZegoCloudRTCCore {
 				this._config.onUserAvatarSetter && this._config.onUserAvatarSetter([user])
 
 				// @ts-ignore 日志上报
-				ZegoCloudRTCCore._zg.logger.error("zu.jr " + JSON.stringify(this.originConfig))
+				ZegoCloudRTCCore._zg.logger.info("zu.jr " + JSON.stringify(this.originConfig))
 			} catch (error) {
-				console.error(error)
+				console.error('login', error)
 			}
 		})
 		this._zimManager?.enterRoom()
@@ -1325,7 +1350,9 @@ export class ZegoCloudRTCCore {
 						extraInfo = JSON.parse(streamInfo.extraInfo)
 					} catch (err) { }
 					try {
+						console.log('===isCDNLive', this.isCDNLive);
 						if (this.isCDNLive) {
+							console.log('===streaminfo', streamInfo);
 							if (!streamInfo.urlsFLV) {
 								this.coreErrorCallback(CoreError.notSupportCDNLive, "urlsFLV is empty")
 							}
@@ -1456,6 +1483,7 @@ export class ZegoCloudRTCCore {
 		if (extraInfo) {
 			publishOption = {
 				extraInfo,
+				trafficControlFocusOnMode: 1,
 			}
 		}
 		const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media, {
@@ -2226,5 +2254,13 @@ export class ZegoCloudRTCCore {
 			ZegoCloudRTCCore._zg.stopPlayingStream(this.mixUser.streamList[0].streamID)
 		}
 		this.mixUser.streamList = []
+	}
+
+	// 更新通话中邀请用户配置
+	updateCallingInvitationListConfig(config: CallingInvitationListConfig) {
+		this._config.callingInvitationListConfig = {
+			...this._config.callingInvitationListConfig || {},
+			...config,
+		}
 	}
 }

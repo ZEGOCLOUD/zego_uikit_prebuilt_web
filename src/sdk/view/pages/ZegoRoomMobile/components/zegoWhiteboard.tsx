@@ -1,5 +1,5 @@
 import React from "react";
-import { ZegoWhiteboardSharingLayoutProps } from "../../../../model";
+import { ZegoWhiteboardSharingLayoutProps, ScenarioModel, LiveRole } from "../../../../model";
 import ZegoAudio from "../../../components/zegoMedia/audio";
 import ZegoSidebarCss from "./zegoSidebar.module.scss";
 import zegoWhiteboardSharingLayout from "./zegoWhiteboard.module.scss";
@@ -21,8 +21,8 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
   state: {
     currentZoom: number;
   } = {
-    currentZoom: 100,
-  };
+      currentZoom: 100,
+    };
   static contextType?: React.Context<ShowManageType> = ShowPCManageContext;
   context!: React.ContextType<typeof ShowPCManageContext>;
   componentDidMount() {
@@ -37,11 +37,9 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
   render(): React.ReactNode {
     return (
       <div
-        className={`${ZegoSidebarCss.sidebarWrapper} ${
-          ZegoSidebarCss.landscape
-        }  ${
-          this.props.userList.length === 0 ? ZegoSidebarCss.fullScreen : ""
-        }`}
+        className={`${ZegoSidebarCss.sidebarWrapper} ${ZegoSidebarCss.landscape
+          }  ${this.props.userList.length === 0 ? ZegoSidebarCss.fullScreen : ""
+          }`}
         style={{ padding: 0 }}
       >
         <div
@@ -76,6 +74,7 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
             }
             return (
               <ZegoUserVideo
+                core={this.props.core}
                 muted={this.props?.selfInfo?.userID === value.userID}
                 user={value}
                 circleSize="SIDEBAR"
@@ -88,39 +87,40 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
         <div
           className={`${ZegoSidebarCss.bottomWrapper} ${zegoWhiteboardSharingLayout.whiteboardWrapper} zegoUserVideo_click`}
         >
-          <div
-            className={`${zegoWhiteboardSharingLayout.top} zegoUserVideo_click`}
-          >
-            <div className={zegoWhiteboardSharingLayout.toolLeft}>
-              <div
-                className={zegoWhiteboardSharingLayout.undo}
-                onClick={() => {
-                  this.props.zegoSuperBoardView
-                    ?.getCurrentSuperBoardSubView()
-                    ?.undo();
-                }}
-              ></div>
-              <div
-                className={zegoWhiteboardSharingLayout.redo}
-                onClick={() => {
-                  this.props.zegoSuperBoardView
-                    ?.getCurrentSuperBoardSubView()
-                    ?.redo();
-                }}
-              ></div>
-            </div>
-
-            {this.context.whiteboard_showCreateClose && (
-              <div
-                className={zegoWhiteboardSharingLayout.stop}
-                onClick={() => {
-                  this.props.onclose();
-                }}
-              >
-                <FormattedMessage id="room.stopPresenting" />
+          {!(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+            this.props.core._config.scenario?.config?.role !== LiveRole.Host) && (<div
+              className={`${zegoWhiteboardSharingLayout.top} zegoUserVideo_click`}
+            >
+              <div className={zegoWhiteboardSharingLayout.toolLeft}>
+                <div
+                  className={zegoWhiteboardSharingLayout.undo}
+                  onClick={() => {
+                    this.props.zegoSuperBoardView
+                      ?.getCurrentSuperBoardSubView()
+                      ?.undo();
+                  }}
+                ></div>
+                <div
+                  className={zegoWhiteboardSharingLayout.redo}
+                  onClick={() => {
+                    this.props.zegoSuperBoardView
+                      ?.getCurrentSuperBoardSubView()
+                      ?.redo();
+                  }}
+                ></div>
               </div>
-            )}
-          </div>
+
+              {this.context.whiteboard_showCreateClose && (
+                <div
+                  className={zegoWhiteboardSharingLayout.stop}
+                  onClick={() => {
+                    this.props.onclose();
+                  }}
+                >
+                  <FormattedMessage id="room.stopPresenting" />
+                </div>
+              )}
+            </div>)}
           <div
             className={`${zegoWhiteboardSharingLayout.content} zegoUserVideo_click`}
             id="ZegoCloudWhiteboardContainer"
@@ -149,99 +149,99 @@ export class ZegoWhiteboard extends React.PureComponent<ZegoWhiteboardSharingLay
               }
             }}
           ></div>
-          <div className={zegoWhiteboardSharingLayout.page}>
-            <div>
-              <p
-                className={`${zegoWhiteboardSharingLayout.page_sub}  ${
-                  this.context.whiteboard_page &&
-                  this.context.whiteboard_page > 1
+          {!(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+            this.props.core._config.scenario?.config?.role !== LiveRole.Host) && (<div className={zegoWhiteboardSharingLayout.page}>
+              <div>
+                <p
+                  className={`${zegoWhiteboardSharingLayout.page_sub}  ${this.context.whiteboard_page &&
+                    this.context.whiteboard_page > 1
                     ? zegoWhiteboardSharingLayout.active
                     : ""
-                }`}
-                onClick={() => {
-                  this.props.zegoSuperBoardView
-                    ?.getCurrentSuperBoardSubView()
-                    ?.flipToPrePage();
-                }}
-              ></p>
-              <span className={zegoWhiteboardSharingLayout.page_value}>
-                {this.context.whiteboard_page}
-              </span>
-              <span className={zegoWhiteboardSharingLayout.page_value_total}>
-                /5
-              </span>
-              <p
-                className={`${zegoWhiteboardSharingLayout.page_add} ${
-                  this.context.whiteboard_page &&
-                  this.context.whiteboard_page < 5
+                    }`}
+                  onClick={() => {
+                    this.props.zegoSuperBoardView
+                      ?.getCurrentSuperBoardSubView()
+                      ?.flipToPrePage();
+                  }}
+                ></p>
+                <span className={zegoWhiteboardSharingLayout.page_value}>
+                  {this.context.whiteboard_page}
+                </span>
+                <span className={zegoWhiteboardSharingLayout.page_value_total}>
+                  /5
+                </span>
+                <p
+                  className={`${zegoWhiteboardSharingLayout.page_add} ${this.context.whiteboard_page &&
+                    this.context.whiteboard_page < 5
                     ? zegoWhiteboardSharingLayout.active
                     : ""
-                }`}
-                onClick={() => {
-                  this.props.zegoSuperBoardView
-                    ?.getCurrentSuperBoardSubView()
-                    ?.flipToNextPage();
-                }}
-              ></p>
-            </div>
-          </div>
+                    }`}
+                  onClick={() => {
+                    this.props.zegoSuperBoardView
+                      ?.getCurrentSuperBoardSubView()
+                      ?.flipToNextPage();
+                  }}
+                ></p>
+              </div>
+            </div>)}
 
-          <ZegoWhiteboardTools
-            core={this.props.core}
-            onToolChange={(type: number, fontSize?: number, color?: string) => {
-              this.props.onToolChange(type, fontSize, color);
-            }}
-            onFontChange={(
-              font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
-              fontSize?: number,
-              color?: string
-            ) => {
-              this.props.onFontChange(font, fontSize, color);
-            }}
-            onAddImage={async (file: File) => {
-              ZegoLoadingShow({
-                contentText: "The picture is being uploaded",
-              });
-              await this.props.zegoSuperBoardView
-                ?.getCurrentSuperBoardSubView()
-                ?.addImage(0, 10, 10, file, (res: string) => {
-                  ZegoLoadingHide();
-                  ZegoToast({ content: "add Image Success!!" });
-                })
-                .catch((error: any) => {
-                  ZegoLoadingHide();
-                  console.error("onAddImage:", error);
-                  if (error.code === 60022) {
-                    ZegoToast({
-                      content:
-                        "Failed to add image, this feature is not supported.",
-                    });
-                  } else if (error.code === 3130009) {
-                    ZegoToast({
-                      content: "Failed to add image, Unsupported image type.",
-                    });
-                  } else {
-                    ZegoToast({
-                      content: "Failed to add image, error code:" + error.code,
-                    });
-                  }
+          {!(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+            this.props.core._config.scenario?.config?.role !== LiveRole.Host) && (<ZegoWhiteboardTools
+              core={this.props.core}
+              onToolChange={(type: number, fontSize?: number, color?: string) => {
+                this.props.onToolChange(type, fontSize, color);
+              }}
+              onFontChange={(
+                font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
+                fontSize?: number,
+                color?: string
+              ) => {
+                this.props.onFontChange(font, fontSize, color);
+              }}
+              onAddImage={async (file: File) => {
+                ZegoLoadingShow({
+                  contentText: "The picture is being uploaded",
                 });
-              ZegoLoadingHide();
-              this.props.onImageAdd && this.props.onImageAdd();
-            }}
-            onSnapshot={() => {
-              const zegoSuperBoardSubView =
-                this.props.zegoSuperBoardView?.getCurrentSuperBoardSubView();
-              zegoSuperBoardSubView
-                ?.snapshot()
-                .then(function (data: { image: string; userData?: string }) {
-                  const link = document.createElement("a");
-                  link.href = data.image;
-                  link.download = "snapshot.png";
-                  link.click();
-                });
-            }}
-          ></ZegoWhiteboardTools>
+                await this.props.zegoSuperBoardView
+                  ?.getCurrentSuperBoardSubView()
+                  ?.addImage(0, 10, 10, file, (res: string) => {
+                    ZegoLoadingHide();
+                    ZegoToast({ content: "add Image Success!!" });
+                  })
+                  .catch((error: any) => {
+                    ZegoLoadingHide();
+                    console.error("onAddImage:", error);
+                    if (error.code === 60022) {
+                      ZegoToast({
+                        content:
+                          "Failed to add image, this feature is not supported.",
+                      });
+                    } else if (error.code === 3130009) {
+                      ZegoToast({
+                        content: "Failed to add image, Unsupported image type.",
+                      });
+                    } else {
+                      ZegoToast({
+                        content: "Failed to add image, error code:" + error.code,
+                      });
+                    }
+                  });
+                ZegoLoadingHide();
+                this.props.onImageAdd && this.props.onImageAdd();
+              }}
+              onSnapshot={() => {
+                const zegoSuperBoardSubView =
+                  this.props.zegoSuperBoardView?.getCurrentSuperBoardSubView();
+                zegoSuperBoardSubView
+                  ?.snapshot()
+                  .then(function (data: { image: string; userData?: string }) {
+                    const link = document.createElement("a");
+                    link.href = data.image;
+                    link.download = "snapshot.png";
+                    link.click();
+                  });
+              }}
+            ></ZegoWhiteboardTools>)}
         </div>
       </div>
     );

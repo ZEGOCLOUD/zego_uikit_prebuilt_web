@@ -4,7 +4,7 @@ import { getNameFirstLetter, userNameColor } from "../../../../util";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
 import ZegoVideo from "../../../components/zegoMedia/video";
-import { UserListMenuItemType } from "../../../../model";
+import { UserListMenuItemType, UserTypeEnum } from "../../../../model";
 import { FormattedMessage } from "react-intl";
 import { ZegoCloudRTCCore } from "../../../../modules";
 export class VideoPlayer extends React.PureComponent<{
@@ -26,6 +26,38 @@ export class VideoPlayer extends React.PureComponent<{
   state = {
     hovered: false,
   };
+  get avatarConfig() {
+    const videoViewConfig = this.props.core._config.videoViewConfig || []
+    const { avatar, userID } = this.props.userInfo
+    const _avatarConfig = videoViewConfig.find((config) => config.userID === userID)
+    const visiblity = _avatarConfig?.showAvatarWhenCameraOff !== false
+    return {
+      visiblity,
+      url: avatar,
+    }
+  }
+
+  get isCameraOpen() {
+    return this.props.userInfo?.streamList?.[0]?.cameraStatus === "OPEN";
+  }
+
+  get hideUsersById() {
+    const { hideUsersById } = this.props.core._config
+    return hideUsersById || []
+  }
+
+  get isHiddenVideo() {
+    return this.hideUsersById.includes(this.props.userInfo.userID)
+  }
+
+  get isWaitingUser() {
+    return this.props.userInfo.type === UserTypeEnum.CALLING_WAITTING
+  }
+
+  cancelCall() {
+    this.props.core._zimManager?.cancelInvitation(void 0, [this.props.userInfo], false)
+  }
+
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.userInfo?.streamList?.[0]?.streamID];
@@ -40,7 +72,7 @@ export class VideoPlayer extends React.PureComponent<{
     const { formatMessage } = this.props.core.intl;
     return (
       <div
-        className={` ${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass}`}
+        className={`${ZegoVideoPlayerCss.videoPlayerWrapper} ${this.props.myClass} ${this.isHiddenVideo && ZegoVideoPlayerCss.hidden}`}
         onMouseEnter={() => {
           this.setState({
             hovered: true,
@@ -54,7 +86,7 @@ export class VideoPlayer extends React.PureComponent<{
       >
         <ZegoVideo
           muted={this.props.muted}
-          classList={ZegoVideoPlayerCss.videoCommon}
+          classList={`${ZegoVideoPlayerCss.videoCommon}`}
           userInfo={this.props.userInfo}
           onPause={() => {
             this.props.onPause && this.props.onPause();
@@ -63,32 +95,43 @@ export class VideoPlayer extends React.PureComponent<{
             this.props.onCanPlay && this.props.onCanPlay();
           }}
         ></ZegoVideo>
-        <div
-          className={ZegoVideoPlayerCss.cameraMask}
-          style={{
-            display:
-              this.props.userInfo?.streamList?.[0]?.cameraStatus === "OPEN"
-                ? "none"
-                : "flex",
-          }}
-        >
-          {this.props.userInfo.avatar && (
-            <img
-              src={this.props.userInfo.avatar}
-              onError={(e: any) => {
-                e.target.style.display = "none";
-              }}
-              alt=""
-            />
-          )}
+        {this.avatarConfig.visiblity &&
           <div
+            className={ZegoVideoPlayerCss.cameraMask}
             style={{
-              color: userNameColor(this.props.userInfo?.userName as string),
+              display:
+                this.isCameraOpen
+                  ? "none"
+                  : "flex",
             }}
           >
-            {getNameFirstLetter(this.props.userInfo?.userName || "")}
+
+            {this.avatarConfig.url && (
+              <img
+                src={this.avatarConfig.url}
+                onError={(e: any) => {
+                  e.target.style.display = "none";
+                }}
+                alt=""
+              />
+            )}
+            <div
+              style={{
+                color: userNameColor(this.props.userInfo?.userName as string),
+              }}
+            >
+              {getNameFirstLetter(this.props.userInfo?.userName || "")}
+            </div>
           </div>
-        </div>
+        }
+
+        {
+          this.isWaitingUser && (
+            <div className={ZegoVideoPlayerCss.cancelBtn} onClick={() => this.cancelCall()}>
+              <FormattedMessage id="call.cancelCall" />
+            </div>
+          )
+        }
 
         {!this.props.hiddenName && (
           <div className={ZegoVideoPlayerCss.name}>
@@ -117,7 +160,7 @@ export class VideoPlayer extends React.PureComponent<{
             )}
           </div>
         )}
-        {!this.props.hiddenMore &&
+        {(!this.props.hiddenMore && !this.isWaitingUser) &&
           (showTurnOffMicrophoneButton!(this.props.userInfo) ||
             showTurnOffCameraButton!(this.props.userInfo) ||
             isShownPin!(this.props.userInfo) ||

@@ -1,0 +1,115 @@
+@import "../../../../var.scss";
+.invitationListWrapper {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  z-index: 202;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  height: 70vh;
+  background: #242736;
+  border-radius: vw(46px) vw(46px) 0px 0px;
+  .invitationListHeader {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: vw(15px) vw(23px) vw(13px) vw(23px);
+    color: #ffffff;
+    font-weight: 400;
+    font-size: vw(36px);
+    box-shadow: 0px 1px 0px 0px rgba(61, 64, 84, 1);
+    .invitationHide {
+      width: vw(70px);
+      height: vw(70px);
+      margin-right: 11px;
+      background-image: url(../../../../sdkMobileAssets/Room_member_hide@2x.png);
+      background-size: contain;
+    }
+  }
+  .invitationListContent {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    overflow: auto;
+    .member {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      width: 100%;
+      margin-top: vw(48px);
+      padding-right: vw(34px);
+      padding-left: vw(36px);
+      .memberName {
+        display: flex;
+        align-items: center;
+        i {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: vw(72px);
+          height: vw(72px);
+          margin-right: vw(24px);
+          color: #557bff;
+          font-weight: 600;
+          font-size: vw(24px);
+          font-style: normal;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: vw(36px);
+          img {
+            position: absolute;
+            top: 0;
+            width: vw(72px);
+            height: vw(72px);
+            object-fit: cover;
+            border-radius: 50%;
+          }
+        }
+        span {
+          max-width: vw(300px);
+          overflow: hidden;
+          color: #ffffff;
+          font-weight: 500;
+          font-size: vw(32px);
+          line-height: vw(45px);
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+      .checkWrapper {
+        flex-shrink: 0;
+        width: vw(45px);
+        height: vw(48px);
+        &.checked {
+          width: vw(48px);
+          height: vw(48px);
+        }
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+  .callWrapper {
+    margin: 6px;
+    width: calc(100% - 12px);
+    height: vw(80px);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #3d4054;
+    border-radius: vw(8px);
+    img {
+      width: vw(40px);
+      height: vw(40px);
+    }
+  }
+}

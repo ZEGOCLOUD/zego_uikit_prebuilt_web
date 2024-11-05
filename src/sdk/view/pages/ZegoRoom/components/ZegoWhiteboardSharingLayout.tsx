@@ -3,6 +3,8 @@ import clsx from "clsx";
 import {
   UserListMenuItemType,
   ZegoWhiteboardSharingLayoutProps,
+  LiveRole,
+  ScenarioModel
 } from "../../../../model";
 import ZegoSidebarCss from "./zegoSidebarLayout.module.scss";
 import zegoWhiteboardSharingLayout from "./zegoWhiteboardSharingLayout.module.scss";
@@ -62,178 +64,184 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
         <div
           className={`${ZegoSidebarCss.bigVideoWrapper}  ${zegoWhiteboardSharingLayout.whiteboardWrapper}`}
         >
-          <div className={zegoWhiteboardSharingLayout.top}>
-            <div className={zegoWhiteboardSharingLayout.toolLeft}>
-              <div
-                className={zegoWhiteboardSharingLayout.undo}
-                onClick={() => {
-                  this.props.zegoSuperBoardView
-                    ?.getCurrentSuperBoardSubView()
-                    ?.undo();
-                }}
-              ></div>
-              <div
-                className={zegoWhiteboardSharingLayout.redo}
-                onClick={() => {
-                  this.props.zegoSuperBoardView
-                    ?.getCurrentSuperBoardSubView()
-                    ?.redo();
-                }}
-              ></div>
-              <div className={zegoWhiteboardSharingLayout.zoom}>
-                <i
-                  className={zegoWhiteboardSharingLayout.zoom_sub}
-                  onClick={() => {
-                    this.setState(
-                      (preState: {
-                        currentZoom: number;
-                        currentPage: number;
-                      }) => {
-                        return {
-                          currentZoom:
-                            preState.currentZoom - 25 > 300
-                              ? 300
-                              : preState.currentZoom - 25 < 100
-                                ? 100
-                                : preState.currentZoom - 25,
-                        };
-                      },
-                      () => {
+          {!(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+            this.props.core._config.scenario?.config?.role !== LiveRole.Host) && (
+              <div className={zegoWhiteboardSharingLayout.top}>
+                <div className={zegoWhiteboardSharingLayout.toolLeft}>
+                  <div
+                    className={zegoWhiteboardSharingLayout.undo}
+                    onClick={() => {
+                      this.props.zegoSuperBoardView
+                        ?.getCurrentSuperBoardSubView()
+                        ?.undo();
+                    }}
+                  ></div>
+                  <div
+                    className={zegoWhiteboardSharingLayout.redo}
+                    onClick={() => {
+                      this.props.zegoSuperBoardView
+                        ?.getCurrentSuperBoardSubView()
+                        ?.redo();
+                    }}
+                  ></div>
+                  <div className={zegoWhiteboardSharingLayout.zoom}>
+                    <i
+                      className={zegoWhiteboardSharingLayout.zoom_sub}
+                      onClick={() => {
+                        this.setState(
+                          (preState: {
+                            currentZoom: number;
+                            currentPage: number;
+                          }) => {
+                            return {
+                              currentZoom:
+                                preState.currentZoom - 25 > 300
+                                  ? 300
+                                  : preState.currentZoom - 25 < 100
+                                    ? 100
+                                    : preState.currentZoom - 25,
+                            };
+                          },
+                          () => {
+                            this.props.zegoSuperBoardView
+                              ?.getCurrentSuperBoardSubView()
+                              ?.setScaleFactor(this.state.currentZoom / 100);
+                          }
+                        );
+                      }}
+                    ></i>
+                    <span className={zegoWhiteboardSharingLayout.zoom_value}>
+                      {`${this.state.currentZoom}%`}
+                    </span>
+                    <i
+                      className={zegoWhiteboardSharingLayout.zoom_add}
+                      onClick={() => {
+                        this.setState(
+                          (preState: {
+                            currentZoom: number;
+                            currentPage: number;
+                          }) => {
+                            return {
+                              currentZoom:
+                                preState.currentZoom + 25 > 300
+                                  ? 300
+                                  : preState.currentZoom + 25 < 100
+                                    ? 100
+                                    : preState.currentZoom + 25,
+                            };
+                          },
+                          () => {
+                            this.props.zegoSuperBoardView
+                              ?.getCurrentSuperBoardSubView()
+                              ?.setScaleFactor(this.state.currentZoom / 100);
+                          }
+                        );
+                      }}
+                    ></i>
+                  </div>
+                  <div className={zegoWhiteboardSharingLayout.page}>
+                    <i
+                      className={zegoWhiteboardSharingLayout.page_sub}
+                      onClick={() => {
                         this.props.zegoSuperBoardView
                           ?.getCurrentSuperBoardSubView()
-                          ?.setScaleFactor(this.state.currentZoom / 100);
-                      }
-                    );
-                  }}
-                ></i>
-                <span className={zegoWhiteboardSharingLayout.zoom_value}>
-                  {`${this.state.currentZoom}%`}
-                </span>
-                <i
-                  className={zegoWhiteboardSharingLayout.zoom_add}
-                  onClick={() => {
-                    this.setState(
-                      (preState: {
-                        currentZoom: number;
-                        currentPage: number;
-                      }) => {
-                        return {
-                          currentZoom:
-                            preState.currentZoom + 25 > 300
-                              ? 300
-                              : preState.currentZoom + 25 < 100
-                                ? 100
-                                : preState.currentZoom + 25,
-                        };
-                      },
-                      () => {
+                          ?.flipToPrePage();
+                      }}
+                    ></i>
+                    <span className={zegoWhiteboardSharingLayout.page_value}>
+                      {this.context.whiteboard_page}
+                    </span>
+                    <span className={zegoWhiteboardSharingLayout.page_value_total}>
+                      /5
+                    </span>
+                    <i
+                      className={zegoWhiteboardSharingLayout.page_add}
+                      onClick={() => {
                         this.props.zegoSuperBoardView
                           ?.getCurrentSuperBoardSubView()
-                          ?.setScaleFactor(this.state.currentZoom / 100);
-                      }
-                    );
-                  }}
-                ></i>
-              </div>
-              <div className={zegoWhiteboardSharingLayout.page}>
-                <i
-                  className={zegoWhiteboardSharingLayout.page_sub}
-                  onClick={() => {
-                    this.props.zegoSuperBoardView
-                      ?.getCurrentSuperBoardSubView()
-                      ?.flipToPrePage();
-                  }}
-                ></i>
-                <span className={zegoWhiteboardSharingLayout.page_value}>
-                  {this.context.whiteboard_page}
-                </span>
-                <span className={zegoWhiteboardSharingLayout.page_value_total}>
-                  /5
-                </span>
-                <i
-                  className={zegoWhiteboardSharingLayout.page_add}
-                  onClick={() => {
-                    this.props.zegoSuperBoardView
-                      ?.getCurrentSuperBoardSubView()
-                      ?.flipToNextPage();
-                  }}
-                ></i>
-              </div>
-            </div>
-            {this.context.whiteboard_showCreateClose && (
-              <div
-                className={zegoWhiteboardSharingLayout.stop}
-                onClick={() => {
-                  this.props.onclose();
-                }}
-              >
-                <FormattedMessage id="room.stopPresenting" />
-              </div>
-            )}
-          </div>
+                          ?.flipToNextPage();
+                      }}
+                    ></i>
+                  </div>
+                </div>
+                {(this.context.whiteboard_showCreateClose &&
+                  !(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+                    this.props.core._config.scenario?.config?.role !== LiveRole.Host)) && (
+                    <div
+                      className={zegoWhiteboardSharingLayout.stop}
+                      onClick={() => {
+                        this.props.onclose();
+                      }}
+                    >
+                      <FormattedMessage id="room.stopPresenting" />
+                    </div>
+                  )}
+              </div>)}
           <div className={zegoWhiteboardSharingLayout.content}>
-            <ZegoWhiteboardTools
-              core={this.props.core}
-              rows={this.state.rows}
-              onToolChange={async (
-                type: number,
-                fontSize?: number,
-                color?: string
-              ) => {
-                this.props.onToolChange(type, fontSize, color);
-              }}
-              onFontChange={(
-                font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
-                fontSize?: number,
-                color?: string
-              ) => {
-                this.props.onFontChange(font, fontSize, color);
-              }}
-              onAddImage={async (file: File) => {
-                ZegoLoadingShow({
-                  contentText: "The picture is being uploaded",
-                });
-                await this.props.zegoSuperBoardView
-                  ?.getCurrentSuperBoardSubView()
-                  ?.addImage(0, 10, 10, file, (res: string) => {
-                    ZegoLoadingHide();
-                    ZegoToast({ content: "add Image Success!!" });
-                  })
-                  .catch((error: any) => {
-                    ZegoLoadingHide();
-                    console.error("onAddImage:", error);
-                    if (error.code === 60022) {
-                      ZegoToast({
-                        content:
-                          "Failed to add image, this feature is not supported.",
+            {!(this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming &&
+              this.props.core._config.scenario?.config?.role !== LiveRole.Host) && (
+                <ZegoWhiteboardTools
+                  core={this.props.core}
+                  rows={this.state.rows}
+                  onToolChange={async (
+                    type: number,
+                    fontSize?: number,
+                    color?: string
+                  ) => {
+                    this.props.onToolChange(type, fontSize, color);
+                  }}
+                  onFontChange={(
+                    font?: "BOLD" | "ITALIC" | "NO_BOLD" | "NO_ITALIC",
+                    fontSize?: number,
+                    color?: string
+                  ) => {
+                    this.props.onFontChange(font, fontSize, color);
+                  }}
+                  onAddImage={async (file: File) => {
+                    ZegoLoadingShow({
+                      contentText: "The picture is being uploaded",
+                    });
+                    await this.props.zegoSuperBoardView
+                      ?.getCurrentSuperBoardSubView()
+                      ?.addImage(0, 10, 10, file, (res: string) => {
+                        ZegoLoadingHide();
+                        ZegoToast({ content: "add Image Success!!" });
+                      })
+                      .catch((error: any) => {
+                        ZegoLoadingHide();
+                        console.error("onAddImage:", error);
+                        if (error.code === 60022) {
+                          ZegoToast({
+                            content:
+                              "Failed to add image, this feature is not supported.",
+                          });
+                        } else if (error.code === 3130009) {
+                          ZegoToast({
+                            content: "Failed to add image, Unsupported image type.",
+                          });
+                        } else {
+                          ZegoToast({
+                            content:
+                              "Failed to add image, error code:" + error.code,
+                          });
+                        }
                       });
-                    } else if (error.code === 3130009) {
-                      ZegoToast({
-                        content: "Failed to add image, Unsupported image type.",
-                      });
-                    } else {
-                      ZegoToast({
-                        content:
-                          "Failed to add image, error code:" + error.code,
-                      });
-                    }
-                  });
 
-                ZegoLoadingHide();
-              }}
-              onSnapshot={() => {
-                const zegoSuperBoardSubView =
-                  this.props.zegoSuperBoardView?.getCurrentSuperBoardSubView();
-                zegoSuperBoardSubView
-                  ?.snapshot()
-                  .then(function (data: { image: string; userData?: string }) {
-                    const link = document.createElement("a");
-                    link.href = data.image;
-                    link.download = "snapshot.png";
-                    link.click();
-                  });
-              }}
-            ></ZegoWhiteboardTools>
+                    ZegoLoadingHide();
+                  }}
+                  onSnapshot={() => {
+                    const zegoSuperBoardSubView =
+                      this.props.zegoSuperBoardView?.getCurrentSuperBoardSubView();
+                    zegoSuperBoardSubView
+                      ?.snapshot()
+                      .then(function (data: { image: string; userData?: string }) {
+                        const link = document.createElement("a");
+                        link.href = data.image;
+                        link.download = "snapshot.png";
+                        link.click();
+                      });
+                  }}
+                ></ZegoWhiteboardTools>)}
             <div
               className={`${ZegoSidebarCss.screenVideo}  ${zegoWhiteboardSharingLayout.contentRight}`}
               id="ZegoCloudWhiteboardContainer"

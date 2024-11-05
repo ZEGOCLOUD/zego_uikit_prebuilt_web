@@ -87,6 +87,12 @@ export enum ConsoleLevel {
 	Error = "Error",
 	None = "None",
 }
+
+export interface CallingInvitationListConfig {
+	waitingSelectUsers: ZegoUser[]; // 等待选择的成员列表
+	defaultChecked?: boolean; // 是否默认选中， 默认true
+}
+
 export interface ZegoCloudRoomConfig {
 	container?: HTMLElement | undefined | null // 挂载容器
 	preJoinViewConfig?: {
@@ -204,7 +210,27 @@ export interface ZegoCloudRoomConfig {
 	leaveRoomDialogConfig?: {
 		titleText?: string, // custom leave room confrim dialog title
 		descriptionText?: string, // // custom leave room confrim dialog desctiption
-	}
+		// 2.9.0
+		confirmCallback?: () => void, // custom leave room confirm callback
+	},
+	// 2.7.0
+	showMoreButton?: boolean; // 是否显示更多按钮，默认true
+	showUserName?: boolean; // 是否显示用户名称，默认true
+	hideUsersById?: string[]; // 隐藏指定用户id对应的画面
+	videoViewConfig?: {
+		userID?: string; // 用户ID
+		showAvatarWhenCameraOff?: boolean; // 摄像头关闭时是否显示用户头像，默认true
+	}[];
+	backgroundUrl?: string; // 背景图
+	// 2.8.0
+	liveNotStartedTextForAudience?: string; // 自定义观众端直播开始前展示的文本
+	startLiveButtonText?: string; // 自定义开始直播按钮文本
+	// 2.11.0
+	// 通话中邀请用户时，邀请用户窗口将出现在邀请方，如果您想隐藏此视图，请将其设置为false。默认展示。
+	// 您可以在此视图中取消对此用户的邀请。
+	showWaitingCallAcceptAudioVideoView?: boolean;
+	// 通话中呼叫邀请列表配置
+	callingInvitationListConfig?: CallingInvitationListConfig;
 }
 export enum RightPanelExpandedType {
 	None = "None",
@@ -238,7 +264,7 @@ export interface InRoomMessageInfo {
 export interface ZegoBrowserCheckProp {
 	core: ZegoCloudRTCCore
 	joinRoom?: () => void
-	leaveRoom?: (isKickedOut?: boolean) => void
+	leaveRoom?: (isKickedOut?: boolean, isCallQuit?: boolean) => void
 	returnHome?: () => void
 }
 
@@ -282,6 +308,7 @@ export interface ZegoGridLayoutProps {
 	handleMenuItem?: (type: UserListMenuItemType, user: ZegoCloudUser) => void
 
 	soundLevel?: SoundLevelMap
+	myClass?: string
 }
 
 export interface ZegoSidebarLayoutProps {
@@ -342,6 +369,7 @@ export enum ZegoStreamType {
 export interface ZegoUser {
 	userID: string
 	userName?: string
+	avatar?: string
 	setUserAvatar?: (avatar: string) => void
 }
 export enum CoreError {
@@ -411,6 +439,18 @@ export interface ZegoCallInvitationConfig {
 	onIncomingCallAcceptButtonPressed?: () => void
 	// 被叫者点击拒绝按钮回调
 	onIncomingCallDeclineButtonPressed?: () => void
+	// 2.11.0
+	// 是否允许在通话中发送邀请
+  // 默认值为false。
+  canInvitingInCalling?: boolean;
+  // 是否只有呼叫发起者有权限邀请其他人加入通话。
+  // 默认值为false。
+  // 如果设置为false，则通话中的所有参与者都可以邀请其他人。
+  onlyInitiatorCanInvite?: boolean;
+  // 当呼叫发起者离开通话时，整个通话是否应该结束（导致其他参与者一起离开）。
+  // 默认值为false。
+  // 如果设置为false，则即使发起者离开，通话仍然可以继续。
+  endCallWhenInitiatorLeave?: boolean;
 }
 export type CancelCallInvitationFunc = (data?: string) => void // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void // 接受邀请
@@ -424,6 +464,10 @@ export interface InRoomInvitationInfo {
 }
 export type InRoomInvitationReceivedInfo = Omit<InRoomInvitationInfo, "invitee">
 
+export type WaitingUser = ZegoUser & {
+	type: UserTypeEnum
+}
+
 export interface CallInvitationInfo {
 	callID: string
 	roomID: string
@@ -433,6 +477,8 @@ export interface CallInvitationInfo {
 	acceptedInvitees: ZegoUser[]
 	type: ZegoInvitationType
 	isGroupCall: boolean
+	// 等待接受的用户列表
+	waitingUsers?: WaitingUser[]
 }
 export enum CallInvitationEndReason {
 	Declined = "Declined",
@@ -464,4 +510,28 @@ export const enum ReasonForRefusedInviteToCoHost {
 export enum ZegoUIKitLanguage {
 	CHS = "zh-CN", // 中文
 	ENGLISH = "en-US", // 英文
+}
+
+export enum ZIMCallInvitationMode {
+	Unknown = -1,
+	General = 0,
+	Advanced = 1
+}
+
+export enum UserTypeEnum {
+	CALLING_WAITTING, // 通话中邀请 - 等待中
+	GENERAL_WAITING, // 通话前邀请 - 等待中
+}
+ export enum ZIMCallUserState {
+	Unknown = -1,
+	Inviting = 0,
+	Accepted = 1,
+	Rejected = 2,
+	Cancelled = 3,
+	Received = 5,
+	Timeout = 6,
+	Quit = 7,
+	Ended = 8,
+	NotYetReceived = 9,
+	BeCancelled = 10,
 }

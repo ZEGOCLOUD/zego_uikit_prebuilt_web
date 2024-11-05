@@ -16,11 +16,9 @@ export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps
   render(): React.ReactNode {
     return (
       <div
-        className={`${ZegoSidebarCss.sidebarWrapper} ${
-          ZegoSidebarCss.landscape
-        } ${
-          this.props.userList.length === 0 ? ZegoSidebarCss.fullScreen : ""
-        } `}
+        className={`${ZegoSidebarCss.sidebarWrapper} ${ZegoSidebarCss.landscape
+          } ${this.props.userList.length === 0 ? ZegoSidebarCss.fullScreen : ""
+          } `}
       >
         <div className={ZegoSidebarCss.upWrapper}>
           {this.props.userList.map((value, index, arr) => {
@@ -52,6 +50,7 @@ export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps
             }
             return (
               <ZegoUserVideo
+                core={this.props.core}
                 muted={this.props?.selfInfo?.userID === value.userID}
                 user={value}
                 circleSize="SIDEBAR"
@@ -63,6 +62,7 @@ export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps
         </div>
         <div className={ZegoSidebarCss.bottomWrapper}>
           <ZegoUserVideo
+            core={this.props.core}
             muted={
               this.props?.selfInfo?.userID ===
               this.props.screenSharingUser.userID

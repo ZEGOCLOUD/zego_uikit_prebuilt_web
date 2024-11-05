@@ -55,9 +55,9 @@
 		"react-app-polyfill": "^3.0.0",
 		"react-dom": "^18.2.0",
 		"react-intl": "^6.0.4",
-		"zego-express-engine-webrtc": "^3.2.0",
-		"zego-superboard-web": "2.15.3",
-		"zego-zim-web": "2.9.0"
+		"zego-express-engine-webrtc": "^3.6.0",
+		"zego-superboard-web": "^2.16.1",
+		"zego-zim-web": "2.16.0"
 	},
 	"devDependencies": {
 		"@formatjs/cli": "^5.0.2",
@@ -91,6 +91,7 @@
 		"url-loader": "^4.1.1",
 		"web-vitals": "^2.1.4",
 		"webpack": "^5.82.0",
+		"webpack-bundle-analyzer": "^4.10.2",
 		"webpack-cli": "^4.10.0",
 		"webpack-dev-server": "^4.11.1",
 		"zego-express-engine-webrtm": "^2.2.0"

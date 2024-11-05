@@ -81,9 +81,11 @@
   display: flex;
   flex: 1;
   box-sizing: border-box;
-  width: 100%;
-  padding: 0 16px 10px;
+  width: calc(100% - 32px);
+  margin: 0 16px 10px;
   overflow: hidden;
+  background: no-repeat center/cover;
+  border-radius: 19px;
 }
 .contentLeft {
   position: relative;
@@ -633,4 +635,7 @@
   i {
     background-image: url(../../../sdkAssets/Room_nobody_stream@2x.png);
   }
+}
+.transparent {
+  background-color: transparent !important;
 }

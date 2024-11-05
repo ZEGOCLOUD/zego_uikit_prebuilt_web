@@ -145,14 +145,18 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         page = isPc() ? (
           <ZegoRoom
             core={this.props.core}
-            leaveRoom={(isKickedOut = false) => {
+            leaveRoom={(isKickedOut = false, isCallQuit = true) => {
               if (isKickedOut) {
                 // 被踢出房间回到预览页
                 if (this.props.core._config.showPreJoinView) {
                   this.setState({ step: 0 });
                 }
               } else {
-                this.props.core._config.showLeavingView && this.nextPage();
+                if (this.props.core._config.showLeavingView) {
+                  this.nextPage();
+                } else {
+                  this.props.core._config.showPreJoinView && this.setState({ step: 0 });
+                }
               }
               setTimeout(() => {
                 if (!isKickedOut) {
@@ -166,7 +170,8 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
                 this.destroyNodeWhenNoView();
                 this.props.core._zimManager?.callInfo?.callID &&
                   this.props.core._zimManager.endCall(
-                    CallInvitationEndReason.LeaveRoom
+                    CallInvitationEndReason.LeaveRoom,
+                    isCallQuit,
                   );
               }, 0);
             }}
@@ -174,7 +179,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
         ) : (
           <ZegoRoomMobile
             core={this.props.core}
-            leaveRoom={(isKickedOut = false) => {
+            leaveRoom={(isKickedOut = false, isCallQuit = true) => {
               if (isKickedOut) {
                 // 被踢出房间回到预览页
                 if (this.props.core._config.showPreJoinView) {
@@ -196,7 +201,8 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
                 // 主动退出房间，呼叫邀请结束
                 this.props.core._zimManager?.callInfo?.callID &&
                   this.props.core._zimManager.endCall(
-                    CallInvitationEndReason.LeaveRoom
+                    CallInvitationEndReason.LeaveRoom,
+                    isCallQuit
                   );
               }, 0);
             }}

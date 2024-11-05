@@ -507,4 +507,6 @@ export function memberSearch(memberList: ZegoCloudUserList, name: string) {
     return fuse.search(name);
 }
 
-
+export function typeIsBoolean(value: unknown): value is boolean {
+  return typeof value === "boolean";
+}

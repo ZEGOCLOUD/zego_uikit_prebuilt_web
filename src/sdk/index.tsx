@@ -3,6 +3,7 @@ import type { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
 import ZIM from "zego-zim-web";
 import {
+	CallingInvitationListConfig,
 	ConsoleLevel,
 	LiveRole,
 	LiveStreamingMode,
@@ -61,6 +62,7 @@ export class ZegoUIKitPrebuilt {
 	public express: ZegoExpressEngine | undefined;
 	constructor() {
 		this.express = ZegoCloudRTCCore._zg;
+		console.log('ZegoUIKitPrebuilt version: 2.11.2');
 	}
 	get localStream() {
 		return ZegoUIKitPrebuilt.core?.localStream;
@@ -97,9 +99,9 @@ export class ZegoUIKitPrebuilt {
 		);
 	}
 
-	static create(kitToken: string): ZegoUIKitPrebuilt {
+	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt {
 		if (!ZegoUIKitPrebuilt.core && kitToken) {
-			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken);
+			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, cloudProxyConfig);
 			ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
 		}
 		return ZegoUIKitPrebuilt._instance;
@@ -115,7 +117,7 @@ export class ZegoUIKitPrebuilt {
 					if (config.autoLeaveRoomWhenOnlySelfInRoom === undefined) {
 						config.autoLeaveRoomWhenOnlySelfInRoom = mode === ScenarioModel.OneONoneCall;
 					}
-					config.turnOnMicrophoneWhenJoining = config.turnOnCameraWhenJoining ?? true;
+					config.turnOnMicrophoneWhenJoining = config.turnOnMicrophoneWhenJoining ?? true;
 					if (type === ZegoInvitationType.VoiceCall) {
 						config.turnOnCameraWhenJoining = config.turnOnCameraWhenJoining ?? false;
 					}
@@ -164,6 +166,7 @@ export class ZegoUIKitPrebuilt {
 			div.style.zIndex = "100";
 			div.style.backgroundColor = "#FFFFFF";
 			div.style.overflow = "auto";
+			div.id = "zego-container";
 			document.body.appendChild(div);
 			roomConfig = {
 				...roomConfig,
@@ -184,10 +187,12 @@ export class ZegoUIKitPrebuilt {
 						this.root?.unmount();
 						this.root = undefined;
 						this.hasJoinedRoom = false;
+						ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(false)
 						div && div.remove();
 					}}></ZegoCloudRTCKitComponent>
 			);
 			this.hasJoinedRoom = true;
+			ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(true)
 		} else {
 			console.error("【ZEGOCLOUD】joinRoom parameter error !!");
 		}
@@ -195,6 +200,7 @@ export class ZegoUIKitPrebuilt {
 
 	destroy() {
 		ZegoUIKitPrebuilt.core?.leaveRoom?.();
+		ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(false)
 		ZegoUIKitPrebuilt.core = undefined;
 		// @ts-ignore
 		ZegoCloudRTCCore._instance = undefined;
@@ -233,7 +239,14 @@ export class ZegoUIKitPrebuilt {
 			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callType !!");
 		}
 
-		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation(callees, callType, timeout, data, roomID, notificationConfig);
+		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation({
+			invitees: callees,
+			type: callType,
+			timeout,
+			data,
+			roomID,
+			notificationConfig,
+		});
 	}
 
 	async sendInRoomCommand(command: string, toUserIDs: string[]): Promise<boolean> {
@@ -281,5 +294,14 @@ export class ZegoUIKitPrebuilt {
 			return "【ZEGOCLOUD】 please call init first !!";
 		}
 		return ZegoUIKitPrebuilt.core._expressConfig.roomID;
+	}
+
+	// 更新通话中邀请用户配置
+	updateCallingInvitationListConfig(config: CallingInvitationListConfig) {
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return;
+		}
+		ZegoUIKitPrebuilt.core.updateCallingInvitationListConfig(config);
 	}
 }

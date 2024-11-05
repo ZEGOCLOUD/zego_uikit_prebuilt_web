@@ -1,6 +1,5 @@
 import React from "react";
-import { ZegoUser } from "zego-express-engine-webrtc/sdk/src/common/zego.entity";
-import { ZegoInvitationType } from "../../../model";
+import { ZegoInvitationType, ZegoUser } from "../../../model";
 import { getNameFirstLetter, userNameColor } from "../../../util";
 import WaitingCss from "./callInvitationWaiting.module.scss";
 export class CallInvitationWaiting extends React.PureComponent<{
@@ -15,6 +14,11 @@ export class CallInvitationWaiting extends React.PureComponent<{
   componentWillUnmount(): void {
     this.audioRef && (this.audioRef.src = "");
   }
+
+  get inviteeInfo(): ZegoUser {
+    return this.props.invitee;
+  }
+
   render(): React.ReactNode {
     const { formatMessage } = this.props.languageManager;
     return (
@@ -26,11 +30,20 @@ export class CallInvitationWaiting extends React.PureComponent<{
         <div className={WaitingCss.userWrapper}>
           <div
             className={WaitingCss.avatar}
-            style={{ color: userNameColor(this.props.invitee.userName || "") }}
+            style={{ color: userNameColor(this.inviteeInfo.userName || "") }}
           >
-            {getNameFirstLetter(this.props.invitee.userName || "")}
+            {this.inviteeInfo.avatar && (
+              <img
+                src={this.inviteeInfo.avatar}
+                onError={(e: any) => {
+                  e.target.style.display = "none";
+                }}
+                alt=""
+              />
+            )}
+            {getNameFirstLetter(this.inviteeInfo.userName || "")}
           </div>
-          <p className={WaitingCss.userName}>{this.props.invitee.userName}</p>
+          <p className={WaitingCss.userName}>{this.inviteeInfo.userName}</p>
         </div>
         <div
           className={WaitingCss.endBtn}

@@ -44,7 +44,9 @@ const en = {
     "global.joinRoomFailedNetwork": "There's something wrong with your network. Please check it and try again.",
     "global.joinRoomFailedToken": "Failed to join the room, token authentication error.",
     "global.joinRoomFailedRepeat": "You are on a call in another room, please leave that room first.",
-    "global.joinRoomFailed": "加入房间失败，请重试。（错误码：{code}）",
+    "global.joinRoomFailed": "Failed to join the room, please try again.（error code: {code}）",
+    "global.inviteMembers": "Invite members",
+    "global.invitees": "Invitees",
 
     'browserCheck.join': "Join",
     "browserCheck.placeholder": "Your name",
@@ -61,7 +63,7 @@ const en = {
     "room.presentingMirrorTip": " To avoid an infinity mirror, we suggest you not to share your entire screen or browser window.",
     "room.ignore": "Ignore",
     "room.live": "Go Live",
-    "room.stopLive": "Stop broadcase",
+    "room.stopLive": "Stop broadcast",
     "room.living": "Start stream...",
     "room.stopLiveDesc": "Are you sure to stop broadcasting?",
     "room.turnOffMicToast": "Turned off the microphone successfully.",
@@ -116,6 +118,7 @@ const en = {
     "mobileRoom.presenting": "{user} is presenting.",
     "mobileRoom.systemNotSupport": "Your current mobile system does not support the display of multiple video screens during the live streaming.",
     "mobileRoom.browserNotSupport": "The current browser does not support the display of multiple video screens, we suggest you change your browser.",
+    "mobileRoom.connect": "Connect",
 
     "settings.audio": "Audio",
     "settings.video": "Video",
@@ -136,6 +139,7 @@ const en = {
     "call.cancelled": "Cancelled invitation",
     "call.incomingVoice": "Incoming {group}voice call...",
     "call.incomingVideo": "Incoming {group}video call...",
+    "call.cancelCall": "Cancel call",
 
 }
 export default en;

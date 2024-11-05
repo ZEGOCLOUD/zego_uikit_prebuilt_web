@@ -4,6 +4,7 @@ import {
   LiveRole,
   LiveStreamingMode,
   ScenarioModel,
+  UserTypeEnum,
   ZegoCloudRemoteMedia,
 } from "../../model";
 import { isPc } from "../../util";
@@ -16,6 +17,7 @@ export type ZegoCloudUser = ZegoUser & {
   avatar?: string;
   requestCohost?: undefined | number;
   invited?: boolean;
+  type?: UserTypeEnum;
 };
 export class ZegoCloudUserListManager {
   constructor(private zg: ZegoExpressEngine) {}

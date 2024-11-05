@@ -12,10 +12,10 @@
     background: #242736;
     border-radius: vw(14px);
   }
-//   .hideVideo {
-//     width: 1px;
-//     height: 1px;
-//   }
+  //   .hideVideo {
+  //     width: 1px;
+  //     height: 1px;
+  //   }
   .noVideoWrapper {
     position: absolute;
     top: 0;
@@ -43,7 +43,7 @@
         box-sizing: border-box;
         width: vw(160px);
         height: vw(160px);
-        margin-bottom: vw(16px);
+        // margin-bottom: vw(16px);
         font-weight: 600;
         font-size: vw(35px);
         line-height: vw(49px);
@@ -186,4 +186,23 @@
     background-position: center;
     background-size: 100%;
   }
+  .cancelBtn {
+    position: absolute;
+    bottom: vw(40px);
+    left: 50%;
+    z-index: 100;
+    transform: translateX(-50%);
+    width: vw(80px);
+    height: vw(80px);
+    text-align: center;
+    color: #ffffff;
+    background: #e8543b;
+    border-radius: 50%;
+    background: url("../../../../sdkMobileAssets/icon_Decline_nor@2x.png")
+      no-repeat;
+    background-size: 100%;
+  }
+}
+.hidden {
+  display: none !important;
 }
