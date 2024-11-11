@@ -42,7 +42,7 @@ import { getVideoResolution } from "../util"
 import { EventEmitter } from "./tools/EventEmitter"
 import { createIntl, createIntlCache } from "react-intl";
 import { i18nMap } from '../locale';
-
+import { ZegoStreamView } from "zego-express-engine-webrtc/sdk/code/zh/ZegoStreamView.web"
 export class ZegoCloudRTCCore {
 	static _instance: ZegoCloudRTCCore
 	static _zg: ZegoExpressEngine
@@ -231,6 +231,9 @@ export class ZegoCloudRTCCore {
 			this._config.scenario.config?.role === LiveRole.Audience &&
 			(this._config.scenario.config as any).liveStreamingMode === LiveStreamingMode.LiveStreaming
 		)
+	}
+	get zg() {
+		return ZegoCloudRTCCore._zg;
 	}
 	isHost(userID?: string): boolean {
 		userID ??= this._expressConfig.userID
@@ -843,10 +846,11 @@ export class ZegoCloudRTCCore {
 		return ZegoCloudRTCCore._zg.enableVideoCaptureDevice(localStream, enable)
 	}
 
-	async mutePublishStreamVideo(localStream: MediaStream | ZegoLocalStream, enable: boolean): Promise<boolean> {
-		this.localStreamInfo.cameraStatus = enable ? "MUTE" : "OPEN"
+	// 开关正在推流的流画面
+	async mutePublishStreamVideo(localStream: MediaStream | ZegoLocalStream, mute: boolean): Promise<boolean> {
+		this.localStreamInfo.cameraStatus = mute ? "MUTE" : "OPEN"
 		this.startAndUpdateMixinTask()
-		return ZegoCloudRTCCore._zg.mutePublishStreamVideo(localStream, enable)
+		return ZegoCloudRTCCore._zg.mutePublishStreamVideo(localStream, mute)
 	}
 	async mutePublishStreamAudio(localStream: MediaStream, enable: boolean): Promise<boolean> {
 		this.localStreamInfo.micStatus = enable ? "MUTE" : "OPEN"
@@ -2262,5 +2266,10 @@ export class ZegoCloudRTCCore {
 			...this._config.callingInvitationListConfig || {},
 			...config,
 		}
+	}
+
+	// 创建媒体流播放组件
+	createRemoteStreamView(remoteStream: MediaStream): ZegoStreamView {
+		return ZegoCloudRTCCore._zg.createRemoteStreamView(remoteStream);
 	}
 }

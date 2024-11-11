@@ -11,6 +11,7 @@ import { ZegoModel } from "./components/zegoModel";
 import { CallInvitationEndReason, ZegoUIKitLanguage } from "../model";
 import { IntlProvider } from "react-intl";
 import { i18nMap } from '../locale';
+
 declare const SDK_ENV: boolean;
 export class ZegoCloudRTCKitComponent extends React.Component<{
   core: ZegoCloudRTCCore;
@@ -34,6 +35,12 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
     this.setState({
       isSupportWebRTC: res,
     });
+
+    console.log('[KitComponent]componentDidMount')
+  }
+  componentWillUnmount(): void {
+    console.warn('[KitComponent]componentWillUnmount')
+    this.destroyNodeWhenNoView();
   }
 
   async deviceCheck(): Promise<void> {
@@ -72,6 +79,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
     });
   }
   destroyNodeWhenNoView() {
+    console.warn('[KitComponent]destroyNodeWhenNoView', this.props.core._config)
     //退出房间后，如果没有预览页面，就销毁渲染节点
     if (
       !this.props.core._config.showLeavingView &&
@@ -146,6 +154,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           <ZegoRoom
             core={this.props.core}
             leaveRoom={(isKickedOut = false, isCallQuit = true) => {
+              console.log('【ZegoRoom】 leave room')
               if (isKickedOut) {
                 // 被踢出房间回到预览页
                 if (this.props.core._config.showPreJoinView) {
@@ -167,6 +176,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
                 } else {
                   this.props.core._config?.onYouRemovedFromRoom?.();
                 }
+                console.warn('KitComponent]leaveRoom')
                 this.destroyNodeWhenNoView();
                 this.props.core._zimManager?.callInfo?.callID &&
                   this.props.core._zimManager.endCall(

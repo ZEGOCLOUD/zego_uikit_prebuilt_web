@@ -11,8 +11,8 @@ import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStr
 export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
 	state = {
 		localStream: undefined,
-		localVideoStream: undefined,
-		localAudioStream: undefined,
+		// localVideoStream: undefined,
+		// localAudioStream: undefined,
 		userName: "xxx",
 		videoOpen: true,
 		audioOpen: true,
@@ -61,82 +61,39 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 	}
 	componentWillUnmount() {
 		window.removeEventListener("orientationchange", this.onOrientationChange.bind(this), false);
-		this.state.localVideoStream && this.props.core.destroyStream(this.state.localVideoStream);
-		this.state.localAudioStream && this.props.core.destroyStream(this.state.localAudioStream);
+		this.state.localStream && this.props.core.destroyStream(this.state.localStream);
+		// this.state.localAudioStream && this.props.core.destroyStream(this.state.localAudioStream);
 		window.removeEventListener("resize", this.onResize);
 	}
-	async createStream(videoOpen: boolean, audioOpen: boolean): Promise<MediaStream> {
-		let localVideoStream: ZegoLocalStream,
-			localAudioStream,
-			localStream = new MediaStream();
-
-		// try {
-		// if (videoOpen && audioOpen) {
-		// 	this.setState({
-		// 		isVideoOpening: true,
-		// 	});
-		// 	localStream = await this.props.core.createStream({
-		// 		camera: {
-		// 			video: true,
-		// 			audio: true,
-		// 			facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
-		// 		},
-		// 	});
-		// }
-		// } catch (error) {
+	async createStream(videoOpen: boolean, audioOpen: boolean): Promise<ZegoLocalStream | undefined> {
+		let localStream: ZegoLocalStream | undefined;
 		try {
 			if (videoOpen) {
 				this.setState({
 					isVideoOpening: true,
 				});
-				localVideoStream = await this.props.core.createStream({
-					camera: {
-						video: {
-							facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
-						},
-						audio: false,
-						// videoQuality: 4,
-						// width: 640,
-						// height: 360,
-						// bitrate: 400,
-						// frameRate: 15,
-					},
-				});
-				localVideoStream?.getVideoTracks().forEach((track) => {
-					localStream.addTrack(track);
-				});
-				this.setState({
-					localVideoStream,
-				});
 			}
+			localStream = await this.props.core.createStream({
+				camera: {
+					video: {
+						facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
+					},
+					audio: true,
+					// videoQuality: 4,
+					// width: 640,
+					// height: 360,
+					// bitrate: 400,
+					// frameRate: 15,
+				},
+			});
 		} catch (error) {
 			this.videoRefuse = true;
+			this.audioRefuse = true;
 			this.setState({
 				isVideoOpening: false,
 			});
 			console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(error));
 		}
-
-		try {
-			if (audioOpen) {
-				localAudioStream = await this.props.core.createStream({
-					camera: {
-						video: false,
-						audio: true,
-					},
-				});
-				localAudioStream?.getAudioTracks().forEach((track) => {
-					localStream.addTrack(track);
-				});
-				this.setState({
-					localAudioStream,
-				});
-			}
-		} catch (error) {
-			this.audioRefuse = true;
-			console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(error));
-		}
-		// }
 
 		this.setState(
 			{
@@ -146,11 +103,13 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 				isVideoOpening: false,
 			},
 			() => {
-				// if (this.videoRef.current && localStream) {
-				// 	this.videoRef.current.srcObject = localStream;
-				// }
-				if (this.localVideoRef.current && localVideoStream) {
-					localVideoStream.playVideo(this.localVideoRef.current, { objectFit: 'cover' });
+				if (this.localVideoRef.current && localStream) {
+					if (videoOpen) {
+						localStream.playVideo(this.localVideoRef.current, { objectFit: 'cover' });
+					}
+					if (audioOpen) {
+						localStream.playAudio();
+					}
 				}
 			}
 		);
@@ -158,7 +117,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		return localStream;
 	}
 
-	async toggleStream2(type: "video" | "audio") {
+	async toggleStream(type: "video" | "audio") {
 		if (type === "video") {
 			if (this.videoRefuse) {
 				ZegoConfirm({
@@ -170,14 +129,16 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 				return;
 			}
 			const videoOpen = !this.state.videoOpen;
-			if (!this.state.localVideoStream) {
+			if (!this.state.localStream) {
 				await this.createStream(videoOpen, this.state.audioOpen);
 			} else {
-				(this.state.localVideoStream as MediaStream)
-					.getTracks()
-					.reverse()
-					.forEach((track) => track.stop());
-				this.setState({ localVideoStream: undefined });
+				if (videoOpen && this.localVideoRef.current) {
+					(this.state.localStream as ZegoLocalStream).playVideo(this.localVideoRef.current, { objectFit: 'cover' });
+				} else {
+					(this.state.localStream as ZegoLocalStream).stopVideo();
+				}
+				// this.props.core.destroyStream(this.state.localStream);
+				// this.setState({ localStream: undefined });
 			}
 			this.setState({ videoOpen });
 		} else if (type === "audio") {
@@ -191,10 +152,16 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 				return;
 			}
 			const audioOpen = !this.state.audioOpen;
-			if (!this.state.localAudioStream) {
+			if (!this.state.localStream) {
 				await this.createStream(this.state.videoOpen, audioOpen);
 			} else {
-				this.props.core.muteMicrophone(audioOpen);
+				if (audioOpen) {
+					(this.state.localStream as ZegoLocalStream).playAudio();
+				} else {
+					console.warn('===stop audio', this.state.localStream);
+					(this.state.localStream as ZegoLocalStream).stopAudio();
+				}
+				// this.props.core.muteMicrophone(audioOpen);
 			}
 			this.setState({ audioOpen });
 		}
@@ -219,19 +186,19 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		}
 	}
 
-	async toggleStream(type: "video" | "audio") {
-		if (
-			this.state.videoOpen &&
-			this.state.audioOpen &&
-			this.state.localStream &&
-			!this.state.localAudioStream &&
-			!this.state.localVideoStream
-		) {
-			this.toggleStream1(type);
-		} else {
-			this.toggleStream2(type);
-		}
-	}
+	// async toggleStream(type: "video" | "audio") {
+	// 	if (
+	// 		this.state.videoOpen &&
+	// 		this.state.audioOpen &&
+	// 		this.state.localStream &&
+	// 		!this.state.localAudioStream &&
+	// 		!this.state.localVideoStream
+	// 	) {
+	// 		this.toggleStream1(type);
+	// 	} else {
+	// 		this.toggleStream2(type);
+	// 	}
+	// }
 
 	async joinRoom() {
 		if (!this.state.userName.length) return;

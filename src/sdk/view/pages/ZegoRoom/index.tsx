@@ -641,9 +641,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					videoBitrate: solution.bitrate,
 				});
 				this.props.core.localStream = localStream;
-				this.props.core.enableVideoCaptureDevice(
+				this.props.core.mutePublishStreamVideo(
 					localStream,
-					!!this.props.core._config.turnOnCameraWhenJoining
+					!this.props.core._config.turnOnCameraWhenJoining
 				);
 				this.props.core.muteMicrophone(!this.props.core._config.turnOnMicrophoneWhenJoining);
 				this.setState({
@@ -780,8 +780,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.cameraStatus = -1;
 
 		let result;
+		if (this.state.localStream) {
+			console.log('===togglecamera', this.state.localStream.getVideoTracks().length)
+
+		}
 		if (this.state.localStream && this.state.localStream.getVideoTracks().length > 0) {
-			result = await this.props.core.enableVideoCaptureDevice(this.state.localStream, !this.state.cameraOpen);
+			result = await this.props.core.mutePublishStreamVideo(this.state.localStream, this.state.cameraOpen);
 			try {
 				await this.props.core.setStreamExtraInfo(
 					this.localStreamID as string,
@@ -1118,6 +1122,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		}
 	}
 	leaveRoom(isKickedOut = false, isCallQuit = true) {
+		console.log('【ZegoRoom】leaveRoom function', isKickedOut, isCallQuit)
 		this.props.core._zimManager?._inRoomInviteMg?.audienceCancelRequest();
 		this.state.isScreenSharingBySelf && this.closeScreenSharing();
 		this.state.localStream && this.props.core.destroyStream(this.state.localStream);
