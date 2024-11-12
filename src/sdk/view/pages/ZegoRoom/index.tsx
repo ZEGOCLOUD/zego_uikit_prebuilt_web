@@ -638,7 +638,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					},
 				});
 				this.props.core.localStream = localStream;
-				this.props.core.enableVideoCaptureDevice(
+				await this.props.core.enableVideoCaptureDevice(
 					localStream,
 					!!this.props.core._config.turnOnCameraWhenJoining
 				);
