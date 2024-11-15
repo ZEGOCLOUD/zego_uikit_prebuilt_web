@@ -74,6 +74,7 @@ export default class App extends React.PureComponent {
     waitingUsers: [],
   };
   refuseBtn = React.createRef();
+  acceptBtn = React.createRef();
   settingsEl = null;
   invitationInput: RefObject<HTMLInputElement> = React.createRef();
   zp: ZegoUIKitPrebuilt;
@@ -475,31 +476,38 @@ export default class App extends React.PureComponent {
     //@ts-ignore // just for debugger
     window.zp = this.zp;
     this.zp.setCallInvitationConfig({
-      // enableCustomCallInvitationDialog: true,
       language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
       canInvitingInCalling,
       endCallWhenInitiatorLeave,
       onlyInitiatorCanInvite,
+      // enableCustomCallInvitationDialog: true,
       onConfirmDialogWhenReceiving: (callType, caller, refuse, accept, data) => {
         console.warn("【demo】onCallInvitationDialogShowed", callType, caller, data, refuse);
         this.inviter = caller;
-        // this.setState({
-        //   showConfirmDialog: true,
-        // })
-        // console.warn("【demo】onCallInvitationDialogShowed", document.querySelector('.refuse-btn'), this.refuseBtn.current);
-        // const refuseBtn = document.querySelector('.refuse-btn') as HTMLElement;
-        // refuseBtn && (refuseBtn.onclick = () => {
-        //   console.log('====click refuse')
-        //   refuse();
-        // })
+        this.setState({
+          showConfirmDialog: true,
+        })
+        console.warn("【demo】onCallInvitationDialogShowed", document.querySelector('.refuse-btn'), this.refuseBtn.current);
+        const refuseBtn = document.querySelector('.refuse-btn') as HTMLElement;
+        refuseBtn && (refuseBtn.onclick = () => {
+          console.log('====click refuse')
+          refuse();
+        })
+        const acceptBtn = document.querySelector('.accept-btn') as HTMLElement;
+        acceptBtn && (
+          acceptBtn.onclick = () => {
+            console.log('====click accept')
+            accept();
+          }
+        )
       },
       // enableCustomCallInvitationWaitingPage: true,
       onWaitingPageWhenSending: (callType, callees, cancel) => {
         console.warn("【demo】onCallInvitationWaitingPageShowed", callType, callees, cancel, this.state.showWaitingPage);
         this.setState({
           callees,
-          // showWaitingPage: true
+          showWaitingPage: true
         })
       },
       onSetRoomConfigBeforeJoining: (callType) => {
@@ -597,6 +605,9 @@ export default class App extends React.PureComponent {
       // 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
       onOutgoingCallAccepted: (callID: string, caller: ZegoUser) => {
         console.warn("onOutgoingCallAccepted", callID, caller);
+        this.setState({
+          showWaitingPage: false
+        })
       },
       // 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
       onOutgoingCallRejected: (callID: string, caller: ZegoUser) => {
@@ -1183,12 +1194,12 @@ export default class App extends React.PureComponent {
           <div className={`${APP.toast}`}>{this.state.toastText}</div>
         )}
 
-        {this.state.showWaitingPage && (
-          <div className="wait-page" style={{ position: "absolute", top: 0, width: "100%", height: "100%", background: "#3b3b3b" }}>
+        {/* {this.state.showWaitingPage && (
+          <div className="wait-page" style={{ position: "absolute", top: 0, width: "100%", height: "100%", background: "#3b3b3b", display: "flex", justifyContent: "center", alignItems: "center" }}>
             {this.state.callees.map((item) => {
               return (
                 <div>
-                  <div>{item.userID}</div>
+                  <div style={{ color: "#fff" }}>{item.userID}</div>
                   <div>{item.userName}</div>
 
                 </div>
@@ -1197,9 +1208,10 @@ export default class App extends React.PureComponent {
           </div>
         )}
 
-        {/* {(
+        {(
           <div className="confirm-dialog" style={{ position: "absolute", top: 0, width: "100px", height: "100px", background: "#3b3b3b" }}>
             <div ref={this.refuseBtn} className="refuse-btn" style={{ width: "100px", height: "40px", backgroundColor: "#fff" }}>refuse</div>
+            <div ret={this.acceptBtn} className="accept-btn" style={{ width: "100px", height: "40px", backgroundColor: "#fff" }}>accept</div>
           </div>
         )} */}
       </div>
