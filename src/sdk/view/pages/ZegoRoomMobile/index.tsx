@@ -800,11 +800,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
         if (!localStream) return false;
 
-        this.props.core.mutePublishStreamVideo(
+        await this.props.core.mutePublishStreamVideo(
           localStream,
           !this.props.core._config.turnOnCameraWhenJoining
         );
-        this.props.core.muteMicrophone(
+        await this.props.core.muteMicrophone(
           !this.props.core._config.turnOnMicrophoneWhenJoining
         );
         this.setState({
@@ -1818,6 +1818,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                   </div>
                 )}
               <ZegoMixPlayer
+                core={this.props.core}
                 userInfo={this.props.core.mixUser}
                 showFullScreen={
                   this.state.liveStatus === "1" &&
@@ -2036,6 +2037,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   clickVideo(e: MouseEvent) {
     // @ts-ignore
     let className: string = e.target.className;
+    let id: string = (e.target as any).id;
     let whiteboardClick = false;
     if (
       // @ts-ignore
@@ -2052,7 +2054,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       className.includes("zegoUserVideo_videoCommon") ||
       className.includes("zegoMore_more") ||
       className.includes("ZegoRoomMobile_ZegoRoom") ||
-      className.includes("zegoUserVideo_click")
+      className.includes("zegoUserVideo_click") ||
+      className.includes("zegoSidebar_") ||
+      id.includes("zg-rtc-video") // 使用zegostreamview播放时点击的video
     ) {
       if (!this.state.showFooter) {
         // 横屏白板不展示底部工具栏

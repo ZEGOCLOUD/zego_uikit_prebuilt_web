@@ -7,21 +7,24 @@ import ShowManageContext, {
 import flvjs from "flv.js/dist/flv.min.js";
 import { isSafari, isPc, isIOS } from "../../../util";
 import ZegoVideoCss from "./index.module.scss";
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
+import { ZegoCloudRTCCore } from "../../../modules";
 
 export default class ZegoVideo extends React.PureComponent<{
+	core: ZegoCloudRTCCore
 	muted: boolean
 	classList: string
 	userInfo: ZegoCloudUser
 	onPause?: Function
 	onCanPlay?: Function
-	videoRefs?: (el: HTMLVideoElement) => void
+	videoRefs?: (el: HTMLVideoElement | HTMLDivElement) => void
 	isMixing?: boolean
 	isPureAudio?: boolean
 	isPureVideo?: boolean
 }> {
 	static contextType?: React.Context<ShowManageType> = ShowManageContext
 	context!: React.ContextType<typeof ShowManageContext>
-	videoRef: HTMLVideoElement | null = null
+	videoRef: HTMLVideoElement | HTMLDivElement | null = null
 	flvPlayer: flvjs.Player | null = null
 	timer: NodeJS.Timer | null = null
 	loadTimer: NodeJS.Timer | null = null
@@ -51,34 +54,43 @@ export default class ZegoVideo extends React.PureComponent<{
 	}
 	onloadedmetadata = () => {
 		this.loadTimer = setTimeout(() => {
-			this.videoRef?.load()
+			(this.videoRef as HTMLVideoElement)?.load()
 		}, 5000)
 	}
-	initVideo(el: HTMLVideoElement) {
+	initVideo(el: HTMLElement | HTMLVideoElement) {
 		if (el) {
-			!this.videoRef && (this.videoRef = el)
-			el.muted !== this.props.muted && (el.muted = this.props.muted)
-			if ((el as any)?.sinkId !== this.context?.speakerId) {
-				; (el as any)?.setSinkId?.(this.context?.speakerId || "")
-			}
+			!this.videoRef && (this.videoRef = el as HTMLVideoElement)
 			if (this.props.userInfo?.streamList?.[0]?.media?.id) {
-				if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
-					el.src = ""
-					el.srcObject = this.props.userInfo?.streamList?.[0]?.media! as any
-					el.setAttribute("cameraOpen", this.props.userInfo?.streamList?.[0]?.cameraStatus)
-					this.safariAutoPlayTimer()
+				const isMirror = this.props.userInfo.streamList[0]?.streamID.includes('_screensharing') ? false : true;
+				if (this.props.muted) {
+					// 本地预览流
+					(this.props.userInfo.streamList[0]?.media as ZegoLocalStream).playVideo(this.videoRef, { mirror: isMirror })
 				} else {
-					this.safariVideoMutedInvalidWhenOpenCamera(el)
+					const remoteView = this.props.core.createRemoteStreamView(this.props.userInfo.streamList[0].media as MediaStream);
+					remoteView.play(this.videoRef, { mirror: isMirror });
 				}
+				// if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
+				// 	el.src = ""
+				// 	el.srcObject = this.props.userInfo?.streamList?.[0]?.media! as any
+				// 	el.setAttribute("cameraOpen", this.props.userInfo?.streamList?.[0]?.cameraStatus)
+				// 	this.safariAutoPlayTimer()
+				// } else {
+				// 	this.safariVideoMutedInvalidWhenOpenCamera(el)
+				// }
 				this.destroyFlvPlayer()
 			} else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
-				if (isSafari()) {
-					if (el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {
-						el.srcObject = null
-						el.onloadedmetadata = this.onloadedmetadata
-						el.src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!
-						el.load()
-						const promise = el.play()
+				(el as HTMLVideoElement).muted !== this.props.muted && ((el as HTMLVideoElement).muted = this.props.muted)
+				if ((el as any)?.sinkId !== this.context?.speakerId) {
+					(el as any)?.setSinkId?.(this.context?.speakerId || "")
+				}
+				if (!flvjs.isSupported()) {
+					console.warn('===is safari', isSafari());
+					if ((el as HTMLVideoElement).src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {
+						(el as HTMLVideoElement).srcObject = null;
+						el.onloadedmetadata = this.onloadedmetadata;
+						(el as HTMLVideoElement).src = this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS!;
+						(el as HTMLVideoElement).load();
+						const promise = (el as HTMLVideoElement).play();
 						if (promise !== undefined) {
 							promise
 								.catch((error) => {
@@ -97,7 +109,7 @@ export default class ZegoVideo extends React.PureComponent<{
 						}
 					}
 				} else {
-					this.initFLVPlayer(el, this.props.userInfo.streamList?.[0]?.urlsHttpsFLV)
+					this.initFLVPlayer(el as HTMLVideoElement, this.props.userInfo.streamList?.[0]?.urlsHttpsFLV)
 				}
 			}
 		}
@@ -130,10 +142,9 @@ export default class ZegoVideo extends React.PureComponent<{
 			hasVideo: hasVideo, //是否需要视频
 		})
 		this.flvPlayer.on(flvjs.Events.LOADING_COMPLETE, () => {
-			this.flvPlayer?.play()
+			this.flvPlayer?.play();
 		})
 		this.flvPlayer.on(flvjs.Events.ERROR, (error: any) => {
-			console.error(flvjs.Events.ERROR, error)
 			if (error === "NetworkError") {
 				setTimeout(() => {
 					if (this.flvPlayer) {
@@ -197,8 +208,8 @@ export default class ZegoVideo extends React.PureComponent<{
 		if (this.flvPlayer) {
 			this.destroyFlvPlayer()
 		} else {
-			this.videoRef?.srcObject && (this.videoRef.srcObject = null)
-			this.videoRef?.src && (this.videoRef.src = "")
+			// this.videoRef?.srcObject && (this.videoRef.srcObject = null)
+			// this.videoRef?.src && (this.videoRef.src = "")
 		}
 		this.timer && clearInterval(this.timer)
 		if (this.loadTimer) {
@@ -218,22 +229,22 @@ export default class ZegoVideo extends React.PureComponent<{
 		}
 	}
 	reload() {
-		const currentTime = this.videoRef?.currentTime
+		const currentTime = (this.videoRef as HTMLVideoElement)?.currentTime
 		this.reloadTimer = setTimeout(() => {
-			if (currentTime === this.videoRef?.currentTime) {
-				this.videoRef?.load()
+			if (currentTime === (this.videoRef as HTMLVideoElement)?.currentTime) {
+				(this.videoRef as HTMLVideoElement)?.load()
 				this.safariAutoPlayTimer()
 			}
 		}, 2000)
 	}
 	safariAutoPlayTimer() {
 		// 修复浏览器听不到拉流声音的问题 Safari15.3，chrome拒绝权限的时候
-		if (!this.videoRef?.muted) {
-			if (!this.videoRef?.paused && this.context.enableVideoMixing) {
+		if (!(this.videoRef as HTMLVideoElement)?.muted) {
+			if (!(this.videoRef as HTMLVideoElement)?.paused && this.context.enableVideoMixing) {
 				this.reload()
 				return
 			}
-			if (this.videoRef?.paused) {
+			if ((this.videoRef as HTMLVideoElement)?.paused) {
 				this.reload()
 			}
 		}
@@ -247,67 +258,89 @@ export default class ZegoVideo extends React.PureComponent<{
 		}
 	}
 	render(): React.ReactNode {
+		const { formatMessage } = this.props.core.intl;
 		return (
-			<>
-				<video
-					autoPlay
-					className={`${ZegoVideoCss.video}  ${this.context.userInfo.userID === this.props.userInfo.userID &&
-							this.props.userInfo.streamList?.[0]?.streamID?.includes("_main")
+			this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV ?
+				<>
+					<video
+						autoPlay
+						className={`${ZegoVideoCss.video}  ${this.props.userInfo.streamList?.[0]?.streamID?.includes("_main")
 							? ZegoVideoCss.mirror
 							: ""
-						} ${this.props.classList}`}
-					playsInline={true}
-					ref={(el: HTMLVideoElement) => {
-						el && this.props.videoRefs?.(el);
-						!this.videoRef && (this.videoRef = el);
-					}}
-					onPause={() => {
-						this.setState({
-							isPaused: true,
-						});
-						setTimeout(() => {
-							this.videoRef?.load();
-							this.videoRef?.play();
-						}, 2000);
-						this.props.onPause && this.props.onPause();
-					}}
-					onCanPlay={() => {
-						if (this.loadTimer) {
-							this.videoRef!.onloadedmetadata = null;
-							clearTimeout(this.loadTimer);
-							this.loadTimer = null;
-						}
-						this.videoRef
-							?.play()
-							.then((res) => {
-								this.setState({
-									isPaused: false,
-								});
-							})
-							.catch((error) => {
-								this.setState({
-									isPaused: true,
-								});
+							} ${this.props.classList}`}
+						playsInline={true}
+						ref={(el: HTMLVideoElement) => {
+							el && this.props.videoRefs?.(el);
+							!this.videoRef && (this.videoRef = el);
+						}}
+						onPause={() => {
+							this.setState({
+								isPaused: true,
 							});
-						this.props.onCanPlay && this.props.onCanPlay();
-					}}
-					onPlaying={() => {
-						this.setState({
-							isPaused: false,
-						});
-					}}></video>
-				{this.state.isPaused && (isSafari() || isIOS()) && (
-					<div
-						className={`${ZegoVideoCss.videoPlayBtn} ${isPc() ? "" : ZegoVideoCss.mobile}`}
-						onClick={() => {
-							this.videoRef?.load();
-							this.videoRef?.play();
+							setTimeout(() => {
+								(this.videoRef as HTMLVideoElement)?.load();
+								(this.videoRef as HTMLVideoElement)?.play();
+							}, 2000);
+							this.props.onPause && this.props.onPause();
+						}}
+						onCanPlay={() => {
+							console.warn('===onCanPlay');
+							if (this.loadTimer) {
+								this.videoRef!.onloadedmetadata = null;
+								clearTimeout(this.loadTimer);
+								this.loadTimer = null;
+							}
+							(this.videoRef as HTMLVideoElement)
+								?.play()
+								.then((res) => {
+									this.setState({
+										isPaused: false,
+									});
+								})
+								.catch((error) => {
+									this.setState({
+										isPaused: true,
+									});
+								});
+							this.props.onCanPlay && this.props.onCanPlay();
+						}}
+						onPlaying={() => {
 							this.setState({
 								isPaused: false,
 							});
-						}}></div>
-				)}
-			</>
+						}}></video>
+					{this.state.isPaused && (isSafari() || isIOS()) && !document.getElementById('ZegoVideoResumeDialog') && (
+						// <div
+						// 	className={`${ZegoVideoCss.videoPlayBtn} ${isPc() ? "" : ZegoVideoCss.mobile}`}
+						// 	onClick={() => {
+						// 		(this.videoRef as HTMLVideoElement)?.load();
+						// 		(this.videoRef as HTMLVideoElement)?.play();
+						// 		this.setState({
+						// 			isPaused: false,
+						// 		});
+						// 	}}></div>
+						<div id="ZegoVideoResumeDialog" className={`${ZegoVideoCss.Mask}`}>
+							<div className={`${ZegoVideoCss.videoDialog}`}>
+								{formatMessage({ id: "room.resumePlayTips" })}
+								<button className={`${ZegoVideoCss.button}`}
+									onClick={() => {
+										(this.videoRef as HTMLVideoElement)?.load();
+										(this.videoRef as HTMLVideoElement)?.play();
+										this.setState({
+											isPaused: false,
+										});
+									}}>{formatMessage({ id: "room.resumePlay" })}</button>
+							</div>
+						</div>
+					)}
+				</> :
+				<div className={this.props.classList}
+					ref={(el: HTMLDivElement) => {
+						el && this.props.videoRefs?.(el);
+						!this.videoRef && (this.videoRef = el);
+						// 对端屏幕共享流画面依赖该方法结束loading
+						this.props.onCanPlay && this.props.onCanPlay();
+					}}></div>
 		);
 	}
 }

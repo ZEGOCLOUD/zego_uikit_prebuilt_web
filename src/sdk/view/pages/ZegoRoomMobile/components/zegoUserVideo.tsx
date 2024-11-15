@@ -4,7 +4,7 @@ import zegoUserVideoCss from "./zegoUserVideo.module.scss";
 import { ZegoMore } from "./zegoMore";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
-// import ZegoVideo from "../../../components/zegoMedia/video";
+import ZegoVideo from "../../../components/zegoMedia/video";
 import ZegoAudio from "../../../components/zegoMedia/audio";
 import { FormattedMessage } from "react-intl";
 import { ZegoCloudRTCCore } from "../../../../modules";
@@ -29,7 +29,7 @@ export class ZegoUserVideo extends React.PureComponent<{
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
   localVideoRef: RefObject<HTMLDivElement> = React.createRef();
-  videoEl: HTMLVideoElement | null = null;
+  videoEl: HTMLVideoElement | HTMLDivElement | null = null;
   state: {
     isFullScreen: boolean;
   } = {
@@ -54,41 +54,6 @@ export class ZegoUserVideo extends React.PureComponent<{
     this.props.core._zimManager?.cancelInvitation(void 0, [this.props.user], false)
   }
 
-  componentDidMount(): void {
-    console.warn('===zegovideoplayer mount', this.props.user, this.props.muted);
-    this.playVideo(this.localVideoRef.current as HTMLElement)
-  }
-  componentDidUpdate(prevProps: Readonly<{ core: ZegoCloudRTCCore; user: ZegoCloudUser; myClass?: string; onLocalStreamPaused?: () => void; onCanPlay?: () => void; volume: { [streamID: string]: number; }; circleSize?: "GRID" | "SIDEBAR"; muted: boolean; hiddenName?: boolean; hiddenMore?: boolean; bigVideo?: boolean; showFullScreen?: boolean; }>, prevState: Readonly<{}>, snapshot?: any): void {
-    this.playVideo(this.localVideoRef.current as HTMLElement)
-  }
-  async playVideo(el: HTMLElement) {
-    if (el && !el.childNodes.length) {
-      console.warn('===渲染', el.childNodes.length);
-      if (this.props.user?.streamList?.[0]?.media?.id) {
-        if (this.props.muted) {
-          // 本地流
-          (this.props.user.streamList[0]?.media as ZegoLocalStream).playVideo(this.localVideoRef.current as HTMLElement, { mirror: true })
-        } else {
-          console.warn('===remote view')
-          const remoteView = this.props.core.createRemoteStreamView(this.props.user.streamList[0].media as MediaStream);
-          remoteView.play(this.localVideoRef.current as HTMLElement);
-        }
-      } else if (this.props.user?.streamList?.[0]?.urlsHttpsFLV) {
-        // const player = new ZegoExpressPlayer(this.props.core.zg, {
-        //   container: this.localVideoRef.current,
-        //   mode: "live"
-        // })
-        // const { token, userID } = this.props.core._expressConfig;
-        // const res = await player.verify(token, userID);
-        // console.warn('===res', res);
-        // player.onError = (err: any) => {
-        //   console.error('===err', err);
-        // }
-        // player.src = this.props.userInfo.streamList[0].urlsHttpsFLV;
-        // player.play();
-      }
-    }
-  }
   get avatarConfig() {
     const videoViewConfig = this.props.core._config.videoViewConfig || []
     const { avatar, userID } = this.props.user
@@ -132,26 +97,22 @@ export class ZegoUserVideo extends React.PureComponent<{
           this.props.user.streamList[0] &&
           (this.props.user.streamList[0].media ||
             this.props.user.streamList[0].urlsHttpsFLV) && (
-            <div ref={this.localVideoRef}
-              className={`${zegoUserVideoCss.videoCommon} zegoUserVideo_videoCommon ${this.isCameraMute
-                ? zegoUserVideoCss.hideVideo
-                : ""}`}
-            ></div>
-            // <ZegoVideo
-            //   muted={this.props.muted}
-            //   userInfo={this.props.user}
-            //   classList={`${zegoUserVideoCss.videoCommon
-            //     } zegoUserVideo_videoCommon ${this.isCameraMute
-            //       ? zegoUserVideoCss.hideVideo
-            //       : ""
-            //     }`}
-            //   onCanPlay={() => {
-            //     this.props.onCanPlay && this.props.onCanPlay();
-            //   }}
-            //   videoRefs={(el: HTMLVideoElement) => {
-            //     this.videoEl = el;
-            //   }}
-            // ></ZegoVideo>
+            <ZegoVideo
+              core={this.props.core}
+              muted={this.props.muted}
+              userInfo={this.props.user}
+              classList={`${zegoUserVideoCss.videoCommon
+                } zegoUserVideo_videoCommon ${this.isCameraMute
+                  ? zegoUserVideoCss.hideVideo
+                  : ""
+                }`}
+              onCanPlay={() => {
+                this.props.onCanPlay && this.props.onCanPlay();
+              }}
+              videoRefs={(el: HTMLVideoElement | HTMLDivElement) => {
+                this.videoEl = el;
+              }}
+            ></ZegoVideo>
           )}
         {(!this.props.user.streamList ||
           !this.props.user.streamList[0] ||

@@ -8,10 +8,6 @@ import { UserListMenuItemType, UserTypeEnum } from "../../../../model";
 import { FormattedMessage } from "react-intl";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
-
-// import ZegoExpressPlayer from '../../../../modules/tools/zego-express-player/ZegoExpressPlayer-1.3.1';
-// const ZegoExpressPlayer = require('../../../../modules/tools/zego-express-player/ZegoExpressPlayer-1.3.1.js');
-// console.warn('===zegoplayer', ZegoExpressPlayer);
 export class VideoPlayer extends React.PureComponent<{
   core: ZegoCloudRTCCore
   userInfo: ZegoCloudUser;
@@ -60,42 +56,6 @@ export class VideoPlayer extends React.PureComponent<{
     return this.props.userInfo.type === UserTypeEnum.CALLING_WAITTING
   }
 
-  componentDidMount(): void {
-    console.warn('===zegovideoplayer mount', this.props.userInfo, this.props.muted);
-    this.playVideo(this.localVideoRef.current as HTMLElement)
-  }
-  componentDidUpdate(prevProps: Readonly<{ core: ZegoCloudRTCCore; userInfo: ZegoCloudUser; muted: boolean; volume?: { [streamID: string]: number; }; handleMenuItem?: (type: UserListMenuItemType) => void; onPause?: Function; onCanPlay?: Function; myClass?: string; hiddenName?: boolean; hiddenMore?: boolean; }>, prevState: Readonly<{}>, snapshot?: any): void {
-    this.playVideo(this.localVideoRef.current as HTMLElement)
-  }
-  async playVideo(el: HTMLElement) {
-    if (el && !el.childNodes.length) {
-      console.warn('===渲染', el.childNodes.length);
-      if (this.props.userInfo?.streamList?.[0]?.media?.id) {
-        if (this.props.muted) {
-          // 本地流
-          (this.props.userInfo.streamList[0]?.media as ZegoLocalStream).playVideo(this.localVideoRef.current as HTMLElement, { mirror: true })
-        } else {
-          console.warn('===remote view')
-          const remoteView = this.props.core.createRemoteStreamView(this.props.userInfo.streamList[0].media as MediaStream);
-          remoteView.play(this.localVideoRef.current as HTMLElement);
-        }
-      } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
-        // const player = new ZegoExpressPlayer(this.props.core.zg, {
-        //   container: this.localVideoRef.current,
-        //   mode: "live"
-        // })
-        // const { token, userID } = this.props.core._expressConfig;
-        // const res = await player.verify(token, userID);
-        // console.warn('===res', res, this.props.userInfo.streamList[0].urlsHttpsFLV);
-        // // player.onError = (err: any) => {
-        // //   console.error('===err', err);
-        // // }
-        // player.src = this.props.userInfo.streamList[0].urlsHttpsFLV;
-        // player.play();
-      }
-    }
-  }
-
   cancelCall() {
     this.props.core._zimManager?.cancelInvitation(void 0, [this.props.userInfo], false)
   }
@@ -127,8 +87,8 @@ export class VideoPlayer extends React.PureComponent<{
           });
         }}
       >
-        <div ref={this.localVideoRef} className={`${ZegoVideoPlayerCss.videoCommon}`}></div>
-        {/* <ZegoVideo
+        <ZegoVideo
+          core={this.props.core}
           muted={this.props.muted}
           classList={`${ZegoVideoPlayerCss.videoCommon}`}
           userInfo={this.props.userInfo}
@@ -138,7 +98,7 @@ export class VideoPlayer extends React.PureComponent<{
           onCanPlay={() => {
             this.props.onCanPlay && this.props.onCanPlay();
           }}
-        ></ZegoVideo> */}
+        ></ZegoVideo>
         {this.avatarConfig.visiblity &&
           <div
             className={ZegoVideoPlayerCss.cameraMask}

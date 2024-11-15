@@ -480,7 +480,17 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                     <label>
                       <FormattedMessage id="settings.preview" />
                     </label>
-                    <video
+                    <div className={ZegoSettingsCss.previewVideo}
+                      ref={(el: HTMLDivElement | null) => {
+                        if (
+                          el &&
+                          this.state.localVideoStream
+                        ) {
+                          (this.state.localVideoStream as ZegoLocalStream).playVideo(el, { mirror: true, objectFit: "cover" })
+                        }
+                      }}>
+                    </div>
+                    {/* <video
                       muted
                       autoPlay
                       className={ZegoSettingsCss.previewVideo}
@@ -493,7 +503,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                           el.srcObject = this.state.localVideoStream as any;
                         }
                       }}
-                    ></video>
+                    ></video> */}
                   </div>
                   <div className={ZegoSettingsCss.device}>
                     <ZegoSelect

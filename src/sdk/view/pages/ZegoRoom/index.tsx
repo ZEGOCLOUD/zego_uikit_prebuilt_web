@@ -641,11 +641,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					videoBitrate: solution.bitrate,
 				});
 				this.props.core.localStream = localStream;
-				this.props.core.mutePublishStreamVideo(
+				await this.props.core.mutePublishStreamVideo(
 					localStream,
 					!this.props.core._config.turnOnCameraWhenJoining
 				);
-				this.props.core.muteMicrophone(!this.props.core._config.turnOnMicrophoneWhenJoining);
+				await this.props.core.muteMicrophone(!this.props.core._config.turnOnMicrophoneWhenJoining);
 				this.setState({
 					localStream,
 					cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
@@ -859,7 +859,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					frameRate: 15,
 				};
 			}
-			console.error(screenConfig);
 			const screenSharingStream = await this.props.core.createStream({
 				// @ts-ignore
 				screen: {
@@ -875,7 +874,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					isCameraOn: true,
 					isMicrophoneOn: true,
 					hasVideo: screenSharingStream.getVideoTracks().length > 0,
-					hasAudio: screenSharingStream.getAudioTracks()[0].enabled,
+					hasAudio: screenSharingStream.getAudioTracks()?.[0].enabled,
 				})
 			);
 			streamID && (this.screenSharingStreamID = streamID as string);
@@ -884,7 +883,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				screenSharingStream: screenSharingStream,
 			});
 		} catch (error: any) {
-			console.error(error);
+			console.warn("screen sharing canceled or error", error);
 			if (!this.props.core._config.screenSharingConfig?.onError) {
 				if (error?.code === 1103043) {
 					ZegoModelShow(
@@ -1409,6 +1408,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				) {
 					return (
 						<ZegoMixPlayer
+							core={this.props.core}
 							userInfo={this.props.core.mixUser}
 							isPureAudio={this.props.core.zum.isPureAudio}
 							isPureVideo={this.props.core.zum.isPureVideo}></ZegoMixPlayer>

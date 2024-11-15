@@ -191,13 +191,13 @@ export class ZimManager {
 								this.refuseInvitation("decline");
 								callInvitationControl.callInvitationDialogHide();
 								this.endCall(CallInvitationEndReason.Declined);
-								this.config?.onIncomingCallAcceptButtonPressed?.();
+								this.config?.onIncomingCallDeclineButtonPressed?.();
 							},
 							() => {
 								this.clearIncomingTimer();
 								this.acceptInvitation();
 								this.notifyJoinRoomCallback();
-								this.config?.onIncomingCallDeclineButtonPressed?.();
+								this.config?.onIncomingCallAcceptButtonPressed?.();
 							},
 							this.languageManager,
 							this.config?.ringtoneConfig?.incomingCallUrl
@@ -652,7 +652,7 @@ export class ZimManager {
 			call_id: this.callInfo.roomID,
 			operation_type: "cancel_invitation",
 		}
-		const extendedData: Record<string, string> = {..._data};
+		const extendedData: Record<string, string> = { ..._data };
 		if (data) {
 			extendedData.custom_data = data;
 		}
@@ -770,7 +770,7 @@ export class ZimManager {
 		if (!callID) return
 		try {
 			await this._zim?.callEnd(callID, { extendedData: '' })
-		} catch(err) {
+		} catch (err) {
 			console.error("【ZEGOCLOUD】callEnd", err)
 		}
 	}
@@ -780,13 +780,13 @@ export class ZimManager {
 		if (!callID) return
 		try {
 			await this._zim?.callQuit(callID, { extendedData: '' })
-		} catch(err) {
+		} catch (err) {
 			console.error("【ZEGOCLOUD】callQuit", err)
 		}
 	}
 	/**结束 call,清除 callInfo */
 	async endCall(reason: CallInvitationEndReason, isCallQuit = true) {
-		const { canInvitingInCalling ,endCallWhenInitiatorLeave } = this.config
+		const { canInvitingInCalling, endCallWhenInitiatorLeave } = this.config
 		const isInviter = this.callInfo.inviter.userID === this.expressConfig.userID
 		if (
 			reason === CallInvitationEndReason.LeaveRoom &&
@@ -796,7 +796,7 @@ export class ZimManager {
 			// 主叫人如果在所有人接收邀请前离开房间，则取消所有人的邀请
 			try {
 				await this.cancelInvitation();
-			} catch(error) {
+			} catch (error) {
 				console.error("【ZEGOCLOUD】cancelInvitation error", error)
 			};
 		}

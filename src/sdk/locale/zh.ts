@@ -106,6 +106,8 @@ const zh = {
     "room.requestExpired": "连麦请求已过期",
     "room.browserNotSupport": "您当前的浏览器不支持在直播间显示多个视频屏幕",
     "room.serviceNotAvailable": "该服务不可用，请联系直播服务提供商解决",
+    "room.resumePlayTips": "浏览器阻止音视频播放，请点击“恢复播放”。",
+    "room.resumePlay": "恢复播放",
 
     "mobileRoom.member": "成员",
     "mobileRoom.chat": "聊天",

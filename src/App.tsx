@@ -258,16 +258,26 @@ export default class App extends React.PureComponent {
           })
         }
         const param: ZegoCloudRoomConfig = {
+          container: element, // 挂载容器
           console: ZegoUIKitPrebuilt.ConsoleNone,
-          turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
-          turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
+          sharedLinks,
+          scenario: {
+            mode,
+            config: {
+              role,
+              liveStreamingMode,
+              enableVideoMixing: enableMixing,
+              videoMixingOutputResolution: ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
+            },
+          },
+          // turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
+          // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
           // showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
           //   showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
           //   showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
           //   showNonVideoUser: true,
           // enableUserSearch: true,
           // @ts-ignore
-          // container: element, // 挂载容器
           // showPreJoinView: true,
           // showScreenSharingButton: false,
           // showTextChat: false,
@@ -343,16 +353,6 @@ export default class App extends React.PureComponent {
           // branding: {
           //   logoURL: require("./assets/zegocloud_logo.png"),
           // },
-          sharedLinks,
-          scenario: {
-            mode,
-            config: {
-              role,
-              liveStreamingMode,
-              enableVideoMixing: enableMixing,
-              videoMixingOutputResolution: ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
-            },
-          },
           // onUserAvatarSetter: (user) => {
           //   user.forEach((u) => {
           //     u.setUserAvatar &&

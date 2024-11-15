@@ -110,6 +110,8 @@ const en = {
     "room.requestExpired": "The request for connecting has expired.",
     "room.browserNotSupport": "Your current browser does not support the display of multiple video screens during the live streaming.",
     "room.serviceNotAvailable": "The service is not available, please contact the live streaming service provider to resolve.",
+    "room.resumePlayTips": 'Media play failed. Click the "Resume"to resume.',
+    "room.resumePlay": "Resume",
 
     "mobileRoom.member": "Member",
     "mobileRoom.chat": "Chat",
