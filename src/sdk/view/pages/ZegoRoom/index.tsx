@@ -626,7 +626,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		if (!this.props.core.status.videoRefuse || !this.props.core.status.audioRefuse) {
 			try {
 				const solution = getVideoResolution(this.state.selectVideoResolution);
-				const localStream = await this.props.core.createStream({
+				const localStream = await this.props.core.createZegoStream({
 					camera: {
 						video: !this.props.core.status.videoRefuse ? {
 							input: this.state.selectCamera,
@@ -859,7 +859,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					frameRate: 15,
 				};
 			}
-			const screenSharingStream = await this.props.core.createStream({
+			const screenSharingStream = await this.props.core.createZegoStream({
 				// @ts-ignore
 				screen: {
 					...screenConfig,

@@ -73,7 +73,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					isVideoOpening: true,
 				});
 			}
-			localStream = await this.props.core.createStream({
+			localStream = await this.props.core.createZegoStream({
 				camera: {
 					video: {
 						facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",

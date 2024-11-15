@@ -137,7 +137,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
           audio: false,
         },
       };
-      const localVideoStream = await this.props.core.createStream(source);
+      const localVideoStream = await this.props.core.createZegoStream(source);
       this.setState({
         localVideoStream,
       });
@@ -160,7 +160,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
           audio: { input: this.state.selectMic },
         },
       };
-      const localAudioStream = await this.props.core.createStream(source);
+      const localAudioStream = await this.props.core.createZegoStream(source);
       this.setState(
         {
           localAudioStream,

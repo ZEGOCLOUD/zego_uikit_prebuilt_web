@@ -758,7 +758,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         let localStream: ZegoLocalStream | MediaStream | null = null;
         try {
           const solution = getVideoResolution(this.state.selectVideoResolution);
-          localStream = await this.props.core.createStream({
+          localStream = await this.props.core.createZegoStream({
             camera: {
               video: !this.props.core.status.videoRefuse ? {
                 input: this.state.selectCamera,
@@ -776,7 +776,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           this.props.core.localStream = localStream;
         } catch (error: any) {
           if (JSON.stringify(error).includes("constrain")) {
-            localStream = await this.props.core.createStream({
+            localStream = await this.props.core.createZegoStream({
               camera: {
                 video: !this.props.core.status.videoRefuse ? {
                   facingMode: this.faceModel ? "user" : "environment",

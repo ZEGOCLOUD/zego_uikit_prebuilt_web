@@ -168,7 +168,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         });
       }
       const solution = getVideoResolution(this.state.selectVideoResolution);
-      localStream = await this.props.core.createStream({
+      localStream = await this.props.core.createZegoStream({
         camera: {
           video: {
             input: this.state.selectCamera,

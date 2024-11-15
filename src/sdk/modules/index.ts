@@ -738,7 +738,7 @@ export class ZegoCloudRTCCore {
 		media.volume = volume
 	}
 
-	async createStream(source?: ZegoStreamOptions): Promise<ZegoLocalStream> {
+	async createZegoStream(source?: ZegoStreamOptions): Promise<ZegoLocalStream> {
 		return ZegoCloudRTCCore._zg.createZegoStream(source)
 	}
 
