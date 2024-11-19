@@ -59,15 +59,19 @@ export default class ZegoVideo extends React.PureComponent<{
 	}
 	initVideo(el: HTMLElement | HTMLVideoElement) {
 		if (el) {
-			!this.videoRef && (this.videoRef = el as HTMLVideoElement)
+			!this.videoRef && (this.videoRef = el as HTMLVideoElement);
 			if (this.props.userInfo?.streamList?.[0]?.media?.id) {
-				const isMirror = this.props.userInfo.streamList[0]?.streamID.includes('_screensharing') ? false : true;
+				const streamID = this.props.userInfo?.streamList?.[0]?.streamID;
+				const isRender = document.getElementById(`${streamID}`)?.children.length ? true : false;
+				if (isRender) return;
+				const isScreenSharing = this.props.userInfo.streamList[0]?.streamID.includes('_screensharing') ? true : false;
+				const videoObjectFit = !isScreenSharing ? this.props.core._config.videoScreenConfig?.objectFit : 'contain';
 				if (this.props.muted) {
 					// 本地预览流
-					(this.props.userInfo.streamList[0]?.media as ZegoLocalStream).playVideo(this.videoRef, { mirror: isMirror })
+					(this.props.userInfo.streamList[0]?.media as ZegoLocalStream).playVideo(this.videoRef, { mirror: !isScreenSharing, objectFit: videoObjectFit })
 				} else {
 					const remoteView = this.props.core.createRemoteStreamView(this.props.userInfo.streamList[0].media as MediaStream);
-					remoteView.play(this.videoRef, { mirror: isMirror });
+					remoteView.play(this.videoRef, { mirror: !isScreenSharing, objectFit: videoObjectFit });
 				}
 				// if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
 				// 	el.src = ""
@@ -84,7 +88,7 @@ export default class ZegoVideo extends React.PureComponent<{
 					(el as any)?.setSinkId?.(this.context?.speakerId || "")
 				}
 				if (!flvjs.isSupported()) {
-					console.warn('===is safari', isSafari());
+					//不支持播放 flv
 					if ((el as HTMLVideoElement).src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS) {
 						(el as HTMLVideoElement).srcObject = null;
 						el.onloadedmetadata = this.onloadedmetadata;
@@ -109,6 +113,7 @@ export default class ZegoVideo extends React.PureComponent<{
 						}
 					}
 				} else {
+					console.warn('===init flv');
 					this.initFLVPlayer(el as HTMLVideoElement, this.props.userInfo.streamList?.[0]?.urlsHttpsFLV)
 				}
 			}
@@ -116,7 +121,7 @@ export default class ZegoVideo extends React.PureComponent<{
 	}
 	initFLVPlayer(videoElement: HTMLVideoElement, url: string) {
 		if (this.flvPlayer) return
-		if (!flvjs.isSupported()) return
+		// if (!flvjs.isSupported()) return
 		videoElement.srcObject = null
 		let hasVideo, hasAudio
 		// if (this.props.isMixing) {
@@ -334,7 +339,9 @@ export default class ZegoVideo extends React.PureComponent<{
 						</div>
 					)}
 				</> :
-				<div className={this.props.classList}
+				<div
+					id={this.props.userInfo.streamList[0].streamID}
+					className={this.props.classList}
 					ref={(el: HTMLDivElement) => {
 						el && this.props.videoRefs?.(el);
 						!this.videoRef && (this.videoRef = el);

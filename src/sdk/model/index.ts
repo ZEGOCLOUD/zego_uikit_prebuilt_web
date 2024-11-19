@@ -231,6 +231,10 @@ export interface ZegoCloudRoomConfig {
 	showWaitingCallAcceptAudioVideoView?: boolean;
 	// 通话中呼叫邀请列表配置
 	callingInvitationListConfig?: CallingInvitationListConfig;
+	// 整体视频画面配置
+	videoScreenConfig?: {
+		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
+	}
 }
 export enum RightPanelExpandedType {
 	None = "None",
@@ -441,16 +445,16 @@ export interface ZegoCallInvitationConfig {
 	onIncomingCallDeclineButtonPressed?: () => void
 	// 2.11.0
 	// 是否允许在通话中发送邀请
-  // 默认值为false。
-  canInvitingInCalling?: boolean;
-  // 是否只有呼叫发起者有权限邀请其他人加入通话。
-  // 默认值为false。
-  // 如果设置为false，则通话中的所有参与者都可以邀请其他人。
-  onlyInitiatorCanInvite?: boolean;
-  // 当呼叫发起者离开通话时，整个通话是否应该结束（导致其他参与者一起离开）。
-  // 默认值为false。
-  // 如果设置为false，则即使发起者离开，通话仍然可以继续。
-  endCallWhenInitiatorLeave?: boolean;
+	// 默认值为false。
+	canInvitingInCalling?: boolean;
+	// 是否只有呼叫发起者有权限邀请其他人加入通话。
+	// 默认值为false。
+	// 如果设置为false，则通话中的所有参与者都可以邀请其他人。
+	onlyInitiatorCanInvite?: boolean;
+	// 当呼叫发起者离开通话时，整个通话是否应该结束（导致其他参与者一起离开）。
+	// 默认值为false。
+	// 如果设置为false，则即使发起者离开，通话仍然可以继续。
+	endCallWhenInitiatorLeave?: boolean;
 }
 export type CancelCallInvitationFunc = (data?: string) => void // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void // 接受邀请
@@ -522,7 +526,7 @@ export enum UserTypeEnum {
 	CALLING_WAITTING, // 通话中邀请 - 等待中
 	GENERAL_WAITING, // 通话前邀请 - 等待中
 }
- export enum ZIMCallUserState {
+export enum ZIMCallUserState {
 	Unknown = -1,
 	Inviting = 0,
 	Accepted = 1,

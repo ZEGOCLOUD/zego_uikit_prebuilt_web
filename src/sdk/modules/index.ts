@@ -195,6 +195,9 @@ export class ZegoCloudRTCCore {
 			callingInvitationListConfig: {
 				waitingSelectUsers: [],
 				defaultChecked: true,
+			},
+			videoScreenConfig: {
+				objectFit: "contain",
 			}
 		}
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage"
