@@ -260,7 +260,7 @@ export class ZegoUIKitPrebuilt {
 		if (typeof command !== "object" || command === null) {
 			return Promise.reject("【ZEGOCLOUD】sendInRoomCustomCommand params error: command !!");
 		}
-		return await ZegoUIKitPrebuilt.core._zimManager.sendMessage(command, priority);
+		return await ZegoUIKitPrebuilt.core._zimManager.sendInRoomCustomMessage(command, priority);
 	}
 	// 主动退出房间
 	hangUp() {

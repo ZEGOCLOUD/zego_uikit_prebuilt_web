@@ -33,7 +33,7 @@ import { callInvitationControl } from "../../view/pages/ZegoCallInvitation/callI
 import InRoomInviteManager from "./InRoomInviteManager";
 import { createIntl, createIntlCache } from "react-intl";
 import { i18nMap } from '../../locale';
-import { typeIsBoolean } from "../../util";
+import { typeIsBoolean, userNameColor } from "../../util";
 import { ZegoUIKitPrebuilt } from "../..";
 
 export class ZimManager {
@@ -70,6 +70,8 @@ export class ZimManager {
 	languageManager: any
 	// 是否加入到房间内
 	hasJoinedRoom: boolean = false;
+	// 在 login 成功后再次调用 enterRoom
+	needJoinRoomAgain: boolean = false;
 	constructor(
 		ZIM: ZIM,
 		expressConfig: {
@@ -106,8 +108,12 @@ export class ZimManager {
 		)
 			.then(() => {
 				// 登录成功
-				console.warn("zim login success!!");
+				console.warn("zim login success!!", this.hasJoinedRoom, this.needJoinRoomAgain);
 				this.isLogin = true;
+				// 解决 zim 还未登录成功就调用了 zim 的 enterRoom，导致加入房间失败，发送消息不成功
+				if (this.needJoinRoomAgain) {
+					this.enterRoom();
+				}
 				// 用户不调用 setCallInvitationConfig 时也需要初始化language
 				if (!this.languageManager) {
 					this.changeIntl();
@@ -312,6 +318,7 @@ export class ZimManager {
 					orderKey: msg.orderKey,
 					senderUserID: msg.senderUserID,
 					text: msg.message as string,
+					extendedData: msg.extendedData,
 				}));
 			const commandMsgs = data.messageList
 				.filter((msg: { type: number }) => msg.type === 2)
@@ -856,6 +863,7 @@ export class ZimManager {
 		this.onRoomCommandMessageCallback = func;
 	}
 	enterRoom() {
+		console.warn('===zim enter room', this.isLogin, this.hasJoinedRoom)
 		if (this.isLogin) {
 			this._zim
 				?.enterRoom({
@@ -868,6 +876,8 @@ export class ZimManager {
 				.catch((error: any) => {
 					console.error("【zim enterRoom】failed", error);
 				});
+		} else {
+			this.needJoinRoomAgain = true;
 		}
 	}
 	leaveRoom() {
@@ -881,7 +891,7 @@ export class ZimManager {
 				console.error("【zim leaveRoom】failed", error);
 			});
 	}
-	async sendMessage(command: object, priority = 1): Promise<ZegoSignalingInRoomCommandMessage> {
+	async sendInRoomCustomMessage(command: object, priority = 1): Promise<ZegoSignalingInRoomCommandMessage> {
 		const res = await this._zim?.sendMessage(
 			{
 				type: 2,
@@ -903,5 +913,35 @@ export class ZimManager {
 			senderUserID,
 			command: JSON.parse(decodeURIComponent(escape(String.fromCharCode(...Array.from(message as Uint8Array))))),
 		};
+	}
+
+	// 调用 zim 接口发送文本消息，目前使用原因：zim 的文字审核功能
+	async sendTextMessage(message: string) {
+		const extendedData = {
+			userName: ZegoUIKitPrebuilt.core?._expressConfig.userName
+		}
+		return await this._zim?.sendMessage(
+			{
+				type: 1,
+				message,
+				extendedData: JSON.stringify(extendedData),
+			},
+			this.expressConfig.roomID,
+			1,
+			{ priority: 3 }
+		).then(({ message }) => {
+			console.warn('[ZimManager]send text msg success', message);
+			return {
+				errorCode: 0,
+				message: message.message,
+				timestamp: message.timestamp,
+			}
+		}).catch((err) => {
+			console.warn('[ZimManager]send text msg error', err);
+			return {
+				errorCode: err.code,
+				message: err.message
+			}
+		})
 	}
 }

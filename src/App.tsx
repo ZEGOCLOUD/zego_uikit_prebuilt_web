@@ -231,6 +231,7 @@ export default class App extends React.PureComponent {
           }));
         } else {
           token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, userName || getRandomName())).token;
+          // token = ZegoUIKitPrebuilt.generateKitTokenForTest(0, "", roomID, userID, userName || getRandomName())
         }
         const zp = ZegoUIKitPrebuilt.create(token);
         //@ts-ignore // just for debugger
@@ -270,7 +271,10 @@ export default class App extends React.PureComponent {
               videoMixingOutputResolution: ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
             },
           },
-          // turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
+          turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
+          // onSendMessageResult: (response) => {
+          //   console.warn('===onSendMessageResult', response);
+          // },
           // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
           // showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
           //   showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示

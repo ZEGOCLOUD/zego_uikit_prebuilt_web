@@ -1020,8 +1020,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} else {
 				message = msg
 			}
-
-			resp = await this.props.core.sendRoomMessage(message)
+			if (this.props.core._zimManager) {
+				resp = await this.props.core._zimManager?.sendTextMessage(message);
+				this.props.core._config.onSendMessageResult && this.props.core._config.onSendMessageResult(resp);
+			} else {
+				resp = await this.props.core.sendRoomMessage(message)
+			}
 		} catch (err) {
 			console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
 		}
@@ -1032,7 +1036,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				}
 				return msg;
 			});
-			console.log(_messageList);
+			console.log('messageList', _messageList);
 			return {
 				messageList: _messageList,
 			};

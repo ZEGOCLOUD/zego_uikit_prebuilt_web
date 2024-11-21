@@ -209,6 +209,13 @@ declare interface ZegoCloudRoomConfig {
 	showWaitingCallAcceptAudioVideoView?: boolean;
 	// Configure the call invitation list during a call
 	callingInvitationListConfig?: CallingInvitationListConfig;
+	// 2.13.1
+	// Overall video screen configuration
+	videoScreenConfig?: {
+		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
+	}
+	// Send Message Response
+	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
 }
 
 export enum RightPanelExpandedType {
@@ -296,11 +303,6 @@ declare interface ZegoCallInvitationConfig {
 	// Whether the whole call should end when the call originator leaves the call (causing other participants to leave together), The default value is false.
 	// If it is set to false, the call can continue even if the initiator leaves.
 	endCallWhenInitiatorLeave?: boolean;
-	// 2.13.1
-	// Overall video screen configuration
-	videoScreenConfig?: {
-		objectFit?: "cover" | "contain" | "fill" // Video display mode, default "contain"
-	}
 }
 
 declare interface ZegoSignalingPluginNotificationConfig {

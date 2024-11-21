@@ -31,7 +31,9 @@ import {
 	VideoResolution,
 	ZegoCloudRemoteMedia,
 	ZegoCloudRoomConfig,
+	ZegoSignalingInRoomTextMessage,
 	ZegoUIKitLanguage,
+	ZegoUIKitMessageType,
 	ZegoUser,
 } from "../model"
 import { ZegoCloudUser, ZegoCloudUserList, ZegoCloudUserListManager } from "./tools/UserListManager"
@@ -1119,10 +1121,10 @@ export class ZegoCloudRTCCore {
 			}
 		)
 		ZegoCloudRTCCore._zg.on("IMRecvBroadcastMessage", (roomID: string, chatData: ZegoBroadcastMessageInfo[]) => {
-			const newChatData = transformMsg(chatData)
-			this.onRoomMessageUpdateCallBack && this.onRoomMessageUpdateCallBack(roomID, newChatData)
+			const newChatData = transformMsg(ZegoUIKitMessageType.rtcMessage, chatData)
+			this.onRoomMessageUpdateCallBack && this.onRoomMessageUpdateCallBack(roomID, newChatData as ZegoBroadcastMessageInfo[])
 			newChatData.forEach((data) => {
-				this._config.onInRoomMessageReceived && this._config.onInRoomMessageReceived(data)
+				this._config.onInRoomMessageReceived && this._config.onInRoomMessageReceived(data as ZegoBroadcastMessageInfo)
 			})
 		})
 		// 房间内自定义消息
@@ -1240,8 +1242,15 @@ export class ZegoCloudRTCCore {
 		)
 		// }
 		// 监听房间内ZIM text消息
-		this._config.onInRoomTextMessageReceived &&
-			this._zimManager?.onRoomTextMessage(this._config.onInRoomTextMessageReceived)
+		// this._config.onInRoomTextMessageReceived &&
+		// 	this._zimManager?.onRoomTextMessage(this._config.onInRoomTextMessageReceived)
+		this._zimManager?.onRoomTextMessage((msgs) => {
+			const newChatData = transformMsg(ZegoUIKitMessageType.zimMessage, msgs);
+			this.onRoomMessageUpdateCallBack && this.onRoomMessageUpdateCallBack(this._expressConfig.roomID, newChatData as ZegoBroadcastMessageInfo[])
+			newChatData.forEach((data) => {
+				this._config.onInRoomMessageReceived && this._config.onInRoomMessageReceived(data as ZegoBroadcastMessageInfo)
+			})
+		})
 		this._config.onInRoomCustomCommandReceived &&
 			this._zimManager?.onRoomCommandMessage(this._config.onInRoomCustomCommandReceived)
 		const resp = await new Promise<number>(async (res, rej) => {
@@ -1327,7 +1336,7 @@ export class ZegoCloudRTCCore {
 				console.error('login', error)
 			}
 		})
-		this._zimManager?.enterRoom()
+		this._zimManager?.enterRoom();
 		ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300)
 		this.streamUpdateTimer(this.waitingHandlerStreams)
 		return resp

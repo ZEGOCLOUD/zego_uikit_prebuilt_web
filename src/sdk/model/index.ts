@@ -231,10 +231,13 @@ export interface ZegoCloudRoomConfig {
 	showWaitingCallAcceptAudioVideoView?: boolean;
 	// 通话中呼叫邀请列表配置
 	callingInvitationListConfig?: CallingInvitationListConfig;
+	// 2.13.0
 	// 整体视频画面配置
 	videoScreenConfig?: {
 		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
 	}
+	// 发送消息回调
+	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
 }
 export enum RightPanelExpandedType {
 	None = "None",
@@ -248,6 +251,7 @@ export interface ZegoSignalingInRoomTextMessage {
 	orderKey: number
 	senderUserID: string
 	text: string
+	extendedData?: string
 }
 export interface ZegoSignalingInRoomCommandMessage {
 	messageID: string
@@ -538,4 +542,8 @@ export enum ZIMCallUserState {
 	Ended = 8,
 	NotYetReceived = 9,
 	BeCancelled = 10,
+}
+export enum ZegoUIKitMessageType {
+	rtcMessage = 1,
+	zimMessage = 2,
 }
