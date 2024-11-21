@@ -392,10 +392,10 @@ export class ZegoCloudRTCCore {
 				config.showPinButton = false
 				config.showLayoutButton = false
 				config.layout = "Grid"
-				config.lowerLeftNotification = {
-					showTextChat: false,
-					showUserJoinAndLeave: false,
-				}
+				// config.lowerLeftNotification = {
+				// 	showTextChat: false,
+				// 	showUserJoinAndLeave: false,
+				// }
 			}
 		} else {
 			config.showInviteToCohostButton = false
