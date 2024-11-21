@@ -21,7 +21,7 @@ import { ZegoUser, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/s
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
 import { ZegoMessage } from "./components/zegoMessage";
-import { getVideoResolution, isFireFox, isSafari, randomNumber, throttle } from "../../../util";
+import { getVideoResolution, isFireFox, isSafari, randomNumber, throttle, convertDomNodeToReactElement } from "../../../util";
 import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoModelShow } from "../../components/zegoModel";
 import { ZegoToast } from "../../components/zegoToast";
@@ -2225,6 +2225,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 							)}
 						</div>
 					</div>
+					{this.props.core._config.requireRoomForegroundView && (
+						<div id="ZegoRoomForegroundView" className={ZegoRoomCss.foregroundView}>
+							{convertDomNodeToReactElement(this.props.core._config.requireRoomForegroundView())}
+						</div>
+					)}
 					<div
 						className={ZegoRoomCss.reconnect}
 						style={{

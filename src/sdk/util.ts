@@ -2,6 +2,8 @@
 import CryptoJS from "crypto-js";
 import Fuse from "fuse.js";
 import { ZegoCloudUserList } from "./modules/tools/UserListManager";
+import React from 'react';
+
 export function randomNumber(len: number): number {
   let result = "";
   let chars = "123456789",
@@ -201,18 +203,18 @@ export function getBrowser(): { browser: string; version: string } {
   (s = ua.match(/edge\/([\d.]+)/))
     ? (sys.edge = s[1])
     : (s = ua.match(/rv:([\d.]+)\) like gecko/))
-    ? (sys.ie = s[1])
-    : (s = ua.match(/msie ([\d.]+)/))
-    ? (sys.ie = s[1])
-    : (s = ua.match(/firefox\/([\d.]+)/))
-    ? (sys.firefox = s[1])
-    : (s = ua.match(/chrome\/([\d.]+)/))
-    ? (sys.chrome = s[1])
-    : (s = ua.match(/opera.([\d.]+)/))
-    ? (sys.opera = s[1])
-    : (s = ua.match(/version\/([\d.]+).*safari/))
-    ? (sys.safari = s[1])
-    : 0;
+      ? (sys.ie = s[1])
+      : (s = ua.match(/msie ([\d.]+)/))
+        ? (sys.ie = s[1])
+        : (s = ua.match(/firefox\/([\d.]+)/))
+          ? (sys.firefox = s[1])
+          : (s = ua.match(/chrome\/([\d.]+)/))
+            ? (sys.chrome = s[1])
+            : (s = ua.match(/opera.([\d.]+)/))
+              ? (sys.opera = s[1])
+              : (s = ua.match(/version\/([\d.]+).*safari/))
+                ? (sys.safari = s[1])
+                : 0;
 
   if (sys.edge) return { browser: "Edge", version: sys.edge };
   if (sys.ie) return { browser: "IE", version: sys.ie };
@@ -497,16 +499,36 @@ export function generatePrebuiltToken(
  * @return {any[]} An array of search results.
  */
 export function memberSearch(memberList: ZegoCloudUserList, name: string) {
-    const option = {
-        location: 0,
-        distance: 100,
-        threshold: 0.0,
-        keys: ["userName"],
-    };
-    const fuse = new Fuse(memberList, option);
-    return fuse.search(name);
+  const option = {
+    location: 0,
+    distance: 100,
+    threshold: 0.0,
+    keys: ["userName"],
+  };
+  const fuse = new Fuse(memberList, option);
+  return fuse.search(name);
 }
 
 export function typeIsBoolean(value: unknown): value is boolean {
   return typeof value === "boolean";
+}
+
+// @ts-ignore
+export function convertDomNodeToReactElement(domNode: Element) {
+  if (!(domNode instanceof Element)) {
+    // 如果不是Element类型，可能是文本节点，直接返回其文本内容
+    // @ts-ignore
+    return domNode.nodeValue
+  }
+
+  const tag = domNode.tagName.toLowerCase()
+  const attrs = Array.from(domNode.attributes).reduce((props, attr) => {
+    // @ts-ignore
+    props[attr.name] = attr.value
+    return props
+  }, {})
+  // @ts-ignore
+  const children = Array.from(domNode.childNodes).map(convertDomNodeToReactElement)
+
+  return React.createElement(tag, attrs, ...children)
 }

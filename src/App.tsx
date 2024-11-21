@@ -312,7 +312,7 @@ export default class App extends React.PureComponent {
             console.warn("onInRoomMessageReceived", messageInfo)
           },
           onInRoomCommandReceived: (fromUser, command) => {
-            console.warn("onInRoomCommandReceived", fromUser, JSON.parse(command))
+            console.warn("onInRoomCommandReceived", fromUser, command)
           },
           onInRoomTextMessageReceived(messages) {
             console.warn("onInRoomTextMessageReceived", messages)
@@ -419,7 +419,18 @@ export default class App extends React.PureComponent {
           whiteboardConfig: {
             // showAddImageButton: true,
             // showCreateAndCloseButton: true,
-          }
+          },
+          // requireRoomForegroundView: () => {
+          //   const myView = document.createElement('div');
+          //   myView.classList.add("my-view");
+          //   const textData = [];
+          //   textData.forEach((msg) => {
+          //     const msgDom = document.createElement('div');
+          //     msgDom.innerHTML = msg;
+          //     myView.append(msgDom);
+          //   })
+          //   return myView;
+          // }
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"

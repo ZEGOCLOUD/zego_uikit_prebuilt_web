@@ -10,16 +10,19 @@
   min-height: 328px;
   background: #1c1f2e;
 }
+
 @media screen and (min-width: 826px) {
   .ZegoRoom {
     overflow-x: hidden;
   }
 }
+
 @media screen and (min-height: 280px) {
   .ZegoRoom {
     overflow-y: hidden;
   }
 }
+
 .header {
   display: flex;
   align-items: center;
@@ -29,16 +32,19 @@
   height: 64px;
   padding: 0 20px;
   background-color: #1c1f2e;
+
   .headerLeft {
     display: flex;
     align-items: center;
     justify-content: center;
+
     .logo {
       width: 154px;
       height: 32px;
       margin-right: 2px;
       object-fit: contain;
     }
+
     .liveState {
       margin-left: 3px;
       padding: 2px 11px;
@@ -63,21 +69,27 @@
     border: 0;
     border-radius: 10px;
     cursor: pointer;
+
     &:hover {
       background-color: #2c72ff;
     }
   }
+
   .goLiveEnabled {
     background: #ff4a50;
+
     &:hover {
       background: #ff5e64;
     }
   }
+
   .timer {
     margin-right: 20px;
   }
 }
+
 .content {
+  z-index: 1;
   display: flex;
   flex: 1;
   box-sizing: border-box;
@@ -87,6 +99,7 @@
   background: no-repeat center/cover;
   border-radius: 19px;
 }
+
 .contentLeft {
   position: relative;
   display: flex;
@@ -96,6 +109,7 @@
   background-color: #1c1f2e;
   border-radius: 19px;
 }
+
 .network {
   position: absolute;
   top: 14px;
@@ -103,14 +117,14 @@
   z-index: 20;
   width: 32px;
   height: 32px;
-  background: url("../../../sdkAssets/icon_inner_network_poor.png") no-repeat
-      center,
+  background: url("../../../sdkAssets/icon_inner_network_poor.png") no-repeat center,
     rgba(42, 42, 42, 0.25);
   background-size: 24px 24px;
 
   border-radius: 4px;
   backdrop-filter: blur(8px);
 }
+
 .reconnect {
   position: absolute;
   top: 0;
@@ -123,15 +137,16 @@
   width: 100%;
   height: 100%;
   background-color: rgba($color: #2a2a2a, $alpha: 0.6);
-  & > div {
+
+  &>div {
     width: 56px;
     height: 56px;
     margin-bottom: 12px;
-    background: url("../../../sdkAssets/icon_network_reconnect.png") no-repeat
-      center/cover;
+    background: url("../../../sdkAssets/icon_network_reconnect.png") no-repeat center/cover;
     animation: netLoading 2s linear infinite;
   }
-  & > p {
+
+  &>p {
     color: rgba(255, 255, 255, 0.9);
     font-weight: 600;
     font-size: 16px;
@@ -139,6 +154,7 @@
     text-align: center;
   }
 }
+
 .countDown {
   position: absolute;
   top: 0;
@@ -151,7 +167,8 @@
   width: 100%;
   height: 100%;
   background-color: rgba($color: #2a2a2a, $alpha: 0.6);
-  & > div {
+
+  &>div {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -165,11 +182,13 @@
     border-radius: 73px;
   }
 }
+
 @keyframes netLoading {
   100% {
     transform: rotate(360deg);
   }
 }
+
 .contentRight {
   display: flex;
   flex-direction: column;
@@ -179,6 +198,7 @@
   border-radius: 19px;
   transition: all 0.3s ease;
 }
+
 .listHeader {
   display: flex;
   flex: 0 0 auto;
@@ -193,31 +213,35 @@
   line-height: 22px;
   border-bottom: 1px solid #3d4054;
 }
+
 .listHeaderClose {
   width: 18px;
   height: 18px;
-  background: url("../../../sdkAssets/icon_inner_right_close.png") no-repeat
-    center/cover;
+  background: url("../../../sdkAssets/icon_inner_right_close.png") no-repeat center/cover;
   cursor: pointer;
+
   &:hover {
-    background: url("../../../sdkAssets/icon_inner_right_close_hover.png")
-      no-repeat center/cover;
+    background: url("../../../sdkAssets/icon_inner_right_close_hover.png") no-repeat center/cover;
   }
 }
+
 .listContent {
   display: flex;
   flex: 1;
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: auto;
+
   &::-webkit-scrollbar {
     width: 3px;
     height: 3px;
   }
+
   &::-webkit-scrollbar-thumb {
     background: #3d4054;
     border-radius: 2px;
   }
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }
@@ -229,7 +253,9 @@
   justify-content: space-between;
   height: 50px;
 }
+
 .footer {
+  z-index: 3;
   position: relative;
   display: flex;
   align-items: center;
@@ -240,6 +266,7 @@
   padding: 0 30px;
   background: #1e2130;
 }
+
 @mixin toolButton {
   width: 42px;
   height: 42px;
@@ -249,6 +276,7 @@
   background-size: 28px 28px;
   border-radius: 10px;
   cursor: pointer;
+
   &:hover {
     background-color: #404352;
   }
@@ -260,18 +288,22 @@
   flex: 1;
   align-items: center;
   justify-content: center;
-  & > div {
+
+  &>div {
     @include toolButton;
     margin: 0 10px;
   }
+
   .leaveButton {
     width: 82px;
     background-color: #e8543b;
     background-image: url("../../../sdkAssets/icon_inner_leave.png");
+
     &:hover {
       background-color: #ff5d42;
     }
   }
+
   .liveLeaveButton {
     width: 42px;
     height: 42px;
@@ -282,74 +314,95 @@
     background-size: 28px 28px;
     border-radius: 10px;
     cursor: pointer;
+
     &:hover {
       background-color: #3d4154;
     }
   }
+
   .requestCohostButton {
     background-color: #313443;
+
     &.active {
       background-image: url("../../../sdkAssets/icon_tab_connect@2x.png");
     }
+
     &.cancel {
       background-image: url("../../../sdkAssets/icon_tab_connect_nor.png");
     }
   }
 }
+
 .handlerRight {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 74px;
-  & > div {
+
+  &>div {
     @include toolButton;
+
     &:not(:last-of-type) {
       margin-right: 20px;
     }
   }
 }
+
 .inviteButton {
   @include toolButton;
   background-image: url("../../../sdkAssets/icon_inner_share.png");
 }
+
 .micButton {
   background-image: url("../../../sdkAssets/icon_inner_mic.png");
+
   &.close {
     background-image: url("../../../sdkAssets/icon_inner_mic_close.png");
   }
 }
+
 .cameraButton {
   background-image: url("../../../sdkAssets/icon_inner_camera.png");
+
   &.close {
     background-image: url("../../../sdkAssets/icon_inner_camera_close.png");
   }
 }
+
 .screenButton {
   background-image: url("../../../sdkAssets/icon_inner_screen.png");
+
   &.sharing {
     background-image: url("../../../sdkAssets/icon_inner_screen_close.png");
   }
+
   &.forbidden {
     cursor: not-allowed;
   }
 }
+
 .whiteboardButton {
   background-image: url("../../../sdkAssets/icon_inner_whiteboard.png");
+
   &.sharing {
     background-image: url("../../../sdkAssets/icon_inner_whiteboard_close.png");
   }
+
   &.forbidden {
     background-image: url("../../../sdkAssets/icon_inner_whiteboard_forbid.png");
     cursor: not-allowed;
   }
 }
+
 .moreButton {
   position: relative;
   background-image: url("../../../sdkAssets/icon_inner_more.png");
 }
+
 .memberButton {
   position: relative;
   background-image: url("../../../sdkAssets/icon_inner_member.png");
+
   .memberNum {
     position: absolute;
     top: -10px;
@@ -367,11 +420,14 @@
     border-radius: 10px;
   }
 }
+
 .msgButton {
   background-image: url("../../../sdkAssets/icon_inner_message.png");
 }
+
 .msgButtonRed {
   position: relative;
+
   &::after {
     position: absolute;
     top: -2px;
@@ -384,6 +440,7 @@
     content: "";
   }
 }
+
 .settingsButtonModel {
   position: absolute;
   bottom: 58px;
@@ -397,7 +454,8 @@
   border-radius: 6px;
   box-shadow: 0px 3px 6px 0px rgba(23, 24, 33, 0.75);
   transform: translateX(-50%);
-  & > div {
+
+  &>div {
     padding: 7px 14px;
     color: rgba(255, 255, 255, 0.9);
     font-weight: 400;
@@ -406,17 +464,20 @@
     letter-spacing: -1px;
     border-radius: 4px;
     cursor: pointer;
+
     &:hover {
       background: #36394b;
     }
   }
-  & > span {
+
+  &>span {
     display: block;
     width: 141px;
     height: 1px;
     margin: 8px 0;
     background: #3d4054;
   }
+
   &::after {
     position: absolute;
     bottom: -7px;
@@ -430,6 +491,7 @@
     content: "";
   }
 }
+
 .notify {
   position: absolute;
   bottom: 24px;
@@ -439,6 +501,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-end;
+
   .notifyContent {
     box-sizing: border-box;
     max-width: 408px;
@@ -454,6 +517,7 @@
     &:not(:last-of-type) {
       margin-bottom: 10px;
     }
+
     h5 {
       max-width: 384px;
       margin-bottom: 4px;
@@ -465,13 +529,15 @@
       white-space: nowrap;
       text-overflow: ellipsis;
     }
-    & > span {
+
+    &>span {
       display: -webkit-box;
       overflow: hidden;
       text-overflow: ellipsis;
       -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
     }
+
     .nowrap {
       word-wrap: break-word;
     }
@@ -488,6 +554,7 @@
   justify-content: center;
   width: 100%;
   height: 100%;
+
   .layoutSettingsWrapper {
     width: 283px;
     background: #2c2f3e;
@@ -495,6 +562,7 @@
     border-radius: 8px;
     box-shadow: 0px 3px 6px 0px rgba(23, 24, 33, 0.75);
   }
+
   .layoutSettingsHeader {
     display: flex;
     align-items: center;
@@ -506,20 +574,22 @@
     line-height: 16px;
     border-bottom: 1px solid #3d4054;
   }
+
   .layoutSettingsCloseIcon {
     width: 18px;
     height: 18px;
-    background: url("../../../sdkAssets/icon_settings_close.png") no-repeat
-      center/cover;
+    background: url("../../../sdkAssets/icon_settings_close.png") no-repeat center/cover;
     cursor: pointer;
+
     &:hover {
-      background: url("../../../sdkAssets/icon_settings_black_close_hover.png")
-        no-repeat center/cover;
+      background: url("../../../sdkAssets/icon_settings_black_close_hover.png") no-repeat center/cover;
     }
   }
+
   .layoutSettingsContent {
     padding: 10px 0;
   }
+
   .layoutSettingsItemRow {
     display: flex;
     align-items: center;
@@ -532,13 +602,16 @@
     font-size: 14px;
     line-height: 20px;
     cursor: pointer;
+
     &:not(:last-of-type) {
       margin-bottom: 4px;
     }
+
     p {
       display: flex;
       align-items: center;
     }
+
     .layoutSettingsItemIcon {
       width: 16px;
       height: 16px;
@@ -548,24 +621,29 @@
       background-position: center;
       background-size: cover;
     }
+
     .layoutSettingsItemChecked {
       background-image: url("../../../sdkAssets/icon_choose_pre@2x.png");
     }
+
     .layoutSettingsItemLoading {
       background-image: url("../../../sdkAssets/icon_loading@2x.png");
       animation: layoutLoading 1.8s linear infinite;
     }
+
     img {
       width: 62px;
       height: 44px;
     }
   }
 }
+
 @keyframes layoutLoading {
   100% {
     transform: rotateZ(360deg);
   }
 }
+
 .screenBottomBar {
   display: flex;
   align-items: center;
@@ -575,6 +653,7 @@
   height: 38px;
   padding: 0 16px;
   background: #353847;
+
   .screenBottomBarLeft {
     display: flex;
     align-items: center;
@@ -583,9 +662,9 @@
       width: 28px;
       height: 28px;
       margin-right: 10px;
-      background: url("../../../sdkAssets/icon_inner_screen.png") no-repeat
-        center/cover;
+      background: url("../../../sdkAssets/icon_inner_screen.png") no-repeat center/cover;
     }
+
     p {
       color: rgba(255, 255, 255, 0.9);
       font-weight: 400;
@@ -593,12 +672,14 @@
       line-height: 20px;
     }
   }
+
   .screenBottomBarRight {
     color: #ff4a50;
     font-weight: 400;
     font-size: 12px;
     line-height: 17px;
     cursor: pointer;
+
     &:hover {
       color: #ff5e64;
     }
@@ -619,6 +700,7 @@
   font-size: 18px;
   line-height: 33px;
   background: #242736;
+
   i {
     width: 76px;
     height: 76px;
@@ -626,16 +708,24 @@
     background-size: contain;
   }
 }
+
 .liveNotStart {
   i {
     background-image: url(../../../sdkAssets/Room_live_notstart@2x.png);
   }
 }
+
 .noOneStreaming {
   i {
     background-image: url(../../../sdkAssets/Room_nobody_stream@2x.png);
   }
 }
+
 .transparent {
   background-color: transparent !important;
+}
+
+.foregroundView {
+  z-index: 2;
+  position: absolute;
 }
