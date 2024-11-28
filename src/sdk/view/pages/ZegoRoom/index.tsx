@@ -934,6 +934,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 
 	async toggleWhiteboardSharing() {
 		if (this.getScreenSharingUser.length > 0) return;
+		if (this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming && this.state.liveStatus !== "1") {
+			const { formatMessage } = this.props.core.intl;
+			ZegoToast({
+				content: formatMessage({ id: "room.liveNotStarted" })
+			})
+			return;
+		};
 		if (this.state.zegoSuperBoardView) {
 			this.closeWhiteboardSharing();
 		} else if (!this.state.isZegoWhiteboardSharing) {
@@ -942,6 +949,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	async createWhiteboardSharing() {
+		console.warn('===createWhiteboardSharing')
 		const { formatMessage } = this.props.core.intl;
 		if (this.state.screenSharingUserList.length > 0) {
 			ZegoToast({
@@ -1419,7 +1427,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					);
 				}
 			}
-			if (!hasVideo) {
+			if (!hasVideo && !this.state.isZegoWhiteboardSharing && !this.getScreenSharingUser.length) {
 				return (
 					<div className={ZegoRoomCss.noOneStreaming}>
 						<i></i>
@@ -1446,7 +1454,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				</>
 			);
 		}
-
 		if (this.state.isZegoWhiteboardSharing) {
 			const { formatMessage } = this.props.core.intl;
 			return (
@@ -1462,10 +1469,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					handleFullScreen={this.handleFullScreen.bind(this)}
 					roomID={this.props.core._expressConfig.roomID}
 					onShow={async (el: HTMLDivElement) => {
-						// console.error(
-						//   "【ZEGOCLOUD】onShow",
-						//   this.isCreatingWhiteboardSharing,
-						//   !this.state.zegoSuperBoardView
+						// console.warn(
+						// 	"【ZEGOCLOUD】onShow",
+						// 	this.isCreatingWhiteboardSharing,
+						// 	!this.state.zegoSuperBoardView
 						// );
 						// 主动渲染
 						if (this.isCreatingWhiteboardSharing && !this.state.zegoSuperBoardView) {
