@@ -60,9 +60,10 @@ export default class ZegoVideo extends React.PureComponent<{
 	initVideo(el: HTMLElement | HTMLVideoElement) {
 		if (el) {
 			!this.videoRef && (this.videoRef = el as HTMLVideoElement);
-			if (this.props.userInfo?.streamList?.[0]?.media?.id) {
+			if (this.props.userInfo?.streamList?.[0]?.media?.id && this.props.userInfo?.streamList?.[0]?.media?.active) {
 				const streamID = this.props.userInfo?.streamList?.[0]?.streamID;
-				const isRender = document.getElementById(`${streamID}`)?.children.length ? true : false;
+				const videoDom = document.getElementById(`${streamID}`);
+				const isRender = videoDom?.children.length ? true : false;
 				if (isRender) return;
 				const isScreenSharing = this.props.userInfo.streamList[0]?.streamID.includes('_screensharing') ? true : false;
 				const videoObjectFit = !isScreenSharing ? this.props.core._config.videoScreenConfig?.objectFit : 'contain';
@@ -70,8 +71,13 @@ export default class ZegoVideo extends React.PureComponent<{
 					// 本地预览流
 					(this.props.userInfo.streamList[0]?.media as ZegoLocalStream).playVideo(this.videoRef, { mirror: !isScreenSharing, objectFit: videoObjectFit })
 				} else {
-					const remoteView = this.props.core.createRemoteStreamView(this.props.userInfo.streamList[0].media as MediaStream);
-					remoteView.play(this.videoRef, { mirror: !isScreenSharing, objectFit: videoObjectFit });
+					// 连麦观众下麦，停止拉主播流又马上重新开始拉时，拉流还未成功时 createRemoteStreamView 会报错，拉流成功后还会继续渲染，暂不处理报错
+					try {
+						const remoteView = this.props.core.createRemoteStreamView(this.props.userInfo.streamList[0].media as MediaStream);
+						remoteView.play(this.videoRef, { mirror: !isScreenSharing, objectFit: videoObjectFit });
+					} catch (error) {
+						console.log('createRemoteStreamView error', error);
+					}
 				}
 				// if (el.srcObject !== this.props.userInfo?.streamList?.[0]?.media) {
 				// 	el.src = ""

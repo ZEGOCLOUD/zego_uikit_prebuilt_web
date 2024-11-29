@@ -3,6 +3,7 @@ import type { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/co
 import { ZegoCloudRTCCore } from "../modules"
 import { ZegoCloudUser, ZegoCloudUserList } from "../modules/tools/UserListManager"
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
+import { AiDenoiseMode } from "zego-express-engine-webrtc/sdk/code/zh/ZegoVoiceChangerEntity.web"
 export interface ZegoCloudRemoteMedia {
 	media: ZegoLocalStream | MediaStream | undefined
 	fromUser: ZegoUser
@@ -15,6 +16,11 @@ export interface ZegoCloudRemoteMedia {
 	urlsHttpsHLS?: string
 	hasAudio?: boolean
 	hasVideo?: boolean
+}
+
+export interface ZegoUIKitCreateConfig {
+	cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] },
+	AiDenoiseConfig?: { mode: AiDenoiseMode }
 }
 
 export enum LiveRole {

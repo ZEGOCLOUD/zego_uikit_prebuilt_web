@@ -19,6 +19,7 @@ import {
 	ZegoSignalingPluginNotificationConfig,
 	ZegoUIKitLanguage,
 	ZegoUser,
+	ZegoUIKitCreateConfig,
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
 import { generatePrebuiltToken, isPc } from "./util";
@@ -99,9 +100,9 @@ export class ZegoUIKitPrebuilt {
 		);
 	}
 
-	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt {
+	static create(kitToken: string, createConfig?: ZegoUIKitCreateConfig): ZegoUIKitPrebuilt {
 		if (!ZegoUIKitPrebuilt.core && kitToken) {
-			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, cloudProxyConfig);
+			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, createConfig);
 			ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
 		}
 		return ZegoUIKitPrebuilt._instance;

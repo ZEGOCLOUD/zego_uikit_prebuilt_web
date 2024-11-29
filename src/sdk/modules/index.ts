@@ -3,6 +3,7 @@ import { ZegoExpressEngine } from "zego-express-engine-webrtc"
 import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity"
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
 import {
+	AiDenoiseMode,
 	ZegoDeviceInfo,
 	ZegoLocalStreamConfig,
 	ZegoMixStreamAdvance,
@@ -32,6 +33,7 @@ import {
 	ZegoCloudRemoteMedia,
 	ZegoCloudRoomConfig,
 	ZegoSignalingInRoomTextMessage,
+	ZegoUIKitCreateConfig,
 	ZegoUIKitLanguage,
 	ZegoUIKitMessageType,
 	ZegoUser,
@@ -45,6 +47,9 @@ import { EventEmitter } from "./tools/EventEmitter"
 import { createIntl, createIntlCache } from "react-intl";
 import { i18nMap } from '../locale';
 import { ZegoStreamView } from "zego-express-engine-webrtc/sdk/code/zh/ZegoStreamView.web"
+// import { AiDenoise } from "zego-express-engine-webrtc/aidenoise";
+import { VoiceChanger } from "zego-express-engine-webrtc/voice-changer";
+
 export class ZegoCloudRTCCore {
 	static _instance: ZegoCloudRTCCore
 	static _zg: ZegoExpressEngine
@@ -64,13 +69,20 @@ export class ZegoCloudRTCCore {
 	eventEmitter = new EventEmitter()
 	// 多语言
 	intl: any
+	AiDenoiseConfig: { mode: AiDenoiseMode } | null = null;
 	//   static _soundMeter: SoundMeter;
-	static getInstance(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoCloudRTCCore {
+	static getInstance(
+		kitToken: string,
+		createConfig?: ZegoUIKitCreateConfig,
+	): ZegoCloudRTCCore {
 		const config = getConfig(kitToken)
 		if (!ZegoCloudRTCCore._instance && config) {
-			if (cloudProxyConfig) {
-				ZegoExpressEngine.setCloudProxyConfig(cloudProxyConfig.proxyList, config.token, true);
-			}
+			// 开启云代理
+			createConfig?.cloudProxyConfig && (ZegoExpressEngine.setCloudProxyConfig(createConfig.cloudProxyConfig.proxyList, config.token, true));
+			// 开启ai降噪
+			console.warn('===createConfig', createConfig?.AiDenoiseConfig);
+			ZegoExpressEngine.use(VoiceChanger)
+			createConfig?.AiDenoiseConfig && (ZegoExpressEngine.use(VoiceChanger));
 			ZegoCloudRTCCore._instance = new ZegoCloudRTCCore()
 			ZegoCloudRTCCore._instance._expressConfig = config
 			//   ZegoCloudRTCCore._soundMeter = new SoundMeter();
@@ -78,7 +90,7 @@ export class ZegoCloudRTCCore {
 				ZegoCloudRTCCore._instance._expressConfig.appID,
 				"wss://webliveroom" + ZegoCloudRTCCore._instance._expressConfig.appID + "-api.zegocloud.com/ws"
 			)
-
+			createConfig?.AiDenoiseConfig && (ZegoCloudRTCCore._instance.AiDenoiseConfig = createConfig.AiDenoiseConfig)
 			ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(ZegoCloudRTCCore._zg)
 		}
 
@@ -744,7 +756,13 @@ export class ZegoCloudRTCCore {
 	}
 
 	async createZegoStream(source?: ZegoStreamOptions): Promise<ZegoLocalStream> {
-		return ZegoCloudRTCCore._zg.createZegoStream(source)
+		const localStream = await ZegoCloudRTCCore._zg.createZegoStream(source);
+		if (ZegoCloudRTCCore._instance.AiDenoiseConfig) {
+			console.warn('[createZegoStream]open aiDenoise', ZegoCloudRTCCore._instance.AiDenoiseConfig)
+			await ZegoCloudRTCCore._zg.setAiDenoiseMode(localStream, ZegoCloudRTCCore._instance.AiDenoiseConfig.mode);
+			await ZegoCloudRTCCore._zg.enableAiDenoise(localStream, true);
+		}
+		return localStream;
 	}
 
 	async createAndPublishWhiteboard(parentDom: HTMLDivElement, name: string): Promise<ZegoSuperBoardView> {
@@ -1087,7 +1105,7 @@ export class ZegoCloudRTCCore {
 			}
 		})
 		ZegoCloudRTCCore._zg.on("playerStateUpdate", (streamInfo: ZegoPlayerState) => {
-			console.warn("【ZEGOCLOUD】playerStateUpdate", streamInfo)
+			console.warn("【ZEGOCLOUD】playerStateUpdate", streamInfo, this.remoteStreamMap)
 			if (this.remoteStreamMap[streamInfo.streamID]) {
 				this.remoteStreamMap[streamInfo.streamID].state = streamInfo.state
 				this.onRemoteMediaUpdateCallBack &&
@@ -1210,6 +1228,7 @@ export class ZegoCloudRTCCore {
 		if (this.zegoSuperBoard) {
 			// 监听远端新增白板
 			this.zegoSuperBoard.on("remoteSuperBoardSubViewAdded", async (uniqueID: string) => {
+				console.warn('[ZegoCloudRTCCore]remoteSuperBoardSubViewAdded', uniqueID, this._roomExtraInfo.live_status);
 				await this.zegoSuperBoard.querySuperBoardSubViewList()
 				this.zegoSuperBoard.setToolType(1)
 				this.zegoSuperBoard.setBrushColor("#333333")
@@ -1407,6 +1426,7 @@ export class ZegoCloudRTCCore {
 								state: "PLAYING",
 								streamID: streamInfo.streamID,
 							}
+							console.log('===拉流', stream?.getVideoTracks().length)
 						}
 
 						_streamList.push(this.remoteStreamMap[streamInfo.streamID])
