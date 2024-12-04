@@ -23,6 +23,8 @@ import {
 import { ZegoCloudRTCCore } from "./modules/index";
 import { generatePrebuiltToken, isPc } from "./util";
 import { ZegoCloudRTCKitComponent } from "./view/index";
+import { TracerConnect } from "./modules/tools/ZegoTracer";
+import { SpanEvent } from "./model/tracer";
 
 export class ZegoUIKitPrebuilt {
 	static core: ZegoCloudRTCCore | undefined;
@@ -103,6 +105,12 @@ export class ZegoUIKitPrebuilt {
 		if (!ZegoUIKitPrebuilt.core && kitToken) {
 			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, cloudProxyConfig);
 			ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
+			const span = TracerConnect.createSpan(SpanEvent.Init, {
+				error: 0,
+				msg: '',
+				start_time: Date.now(),
+			})
+			span.end();
 		}
 		return ZegoUIKitPrebuilt._instance;
 	}

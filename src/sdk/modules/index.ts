@@ -40,7 +40,10 @@ import { getVideoResolution } from "../util"
 import { EventEmitter } from "./tools/EventEmitter"
 import { createIntl, createIntlCache } from "react-intl";
 import { i18nMap } from '../locale';
+import { TracerConnect } from "./tools/ZegoTracer"
+import { SpanEvent } from "../model/tracer"
 
+// declare const SDK_VERSION: string;
 export class ZegoCloudRTCCore {
 	static _instance: ZegoCloudRTCCore
 	static _zg: ZegoExpressEngine
@@ -62,7 +65,7 @@ export class ZegoCloudRTCCore {
 	intl: any
 	//   static _soundMeter: SoundMeter;
 	static getInstance(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoCloudRTCCore {
-		const config = getConfig(kitToken)
+		const config = getConfig(kitToken);
 		if (!ZegoCloudRTCCore._instance && config) {
 			if (cloudProxyConfig) {
 				ZegoExpressEngine.setCloudProxyConfig(cloudProxyConfig.proxyList, config.token, true);
@@ -75,12 +78,15 @@ export class ZegoCloudRTCCore {
 				"wss://webliveroom" + ZegoCloudRTCCore._instance._expressConfig.appID + "-api.zegocloud.com/ws"
 			)
 
-			ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(ZegoCloudRTCCore._zg)
+			ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(ZegoCloudRTCCore._zg);
+			TracerConnect.createTracer(this._instance._expressConfig.appID, this._instance._expressConfig.token, this._instance._expressConfig.userID);
 		}
 
 		return ZegoCloudRTCCore._instance
 	}
-
+	static getVersion() {
+		// return SDK_VERSION;
+	}
 	status: {
 		loginRsp: boolean
 		videoRefuse?: boolean
@@ -1264,6 +1270,13 @@ export class ZegoCloudRTCCore {
 						maxMemberCount: ZegoCloudRTCCore._instance._config.maxUsers,
 					}
 				)
+				const span = TracerConnect.createSpan(SpanEvent.LoginRoom, {
+					room_id: ZegoCloudRTCCore._instance._expressConfig.roomID,
+					error: 0,
+					msg: '',
+					start_time: Date.now(),
+				})
+				span.end();
 				if (
 					this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
 					this._config.scenario.config?.role === LiveRole.Host &&

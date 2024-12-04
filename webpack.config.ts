@@ -7,7 +7,8 @@ import FileManagerPlugin from "filemanager-webpack-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-
+const version = require('./public/package.json').version;
+console.log('===version', version);
 const config: webpack.Configuration = {
 	mode: "production",
 	entry: "./src/sdk/index.tsx",
@@ -112,6 +113,7 @@ const config: webpack.Configuration = {
 		new webpack.DefinePlugin({
 			SDK_ENV: JSON.stringify(true),
 			"process.env.REACT_APP_MOBILE": JSON.stringify("no"),
+			// SDK_VERSION: JSON.stringify(version),
 		}),
 		new CleanWebpackPlugin(),
 		new FileManagerPlugin({
