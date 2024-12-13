@@ -222,6 +222,17 @@ declare interface ZegoCloudRoomConfig {
 	showRotatingScreenButton?: boolean;
 	// Screen rotation notification
 	onScreenRotation?: () => void
+	// User status updated
+	onUserStateUpdated?: (status: ZegoUserState) => void
+	// Member view config
+	memberViewConfig?: {
+		operationListCustomButton?: () => Element
+	}
+}
+
+export enum ZegoUserState {
+	Normal = "Normal",
+	Banned = "Banned"
 }
 
 export enum RightPanelExpandedType {

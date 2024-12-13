@@ -248,6 +248,17 @@ export interface ZegoCloudRoomConfig {
 	showRotatingScreenButton?: boolean;
 	// Screen rotation notification
 	onScreenRotation?: (currentScreen: 'landscape' | 'portrait') => void
+	// User status updated
+	onUserStateUpdated?: (status: ZegoUserState) => void
+	// Member view config
+	memberViewConfig?: {
+		operationListCustomButton?: () => Element
+	}
+}
+
+export enum ZegoUserState {
+	Normal = "Normal",
+	Banned = "Banned"
 }
 export enum RightPanelExpandedType {
 	None = "None",
@@ -519,6 +530,8 @@ export enum UserListMenuItemType {
 	InviteCohost = "InviteCohost",
 	DisagreeRequestCohost = "disagreeRequestCohost",
 	AgreeRequestCohost = "agreeRequestCohost",
+	BanSendingMessages = 'banSendingMessages',
+	CancelBanSendingMessages = 'cancelBanSendingMessages',
 }
 export const enum ReasonForRefusedInviteToCoHost {
 	Disagree, // 主动拒绝

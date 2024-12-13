@@ -108,6 +108,8 @@ const zh = {
     "room.serviceNotAvailable": "该服务不可用，请联系直播服务提供商解决",
     "room.resumePlayTips": "浏览器阻止音视频播放，请点击“恢复播放”。",
     "room.resumePlay": "恢复播放",
+    "room.banSending": "禁止发言",
+    "room.cancelBanSending": "取消禁言",
 
     "mobileRoom.member": "成员",
     "mobileRoom.chat": "聊天",

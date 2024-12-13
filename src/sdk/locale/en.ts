@@ -112,6 +112,8 @@ const en = {
     "room.serviceNotAvailable": "The service is not available, please contact the live streaming service provider to resolve.",
     "room.resumePlayTips": 'Media play failed. Click the "Resume"to resume.',
     "room.resumePlay": "Resume",
+    "room.banSending": "Ban sending messages",
+    "room.cancelBanSending": "Cancel the message ban",
 
     "mobileRoom.member": "Member",
     "mobileRoom.chat": "Chat",

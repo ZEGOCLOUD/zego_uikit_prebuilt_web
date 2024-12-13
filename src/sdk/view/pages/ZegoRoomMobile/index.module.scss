@@ -307,16 +307,16 @@
     .toLandscapeButton {
       position: absolute;
       right: 10px;
-      background: url('../../../../assets/rotateToLandscape.png');
+      background-image: url('../../../../assets/rotateToLandscape.png');
       background-repeat: no-repeat;
       background-position: center;
-      background-size: vw(56px) vw(56px);
+      background-size: vw(46px) vw(46px);
     }
 
     .toPortraitButton {
       position: absolute;
       right: 10px;
-      background: url('../../../../assets/rotateToPortrait.png');
+      background-image: url('../../../../assets/rotateToPortrait.png');
       background-repeat: no-repeat;
       background-position: center;
       background-size: vw(56px) vw(56px);

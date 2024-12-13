@@ -1534,6 +1534,31 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       });
       console.warn("AgreeRequestCohost", res);
     },
+    [UserListMenuItemType.BanSendingMessages]: async () => {
+      console.warn('BanSendingMessages', this.props.core._expressConfig.userID, this.props.core._zimManager?.banList);
+      const banList = this.props.core._zimManager?.banList;
+      const selectedUser = this._selectedUser.userID;
+      if (banList && !banList.some((userID) => userID === selectedUser)) {
+        banList.push(selectedUser);
+        const roomAttributes = {
+          ban: JSON.stringify(banList)
+        }
+        this.props.core._zimManager?.setRoomAttributes(roomAttributes);
+      }
+    },
+    [UserListMenuItemType.CancelBanSendingMessages]: async () => {
+      console.warn('CancelBanSendingMessages', this.props.core._expressConfig.userID, this.props.core._zimManager?.banList);
+      const banList = this.props.core._zimManager?.banList;
+      const selectedUser = this._selectedUser.userID;
+      if (banList) {
+        const index = banList.findIndex((id) => id === selectedUser);
+        banList.splice(index, 1);
+        const roomAttributes = {
+          ban: JSON.stringify(banList)
+        }
+        this.props.core._zimManager?.setRoomAttributes(roomAttributes);
+      }
+    }
   };
   private _selectedUser!: ZegoCloudUser;
   get showSelf() {
@@ -2629,7 +2654,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                     </span>
                   </a>
                 )}
-              {this.state.showRotatingScreenButton && (this.state.rotateType === 'toLandscape' ?
+              {this.state.showRotatingScreenButton && this.props.core._config.scenario?.config?.role === LiveRole.Audience && (this.state.rotateType === 'toLandscape' ?
                 (<a className={`${ZegoRoomCss.toLandscapeButton}`} onClick={() => { this.rotatingScreen('toLandscape') }}></a>) :
                 (<a className={`${ZegoRoomCss.toPortraitButton}`} onClick={() => { this.rotatingScreen('toPortrait') }}></a>))}
             </div>

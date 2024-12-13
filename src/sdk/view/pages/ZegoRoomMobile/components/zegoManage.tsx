@@ -20,6 +20,21 @@ export class ZegoManage extends React.PureComponent<{
   async select(type: UserListMenuItemType, value?: boolean) {
     this.props.selectCallback && this.props.selectCallback(type, value);
   }
+  showForbiddenButton(): boolean {
+    // if (!this.props.core._config.showForbiddenButton) return false
+    const currentUserID = this.props.core._expressConfig.userID;
+    if (this.props.core.isHost(currentUserID)) {
+      return currentUserID !== this.props.selectedUser.userID
+    } else {
+      return currentUserID === this.props.selectedUser.userID
+    }
+  }
+  isBanSendingMessages() {
+    if (this.props.core._zimManager?.banList) {
+      const banList = this.props.core._zimManager?.banList
+      return banList.some((u) => u === this.props.selectedUser.userID)
+    }
+  }
   render(): React.ReactNode {
     const { formatMessage } = this.props.core.intl;
     return (
@@ -134,6 +149,35 @@ export class ZegoManage extends React.PureComponent<{
               </div>
             </div>
           )}
+          {this.showForbiddenButton() &&
+            (!this.isBanSendingMessages() ? (
+              <div
+                className={zegoManageCss.manageContent}
+                onClick={() => {
+                  this.select(UserListMenuItemType.BanSendingMessages)
+                }}
+              >
+                <div
+                  className={zegoManageCss.manageContentLeft}
+                >
+                  <span>{formatMessage({ id: "room.banSending" })}</span>
+                </div>
+              </div>
+            ) : (
+              <div
+                className={zegoManageCss.manageContent}
+                onClick={() => {
+                  this.select(UserListMenuItemType.CancelBanSendingMessages)
+                }}
+              >
+                <div
+                  className={zegoManageCss.manageContentLeft}
+                >
+                  <span>{formatMessage({ id: "room.cancelBanSending" })}</span>
+                </div>
+              </div>)
+            )
+          }
         </div>
       </div>
     );

@@ -11,7 +11,9 @@ import {
 	ZIMEventOfCallUserStateChangedResult,
 	ZIMEventOfConnectionStateChangedResult,
 	ZIMEventOfReceiveConversationMessageResult,
+	ZIMEventOfRoomAttributesUpdatedResult,
 	ZIMPushConfig,
+	ZIMRoomAttributesSetConfig,
 } from "zego-zim-web";
 import {
 	CallInvitationEndReason,
@@ -26,6 +28,7 @@ import {
 	ZegoSignalingPluginNotificationConfig,
 	ZegoUIKitLanguage,
 	ZegoUser,
+	ZegoUserState,
 	ZIMCallInvitationMode,
 	ZIMCallUserState,
 } from "../../model";
@@ -72,6 +75,8 @@ export class ZimManager {
 	hasJoinedRoom: boolean = false;
 	// 在 login 成功后再次调用 enterRoom
 	needJoinRoomAgain: boolean = false;
+	// 禁言名单
+	banList: string[] = [];
 	constructor(
 		ZIM: ZIM,
 		expressConfig: {
@@ -334,6 +339,23 @@ export class ZimManager {
 			commandMsgs.length && this.onRoomCommandMessageCallback && this.onRoomCommandMessageCallback(commandMsgs);
 			textMsgs.length && this.onRoomTextMessageCallback && this.onRoomTextMessageCallback(textMsgs);
 		});
+		this._zim?.on("roomAttributesUpdated", (zim: ZIM, data: ZIMEventOfRoomAttributesUpdatedResult) => {
+			console.warn("roomAttributesUpdated", data);
+			if (data.infos?.[0].roomAttributes.ban) {
+				const newBanList = JSON.parse(data.infos?.[0].roomAttributes.ban);
+				if (this.banList.some((id) => id === this.expressConfig.userID)) {
+					if (!newBanList.some((id: string) => id === this.expressConfig.userID)) {
+						// 取消禁言
+						ZegoUIKitPrebuilt.core?._config.onUserStateUpdated && ZegoUIKitPrebuilt.core?._config.onUserStateUpdated(ZegoUserState.Normal)
+					}
+				}
+				if (newBanList.some((id: string) => id === this.expressConfig.userID)) {
+					// 通知被禁言用户
+					ZegoUIKitPrebuilt.core?._config.onUserStateUpdated && ZegoUIKitPrebuilt.core?._config.onUserStateUpdated(ZegoUserState.Banned)
+				}
+				this.banList = JSON.parse(data.infos?.[0].roomAttributes.ban);
+			}
+		})
 	}
 
 	//被邀请者响应超时后,“邀请者”收到的回调通知, 超时时间单位：秒（邀请者）
@@ -863,7 +885,6 @@ export class ZimManager {
 		this.onRoomCommandMessageCallback = func;
 	}
 	enterRoom() {
-		console.warn('===zim enter room', this.isLogin, this.hasJoinedRoom)
 		if (this.isLogin) {
 			this._zim
 				?.enterRoom({
@@ -872,6 +893,7 @@ export class ZimManager {
 				})
 				.then((res: any) => {
 					console.warn("【zim enterRoom】success");
+					this.queryRoomAllAttributes();
 				})
 				.catch((error: any) => {
 					console.error("【zim enterRoom】failed", error);
@@ -943,5 +965,35 @@ export class ZimManager {
 				message: err.message
 			}
 		})
+	}
+
+	// 调用 zim 设置房间属性，目前使用原因：房间禁言功能
+	async setRoomAttributes(roomAttributes: Record<string, string>, config?: ZIMRoomAttributesSetConfig) {
+		const defaultConfig = {
+			isForce: false,
+			isUpdateOwner: false,
+			isDeleteAfterOwnerLeft: false
+		}
+		return await this._zim?.setRoomAttributes(roomAttributes, this.expressConfig.roomID, config || defaultConfig)
+			.then(({ roomID, errorKeys }) => {
+				console.warn('[ZimManager]set room attributes success', roomID, errorKeys)
+			})
+			.catch((err) => {
+				console.warn('[ZimManager]set room attributes error', err);
+			})
+	}
+
+	// 获取 zim 房间属性
+	async queryRoomAllAttributes() {
+		return await this._zim?.queryRoomAllAttributes(this.expressConfig.roomID)
+			.then(({ roomID, roomAttributes }) => {
+				console.warn('[ZimManager]query room attributes success', roomID, roomAttributes);
+				if (roomAttributes && roomAttributes.ban) {
+					this.banList = JSON.parse(roomAttributes.ban);
+				}
+			})
+			.catch((err) => {
+				console.warn('[ZimManager]query room attributes error', err);
+			})
 	}
 }

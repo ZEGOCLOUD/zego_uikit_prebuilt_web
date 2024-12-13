@@ -1710,6 +1710,29 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			});
 			console.warn("AgreeRequestCohost", res);
 		},
+		[UserListMenuItemType.BanSendingMessages]: async (user: ZegoCloudUser) => {
+			console.warn('BanSendingMessages', user, this.props.core._zimManager?.banList);
+			const banList = this.props.core._zimManager?.banList;
+			if (banList && !banList.some((userID) => userID === user.userID)) {
+				banList.push(user.userID);
+				const roomAttributes = {
+					ban: JSON.stringify(banList)
+				}
+				this.props.core._zimManager?.setRoomAttributes(roomAttributes);
+			}
+		},
+		[UserListMenuItemType.CancelBanSendingMessages]: async (user: ZegoCloudUser) => {
+			console.warn('CancelBanSendingMessages', user, this.props.core._zimManager?.banList);
+			const banList = this.props.core._zimManager?.banList;
+			if (banList) {
+				const index = banList.findIndex((id) => id === user.userID);
+				banList.splice(index, 1);
+				const roomAttributes = {
+					ban: JSON.stringify(banList)
+				}
+				this.props.core._zimManager?.setRoomAttributes(roomAttributes);
+			}
+		}
 	};
 	private cohostToBeAudience() {
 		this.stopPublish();
