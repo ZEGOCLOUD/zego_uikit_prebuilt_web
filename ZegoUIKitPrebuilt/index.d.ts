@@ -397,4 +397,7 @@ export declare class ZegoUIKitPrebuilt {
 	getRoomID(): string;
 	// 2.11.0
 	updateCallingInvitationListConfig(config: CallingInvitationListConfig): void
+	// 2.13.0
+	rotateToLandscape(): void
+	rotateToPortrait(): void
 }

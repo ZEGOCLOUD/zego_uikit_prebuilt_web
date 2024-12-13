@@ -97,6 +97,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     selectSpeaker: string | undefined;
     selectVideoResolution: string;
     showNonVideoUser: boolean;
+    showRotatingScreenButton: boolean; // 主动旋转屏幕
+    rotateType: 'toPortrait' | 'toLandscape'; // 旋转屏幕方向
   } = {
       micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
       cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
@@ -131,6 +133,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       selectVideoResolution:
         this.props.core.status.videoResolution || this.props.core._config.videoResolutionList![0],
       showNonVideoUser: this.props.core._config.showNonVideoUser as boolean,
+      showRotatingScreenButton: this.props.core._config.showRotatingScreenButton || false,
+      rotateType: 'toLandscape',
     };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
@@ -2217,6 +2221,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }, 1000);
   }
   onOrientationChange() {
+    const roomDom = document.querySelector('.ZegoRoomMobile_ZegoRoom') as HTMLDivElement;
+    roomDom.classList.remove('transform');
     let isScreenPortrait = this.state.isScreenPortrait;
     this.props.core._config.container
       ?.querySelectorAll("input")
@@ -2224,14 +2230,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (window.orientation === 180 || window.orientation === 0) {
       // 竖屏
       isScreenPortrait = true;
+      this.state.rotateType = 'toLandscape';
+      this.props.core.setScreenLayout(true);
     }
     if (window.orientation === 90 || window.orientation === -90) {
       // 横屏
       isScreenPortrait = false;
+      this.state.rotateType = 'toPortrait';
+      this.props.core.setScreenLayout(false);
     }
-
-    this.setState({});
-
     this.setState(
       {
         isScreenPortrait: isScreenPortrait,
@@ -2367,6 +2374,19 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           layOutStatus: "ONE_VIDEO",
         })
       })
+  }
+  rotatingScreen(type: "toPortrait" | "toLandscape") {
+    if (type === 'toLandscape') {
+      this.setState({
+        rotateType: 'toPortrait'
+      })
+      this.props.core.rotateToLandscape();
+    } else {
+      this.setState({
+        rotateType: 'toLandscape'
+      })
+      this.props.core.rotateToPortrait();
+    }
   }
 
   render(): React.ReactNode {
@@ -2609,6 +2629,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                     </span>
                   </a>
                 )}
+              {this.state.showRotatingScreenButton && (this.state.rotateType === 'toLandscape' ?
+                (<a className={`${ZegoRoomCss.toLandscapeButton}`} onClick={() => { this.rotatingScreen('toLandscape') }}></a>) :
+                (<a className={`${ZegoRoomCss.toPortraitButton}`} onClick={() => { this.rotatingScreen('toPortrait') }}></a>))}
             </div>
           )}
           {this.getListScreen()}

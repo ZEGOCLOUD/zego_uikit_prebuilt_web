@@ -244,6 +244,10 @@ export interface ZegoCloudRoomConfig {
 	}
 	// 发送消息回调
 	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
+	// Screen rotation Button
+	showRotatingScreenButton?: boolean;
+	// Screen rotation notification
+	onScreenRotation?: (currentScreen: 'landscape' | 'portrait') => void
 }
 export enum RightPanelExpandedType {
 	None = "None",

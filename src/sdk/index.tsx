@@ -305,4 +305,20 @@ export class ZegoUIKitPrebuilt {
 		}
 		ZegoUIKitPrebuilt.core.updateCallingInvitationListConfig(config);
 	}
+
+	rotateToLandscape() {
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return;
+		}
+		ZegoUIKitPrebuilt.core.rotateToLandscape();
+	}
+
+	rotateToPortrait() {
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return;
+		}
+		ZegoUIKitPrebuilt.core.rotateToPortrait();
+	}
 }

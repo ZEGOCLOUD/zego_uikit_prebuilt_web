@@ -71,6 +71,8 @@ export class ZegoCloudRTCCore {
 	intl: any
 	AiDenoiseConfig: { mode: AiDenoiseMode } | null = null;
 	//   static _soundMeter: SoundMeter;
+	// 当前屏幕状态
+	isScreenPortrait: boolean = true;
 	static getInstance(
 		kitToken: string,
 		createConfig?: ZegoUIKitCreateConfig,
@@ -2303,5 +2305,60 @@ export class ZegoCloudRTCCore {
 	// 创建媒体流播放组件
 	createRemoteStreamView(remoteStream: MediaStream): ZegoStreamView {
 		return ZegoCloudRTCCore._zg.createRemoteStreamView(remoteStream);
+	}
+
+	setScreenLayout(type: boolean) {
+		this.isScreenPortrait = type;
+	}
+	// h5下切换横屏布局
+	rotateToLandscape() {
+		const roomDom = document.querySelector('.ZegoRoomMobile_ZegoRoom') as HTMLDivElement;
+		if (!roomDom) {
+			console.error("【ZEGOCLOUD】 please join Room !!");
+			return;
+		}
+		const width = roomDom?.clientWidth;
+		const height = roomDom?.clientHeight;
+		if (this.isScreenPortrait) {
+			// 手机竖屏时点击旋转成横屏
+			const style = document.createElement('style');
+			style.innerHTML = `.transform {
+         		width: ${height}px;
+          		height: ${width}px;
+          		transform: rotate(90deg) translate(${(height - width) / 2}px, ${(height - width) / 2}px);
+        	}`
+			document.head.appendChild(style);
+			roomDom?.classList.add('transform');
+		} else {
+			// 手机横屏时点击旋转成横屏
+			roomDom.classList.remove('transform');
+		}
+		this._config.onScreenRotation && this._config.onScreenRotation('landscape');
+	}
+	// h5下切换竖屏布局
+	rotateToPortrait() {
+		const roomDom = document.querySelector('.ZegoRoomMobile_ZegoRoom') as HTMLDivElement;
+		if (!roomDom) {
+			console.error("【ZEGOCLOUD】 please join Room !!");
+			return;
+		}
+		const width = roomDom?.clientWidth;
+		const height = roomDom?.clientHeight;
+
+		if (this.isScreenPortrait) {
+			// 手机竖屏时候点击旋转成竖屏
+			roomDom.classList.remove('transform');
+		} else {
+			// 手机横屏时候点击旋转成竖屏
+			const style = document.createElement('style');
+			style.innerHTML = `.transform {
+            	width: ${height}px;
+            	height: ${width}px;
+            	transform: rotate(-90deg) translate(${(width - height) / 2}px, ${(width - height) / 2}px);
+          	}`
+			document.head.appendChild(style);
+			roomDom.classList.add('transform');
+		}
+		this._config.onScreenRotation && this._config.onScreenRotation('portrait');
 	}
 }
