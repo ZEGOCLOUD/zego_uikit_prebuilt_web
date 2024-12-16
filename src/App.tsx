@@ -272,6 +272,35 @@ export default class App extends React.PureComponent {
             },
           },
           turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
+          showRotatingScreenButton: true,
+          onScreenRotation: (current) => {
+            console.warn('===onScreenRotation', current);
+          },
+          onUserStateUpdated: (state) => {
+            console.warn('===onUserStateUpdated', state);
+          },
+          memberViewConfig: {
+            // operationListCustomButton: () => {
+            //   const button = document.createElement("button");
+            //   const style = document.createElement("style");
+
+            //   style.innerHTML = `.button {
+            //     width: 100%;
+            //      height: 100px;
+            //  }`
+            //   document.head.appendChild(style);
+            //   button?.setAttribute('className', 'button');
+            //   const func = {
+            //     attr: ["user"],
+            //     functionBody: "console.warn('custom ui click')"
+            //   }
+            //   button.setAttribute('onClick', JSON.stringify(func));
+            //   button.addEventListener('click', () => {
+            //     console.warn('custom ui click')
+            //   })
+            //   return button;
+            // }
+          },
           // onSendMessageResult: (response) => {
           //   console.warn('===onSendMessageResult', response);
           // },
@@ -386,11 +415,11 @@ export default class App extends React.PureComponent {
           // },
           // showTurnOffRemoteCameraButton: true,
           // showTurnOffRemoteMicrophoneButton: true,
-          // showRemoveUserButton: true,
+          showRemoveUserButton: true,
           // showPinButton: true,
-          // showInviteToCohostButton: true,
-          // showRemoveCohostButton: true,
-          // showRequestToCohostButton: true,
+          showInviteToCohostButton: true,
+          showRemoveCohostButton: true,
+          showRequestToCohostButton: true,
           // rightPanelExpandedType: RightPanelExpandedType.None,
           // addInRoomMessageAttributes: () => {
           //   return { lv: "9" }
