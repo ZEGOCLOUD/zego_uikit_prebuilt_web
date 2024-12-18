@@ -149,7 +149,6 @@ export class TracerConnect {
             this.tracer = new ZegoTracer();
             this.tracer.init({
                 product: this.PRODUCT,
-                version: "2.13.1", //ZegoCloudRTCCore.getVersion(),
                 appID,
                 deviceID: this.getDeviceId(),
                 env: 0,
@@ -184,16 +183,15 @@ export class TracerConnect {
                 },
                 resources: {
                     product: this.PRODUCT,
-                    version: "2.13.1", //ZegoCloudRTCCore.getVersion(),
                     system: this.systemInfo.system,
                     browser: this.systemInfo.browser,
                     user_agent: this.systemInfo.ua,
                     device_id: this.getDeviceId(),
-                    platform: 'W',
                     appid: +appID,
-                    app_id: +appID,
                     user_id: userID,
-                    report_version: 3,
+                    platform: 'web',
+                    platform_version: '',
+                    uikit_version: '2.13.3'//ZegoCloudRTCCore.getVersion(),
                 },
             });
             const startCommonField = new Map();
