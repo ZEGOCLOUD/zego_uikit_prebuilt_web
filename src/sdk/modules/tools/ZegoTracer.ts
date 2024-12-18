@@ -191,7 +191,7 @@ export class TracerConnect {
                     user_id: userID,
                     platform: 'web',
                     platform_version: '',
-                    uikit_version: '2.13.3'//ZegoCloudRTCCore.getVersion(),
+                    uikit_version: '2.14.0'//ZegoCloudRTCCore.getVersion(),
                 },
             });
             const startCommonField = new Map();
