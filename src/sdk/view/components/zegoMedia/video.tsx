@@ -346,7 +346,7 @@ export default class ZegoVideo extends React.PureComponent<{
 					)}
 				</> :
 				<div
-					id={this.props.userInfo.streamList[0].streamID}
+					id={this.props.userInfo.streamList[0]?.streamID}
 					className={this.props.classList}
 					ref={(el: HTMLDivElement) => {
 						el && this.props.videoRefs?.(el);
