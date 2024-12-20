@@ -74,6 +74,7 @@ export default class App extends React.PureComponent {
     waitingUsers: [],
   };
   refuseBtn = React.createRef();
+  acceptBtn = React.createRef();
   settingsEl = null;
   invitationInput: RefObject<HTMLInputElement> = React.createRef();
   zp: ZegoUIKitPrebuilt;
@@ -325,47 +326,47 @@ export default class App extends React.PureComponent {
           // showLeavingView: true,
           // maxUsers,
           //   layout: "Auto",
-          // onJoinRoom: () => {
-          //   // sessionStorage.setItem('roomID', zp.getRoomID());
-          //   console.warn("join room callback");
-          //   // window?.parent?.postMessage("joinRoom", "*")
-          //   this.postMessage({ type: 'joinRoom', data: null })
-          //   // demo 和 goenjoy 都设置20分钟体验限制 
-          //   // goenjoy 直播体验设置为20分钟
-          //   // const inGoEnjoyExperience = process.env.REACT_APP_PATH === "live_stream" && this.inIframe()
-          //   // const experienceTime = inGoEnjoyExperience ? 1200 : 300
-          //   // const experienceTimeTip = inGoEnjoyExperience ? 5 : 20
-          //   this.state.roomTimer = setInterval(() => {
-          //     this.state.roomTime = ++this.state.roomTime;
-          //     if (this.state.roomTime === 1200) {
-          //       this.showToast(this.state.lang === "en" ? `Only for functional experience, not for commercial use. Each session should not exceed 20 minutes.` : `仅功能体验，不作商业用途。每次不超过 20 分钟。`);
-          //       zp.hangUp();
-          //     }
-          //   }, 1000);
-          // }, // 退出房间回调
-          // onLeaveRoom: () => {
-          //   console.warn("leave room callback");
-          //   // window?.parent?.postMessage("joinRoom", "*")
-          //   this.postMessage({ type: 'leaveRoom', data: null })
-          //   // 刷新20分钟限制
-          //   if (this.state.roomTimer) {
-          //     clearInterval(this.state.roomTimer);
-          //     this.state.roomTimer = null;
-          //     this.state.roomTime = 0;
-          //   }
-          // },
-          // onInRoomMessageReceived: (messageInfo) => {
-          //   console.warn("onInRoomMessageReceived", messageInfo)
-          // },
-          // onInRoomCommandReceived: (fromUser, command) => {
-          //   console.warn("onInRoomCommandReceived", fromUser, JSON.parse(command))
-          // },
-          // onInRoomTextMessageReceived(messages) {
-          //   console.warn("onInRoomTextMessageReceived", messages)
-          // },
-          // onInRoomCustomCommandReceived(command) {
-          //   console.warn("onInRoomCustomCommandReceived", command)
-          // },
+          onJoinRoom: () => {
+            // sessionStorage.setItem('roomID', zp.getRoomID());
+            console.warn("join room callback");
+            // window?.parent?.postMessage("joinRoom", "*")
+            this.postMessage({ type: 'joinRoom', data: null })
+            // demo 和 goenjoy 都设置20分钟体验限制 
+            // goenjoy 直播体验设置为20分钟
+            // const inGoEnjoyExperience = process.env.REACT_APP_PATH === "live_stream" && this.inIframe()
+            // const experienceTime = inGoEnjoyExperience ? 1200 : 300
+            // const experienceTimeTip = inGoEnjoyExperience ? 5 : 20
+            this.state.roomTimer = setInterval(() => {
+              this.state.roomTime = ++this.state.roomTime;
+              if (this.state.roomTime === 1200) {
+                this.showToast(this.state.lang === "en" ? `Only for functional experience, not for commercial use. Each session should not exceed 20 minutes.` : `仅功能体验，不作商业用途。每次不超过 20 分钟。`);
+                zp.hangUp();
+              }
+            }, 1000);
+          }, // 退出房间回调
+          onLeaveRoom: () => {
+            console.warn("leave room callback");
+            // window?.parent?.postMessage("joinRoom", "*")
+            this.postMessage({ type: 'leaveRoom', data: null })
+            // 刷新20分钟限制
+            if (this.state.roomTimer) {
+              clearInterval(this.state.roomTimer);
+              this.state.roomTimer = null;
+              this.state.roomTime = 0;
+            }
+          },
+          onInRoomMessageReceived: (messageInfo) => {
+            console.warn("onInRoomMessageReceived", messageInfo)
+          },
+          onInRoomCommandReceived: (fromUser, command) => {
+            console.warn("onInRoomCommandReceived", fromUser, command)
+          },
+          onInRoomTextMessageReceived(messages) {
+            console.warn("onInRoomTextMessageReceived", messages)
+          },
+          onInRoomCustomCommandReceived(command) {
+            console.warn("onInRoomCustomCommandReceived", command)
+          },
           //   showScreenSharingButton: true,
           // screenSharingConfig: {
           //   onError: (code) => {
@@ -454,7 +455,18 @@ export default class App extends React.PureComponent {
           whiteboardConfig: {
             // showAddImageButton: true,
             // showCreateAndCloseButton: true,
-          }
+          },
+          // requireRoomForegroundView: () => {
+          //   const myView = document.createElement('div');
+          //   myView.classList.add("my-view");
+          //   const textData = [];
+          //   textData.forEach((msg) => {
+          //     const msgDom = document.createElement('div');
+          //     msgDom.innerHTML = msg;
+          //     myView.append(msgDom);
+          //   })
+          //   return myView;
+          // }
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"
@@ -512,31 +524,38 @@ export default class App extends React.PureComponent {
     //@ts-ignore // just for debugger
     window.zp = this.zp;
     this.zp.setCallInvitationConfig({
-      // enableCustomCallInvitationDialog: true,
       language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
       enableNotifyWhenAppRunningInBackgroundOrQuit: true,
       canInvitingInCalling,
       endCallWhenInitiatorLeave,
       onlyInitiatorCanInvite,
+      // enableCustomCallInvitationDialog: true,
       onConfirmDialogWhenReceiving: (callType, caller, refuse, accept, data) => {
         console.warn("【demo】onCallInvitationDialogShowed", callType, caller, data, refuse);
         this.inviter = caller;
-        // this.setState({
-        //   showConfirmDialog: true,
-        // })
-        // console.warn("【demo】onCallInvitationDialogShowed", document.querySelector('.refuse-btn'), this.refuseBtn.current);
-        // const refuseBtn = document.querySelector('.refuse-btn') as HTMLElement;
-        // refuseBtn && (refuseBtn.onclick = () => {
-        //   console.log('====click refuse')
-        //   refuse();
-        // })
+        this.setState({
+          showConfirmDialog: true,
+        })
+        console.warn("【demo】onCallInvitationDialogShowed", document.querySelector('.refuse-btn'), this.refuseBtn.current);
+        const refuseBtn = document.querySelector('.refuse-btn') as HTMLElement;
+        refuseBtn && (refuseBtn.onclick = () => {
+          console.log('====click refuse')
+          refuse();
+        })
+        const acceptBtn = document.querySelector('.accept-btn') as HTMLElement;
+        acceptBtn && (
+          acceptBtn.onclick = () => {
+            console.log('====click accept')
+            accept();
+          }
+        )
       },
       // enableCustomCallInvitationWaitingPage: true,
       onWaitingPageWhenSending: (callType, callees, cancel) => {
         console.warn("【demo】onCallInvitationWaitingPageShowed", callType, callees, cancel, this.state.showWaitingPage);
         this.setState({
           callees,
-          // showWaitingPage: true
+          showWaitingPage: true
         })
       },
       onSetRoomConfigBeforeJoining: (callType) => {
@@ -634,6 +653,9 @@ export default class App extends React.PureComponent {
       // 当被叫者接受邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
       onOutgoingCallAccepted: (callID: string, caller: ZegoUser) => {
         console.warn("onOutgoingCallAccepted", callID, caller);
+        this.setState({
+          showWaitingPage: false
+        })
       },
       // 当被叫者正在通话中，拒接邀请后，呼叫者会收到该回调，将内部数据转成对应数据后抛出。
       onOutgoingCallRejected: (callID: string, caller: ZegoUser) => {
@@ -1390,12 +1412,12 @@ export default class App extends React.PureComponent {
           <div className={`${APP.toast}`}>{this.state.toastText}</div>
         )}
 
-        {this.state.showWaitingPage && (
-          <div className="wait-page" style={{ position: "absolute", top: 0, width: "100%", height: "100%", background: "#3b3b3b" }}>
+        {/* {this.state.showWaitingPage && (
+          <div className="wait-page" style={{ position: "absolute", top: 0, width: "100%", height: "100%", background: "#3b3b3b", display: "flex", justifyContent: "center", alignItems: "center" }}>
             {this.state.callees.map((item) => {
               return (
                 <div>
-                  <div>{item.userID}</div>
+                  <div style={{ color: "#fff" }}>{item.userID}</div>
                   <div>{item.userName}</div>
 
                 </div>
@@ -1404,9 +1426,10 @@ export default class App extends React.PureComponent {
           </div>
         )}
 
-        {/* {(
+        {(
           <div className="confirm-dialog" style={{ position: "absolute", top: 0, width: "100px", height: "100px", background: "#3b3b3b" }}>
             <div ref={this.refuseBtn} className="refuse-btn" style={{ width: "100px", height: "40px", backgroundColor: "#fff" }}>refuse</div>
+            <div ret={this.acceptBtn} className="accept-btn" style={{ width: "100px", height: "40px", backgroundColor: "#fff" }}>accept</div>
           </div>
         )} */}
 

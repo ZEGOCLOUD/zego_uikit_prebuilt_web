@@ -49,7 +49,10 @@ import { i18nMap } from '../locale';
 import { ZegoStreamView } from "zego-express-engine-webrtc/sdk/code/zh/ZegoStreamView.web"
 // import { AiDenoise } from "zego-express-engine-webrtc/aidenoise";
 import { VoiceChanger } from "zego-express-engine-webrtc/voice-changer";
+import { TracerConnect } from "./tools/ZegoTracer"
+import { SpanEvent } from "../model/tracer"
 
+// declare const SDK_VERSION: string;
 export class ZegoCloudRTCCore {
 	static _instance: ZegoCloudRTCCore
 	static _zg: ZegoExpressEngine
@@ -73,11 +76,8 @@ export class ZegoCloudRTCCore {
 	//   static _soundMeter: SoundMeter;
 	// 当前屏幕状态
 	isScreenPortrait: boolean = true;
-	static getInstance(
-		kitToken: string,
-		createConfig?: ZegoUIKitCreateConfig,
-	): ZegoCloudRTCCore {
-		const config = getConfig(kitToken)
+	static getInstance(kitToken: string, createConfig?: ZegoUIKitCreateConfig, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoCloudRTCCore {
+		const config = getConfig(kitToken);
 		if (!ZegoCloudRTCCore._instance && config) {
 			// 开启云代理
 			createConfig?.cloudProxyConfig && (ZegoExpressEngine.setCloudProxyConfig(createConfig.cloudProxyConfig.proxyList, config.token, true));
@@ -94,11 +94,14 @@ export class ZegoCloudRTCCore {
 			)
 			createConfig?.AiDenoiseConfig && (ZegoCloudRTCCore._instance.AiDenoiseConfig = createConfig.AiDenoiseConfig)
 			ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(ZegoCloudRTCCore._zg)
+			TracerConnect.createTracer(this._instance._expressConfig.appID, this._instance._expressConfig.token, this._instance._expressConfig.userID);
 		}
 
 		return ZegoCloudRTCCore._instance
 	}
-
+	// static getVersion(): string {
+	// 	return '2.13.2' // SDK_VERSION;
+	// }
 	status: {
 		loginRsp: boolean
 		videoRefuse?: boolean
@@ -322,7 +325,7 @@ export class ZegoCloudRTCCore {
 			this._originConfig["swbb"] = 1
 		}
 		if (this._config.plugins.ZIM !== undefined) {
-			this._originConfig["uc"] = 1
+			this._originConfig["zim"] = 1
 		}
 		if (config.scenario?.mode !== undefined) {
 			this._originConfig["sm"] = config.scenario.mode
@@ -348,6 +351,16 @@ export class ZegoCloudRTCCore {
 		if (config.onLiveEnd !== undefined) {
 			this._originConfig["ole"] = 1
 		}
+		if (config.autoLeaveRoomWhenOnlySelfInRoom !== undefined) {
+			this._originConfig["lrwos"] = config.autoLeaveRoomWhenOnlySelfInRoom ? 1 : 0
+		}
+		if (config.language !== undefined) {
+			this._originConfig["lang"] = config.language
+		}
+		if (config.onYouRemovedFromRoom !== undefined) {
+			this._originConfig["oyrfr"] = 1
+		}
+
 		this._originConfig["url"] = window.location.origin + window.location.pathname
 	}
 	get originConfig() {
@@ -1303,6 +1316,13 @@ export class ZegoCloudRTCCore {
 						maxMemberCount: ZegoCloudRTCCore._instance._config.maxUsers,
 					}
 				)
+				const span = TracerConnect.createSpan(SpanEvent.LoginRoom, {
+					room_id: ZegoCloudRTCCore._instance._expressConfig.roomID,
+					error: 0,
+					msg: '',
+					start_time: Date.now(),
+				})
+				span.end();
 				if (
 					this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
 					this._config.scenario.config?.role === LiveRole.Host &&
@@ -1767,7 +1787,21 @@ export class ZegoCloudRTCCore {
 		this._zimManager?.leaveRoom()
 		this.status.loginRsp = false
 		setTimeout(() => {
-			ZegoCloudRTCCore._zg.logoutRoom()
+			try {
+				ZegoCloudRTCCore._zg.logoutRoom();
+				const span = TracerConnect.createSpan(SpanEvent.LogoutRoom, {
+					room_id: this._expressConfig.roomID,
+					error: 0
+				})
+				span.end();
+			} catch (error) {
+				const span = TracerConnect.createSpan(SpanEvent.LogoutRoom, {
+					room_id: this._expressConfig.roomID,
+					error: -1,
+					message: error,
+				})
+				span.end();
+			}
 		}, 300)
 	}
 	setStreamExtraInfo(streamID: string, extraInfo: string): Promise<ZegoServerResponse> {

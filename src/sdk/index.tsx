@@ -24,7 +24,8 @@ import {
 import { ZegoCloudRTCCore } from "./modules/index";
 import { generatePrebuiltToken, isPc } from "./util";
 import { ZegoCloudRTCKitComponent } from "./view/index";
-
+import { TracerConnect } from "./modules/tools/ZegoTracer";
+import { SpanEvent } from "./model/tracer";
 export class ZegoUIKitPrebuilt {
 	static core: ZegoCloudRTCCore | undefined;
 	static _instance: ZegoUIKitPrebuilt;
@@ -100,10 +101,18 @@ export class ZegoUIKitPrebuilt {
 		);
 	}
 
-	static create(kitToken: string, createConfig?: ZegoUIKitCreateConfig): ZegoUIKitPrebuilt {
+	static create(kitToken: string, createConfig?: ZegoUIKitCreateConfig, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt {
+		const startTime = Date.now();
 		if (!ZegoUIKitPrebuilt.core && kitToken) {
 			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, createConfig);
 			ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
+			const span = TracerConnect.createSpan(SpanEvent.Create, {
+				error: 0,
+				msg: '',
+				start_time: startTime,
+				elapsed_time_sdk: Date.now() - startTime,
+			})
+			span.end();
 		}
 		return ZegoUIKitPrebuilt._instance;
 	}
@@ -178,6 +187,10 @@ export class ZegoUIKitPrebuilt {
 		}
 
 		const result = ZegoUIKitPrebuilt.core.setConfig(roomConfig);
+		const span = TracerConnect.createSpan(SpanEvent.RoomConfig, {
+			room_config: ZegoUIKitPrebuilt.core.originConfig,
+		})
+		span.end();
 		if (result) {
 			this.root = ReactDOM.createRoot(roomConfig.container as HTMLDivElement);
 			this.root.render(
@@ -190,6 +203,8 @@ export class ZegoUIKitPrebuilt {
 						this.hasJoinedRoom = false;
 						ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(false)
 						div && div.remove();
+						const span = TracerConnect.createSpan(SpanEvent.Unmount, {});
+						span.end();
 					}}></ZegoCloudRTCKitComponent>
 			);
 			this.hasJoinedRoom = true;
@@ -200,11 +215,14 @@ export class ZegoUIKitPrebuilt {
 	}
 
 	destroy() {
+		const span = TracerConnect.createSpan(SpanEvent.Destory, {})
+		span.end();
 		ZegoUIKitPrebuilt.core?.leaveRoom?.();
 		ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(false)
 		ZegoUIKitPrebuilt.core = undefined;
 		// @ts-ignore
 		ZegoCloudRTCCore._instance = undefined;
+		TracerConnect.unInit();
 		this.root?.unmount?.();
 		this.root = undefined;
 		this.hasJoinedRoom = false;
@@ -239,7 +257,16 @@ export class ZegoUIKitPrebuilt {
 		if (callType !== ZegoInvitationType.VideoCall && callType !== ZegoInvitationType.VoiceCall) {
 			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callType !!");
 		}
-
+		const span = TracerConnect.createSpan(SpanEvent.CallInvite, {
+			call_id: '',
+			callees,
+			type: callType,
+			room_id: roomID,
+			custom_data: data,
+			timeout,
+			notification_config: notificationConfig
+		})
+		span.end();
 		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation({
 			invitees: callees,
 			type: callType,

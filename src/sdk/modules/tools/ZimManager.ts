@@ -38,6 +38,8 @@ import { createIntl, createIntlCache } from "react-intl";
 import { i18nMap } from '../../locale';
 import { typeIsBoolean, userNameColor } from "../../util";
 import { ZegoUIKitPrebuilt } from "../..";
+import { TracerConnect } from "./ZegoTracer";
+import { SpanEvent } from "../../model/tracer";
 
 export class ZimManager {
 	_zim: ZIM | null;
@@ -149,6 +151,12 @@ export class ZimManager {
 				timeout,
 				extendedData,
 			});
+			const span = TracerConnect.createSpan(SpanEvent.InvitationReceived, {
+				call_id: callID,
+				inviter: inviter,
+				extended_data: extendedData,
+			})
+			span.end();
 			const { type } = JSON.parse(extendedData);
 			if (type > ZegoInvitationType.VideoCall) {
 				this._inRoomInviteMg.onCallInvitationReceived(callID, inviter, timeout, extendedData);
@@ -156,6 +164,11 @@ export class ZimManager {
 				if (this.callInfo.callID) {
 					// 如果已被邀请，就拒绝其他的
 					callID !== this.callInfo.callID && this.refuseInvitation("busy", callID);
+					const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+						call_id: callID,
+						action: 'busy'
+					})
+					span.end();
 				} else {
 					const { inviter_name, type, data, canInvitingInCalling, onlyInitiatorCanInvite, endCallWhenInitiatorLeave } = JSON.parse(extendedData);
 					const { call_id, invitees, custom_data, inviter: _inviter } = JSON.parse(data);
@@ -203,16 +216,30 @@ export class ZimManager {
 								callInvitationControl.callInvitationDialogHide();
 								this.endCall(CallInvitationEndReason.Declined);
 								this.config?.onIncomingCallDeclineButtonPressed?.();
+								const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+									call_id: this.callInfo.callID,
+									action: 'refuse'
+								})
+								span.end();
 							},
 							() => {
 								this.clearIncomingTimer();
 								this.acceptInvitation();
 								this.notifyJoinRoomCallback();
 								this.config?.onIncomingCallAcceptButtonPressed?.();
+								const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+									call_id: this.callInfo.callID,
+									action: 'accept'
+								})
+								span.end();
 							},
 							this.languageManager,
 							this.config?.ringtoneConfig?.incomingCallUrl
 						);
+						const span = TracerConnect.createSpan(SpanEvent.DisplayNotification, {
+							call_id: this.callInfo.callID,
+						});
+						span.end();
 					}
 					// 透传接收到邀请回调
 					if (this.config.onIncomingCallReceived) {
@@ -231,12 +258,22 @@ export class ZimManager {
 						callInvitationControl.callInvitationDialogHide();
 						this.endCall(CallInvitationEndReason.Declined);
 						this.config?.onIncomingCallAcceptButtonPressed?.();
+						const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+							call_id: this.callInfo.callID,
+							action: 'refuse'
+						})
+						span.end();
 					};
 					const accept = (data?: string) => {
 						this.clearIncomingTimer();
 						this.acceptInvitation(data);
 						this.notifyJoinRoomCallback();
 						this.config?.onIncomingCallDeclineButtonPressed?.();
+						const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+							call_id: this.callInfo.callID,
+							action: 'accept'
+						})
+						span.end();
 					};
 					this.config?.onConfirmDialogWhenReceiving?.(
 						type,
@@ -259,6 +296,11 @@ export class ZimManager {
 				inviter,
 				extendedData,
 			});
+			const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+				call_id: this.callInfo.callID,
+				action: 'inviterCancel'
+			})
+			span.end();
 			this._inRoomInviteMg.onCallInvitationCanceled(callID, inviter, extendedData);
 			if (!this.callInfo.callID) return;
 			// 透传取消呼叫事件
@@ -272,6 +314,11 @@ export class ZimManager {
 		// 被邀请者响应超时后,“被邀请者”收到的回调通知, 超时时间单位：秒 （被邀请者）
 		this._zim!.on("callInvitationTimeout", (zim: ZIM, { callID }: ZIMEventOfCallInvitationTimeoutResult) => {
 			console.warn("callInvitationTimeout", { callID });
+			const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+				call_id: this.callInfo.callID,
+				action: 'timeout'
+			})
+			span.end();
 			this._inRoomInviteMg.onCallInvitationTimeout(callID);
 			if (!this.callInfo.callID) return;
 			// 透传超时事件
@@ -295,6 +342,11 @@ export class ZimManager {
 				}
 				if (state === ZIMCallUserState.Timeout) {
 					this.callInviteesAnsweredTimeout({ callID, invitees: [userID] })
+					const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+						call_id: callID,
+						action: 'timeout'
+					})
+					span.end();
 				}
 				if (state === ZIMCallUserState.Ended) {
 					if (callInvitationControl.isDialogShow) {
@@ -399,8 +451,18 @@ export class ZimManager {
 		const callee = this.callInfo.invitees.find((i) => i.userID === invitee) || { userID: invitee };
 		if (reason === "busy") {
 			this.config.onOutgoingCallRejected && this.config.onOutgoingCallRejected(this.callInfo.roomID, callee);
+			const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+				call_id: this.callInfo.callID,
+				action: 'busy'
+			})
+			span.end();
 		} else {
 			this.config.onOutgoingCallDeclined && this.config.onOutgoingCallDeclined(this.callInfo.roomID, callee);
+			const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+				call_id: this.callInfo.callID,
+				action: 'refuse'
+			})
+			span.end();
 		}
 		if (callInvitationControl.isWaitingPageShow) {
 			// 单人邀请，隐藏waitingPage,清除callInfo
@@ -435,9 +497,10 @@ export class ZimManager {
 			userID: invitee,
 			userName: "",
 		});
-
 		if (callInvitationControl.isWaitingPageShow) {
 			callInvitationControl.callInvitationWaitingPageHide();
+		}
+		if (!this.hasJoinedRoom) {
 			this.notifyJoinRoomCallback();
 		}
 		// 透传接受邀请事件
@@ -555,7 +618,18 @@ export class ZimManager {
 		try {
 			this.callInfo.callID = new Date().getTime().toString(); //临时生成个id，防止同时呼叫情况
 			const res: ZIMCallInvitationSentResult = await this._zim!.callInvite(inviteesID, config);
-
+			const span = TracerConnect.createSpan(SpanEvent.Invite, {
+				invitees: invitees,
+				count: invitees.length,
+				error_userlist: JSON.stringify(res.errorUserList),
+				error_count: res.errorUserList.length,
+				call_id: res.callID,
+				extended_data: JSON.stringify(extendedData),
+				type,
+				error: 0,
+				msg: ''
+			})
+			span.end();
 			const errorInvitees = res.errorUserList.map((i: { userID: string }) => {
 				return invitees.find((u) => u.userID === i.userID) as ZegoUser;
 			});
@@ -629,6 +703,15 @@ export class ZimManager {
 			this.inSendOperation = false;
 			return Promise.resolve({ errorInvitees });
 		} catch (error) {
+			const span = TracerConnect.createSpan(SpanEvent.Invite, {
+				invitees: invitees,
+				count: invitees.length,
+				extended_data: JSON.stringify(extendedData),
+				type,
+				error: (error as any).code,
+				msg: (error as any).message
+			})
+			span.end();
 			this.clearCallInfo();
 			this.inSendOperation = false;
 			return Promise.reject(JSON.stringify(error));
@@ -886,31 +969,53 @@ export class ZimManager {
 	}
 	enterRoom() {
 		if (this.isLogin) {
+			const roomID = this.callInfo.callID || this.expressConfig.roomID
 			this._zim
 				?.enterRoom({
-					roomID: this.callInfo.callID || this.expressConfig.roomID,
-					roomName: this.callInfo.callID || this.expressConfig.roomID,
+					roomID,
+					roomName: roomID,
 				})
 				.then((res: any) => {
 					console.warn("【zim enterRoom】success");
 					this.queryRoomAllAttributes();
+					const span = TracerConnect.createSpan(SpanEvent.ZIMLoginRoom, {
+						room_id: roomID,
+						error: 0,
+					})
+					span.end()
 				})
 				.catch((error: any) => {
 					console.error("【zim enterRoom】failed", error);
+					const span = TracerConnect.createSpan(SpanEvent.ZIMLoginRoom, {
+						room_id: roomID,
+						error: error.code || -1,
+					})
+					span.end()
 				});
 		} else {
 			this.needJoinRoomAgain = true;
 		}
 	}
 	leaveRoom() {
+		const roomID = this.callInfo.callID || this.expressConfig.roomID;
 		this._zim
 			// @ts-ignore
-			?.leaveRoom(this.callInfo.callID || this.expressConfig.roomID)
+			?.leaveRoom(roomID)
 			.then((res: any) => {
 				console.warn("【zim leaveRoom】success");
+				const span = TracerConnect.createSpan(SpanEvent.ZIMLogoutRoom, {
+					room_id: roomID,
+					error: 0,
+				})
+				span.end();
 			})
 			.catch((error: any) => {
 				console.error("【zim leaveRoom】failed", error);
+				const span = TracerConnect.createSpan(SpanEvent.ZIMLogoutRoom, {
+					room_id: roomID,
+					error: error.code || -1,
+				})
+				span.end();
 			});
 	}
 	async sendInRoomCustomMessage(command: object, priority = 1): Promise<ZegoSignalingInRoomCommandMessage> {

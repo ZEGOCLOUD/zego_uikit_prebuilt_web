@@ -238,6 +238,8 @@ export interface ZegoCloudRoomConfig {
 	// 通话中呼叫邀请列表配置
 	callingInvitationListConfig?: CallingInvitationListConfig;
 	// 2.13.0
+	// 房间内自定义view，位于视频上方
+	requireRoomForegroundView?: () => HTMLElement;
 	// 整体视频画面配置
 	videoScreenConfig?: {
 		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
