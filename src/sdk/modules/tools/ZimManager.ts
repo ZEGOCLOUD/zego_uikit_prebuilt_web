@@ -970,6 +970,7 @@ export class ZimManager {
 	enterRoom() {
 		if (this.isLogin) {
 			const roomID = this.callInfo.callID || this.expressConfig.roomID
+			console.warn('[zimManager]enterRoom, roomID:', this.callInfo.callID, this.expressConfig.roomID);
 			this._zim
 				?.enterRoom({
 					roomID,
@@ -1026,7 +1027,7 @@ export class ZimManager {
 					Array.from(unescape(encodeURIComponent(JSON.stringify(command)))).map((val) => val.charCodeAt(0))
 				),
 			},
-			this.expressConfig.roomID,
+			this.callInfo.callID || this.expressConfig.roomID,
 			1,
 			{
 				priority: priority,
@@ -1047,13 +1048,15 @@ export class ZimManager {
 		const extendedData = {
 			userName: ZegoUIKitPrebuilt.core?._expressConfig.userName
 		}
+		const roomID = this.callInfo.callID || this.expressConfig.roomID;
+		console.warn('[ZimManager]sendTextMessage, roomID:', roomID)
 		return await this._zim?.sendMessage(
 			{
 				type: 1,
 				message,
 				extendedData: JSON.stringify(extendedData),
 			},
-			this.expressConfig.roomID,
+			roomID,
 			1,
 			{ priority: 3 }
 		).then(({ message }) => {
@@ -1079,7 +1082,8 @@ export class ZimManager {
 			isUpdateOwner: false,
 			isDeleteAfterOwnerLeft: false
 		}
-		return await this._zim?.setRoomAttributes(roomAttributes, this.expressConfig.roomID, config || defaultConfig)
+		const roomID = this.callInfo.callID || this.expressConfig.roomID;
+		return await this._zim?.setRoomAttributes(roomAttributes, roomID, config || defaultConfig)
 			.then(({ roomID, errorKeys }) => {
 				console.warn('[ZimManager]set room attributes success', roomID, errorKeys)
 			})
@@ -1090,7 +1094,8 @@ export class ZimManager {
 
 	// 获取 zim 房间属性
 	async queryRoomAllAttributes() {
-		return await this._zim?.queryRoomAllAttributes(this.expressConfig.roomID)
+		const roomID = this.callInfo.callID || this.expressConfig.roomID;
+		return await this._zim?.queryRoomAllAttributes(roomID)
 			.then(({ roomID, roomAttributes }) => {
 				console.warn('[ZimManager]query room attributes success', roomID, roomAttributes);
 				if (roomAttributes && roomAttributes.ban) {
