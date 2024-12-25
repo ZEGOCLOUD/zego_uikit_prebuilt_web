@@ -209,6 +209,9 @@ declare interface ZegoCloudRoomConfig {
 	showWaitingCallAcceptAudioVideoView?: boolean;
 	// Configure the call invitation list during a call
 	callingInvitationListConfig?: CallingInvitationListConfig;
+	// 2.13.0
+	// Custom view in the room, located above the video
+	requireRoomForegroundView?: () => HTMLElement;
 }
 
 export enum RightPanelExpandedType {
@@ -364,7 +367,7 @@ export declare class ZegoUIKitPrebuilt {
 		userID: string,
 		userName?: string
 	): string;
-	static create(kitToken: string): ZegoUIKitPrebuilt;
+	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt;
 	addPlugins(plugins?: { ZegoSuperBoardManager?: any; ZIM?: any }): void;
 	joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
 	destroy(): void;

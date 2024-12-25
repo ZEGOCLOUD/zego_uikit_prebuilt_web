@@ -83,8 +83,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			zegoCloudUserList: [],
 			messageList: [],
 			notificationList: [],
-			micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
-			cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
+			micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
+			cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
 			showSettings: false,
 			isNetworkPoor: false,
 			connecting: false,
@@ -496,6 +496,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		const logInRsp = await this.props.core.enterRoom();
 		let massage = "";
 		if (logInRsp === 0) {
+			// 没有预览 view 时，先检测摄像头/麦克风权限
+			if (!this.props.core._config.showPreJoinView) {
+				await this.deviceCheck();
+			}
 			this.createStream();
 			return;
 		} else if (logInRsp === 1002034) {
@@ -613,6 +617,44 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		});
 	}
 
+	// 检查摄像头麦克风权限
+	async deviceCheck() {
+		// 检查摄像头
+		if (this.props.core._config.turnOnCameraWhenJoining) {
+			try {
+				await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
+					const cameras = await this.props.core.getCameras();
+					cameras.length < 1 && (this.props.core.status.videoRefuse = true);
+				})
+					.catch((error) => {
+						console.warn('getUserMedia error', error);
+						this.props.core.status.videoRefuse = true;
+					});
+			} catch (error) {
+				this.props.core.status.videoRefuse = true;
+			}
+		} else {
+			this.props.core.status.videoRefuse = true;
+		}
+		// 检查麦克风
+		if (this.props.core._config.turnOnMicrophoneWhenJoining) {
+			try {
+				await navigator.mediaDevices.getUserMedia({ audio: true }).then(async (stream) => {
+					const mics = await this.props.core.getMicrophones();
+					mics.length < 1 && (this.props.core.status.audioRefuse = true);
+				})
+					.catch((error) => {
+						console.warn('getUserMedia error', error);
+						this.props.core.status.audioRefuse = true;
+					});
+			} catch (error) {
+				this.props.core.status.audioRefuse = true;
+			}
+		} else {
+			this.props.core.status.audioRefuse = true;
+		}
+	}
+
 	async createStream(): Promise<boolean> {
 		const { formatMessage } = this.props.core.intl;
 		if (
@@ -645,12 +687,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				this.props.core.muteMicrophone(!this.props.core._config.turnOnMicrophoneWhenJoining);
 				this.setState({
 					localStream,
-					cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
-					micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
+					cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
+					micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
 				});
 				const extraInfo = JSON.stringify({
-					isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
-					isMicrophoneOn: this.props.core._config.turnOnMicrophoneWhenJoining,
+					isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
+					isMicrophoneOn: this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
 					hasVideo: !this.props.core.status.videoRefuse,
 					hasAudio: !this.props.core.status.audioRefuse,
 				});
@@ -688,6 +730,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				return false;
 			}
 		} else {
+			this.setState({
+				cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
+				micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
+			});
 			return false;
 		}
 	}
