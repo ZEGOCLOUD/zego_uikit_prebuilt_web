@@ -10,6 +10,8 @@ import {
   ZegoInvitationType,
   ZegoUser,
 } from "../../model";
+import { TracerConnect } from "./ZegoTracer";
+import { SpanEvent } from "../../model/tracer";
 
 export default class InRoomInviteManager {
   _zim: ZIM;
@@ -79,6 +81,14 @@ export default class InRoomInviteManager {
           type: ZegoInvitationType.InviteToCoHost,
         });
       }
+      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostInvite, {
+        call_id: res.callID,
+        audience_id: inviteeID,
+        error_userlist: JSON.stringify(res.errorUserList),
+        error_count: res.errorUserList.length,
+        extended_data: JSON.stringify(extendedData),
+      })
+      span.end();
       return {
         code: res.errorUserList.length, // 0：正常， 1：用户不在线，2：重复邀请，3：发送失败
         msg: "",
@@ -86,6 +96,13 @@ export default class InRoomInviteManager {
     } catch (error) {
       this.inviteToCoHostInfoMap.delete(inviteeID);
       console.error("【ZEGOCLOUD】inviteJoinToCohost failed:", error);
+      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostInvite, {
+        audience_id: inviteeID,
+        extended_data: JSON.stringify(extendedData),
+        error: (error as any).code || -1,
+        msg: (error as any).message || ""
+      })
+      span.end();
       return {
         code: 3,
         msg: JSON.stringify(error),

@@ -1511,6 +1511,9 @@ export class ZegoCloudRTCCore {
 			...publishOption,
 			...{ videoCodec: this._config.videoCodec },
 		})
+		if (res) {
+			console.warn(`[ZegoCloudRTCCore]startPublishingStream, time: ${new Date().getTime()}, streamID: ${streamID}`)
+		}
 		return res && streamID
 	}
 
