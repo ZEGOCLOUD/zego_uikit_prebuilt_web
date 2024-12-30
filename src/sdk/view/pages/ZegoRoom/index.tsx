@@ -620,42 +620,53 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	// 检查摄像头麦克风权限
 	async deviceCheck() {
 		// 检查摄像头
-		if (this.props.core._config.turnOnCameraWhenJoining) {
-			try {
-				await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
-					const cameras = await this.props.core.getCameras();
-					cameras.length < 1 && (this.props.core.status.videoRefuse = true);
-				})
-					.catch((error) => {
-						console.warn('getUserMedia error', error);
-						this.props.core.status.videoRefuse = true;
-					});
-			} catch (error) {
-				this.props.core.status.videoRefuse = true;
-			}
-		} else {
+		console.warn('[ZegoRoom]deviceCheck');
+		// if (this.props.core._config.turnOnCameraWhenJoining) {
+		try {
+			await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
+				const cameras = await this.props.core.getCameras();
+				console.warn('[ZegoRoom]deviceCheck camera', cameras);
+				if (cameras.length < 1) {
+					this.props.core.status.videoRefuse = true
+				} else {
+					this.props.core.status.videoRefuse = false
+				}
+			})
+				.catch((error) => {
+					console.warn('getUserMedia error', error);
+					this.props.core.status.videoRefuse = true;
+				});
+		} catch (error) {
 			this.props.core.status.videoRefuse = true;
 		}
+		// } else {
+		// 	this.props.core.status.videoRefuse = true;
+		// }
 		// 检查麦克风
-		if (this.props.core._config.turnOnMicrophoneWhenJoining) {
-			try {
-				await navigator.mediaDevices.getUserMedia({ audio: true }).then(async (stream) => {
-					const mics = await this.props.core.getMicrophones();
-					mics.length < 1 && (this.props.core.status.audioRefuse = true);
-				})
-					.catch((error) => {
-						console.warn('getUserMedia error', error);
-						this.props.core.status.audioRefuse = true;
-					});
-			} catch (error) {
-				this.props.core.status.audioRefuse = true;
-			}
-		} else {
+		// if (this.props.core._config.turnOnMicrophoneWhenJoining) {
+		try {
+			await navigator.mediaDevices.getUserMedia({ audio: true }).then(async (stream) => {
+				const mics = await this.props.core.getMicrophones();
+				if (mics.length < 1) {
+					this.props.core.status.audioRefuse = true
+				} else {
+					this.props.core.status.audioRefuse = false
+				}
+			})
+				.catch((error) => {
+					console.warn('getUserMedia error', error);
+					this.props.core.status.audioRefuse = true;
+				});
+		} catch (error) {
 			this.props.core.status.audioRefuse = true;
 		}
+		// } else {
+		// 	this.props.core.status.audioRefuse = true;
+		// }
 	}
 
 	async createStream(): Promise<boolean> {
+		console.warn('[ZegoRoom]createZegoStream', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse, this.state.cameraOpen)
 		const { formatMessage } = this.props.core.intl;
 		if (
 			!this.props.core._config.turnOnCameraWhenJoining &&
@@ -682,6 +693,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					},
 					videoBitrate: solution.bitrate,
 				});
+				console.warn('[ZegoRoom]createZegoStream localStream', localStream)
 				this.props.core.localStream = localStream;
 				await this.props.core.mutePublishStreamVideo(
 					localStream,
@@ -812,6 +824,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	async toggleCamera(): Promise<boolean> {
 		const { formatMessage } = this.props.core.intl;
 		if (this.props.core.status.videoRefuse) {
+			// if (!this.props.core._config.turnOnCameraWhenJoining) {
+			// 	await this.deviceCheck(true);
+			// 	await this.createStream();
+			// } else {
 			ZegoModelShow(
 				{
 					header: formatMessage({ id: "global.equipment" }),
@@ -821,15 +837,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
 			);
 			return Promise.resolve(false);
+			// }
 		}
 		if (this.cameraStatus === -1) return Promise.resolve(false);
 		this.cameraStatus = -1;
 
 		let result;
-		if (this.state.localStream) {
-			console.log('===togglecamera', this.state.localStream.getVideoTracks().length)
-
-		}
 		if (this.state.localStream && this.state.localStream.getVideoTracks().length > 0) {
 			result = await this.props.core.mutePublishStreamVideo(this.state.localStream, this.state.cameraOpen);
 			try {
