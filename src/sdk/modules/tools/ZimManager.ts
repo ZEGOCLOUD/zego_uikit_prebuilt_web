@@ -343,11 +343,24 @@ export class ZimManager {
 		// 被邀请者响应超时后,“被邀请者”收到的回调通知, 超时时间单位：秒 （被邀请者）
 		this._zim!.on("callInvitationTimeout", (zim: ZIM, { callID }: ZIMEventOfCallInvitationTimeoutResult) => {
 			console.warn("callInvitationTimeout", { callID });
-			const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
-				call_id: this.callInfo.callID,
-				action: 'timeout'
-			})
-			span.end();
+			switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+				case "LiveStreaming": {
+					const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+						call_id: this.callInfo.callID,
+						action: 'timeout'
+					})
+				}
+					break;
+				case "OneONoneCall": {
+					const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
+						call_id: this.callInfo.callID,
+						action: 'timeout'
+					})
+					span.end();
+				}
+					break;
+			}
+
 			this._inRoomInviteMg.onCallInvitationTimeout(callID);
 			if (!this.callInfo.callID) return;
 			// 透传超时事件

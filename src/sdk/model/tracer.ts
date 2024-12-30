@@ -26,4 +26,6 @@ export enum SpanEvent {
     CallerRespondInvitation = 'call/caller/respondInvitation',
     LiveStreamingHostInvite = 'livestreaming/cohost/host/invite',
     LiveStreamingHostReceived = 'livestreaming/cohost/host/received',
+    LiveStreamingHostRespond = 'livestreaming/cohost/host/respond',
+    LiveStreamingHostStop = 'livestreaming/cohost/host/stop',
 }

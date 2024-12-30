@@ -158,6 +158,10 @@ export default class InRoomInviteManager {
     }
   }
   async removeCohost(inviteeID: string) {
+    console.warn('[inRoomInviteManager]removeCohost', inviteeID, this.receivedRequestInfo);
+    const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostStop, {
+      // call_id: 
+    })
     const extendedData = JSON.stringify({
       inviter_name: this.expressConfig.userName,
       type: ZegoInvitationType.RemoveCoHost,
@@ -224,6 +228,11 @@ export default class InRoomInviteManager {
   ): Promise<{ code: number; msg?: string }> {
     if (!this.receivedRequestInfo.has(userID))
       return { code: 0, msg: "success" };
+    const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+      call_id: this.receivedRequestInfo.get(userID)!.callID,
+      action: "accept"
+    })
+    span.end();
     try {
       await this._zim?.callAccept(
         this.receivedRequestInfo.get(userID)!.callID,
@@ -250,6 +259,11 @@ export default class InRoomInviteManager {
   ): Promise<{ code: number; msg?: string }> {
     if (!this.receivedRequestInfo.has(userID))
       return { code: 0, msg: "success" };
+    const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+      call_id: this.receivedRequestInfo.get(userID)!.callID,
+      action: "refuse"
+    })
+    span.end();
     try {
       await this._zim?.callReject(
         this.receivedRequestInfo.get(userID)!.callID,
