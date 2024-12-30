@@ -656,6 +656,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	async createStream(): Promise<boolean> {
+		console.warn('[ZegoRoom]createStream', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse)
 		const { formatMessage } = this.props.core.intl;
 		if (
 			!this.props.core._config.turnOnCameraWhenJoining &&

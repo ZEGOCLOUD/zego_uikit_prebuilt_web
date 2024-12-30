@@ -28,4 +28,7 @@ export enum SpanEvent {
     LiveStreamingHostReceived = 'livestreaming/cohost/host/received',
     LiveStreamingHostRespond = 'livestreaming/cohost/host/respond',
     LiveStreamingHostStop = 'livestreaming/cohost/host/stop',
+    LiveStreamingAudienceInvite = 'livestreaming/cohost/audience/invite',
+    LiveStreamingAudienceReceived = 'livestreaming/cohost/audience/received',
+    LiveStreamingAudienceRespond = 'livestreaming/cohost/audience/respond'
 }

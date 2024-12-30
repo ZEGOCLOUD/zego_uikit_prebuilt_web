@@ -169,12 +169,21 @@ export class ZimManager {
 			span.end();
 			switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
 				case "LiveStreaming": {
-					const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostReceived, {
-						call_id: callID,
-						audience_id: inviter,
-						extended_data: extendedData,
-					})
-					span.end();
+					if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
+						const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostReceived, {
+							call_id: callID,
+							audience_id: inviter,
+							extended_data: extendedData,
+						})
+						span.end();
+					} else {
+						const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceReceived, {
+							call_id: callID,
+							host_id: inviter,
+							extended_data: extendedData,
+						})
+						span.end();
+					}
 				}
 					break;
 				case "OneONoneCall": {
@@ -325,11 +334,25 @@ export class ZimManager {
 				inviter,
 				extendedData,
 			});
-			const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
-				call_id: this.callInfo.callID,
-				action: 'inviterCancel'
-			})
-			span.end();
+			switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+				case "LiveStreaming": {
+					const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+						call_id: callID,
+						action: 'cancel'
+					})
+					span.end()
+				}
+					break;
+				case "OneONoneCall": {
+					const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
+						call_id: this.callInfo.callID,
+						action: 'inviterCancel'
+					})
+					span.end();
+				}
+					break
+			}
+
 			this._inRoomInviteMg.onCallInvitationCanceled(callID, inviter, extendedData);
 			if (!this.callInfo.callID) return;
 			// 透传取消呼叫事件
@@ -373,24 +396,66 @@ export class ZimManager {
 		});
 		// 呼叫邀请相关用户的状态变化 （邀请者）
 		this._zim!.on('callUserStateChanged', (zim: ZIM, { callUserList, callID }: ZIMEventOfCallUserStateChangedResult) => {
-			console.log("【ZEGOCLOUD】callUserStateChanged", callUserList, callID);
+			console.log("【ZIMManager】callUserStateChanged", callUserList, callID);
 			callUserList.forEach(({ state, userID, extendedData }) => {
 				if (userID === this.expressConfig.userID) return
 				if (state === ZIMCallUserState.Rejected) {
 					this.callInvitationRejected({ callID, invitee: userID, extendedData })
-					const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
-						call_id: callID,
-						action: 'refuse'
-					})
-					span.end();
+					switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+						case "LiveStreaming": {
+							if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
+								const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+									call_id: callID,
+									action: 'refuse'
+								})
+								span.end()
+							} else {
+								const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+									call_id: callID,
+									action: 'refuse'
+								})
+								span.end()
+							}
+						}
+							break;
+						case "OneONoneCall": {
+							const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
+								call_id: callID,
+								action: 'refuse'
+							})
+							span.end();
+						}
+							break
+					}
 				}
 				if (state === ZIMCallUserState.Accepted) {
 					this.callInvitationAccepted({ callID, invitee: userID, extendedData })
-					const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
-						call_id: callID,
-						action: 'accept'
-					})
-					span.end();
+					switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+						case "LiveStreaming": {
+							if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
+								const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+									call_id: callID,
+									action: 'accept'
+								})
+								span.end()
+							} else {
+								const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+									call_id: callID,
+									action: 'accept'
+								})
+								span.end()
+							}
+						}
+							break
+						case "OneONoneCall": {
+							const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
+								call_id: callID,
+								action: 'accept'
+							})
+							span.end();
+						}
+							break
+					}
 				}
 				if (state === ZIMCallUserState.Timeout) {
 					this.callInviteesAnsweredTimeout({ callID, invitees: [userID] })
