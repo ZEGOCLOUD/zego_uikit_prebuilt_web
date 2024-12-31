@@ -484,13 +484,13 @@ export class ZimManager {
 
 	// 邀请者的邀请被接受后的回调通知（邀请者）
 	private callInvitationAccepted({ callID, invitee, extendedData }: any) {
-		console.warn("callInvitationAccepted", {
+		console.warn("[ZIMManager]callInvitationAccepted", {
 			callID,
 			invitee,
 			extendedData,
-		});
+		}, this.expressConfig.userID);
 		this._inRoomInviteMg.onCallInvitationAccepted(callID, invitee, extendedData);
-		if (!this.callInfo.callID) return;
+		if (!this.callInfo.callID || invitee !== this.expressConfig.userID) return;
 		this.removeWaitingUser(invitee);
 		this.clearOutgoingTimer();
 		this.callInfo.acceptedInvitees.push({
