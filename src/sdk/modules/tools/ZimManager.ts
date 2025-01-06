@@ -94,6 +94,13 @@ export class ZimManager {
 		this._zim?.setLogConfig({
 			logLevel: "error",
 		});
+		// @ts-ignore
+		console.warn('zim version', ZIM.getVersion())
+		const span = TracerConnect.createSpan(SpanEvent.ZIMInit, {
+			// @ts-ignore
+			zim_version: ZIM.getVersion()
+		});
+		span.end();
 		this._inRoomInviteMg = new InRoomInviteManager(this._zim!, expressConfig);
 		this.expressConfig = expressConfig;
 		this.initListener();
@@ -125,6 +132,13 @@ export class ZimManager {
 				if (!this.languageManager) {
 					this.changeIntl();
 				}
+				const span = TracerConnect.createSpan(SpanEvent.ZIMLogin, {
+					user_id: this.expressConfig.userID,
+					user_name: this.expressConfig.userName,
+					error: 0,
+					msg: "login success"
+				});
+				span.end();
 			})
 			.catch((err: any) => {
 				// 登录失败
@@ -140,6 +154,13 @@ export class ZimManager {
 				setTimeout(() => {
 					this.login(++retryTime);
 				}, 2000 * retryTime);
+				const span = TracerConnect.createSpan(SpanEvent.ZIMLogin, {
+					user_id: this.expressConfig.userID,
+					user_name: this.expressConfig.userName,
+					error: err.code || -1,
+					msg: err.message || ""
+				});
+				span.end();
 			});
 	}
 	private initListener() {
@@ -157,6 +178,34 @@ export class ZimManager {
 				extended_data: extendedData,
 			})
 			span.end();
+			switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+				case "LiveStreaming": {
+					if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
+						const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostReceived, {
+							call_id: callID,
+							audience_id: inviter,
+							extended_data: extendedData,
+						})
+						span.end();
+					} else {
+						const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceReceived, {
+							call_id: callID,
+							host_id: inviter,
+							extended_data: extendedData,
+						})
+						span.end();
+					}
+				}
+					break;
+				case "OneONoneCall": {
+					const span = TracerConnect.createSpan(SpanEvent.CallInvitationReceived, {
+						call_id: callID,
+						inviter: inviter,
+						extended_data: extendedData,
+					})
+					span.end();
+				}
+			}
 			const { type } = JSON.parse(extendedData);
 			if (type > ZegoInvitationType.VideoCall) {
 				this._inRoomInviteMg.onCallInvitationReceived(callID, inviter, timeout, extendedData);
@@ -164,7 +213,7 @@ export class ZimManager {
 				if (this.callInfo.callID) {
 					// 如果已被邀请，就拒绝其他的
 					callID !== this.callInfo.callID && this.refuseInvitation("busy", callID);
-					const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+					const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 						call_id: callID,
 						action: 'busy'
 					})
@@ -215,8 +264,8 @@ export class ZimManager {
 								this.refuseInvitation("decline");
 								callInvitationControl.callInvitationDialogHide();
 								this.endCall(CallInvitationEndReason.Declined);
-								this.config?.onIncomingCallDeclineButtonPressed?.();
-								const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+								this.config?.onIncomingCallAcceptButtonPressed?.();
+								const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 									call_id: this.callInfo.callID,
 									action: 'refuse'
 								})
@@ -226,8 +275,8 @@ export class ZimManager {
 								this.clearIncomingTimer();
 								this.acceptInvitation();
 								this.notifyJoinRoomCallback();
-								this.config?.onIncomingCallAcceptButtonPressed?.();
-								const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+								this.config?.onIncomingCallDeclineButtonPressed?.();
+								const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 									call_id: this.callInfo.callID,
 									action: 'accept'
 								})
@@ -258,7 +307,7 @@ export class ZimManager {
 						callInvitationControl.callInvitationDialogHide();
 						this.endCall(CallInvitationEndReason.Declined);
 						this.config?.onIncomingCallAcceptButtonPressed?.();
-						const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+						const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 							call_id: this.callInfo.callID,
 							action: 'refuse'
 						})
@@ -269,7 +318,7 @@ export class ZimManager {
 						this.acceptInvitation(data);
 						this.notifyJoinRoomCallback();
 						this.config?.onIncomingCallDeclineButtonPressed?.();
-						const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+						const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 							call_id: this.callInfo.callID,
 							action: 'accept'
 						})
@@ -296,11 +345,25 @@ export class ZimManager {
 				inviter,
 				extendedData,
 			});
-			const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
-				call_id: this.callInfo.callID,
-				action: 'inviterCancel'
-			})
-			span.end();
+			switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+				case "LiveStreaming": {
+					const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+						call_id: callID,
+						action: 'cancel'
+					})
+					span.end()
+				}
+					break;
+				case "OneONoneCall": {
+					const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
+						call_id: this.callInfo.callID,
+						action: 'inviterCancel'
+					})
+					span.end();
+				}
+					break
+			}
+
 			this._inRoomInviteMg.onCallInvitationCanceled(callID, inviter, extendedData);
 			if (!this.callInfo.callID) return;
 			// 透传取消呼叫事件
@@ -314,11 +377,24 @@ export class ZimManager {
 		// 被邀请者响应超时后,“被邀请者”收到的回调通知, 超时时间单位：秒 （被邀请者）
 		this._zim!.on("callInvitationTimeout", (zim: ZIM, { callID }: ZIMEventOfCallInvitationTimeoutResult) => {
 			console.warn("callInvitationTimeout", { callID });
-			const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
-				call_id: this.callInfo.callID,
-				action: 'timeout'
-			})
-			span.end();
+			switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+				case "LiveStreaming": {
+					const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+						call_id: this.callInfo.callID,
+						action: 'timeout'
+					})
+				}
+					break;
+				case "OneONoneCall": {
+					const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
+						call_id: this.callInfo.callID,
+						action: 'timeout'
+					})
+					span.end();
+				}
+					break;
+			}
+
 			this._inRoomInviteMg.onCallInvitationTimeout(callID);
 			if (!this.callInfo.callID) return;
 			// 透传超时事件
@@ -331,18 +407,70 @@ export class ZimManager {
 		});
 		// 呼叫邀请相关用户的状态变化 （邀请者）
 		this._zim!.on('callUserStateChanged', (zim: ZIM, { callUserList, callID }: ZIMEventOfCallUserStateChangedResult) => {
-			console.log("【ZEGOCLOUD】callUserStateChanged", callUserList, callID);
+			console.log("【ZIMManager】callUserStateChanged", callUserList, callID);
 			callUserList.forEach(({ state, userID, extendedData }) => {
 				if (userID === this.expressConfig.userID) return
 				if (state === ZIMCallUserState.Rejected) {
 					this.callInvitationRejected({ callID, invitee: userID, extendedData })
+					switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+						case "LiveStreaming": {
+							if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
+								const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+									call_id: callID,
+									action: 'refuse'
+								})
+								span.end()
+							} else {
+								const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+									call_id: callID,
+									action: 'refuse'
+								})
+								span.end()
+							}
+						}
+							break;
+						case "OneONoneCall": {
+							const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
+								call_id: callID,
+								action: 'refuse'
+							})
+							span.end();
+						}
+							break
+					}
 				}
 				if (state === ZIMCallUserState.Accepted) {
 					this.callInvitationAccepted({ callID, invitee: userID, extendedData })
+					switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+						case "LiveStreaming": {
+							if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
+								const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+									call_id: callID,
+									action: 'accept'
+								})
+								span.end()
+							} else {
+								const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+									call_id: callID,
+									action: 'accept'
+								})
+								span.end()
+							}
+						}
+							break
+						case "OneONoneCall": {
+							const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
+								call_id: callID,
+								action: 'accept'
+							})
+							span.end();
+						}
+							break
+					}
 				}
 				if (state === ZIMCallUserState.Timeout) {
 					this.callInviteesAnsweredTimeout({ callID, invitees: [userID] })
-					const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+					const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
 						call_id: callID,
 						action: 'timeout'
 					})
@@ -364,6 +492,10 @@ export class ZimManager {
 		})
 		this._zim?.on("connectionStateChanged", (zim: ZIM, data: ZIMEventOfConnectionStateChangedResult) => {
 			console.warn("【zim】connectionStateChanged", data);
+			const span = TracerConnect.createSpan(SpanEvent.ZIMConnectionStateChanged, {
+				state: data.state
+			});
+			span.end();
 		});
 		this._zim?.on("receiveRoomMessage", (zim: ZIM, data: ZIMEventOfReceiveConversationMessageResult) => {
 			console.warn("receiveRoomMessage", data);
@@ -451,14 +583,14 @@ export class ZimManager {
 		const callee = this.callInfo.invitees.find((i) => i.userID === invitee) || { userID: invitee };
 		if (reason === "busy") {
 			this.config.onOutgoingCallRejected && this.config.onOutgoingCallRejected(this.callInfo.roomID, callee);
-			const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+			const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 				call_id: this.callInfo.callID,
 				action: 'busy'
 			})
 			span.end();
 		} else {
 			this.config.onOutgoingCallDeclined && this.config.onOutgoingCallDeclined(this.callInfo.roomID, callee);
-			const span = TracerConnect.createSpan(SpanEvent.RespondInvitation, {
+			const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 				call_id: this.callInfo.callID,
 				action: 'refuse'
 			})
@@ -708,8 +840,8 @@ export class ZimManager {
 				count: invitees.length,
 				extended_data: JSON.stringify(extendedData),
 				type,
-				error: (error as any).code,
-				msg: (error as any).message
+				error: (error as any).code || -1,
+				msg: (error as any).message || ""
 			})
 			span.end();
 			this.clearCallInfo();
@@ -978,18 +1110,19 @@ export class ZimManager {
 				})
 				.then((res: any) => {
 					console.warn("【zim enterRoom】success");
-					this.queryRoomAllAttributes();
-					const span = TracerConnect.createSpan(SpanEvent.ZIMLoginRoom, {
+					const span = TracerConnect.createSpan(SpanEvent.ZIMJoinRoom, {
 						room_id: roomID,
 						error: 0,
+						msg: "join room success"
 					})
 					span.end()
 				})
 				.catch((error: any) => {
 					console.error("【zim enterRoom】failed", error);
-					const span = TracerConnect.createSpan(SpanEvent.ZIMLoginRoom, {
+					const span = TracerConnect.createSpan(SpanEvent.ZIMJoinRoom, {
 						room_id: roomID,
 						error: error.code || -1,
+						msg: error.message || ""
 					})
 					span.end()
 				});
@@ -1004,17 +1137,19 @@ export class ZimManager {
 			?.leaveRoom(roomID)
 			.then((res: any) => {
 				console.warn("【zim leaveRoom】success");
-				const span = TracerConnect.createSpan(SpanEvent.ZIMLogoutRoom, {
+				const span = TracerConnect.createSpan(SpanEvent.ZIMLeaveRoom, {
 					room_id: roomID,
 					error: 0,
+					msg: "leave room success"
 				})
 				span.end();
 			})
 			.catch((error: any) => {
 				console.error("【zim leaveRoom】failed", error);
-				const span = TracerConnect.createSpan(SpanEvent.ZIMLogoutRoom, {
+				const span = TracerConnect.createSpan(SpanEvent.ZIMLeaveRoom, {
 					room_id: roomID,
 					error: error.code || -1,
+					msg: error.message || "",
 				})
 				span.end();
 			});
