@@ -81,7 +81,7 @@
 		"react-scripts": "5.0.1",
 		"react-testing-library": "^8.0.1",
 		"resolve-url-loader": "^5.0.0",
-		"sass": "^1.81.0",
+		"sass": "~1.71.0",
 		"sass-loader": "^13.0.2",
 		"sass-resources-loader": "^2.2.5",
 		"style-loader": "^3.3.1",
