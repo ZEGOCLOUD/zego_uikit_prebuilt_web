@@ -4,6 +4,7 @@ import React, { ChangeEvent, RefObject } from "react";
 import APP from "./App.module.scss";
 import { ZegoUIKitPrebuilt } from "./sdk/index";
 import {
+  ConsoleLevel,
   LiveRole,
   RightPanelExpandedType,
   ScenarioModel,
@@ -212,12 +213,7 @@ export default class App extends React.PureComponent {
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
       console.warn("【Zego Demo】app call_invitation");
-      window.addEventListener(
-        "orientationchange",
-        this.onOrientationChange.bind(this),
-        false
-      );
-      this.onOrientationChange();
+
       this.initCallInvitation(urlAppID ? urlAppID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken);
       this.state.showSettingsBtn = true;
     } else {
@@ -577,6 +573,7 @@ export default class App extends React.PureComponent {
           }
         }, 1000);
         return {
+          console: ConsoleLevel.Error,
           branding: {
             logoURL: require("./assets/zegocloud_logo.png"),
           },
@@ -696,6 +693,11 @@ export default class App extends React.PureComponent {
       document.documentElement.clientHeight || document.body.clientHeight;
 
     window.addEventListener("resize", this.onResize, { passive: false });
+    window.addEventListener(
+      "orientationchange",
+      this.onOrientationChange.bind(this),
+      false
+    );
   }
   componentWillUnmount(): void {
     window.removeEventListener("resize", this.onResize);

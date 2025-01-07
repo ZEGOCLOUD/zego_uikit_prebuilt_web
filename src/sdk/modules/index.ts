@@ -445,6 +445,8 @@ export class ZegoCloudRTCCore {
 			if (!config.maxUsers) {
 				config.maxUsers = 0
 			}
+			if (!config.showLayoutButton) { config.showLayoutButton = true }
+			if (!config.showPinButton) { config.showPinButton = true }
 		}
 		if (config.scenario && config.scenario?.config?.role === LiveRole.Audience) {
 			config.showPinButton = false
@@ -572,7 +574,6 @@ export class ZegoCloudRTCCore {
 		if (this._config.language) {
 			this.changeIntl();
 		}
-
 		return true
 	}
 

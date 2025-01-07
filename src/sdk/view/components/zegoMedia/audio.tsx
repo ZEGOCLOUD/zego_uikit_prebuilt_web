@@ -5,6 +5,7 @@ import ShowManageContext, {
 } from "../../pages/context/showManage";
 // @ts-ignore
 import flvjs from "flv.js/dist/flv.min.js";
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 
 export default class ZegoAudio extends React.PureComponent<{
   userInfo: ZegoCloudUser;
@@ -22,8 +23,15 @@ export default class ZegoAudio extends React.PureComponent<{
         (el as any)?.setSinkId?.(this.context?.speakerId || "");
       }
       if (this.props.userInfo?.streamList?.[0]?.media) {
-        el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
-          (el.srcObject = this.props.userInfo?.streamList?.[0]?.media! as any);
+        if (this.props.muted) {
+          // zegoStream
+          el.srcObject !== (this.props.userInfo?.streamList?.[0]?.media as ZegoLocalStream).audioCaptureStream &&
+            (el.srcObject = (this.props.userInfo?.streamList?.[0]?.media as ZegoLocalStream).audioCaptureStream);
+        } else {
+          el.srcObject !== this.props.userInfo?.streamList?.[0]?.media &&
+            (el.srcObject = this.props.userInfo?.streamList?.[0]?.media! as any);
+        }
+
       } else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
         if (this.isSafari()) {
           el.src !== this.props.userInfo?.streamList?.[0]?.urlsHttpsHLS! &&

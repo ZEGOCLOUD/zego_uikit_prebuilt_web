@@ -407,9 +407,10 @@ export class ZimManager {
 		});
 		// 呼叫邀请相关用户的状态变化 （邀请者）
 		this._zim!.on('callUserStateChanged', (zim: ZIM, { callUserList, callID }: ZIMEventOfCallUserStateChangedResult) => {
-			console.log("【ZIMManager】callUserStateChanged", callUserList, callID);
+			console.warn("【ZIMManager】callUserStateChanged", callUserList, callID, this.expressConfig.userID, this.callInfo);
 			callUserList.forEach(({ state, userID, extendedData }) => {
-				if (userID === this.expressConfig.userID) return
+				// 不处理邀请者本人的状态
+				if (this.expressConfig.userID !== this.callInfo?.inviter?.userID || userID === this.expressConfig.userID) return
 				if (state === ZIMCallUserState.Rejected) {
 					this.callInvitationRejected({ callID, invitee: userID, extendedData })
 					switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
@@ -622,7 +623,7 @@ export class ZimManager {
 			extendedData,
 		}, this.expressConfig.userID);
 		this._inRoomInviteMg.onCallInvitationAccepted(callID, invitee, extendedData);
-		if (!this.callInfo.callID || invitee !== this.expressConfig.userID) return;
+		if (!this.callInfo.callID) return;
 		this.removeWaitingUser(invitee);
 		this.clearOutgoingTimer();
 		this.callInfo.acceptedInvitees.push({
