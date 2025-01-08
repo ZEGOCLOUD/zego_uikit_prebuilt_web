@@ -1,3 +1,5 @@
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
+
 export interface SoundLevel {
   instant: number;
   slow: number;
@@ -34,11 +36,11 @@ export class SoundMeter {
       this.clip = clipcount / input.length;
     };
   }
-  connectToStreamSource(source: MediaStream, callback: Function) {
-    console.log("SoundMeter connecting");
+  connectToStreamSource(source: ZegoLocalStream, callback: Function) {
+    console.log("SoundMeter connecting", source);
     try {
       this.type = "Stream";
-      this.mic = this.context.createMediaStreamSource(source);
+      this.mic = this.context.createMediaStreamSource(source.audioCaptureStream!);
       this.mic.connect(this.script);
       this.script.connect(this.context.destination);
       if (typeof callback !== "undefined") {
@@ -52,7 +54,7 @@ export class SoundMeter {
     }
   }
   connectToElementSource(source: HTMLMediaElement, callback: Function) {
-    console.log("SoundMeter connecting");
+    console.log("connectToElementSource SoundMeter connecting");
     try {
       this.type = "Element";
       if (!this.mic) {

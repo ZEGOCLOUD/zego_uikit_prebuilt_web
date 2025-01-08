@@ -33,7 +33,7 @@ export class ZegoOne2One extends React.PureComponent<{
               this.props.handleMenuItem!(type, this.props.userList[1]);
             }}
             volume={this.props.soundLevel![this.props.userList[1].userID] || {}}
-            hiddenMore={!showMoreButton}
+            hiddenMore={!showMoreButton || this.props.userList.length === 2}
             hiddenName={!showUserName}
           ></VideoPlayer>
           <VideoPlayer
@@ -52,7 +52,7 @@ export class ZegoOne2One extends React.PureComponent<{
               this.props.handleMenuItem!(type, this.props.userList[0]);
             }}
             volume={this.props.soundLevel![this.props.userList[0].userID] || {}}
-            hiddenMore={!showMoreButton}
+            hiddenMore={!showMoreButton || this.props.userList.length === 2}
             hiddenName={!showUserName}
           ></VideoPlayer>
         </>

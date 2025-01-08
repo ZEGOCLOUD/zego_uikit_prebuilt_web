@@ -26,7 +26,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     speakerDevices: ZegoDeviceInfo[];
     cameraDevices: ZegoDeviceInfo[];
     localVideoStream: ZegoLocalStream | undefined;
-    localAudioStream: MediaStream | undefined;
+    localAudioStream: ZegoLocalStream | undefined;
     audioVolume: number;
     speakerVolume: number;
     isSpeakerPlaying: boolean;

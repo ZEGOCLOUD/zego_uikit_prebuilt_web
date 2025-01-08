@@ -274,7 +274,6 @@ export class ZimManager {
 							() => {
 								this.clearIncomingTimer();
 								this.acceptInvitation();
-								this.notifyJoinRoomCallback();
 								this.config?.onIncomingCallDeclineButtonPressed?.();
 								const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 									call_id: this.callInfo.callID,
@@ -316,7 +315,6 @@ export class ZimManager {
 					const accept = (data?: string) => {
 						this.clearIncomingTimer();
 						this.acceptInvitation(data);
-						this.notifyJoinRoomCallback();
 						this.config?.onIncomingCallDeclineButtonPressed?.();
 						const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 							call_id: this.callInfo.callID,
@@ -964,10 +962,13 @@ export class ZimManager {
 		try {
 			await this._zim?.callAccept(this.callInfo.callID, {
 				extendedData: JSON.stringify(extendedData),
+			}).then((res) => {
+				console.log('[ZIMManager]callAccept success', res)
+				this.notifyJoinRoomCallback();
 			});
 			callInvitationControl.callInvitationDialogHide();
 		} catch (error) {
-			console.error("【ZEGOCLOUD】acceptInvitation", error);
+			console.error("[ZIMManager]callAccept error", error);
 		}
 		this.inAcceptOperation = false;
 	}
