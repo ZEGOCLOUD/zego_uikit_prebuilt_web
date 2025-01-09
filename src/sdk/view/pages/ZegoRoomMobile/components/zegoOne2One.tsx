@@ -45,7 +45,7 @@ export class ZegoOne2One extends React.PureComponent<{
               this.props.soundLevel![this.props.userList[1].userID] || {}
             }
             bigVideo={true}
-            hiddenMore={!this.moreBtnVisible}
+            hiddenMore={!this.moreBtnVisible || this.props.userList.length === 2}
             hiddenName={!this.userNameVisible}
           ></ZegoUserVideo>
           {/* </div> */}
@@ -64,7 +64,7 @@ export class ZegoOne2One extends React.PureComponent<{
               this.props.onLocalStreamPaused &&
                 this.props.onLocalStreamPaused();
             }}
-            hiddenMore={!this.moreBtnVisible}
+            hiddenMore={!this.moreBtnVisible || this.props.userList.length === 2}
             hiddenName={!this.userNameVisible}
           ></ZegoUserVideo>
           {/* </div> */}

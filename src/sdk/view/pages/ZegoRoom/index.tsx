@@ -1218,7 +1218,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			gridRowNumber = 0;
 
 		if (this.getScreenSharingUser.length > 0 || this.state.isZegoWhiteboardSharing) {
-			//Screen Sidebar
+			//Screen Sidebar 屏幕共享和白板共享
 			const videWrapHight =
 				height - (this.showHeader ? 64 : 16) - 84 - (this.state.isZegoWhiteboardSharing ? 0 : 38);
 			const n = parseInt(String(videWrapHight / 124)) || 1;
