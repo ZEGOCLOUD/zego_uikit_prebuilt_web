@@ -402,7 +402,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                           : ""
                           }`}
                       ></span>
-                      {Array(20)
+                      {Array(isPc() ? 20 : 16)
                         .fill(1)
                         .map((i, index) => (
                           <span
@@ -436,7 +436,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                           : ""
                           }`}
                       ></span>
-                      {Array(16)
+                      {Array(isPc() ? 16 : 12)
                         .fill(1)
                         .map((i, index) => (
                           <span
