@@ -42,7 +42,7 @@ import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStr
 import { ZegoInvitationList } from './components/zegoInvitationList'
 export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	state: {
-		localStream: undefined | MediaStream | ZegoLocalStream;
+		localStream: undefined | ZegoLocalStream;
 		layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "INVITE_LIST";
 		zegoCloudUserList: ZegoCloudUserList;
 		messageList: ZegoBroadcastMessageInfo2[];
@@ -68,7 +68,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		liveStatus: "1" | "0";
 		isScreenSharingBySelf: boolean; // 自己是否正在屏幕共享
 
-		screenSharingStream: undefined | MediaStream | ZegoLocalStream; // 本地屏幕共享流
+		screenSharingStream: undefined | ZegoLocalStream; // 本地屏幕共享流
 		zegoSuperBoardView: ZegoSuperBoardView | null; // 本地白板共享
 		isZegoWhiteboardSharing: boolean; // 是否开启白板共享
 		screenSharingUserList: ZegoCloudUserList; // 屏幕共享列表
@@ -179,7 +179,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	componentDidUpdate(
 		preProps: ZegoBrowserCheckProp,
 		preState: {
-			localStream: undefined | MediaStream;
+			localStream: undefined | ZegoLocalStream;
 			layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
 			zegoCloudUserList: ZegoCloudUserList;
 			messageList: ZegoBroadcastMessageInfo2[];
@@ -283,9 +283,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						return;
 					}
 					// 当呼叫发起者离开通话时，整个通话要结束时，离开房间
-					const inviterID = this.props.core._zimManager?.callInfo?.inviter?.userID
+					const callOwnerID = this.props.core._zimManager?.callInfo?.callOwner?.userID
 					const endCallWhenInitiatorLeave = this.props.core._zimManager?.config?.endCallWhenInitiatorLeave
-					if (endCallWhenInitiatorLeave && userList.some(({ userID }) => userID === inviterID)) {
+					if (endCallWhenInitiatorLeave && userList.some(({ userID }) => userID === callOwnerID)) {
 						this.leaveRoom(false, false);
 						return;
 					}
@@ -449,7 +449,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			});
 		});
 		this.props.core.onScreenSharingEnded((stream: MediaStream) => {
-			if (stream === this.state.screenSharingStream) {
+			if (stream === this.state.screenSharingStream?.videoCaptureStream) {
 				this.closeScreenSharing();
 			}
 		});

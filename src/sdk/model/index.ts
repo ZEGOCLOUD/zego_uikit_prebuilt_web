@@ -502,6 +502,7 @@ export type WaitingUser = ZegoUser & {
 export interface CallInvitationInfo {
 	callID: string
 	roomID: string
+	callOwner: ZegoUser
 	inviter: ZegoUser
 	invitees: ZegoUser[]
 	/** 已接受邀请的用户 */

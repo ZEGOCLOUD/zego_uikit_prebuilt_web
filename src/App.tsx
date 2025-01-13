@@ -590,6 +590,18 @@ export default class App extends React.PureComponent {
             waitingSelectUsers,
             defaultChecked: true
           },
+          onLeaveRoom: () => {
+            console.warn("leave room callback", this.state.showPreviewHeader);
+            // // window?.parent?.postMessage("joinRoom", "*")
+            // this.postMessage({ type: 'leaveRoom', data: null })
+            // // 刷新20分钟限制
+            // if (this.state.roomTimer) {
+            //   clearInterval(this.state.roomTimer);
+            //   this.state.roomTimer = null;
+            //   this.state.roomTime = 0;
+            // }
+          },
+          showLeavingView: true
           // turnOnCameraWhenJoining: false,
           // turnOnMicrophoneWhenJoining: false,
           // autoLeaveRoomWhenOnlySelfInRoom: false,
@@ -598,7 +610,7 @@ export default class App extends React.PureComponent {
         };
       },
       onCallInvitationEnded: (reason, data) => {
-        console.warn("【demo】onCallInvitationEnded", reason, data);
+        console.warn("【demo】onCallInvitationEnded", reason, data, this.state.showPreviewHeader);
         // if (reason === "Canceled") {
         //   this.showToast("The call has been canceled.");
         // }
@@ -619,6 +631,9 @@ export default class App extends React.PureComponent {
           nav.style.display = "flex";
           serviceTips.style.display = "block";
           meetingEl.style.height = "auto";
+        } else {
+          const nav = document.querySelector(`.${APP.nav}`) as HTMLDivElement;
+          nav.style.display = "flex";
         }
         this.inviter = {};
 

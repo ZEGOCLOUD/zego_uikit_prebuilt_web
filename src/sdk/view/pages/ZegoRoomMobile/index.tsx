@@ -65,7 +65,7 @@ type LayOutStatus = "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" 
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
-    localStream: undefined | MediaStream | ZegoLocalStream;
+    localStream: undefined | ZegoLocalStream;
     layOutStatus: LayOutStatus;
     userLayoutStatus: "Auto" | "Grid" | "Sidebar";
     zegoCloudUserList: ZegoCloudUserList;
@@ -229,7 +229,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
     preState: {
-      localStream: undefined | MediaStream;
+      localStream: undefined | ZegoLocalStream;
       layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
       messageList: ZegoBroadcastMessageInfo[];
       notificationList: ZegoNotification[];
@@ -333,9 +333,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             return;
           }
           // 当呼叫发起者离开通话时，整个通话要结束时，离开房间
-          const inviterID = this.props.core._zimManager?.callInfo?.inviter?.userID
+          const callOwnerID = this.props.core._zimManager?.callInfo?.callOwner?.userID
           const endCallWhenInitiatorLeave = this.props.core._zimManager?.config?.endCallWhenInitiatorLeave
-          if (endCallWhenInitiatorLeave && userList.some(({ userID }) => userID === inviterID)) {
+          if (endCallWhenInitiatorLeave && userList.some(({ userID }) => userID === callOwnerID)) {
             this.confirmLeaveRoom(false, false);
             return;
           }
@@ -759,7 +759,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       !this.props.core.status.audioRefuse
     ) {
       try {
-        let localStream: ZegoLocalStream | MediaStream | null = null;
+        let localStream: ZegoLocalStream | null = null;
         try {
           const solution = getVideoResolution(this.state.selectVideoResolution);
           localStream = await this.props.core.createZegoStream({

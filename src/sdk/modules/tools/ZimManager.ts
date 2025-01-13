@@ -220,6 +220,7 @@ export class ZimManager {
 					})
 					span.end();
 				} else {
+					// 呼叫中邀请功能中的extendData中的inviter为主叫人, 呼叫者为回调中的inviter
 					const { inviter_name, type, data, canInvitingInCalling, onlyInitiatorCanInvite, endCallWhenInitiatorLeave } = JSON.parse(extendedData);
 					const { call_id, invitees, custom_data, inviter: _inviter } = JSON.parse(data);
 					typeIsBoolean(canInvitingInCalling) && (this.config.canInvitingInCalling = canInvitingInCalling);
@@ -227,13 +228,17 @@ export class ZimManager {
 					typeIsBoolean(endCallWhenInitiatorLeave) && (this.config.endCallWhenInitiatorLeave = endCallWhenInitiatorLeave);
 					this.callInfo = {
 						callID,
+						callOwner: {
+							userID: _inviter?.id || inviter,
+							userName: inviter_name,
+						},
 						invitees: invitees.map((i: { user_id: any; user_name: any }) => ({
 							userID: i.user_id,
 							userName: i.user_name,
 						})),
 						inviter: {
-							userID: _inviter?.id || inviter,
-							userName: inviter_name,
+							userID: inviter,
+							userName: inviter ? "" : inviter_name,
 						},
 						acceptedInvitees: [],
 						roomID: call_id,
@@ -407,6 +412,11 @@ export class ZimManager {
 		// 呼叫结束回调
 		this._zim!.on("callInvitationEnded", (zim: ZIM, { callID, mode, caller, operatedUserID, extendedData, endTime }: ZIMEventOfCallInvitationEndedResult) => {
 			console.warn('callInvitationEnded', callID, mode, caller, operatedUserID, extendedData, endTime);
+			if (callInvitationControl.isDialogShow) {
+				callInvitationControl.callInvitationDialogHide();
+				this.clearIncomingTimer();
+				this.endCall(CallInvitationEndReason.Canceled);
+			}
 		})
 		// 呼叫邀请相关用户的状态变化 （邀请者）
 		this._zim!.on('callUserStateChanged', (zim: ZIM, { callUserList, callID }: ZIMEventOfCallUserStateChangedResult) => {
@@ -798,6 +808,10 @@ export class ZimManager {
 			// 保存邀请信息，进入busy状态
 			this.callInfo = {
 				callID: res.callID,
+				callOwner: {
+					userID: this.expressConfig.userID,
+					userName: this.expressConfig.userName,
+				},
 				invitees: [...onlineInvitee],
 				inviter: {
 					userID: this.expressConfig.userID,
@@ -1050,11 +1064,11 @@ export class ZimManager {
 	/**结束 call,清除 callInfo */
 	async endCall(reason: CallInvitationEndReason, isCallQuit = true) {
 		const { canInvitingInCalling, endCallWhenInitiatorLeave } = this.config
-		const isInviter = this.callInfo.inviter.userID === this.expressConfig.userID
+		const isCallOwner = this.callInfo.callOwner.userID === this.expressConfig.userID
 		if (
 			reason === CallInvitationEndReason.LeaveRoom &&
 			!this.callInfo.acceptedInvitees.length &&
-			isInviter
+			isCallOwner
 		) {
 			// 主叫人如果在所有人接收邀请前离开房间，则取消所有人的邀请
 			try {
@@ -1064,7 +1078,7 @@ export class ZimManager {
 			};
 		}
 		if (canInvitingInCalling && reason === CallInvitationEndReason.LeaveRoom) {
-			if (endCallWhenInitiatorLeave && isInviter) {
+			if (endCallWhenInitiatorLeave && isCallOwner) {
 				if (this.callInfo.waitingUsers?.length) {
 					// 主呼叫人离开 取消所有未接受的邀请
 					this.cancelInvitation(void 0, this.callInfo.waitingUsers)
