@@ -35,8 +35,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
     this.setState({
       isSupportWebRTC: res,
     });
-
-    console.log('[KitComponent]componentDidMount')
+    console.log('[KitComponent]checkWebRTC res:', res)
   }
   componentWillUnmount(): void {
     console.warn('[KitComponent]componentWillUnmount')

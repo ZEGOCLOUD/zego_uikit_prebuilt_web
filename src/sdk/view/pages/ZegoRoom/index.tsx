@@ -728,7 +728,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 
 				return true;
 			} catch (error: any) {
-				console.error("【ZEGOCLOUD】createStream or publishLocalStream failed,Reason: ", JSON.stringify(error));
+				console.error("【ZEGOCLOUD】createStream or publishLocalStream failed, Reason: ", JSON.stringify(error));
 				if (error?.code === 1103065 || error?.code === 1103061) {
 					ZegoToast({
 						content: formatMessage({ id: "room.occupiedToast" }),

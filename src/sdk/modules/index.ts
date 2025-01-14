@@ -703,20 +703,27 @@ export class ZegoCloudRTCCore {
 		return LiveStreamingMode.RealTimeLive
 	}
 	async checkWebRTC(): Promise<boolean> {
-		if (!this.isCDNLive) {
-			const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC")
-			if (this._config.videoCodec === "H264") {
-				const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264")
-				return !!webRTC.result && !!H264.result
-			}
+		console.warn('[ZegoCloudRTCCore]checkWebRTC')
+		try {
+			if (!this.isCDNLive) {
+				const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC")
+				if (this._config.videoCodec === "H264") {
+					const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264")
+					return !!webRTC.result && !!H264.result
+				}
 
-			if (this._config.videoCodec === "VP8") {
-				const VP8 = await ZegoCloudRTCCore._zg.checkSystemRequirements("VP8")
-				return !!webRTC.result && !!VP8.result
+				if (this._config.videoCodec === "VP8") {
+					const VP8 = await ZegoCloudRTCCore._zg.checkSystemRequirements("VP8")
+					return !!webRTC.result && !!VP8.result
+				}
+				return !!webRTC.result
 			}
-			return !!webRTC.result
+			return true
+		} catch (error) {
+			console.warn('[ZegoCloudRTCCore]checkWebRTC error', error)
+			return false
 		}
-		return true
+
 	}
 	setPin(userID?: string, pined?: boolean, stopUpdateUser?: boolean): void {
 		this.zum.setPin(userID, pined)
@@ -1375,11 +1382,15 @@ export class ZegoCloudRTCCore {
 				// @ts-ignore 日志上报
 				ZegoCloudRTCCore._zg.logger.info("zu.jr " + JSON.stringify(this.originConfig))
 			} catch (error) {
-				console.error('login', error)
+				console.error('[ZegoCloudRTCCore]login error', error)
 			}
 		})
 		this._zimManager?.enterRoom();
-		ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300)
+		try {
+			ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300)
+		} catch (error) {
+			console.error('[ZegoCloudRTCCore]setSoundLevelDelegate error', error)
+		}
 		this.streamUpdateTimer(this.waitingHandlerStreams)
 		return resp
 	}

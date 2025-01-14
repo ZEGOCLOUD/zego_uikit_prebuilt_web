@@ -123,8 +123,10 @@ export class ZimManager {
 		)
 			.then(() => {
 				// 登录成功
-				console.warn("zim login success!!", this.hasJoinedRoom, this.needJoinRoomAgain);
+				console.warn("【ZIMManager】zim login success!!", this.hasJoinedRoom, this.needJoinRoomAgain);
 				this.isLogin = true;
+				// 上传zim日志
+				this._zim!.uploadLog();
 				// 解决 zim 还未登录成功就调用了 zim 的 enterRoom，导致加入房间失败，发送消息不成功
 				if (this.needJoinRoomAgain) {
 					this.enterRoom();
@@ -144,7 +146,7 @@ export class ZimManager {
 			.catch((err: any) => {
 				// 登录失败
 				this.isLogin = false;
-				console.error("【ZEGOCLOUD】zim login failed !!", err);
+				console.error("【ZIMManager】zim login failed !!", err);
 				if (err.code === 6000014) {
 					this.isServiceActivated = false;
 					return;
