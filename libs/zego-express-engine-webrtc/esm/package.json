@@ -1,0 +1,6 @@
+{
+  "name": "zego-express-engine-webrtc",
+  "version": "3.2.100",
+  "main": "./ZegoExpressWebRTC.esm.js",
+  "typings": "../sdk/code/zh/zego.client.web.d.ts"
+}

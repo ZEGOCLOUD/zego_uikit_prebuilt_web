@@ -1,0 +1,17 @@
+export declare function typeIsNumber(value: unknown): value is number;
+export declare function typeIsString(value: unknown): value is string;
+export declare function typeIsBoolean(value: unknown): value is boolean;
+export declare function typeIsUndefined(value: unknown): value is undefined;
+export declare function typeIsObject(value: unknown): value is Record<any, any>;
+export declare function typeIsNull(value: unknown): value is null;
+export declare function typeIsFunction(value: unknown): value is Function;
+export declare function typeIsArray<T = any>(value: unknown): value is Array<T>;
+export declare function typeIsFloat32Array(value: unknown): value is Float32Array;
+export declare function typeIsUint8Array(value: unknown): value is Uint8Array;
+export declare function typeIsMediaStream(value: unknown): value is MediaStream;
+export declare function typeIsHTMLVideoElement(value: unknown): value is HTMLVideoElement;
+export declare function typeIsHTMLElement(value: unknown): value is HTMLElement;
+export declare function typeIsHTMLMediaElement(value: unknown): value is HTMLMediaElement;
+export declare function typeIsHTMLImageElement(value: unknown): value is HTMLImageElement;
+export declare function typeIsArrayBuffer(value: unknown): value is ArrayBuffer;
+export declare function typeIsMixImageURL(url: string): boolean;
