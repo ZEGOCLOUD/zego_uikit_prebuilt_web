@@ -13,6 +13,7 @@ import {
 	ZIMEventOfConnectionStateChangedResult,
 	ZIMEventOfReceiveConversationMessageResult,
 	ZIMEventOfRoomAttributesUpdatedResult,
+	ZIMEventOfTokenWillExpireResult,
 	ZIMPushConfig,
 	ZIMRoomAttributesSetConfig,
 } from "zego-zim-web";
@@ -313,7 +314,7 @@ export class ZimManager {
 						this.refuseInvitation("decline", "", data);
 						callInvitationControl.callInvitationDialogHide();
 						this.endCall(CallInvitationEndReason.Declined);
-						this.config?.onIncomingCallAcceptButtonPressed?.();
+						this.config?.onIncomingCallDeclineButtonPressed?.();
 						const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 							call_id: this.callInfo.callID,
 							action: 'refuse'
@@ -323,7 +324,7 @@ export class ZimManager {
 					const accept = (data?: string) => {
 						this.clearIncomingTimer();
 						this.acceptInvitation(data);
-						this.config?.onIncomingCallDeclineButtonPressed?.();
+						this.config?.onIncomingCallAcceptButtonPressed?.();
 						const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 							call_id: this.callInfo.callID,
 							action: 'accept'
@@ -350,7 +351,8 @@ export class ZimManager {
 				callID,
 				inviter,
 				extendedData,
-			});
+			}, this.callInfo.callID);
+			if (callID !== this.callInfo.callID) return;
 			switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
 				case "LiveStreaming": {
 					const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
@@ -567,6 +569,9 @@ export class ZimManager {
 				}
 				this.banList = JSON.parse(data.infos?.[0].roomAttributes.ban);
 			}
+		})
+		this._zim?.on("tokenWillExpire", (zim: ZIM, data: ZIMEventOfTokenWillExpireResult) => {
+			console.warn('[ZIMManager]tokenWillExpire', data);
 		})
 	}
 
@@ -808,6 +813,7 @@ export class ZimManager {
 				type: UserTypeEnum.GENERAL_WAITING,
 			}))
 			// 保存邀请信息，进入busy状态
+			console.warn('[ZIMManager]sendInvitation', res)
 			this.callInfo = {
 				callID: res.callID,
 				callOwner: {
@@ -867,6 +873,7 @@ export class ZimManager {
 			this.inSendOperation = false;
 			return Promise.resolve({ errorInvitees });
 		} catch (error) {
+			console.error('[ZIMManager]callInvite error', error)
 			const span = TracerConnect.createSpan(SpanEvent.Invite, {
 				invitees: invitees,
 				count: invitees.length,
@@ -1065,6 +1072,7 @@ export class ZimManager {
 	}
 	/**结束 call,清除 callInfo */
 	async endCall(reason: CallInvitationEndReason, isCallQuit = true) {
+		console.warn('[ZIMManager]endCall', reason, this.callInfo)
 		const { canInvitingInCalling, endCallWhenInitiatorLeave } = this.config
 		const isCallOwner = this.callInfo.callOwner.userID === this.expressConfig.userID
 		if (
