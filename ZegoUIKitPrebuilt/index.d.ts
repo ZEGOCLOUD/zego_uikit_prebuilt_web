@@ -418,4 +418,5 @@ export declare class ZegoUIKitPrebuilt {
 	// 2.13.0
 	rotateToLandscape(): void
 	rotateToPortrait(): void
+	renewToken(): boolean
 }

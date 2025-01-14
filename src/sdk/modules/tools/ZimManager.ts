@@ -352,7 +352,8 @@ export class ZimManager {
 				inviter,
 				extendedData,
 			}, this.callInfo.callID);
-			if (callID !== this.callInfo.callID) return;
+
+			// 日志上报
 			switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
 				case "LiveStreaming": {
 					const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
@@ -373,7 +374,10 @@ export class ZimManager {
 			}
 
 			this._inRoomInviteMg.onCallInvitationCanceled(callID, inviter, extendedData);
+
 			if (!this.callInfo.callID) return;
+			// 不同于本次callID不处理
+			if (callID !== this.callInfo.callID) return;
 			// 透传取消呼叫事件
 			if (this.config.onIncomingCallCanceled) {
 				this.config.onIncomingCallCanceled(this.callInfo.roomID, this.callInfo.inviter);
@@ -571,7 +575,8 @@ export class ZimManager {
 			}
 		})
 		this._zim?.on("tokenWillExpire", (zim: ZIM, data: ZIMEventOfTokenWillExpireResult) => {
-			console.warn('[ZIMManager]tokenWillExpire', data);
+			console.warn('[ZIMManager]tokenWillExpire', data, ZegoUIKitPrebuilt.core?._config);
+			this.config.onTokenWillExpire && this.config.onTokenWillExpire();
 		})
 	}
 

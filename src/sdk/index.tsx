@@ -348,4 +348,8 @@ export class ZegoUIKitPrebuilt {
 		}
 		ZegoUIKitPrebuilt.core.rotateToPortrait();
 	}
+
+	renewToken(kitToken: string): boolean {
+		return ZegoUIKitPrebuilt.core?.renewToken(kitToken)!;
+	}
 }

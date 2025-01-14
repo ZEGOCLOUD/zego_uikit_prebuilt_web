@@ -482,6 +482,8 @@ export interface ZegoCallInvitationConfig {
 	// 默认值为false。
 	// 如果设置为false，则即使发起者离开，通话仍然可以继续。
 	endCallWhenInitiatorLeave?: boolean;
+	// onTokenWillExpire 还未进房前需要监听
+	onTokenWillExpire?: () => void
 }
 export type CancelCallInvitationFunc = (data?: string) => void // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void // 接受邀请

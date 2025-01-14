@@ -2410,4 +2410,27 @@ export class ZegoCloudRTCCore {
 		}
 		this._config.onScreenRotation && this._config.onScreenRotation('portrait');
 	}
+
+	// 刷新token
+	renewToken(kitToken: string): boolean {
+		console.warn('[ZegoCloudRTCCore]renewToken');
+		const config = getConfig(kitToken);
+		let result: boolean = false;
+		this._zimManager?._zim?.renewToken(config!.token)
+			.then((res) => {
+				console.warn('[ZegoCloudRTCCore]renewToken zim success', res)
+				if (this.status.loginRsp) {
+					const rtcRes = ZegoCloudRTCCore._zg.renewToken(config!.token)
+					console.warn('[ZegoCloudRTCCore]renewToken rtc success', rtcRes)
+					result = rtcRes;
+				} else {
+					result = true;
+				}
+			})
+			.catch((error) => {
+				console.warn('[ZegoCloudRTCCore]renewToken zim error', error)
+				result = false
+			});
+		return result;
+	}
 }

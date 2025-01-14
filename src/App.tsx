@@ -502,20 +502,20 @@ export default class App extends React.PureComponent {
     this.state.callInvitation = true;
     const { canInvitingInCalling, endCallWhenInitiatorLeave, onlyInitiatorCanInvite } = this.state
     // this.state.showPreviewHeader = isPc() ? "show" : "hide";
-    let token;
+    let kitToken;
     if (urlToken) {
-      token = urlToken + '#' + window.btoa(JSON.stringify({
+      kitToken = urlToken + '#' + window.btoa(JSON.stringify({
         userID,
         roomID,
         userName: "user_" + userID,
         appID,
       }));
     } else {
-      token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+      kitToken = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
       // @ts-ignore
       // token = ZegoUIKitPrebuilt.generateKitTokenForTest(550374443, '6402e3cadb20e8d4c4937faf614e1434', 1, '610', 'mes')
     }
-    this.zp = ZegoUIKitPrebuilt.create(token);
+    this.zp = ZegoUIKitPrebuilt.create(kitToken);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
     //@ts-ignore // just for debugger
     window.zp = this.zp;
@@ -601,12 +601,13 @@ export default class App extends React.PureComponent {
             //   this.state.roomTime = 0;
             // }
           },
-          showLeavingView: true
+          showLeavingView: true,
           // turnOnCameraWhenJoining: false,
           // turnOnMicrophoneWhenJoining: false,
           // autoLeaveRoomWhenOnlySelfInRoom: false,
           // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
           // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
+
         };
       },
       onCallInvitationEnded: (reason, data) => {
@@ -692,6 +693,12 @@ export default class App extends React.PureComponent {
       },
       onIncomingCallAcceptButtonPressed: () => {
         console.warn('onIncomingCallAcceptButtonPressed');
+      },
+      onTokenWillExpire: async () => {
+        console.warn('[demo]onTokenWillExpire');
+        // 重新获取token
+        const token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+        this.zp.renewToken(token);
       }
     });
   }
@@ -1458,6 +1465,12 @@ export default class App extends React.PureComponent {
             join room
           </div>
         } */}
+
+        {<div className="upload-btn" style={{ position: "absolute", left: "5px", bottom: "10px", zIndex: '1000' }}
+          onClick={() => {
+            // @ts-ignore
+            ZIM.getInstance().uploadLog()
+          }}>zim日志</div>}
       </div>
     );
   }
