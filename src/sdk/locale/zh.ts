@@ -47,6 +47,7 @@ const zh = {
     "global.joinRoomFailed": "加入房间失败，请重试。（错误码：{code}）",
     "global.inviteMembers": "邀请成员",
     "global.invitees": "受邀请人",
+    "global.checkRTC": "该设备不支持 rtc 功能，请尝试其他设备",
 
     "browserCheck.join": "加入",
     "browserCheck.placeholder": "您的姓名",

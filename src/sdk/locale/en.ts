@@ -47,6 +47,7 @@ const en = {
     "global.joinRoomFailed": "Failed to join the room, please try again.（error code: {code}）",
     "global.inviteMembers": "Invite members",
     "global.invitees": "Invitees",
+    "global.checkRTC": "This device does not support RTC, please try another device",
 
     'browserCheck.join': "Join",
     "browserCheck.placeholder": "Your name",

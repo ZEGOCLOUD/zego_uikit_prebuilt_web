@@ -11,7 +11,7 @@ import { ZegoModel } from "./components/zegoModel";
 import { CallInvitationEndReason, ZegoUIKitLanguage } from "../model";
 import { IntlProvider } from "react-intl";
 import { i18nMap } from '../locale';
-
+import { ZegoModelShow } from "./components/zegoModel";
 declare const SDK_ENV: boolean;
 export class ZegoCloudRTCKitComponent extends React.Component<{
   core: ZegoCloudRTCCore;
@@ -26,6 +26,16 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
     // const notSupportPhone =
     //   !isPc() && isIOS() && IsSafari();
     const res = await this.props.core.checkWebRTC();
+    if (!res) {
+      const { formatMessage } = this.props.core.intl;
+      ZegoModelShow(
+        {
+          header: formatMessage({ id: "global.checkRTC" }),
+          contentText: formatMessage({ id: "global.checkRTC" }),
+          okText: "Okay",
+        },
+      );
+    }
     this.props.core.eventEmitter.on("lang", (lang: string) => {
       this.setState({
         lang,
@@ -35,7 +45,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
     this.setState({
       isSupportWebRTC: res,
     });
-    console.log('[KitComponent]checkWebRTC res:', res)
+    console.warn('[KitComponent]checkWebRTC res:', res)
   }
   componentWillUnmount(): void {
     console.warn('[KitComponent]componentWillUnmount')

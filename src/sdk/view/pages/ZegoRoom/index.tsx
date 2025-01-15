@@ -498,7 +498,18 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		if (logInRsp === 0) {
 			// 没有预览 view 时，先检测摄像头/麦克风权限
 			if (!this.props.core._config.showPreJoinView) {
-				await this.deviceCheck();
+				await this.props.core.deviceCheck();
+				console.warn('[ZegoRoom]deviceCheck', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
+				if (this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
+					ZegoModelShow(
+						{
+							header: formatMessage({ id: "global.equipment" }),
+							contentText: formatMessage({ id: "global.equipmentDesc" }),
+							okText: "Okay",
+						},
+						document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+					);
+				}
 			}
 			this.createStream();
 			return;
@@ -615,54 +626,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				isRequestingCohost: false,
 			});
 		});
-	}
-
-	// 检查摄像头麦克风权限
-	async deviceCheck() {
-		// 检查摄像头
-		console.warn('[ZegoRoom]deviceCheck');
-		// if (this.props.core._config.turnOnCameraWhenJoining) {
-		try {
-			await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
-				const cameras = await this.props.core.getCameras();
-				console.warn('[ZegoRoom]deviceCheck camera', cameras);
-				if (cameras.length < 1) {
-					this.props.core.status.videoRefuse = true
-				} else {
-					this.props.core.status.videoRefuse = false
-				}
-			})
-				.catch((error) => {
-					console.warn('getUserMedia error', error);
-					this.props.core.status.videoRefuse = true;
-				});
-		} catch (error) {
-			this.props.core.status.videoRefuse = true;
-		}
-		// } else {
-		// 	this.props.core.status.videoRefuse = true;
-		// }
-		// 检查麦克风
-		// if (this.props.core._config.turnOnMicrophoneWhenJoining) {
-		try {
-			await navigator.mediaDevices.getUserMedia({ audio: true }).then(async (stream) => {
-				const mics = await this.props.core.getMicrophones();
-				if (mics.length < 1) {
-					this.props.core.status.audioRefuse = true
-				} else {
-					this.props.core.status.audioRefuse = false
-				}
-			})
-				.catch((error) => {
-					console.warn('getUserMedia error', error);
-					this.props.core.status.audioRefuse = true;
-				});
-		} catch (error) {
-			this.props.core.status.audioRefuse = true;
-		}
-		// } else {
-		// 	this.props.core.status.audioRefuse = true;
-		// }
 	}
 
 	async createStream(): Promise<boolean> {

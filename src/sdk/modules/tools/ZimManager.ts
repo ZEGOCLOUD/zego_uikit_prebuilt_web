@@ -273,7 +273,7 @@ export class ZimManager {
 								this.refuseInvitation("decline");
 								callInvitationControl.callInvitationDialogHide();
 								this.endCall(CallInvitationEndReason.Declined);
-								this.config?.onIncomingCallAcceptButtonPressed?.();
+								this.config?.onIncomingCallDeclineButtonPressed?.();
 								const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 									call_id: this.callInfo.callID,
 									action: 'refuse'
@@ -283,7 +283,7 @@ export class ZimManager {
 							() => {
 								this.clearIncomingTimer();
 								this.acceptInvitation();
-								this.config?.onIncomingCallDeclineButtonPressed?.();
+								this.config?.onIncomingCallAcceptButtonPressed?.();
 								const span = TracerConnect.createSpan(SpanEvent.CalleeRespondInvitation, {
 									call_id: this.callInfo.callID,
 									action: 'accept'
@@ -351,7 +351,7 @@ export class ZimManager {
 				callID,
 				inviter,
 				extendedData,
-			}, this.callInfo.callID);
+			}, this.callInfo);
 
 			// 日志上报
 			switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
@@ -430,10 +430,18 @@ export class ZimManager {
 		this._zim!.on('callUserStateChanged', (zim: ZIM, { callUserList, callID }: ZIMEventOfCallUserStateChangedResult) => {
 			console.warn("【ZIMManager】callUserStateChanged", callUserList, callID, this.expressConfig.userID, this.callInfo);
 			callUserList.forEach(({ state, userID, extendedData }) => {
-				// 不处理本人的状态变化
-				if (userID === this.expressConfig.userID) return
 				// 邀请者
 				if (this.expressConfig.userID === this.callInfo?.inviter?.userID) {
+					// 本人网络断开取消
+					if (state === ZIMCallUserState.Cancelled) {
+						if (callInvitationControl.isWaitingPageShow) {
+							callInvitationControl.callInvitationWaitingPageHide();
+							this.clearOutgoingTimer();
+							this.endCall(CallInvitationEndReason.Canceled);
+						}
+					}
+					// 不处理本人的状态变化
+					if (userID === this.expressConfig.userID) return
 					if (state === ZIMCallUserState.Rejected) {
 						this.callInvitationRejected({ callID, invitee: userID, extendedData })
 						switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
@@ -519,6 +527,14 @@ export class ZimManager {
 							callInvitationControl.callInvitationDialogHide();
 							this.clearIncomingTimer();
 							this.endCall(CallInvitationEndReason.Canceled);
+						}
+					}
+					// 断网时接受，恢复网络处理被邀请者接受逻辑
+					if (state === ZIMCallUserState.Accepted && userID === this.expressConfig.userID) {
+						if (callInvitationControl.isDialogShow) {
+							this.clearIncomingTimer();
+							this.notifyJoinRoomCallback();
+							callInvitationControl.callInvitationDialogHide();
 						}
 					}
 				}

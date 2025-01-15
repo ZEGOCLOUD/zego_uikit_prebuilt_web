@@ -706,7 +706,7 @@ export class ZegoCloudRTCCore {
 		console.warn('[ZegoCloudRTCCore]checkWebRTC')
 		try {
 			if (!this.isCDNLive) {
-				const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC")
+				const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC");
 				if (this._config.videoCodec === "H264") {
 					const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264")
 					return !!webRTC.result && !!H264.result
@@ -725,6 +725,55 @@ export class ZegoCloudRTCCore {
 		}
 
 	}
+
+	// 检查摄像头麦克风权限
+	async deviceCheck() {
+		// 检查摄像头
+		console.warn('[ZegoCloudRTCCore]deviceCheck');
+		// if (this.props.core._config.turnOnCameraWhenJoining) {
+		try {
+			await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
+				const cameras = await this.getCameras();
+				console.warn('[ZegoRoom]deviceCheck camera', cameras);
+				if (cameras.length < 1) {
+					this.status.videoRefuse = true
+				} else {
+					this.status.videoRefuse = false
+				}
+			})
+				.catch((error) => {
+					console.warn('getUserMedia error', error);
+					this.status.videoRefuse = true;
+				});
+		} catch (error) {
+			this.status.videoRefuse = true;
+		}
+		// } else {
+		// 	this.props.core.status.videoRefuse = true;
+		// }
+		// 检查麦克风
+		// if (this.props.core._config.turnOnMicrophoneWhenJoining) {
+		try {
+			await navigator.mediaDevices.getUserMedia({ audio: true }).then(async (stream) => {
+				const mics = await this.getMicrophones();
+				if (mics.length < 1) {
+					this.status.audioRefuse = true
+				} else {
+					this.status.audioRefuse = false
+				}
+			})
+				.catch((error) => {
+					console.warn('getUserMedia error', error);
+					this.status.audioRefuse = true;
+				});
+		} catch (error) {
+			this.status.audioRefuse = true;
+		}
+		// } else {
+		// 	this.props.core.status.audioRefuse = true;
+		// }
+	}
+
 	setPin(userID?: string, pined?: boolean, stopUpdateUser?: boolean): void {
 		this.zum.setPin(userID, pined)
 		if (!stopUpdateUser) {
@@ -2418,7 +2467,10 @@ export class ZegoCloudRTCCore {
 		let result: boolean = false;
 		this._zimManager?._zim?.renewToken(config!.token)
 			.then((res) => {
-				console.warn('[ZegoCloudRTCCore]renewToken zim success', res)
+				if (this._expressConfig.token) {
+					this._expressConfig.token = config?.token!;
+				}
+				console.warn('[ZegoCloudRTCCore]renewToken zim success11111', res)
 				if (this.status.loginRsp) {
 					const rtcRes = ZegoCloudRTCCore._zg.renewToken(config!.token)
 					console.warn('[ZegoCloudRTCCore]renewToken rtc success', rtcRes)

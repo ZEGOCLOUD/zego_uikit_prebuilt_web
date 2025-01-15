@@ -604,6 +604,21 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     const logInRsp = await this.props.core.enterRoom();
     let massage = "";
     if (logInRsp === 0) {
+      // 没有预览 view 时，先检测摄像头/麦克风权限
+      if (!this.props.core._config.showPreJoinView) {
+        await this.props.core.deviceCheck();
+        console.warn('[ZegoRoomMobile]deviceCheck', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
+        if (!this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
+          ZegoModelShow(
+            {
+              header: formatMessage({ id: "global.equipment" }),
+              contentText: formatMessage({ id: "global.equipmentDesc" }),
+              okText: "Okay",
+            },
+            document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+          );
+        }
+      }
       this.createStream();
       setTimeout(async () => {
         this.props.core._config.showMyCameraToggleButton &&
@@ -883,13 +898,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
   }
   async toggleMic() {
+    const { formatMessage } = this.props.core.intl;
     if (this.props.core.status.audioRefuse) {
-      ZegoConfirm({
-        title: "Equipment authorization",
-        content:
-          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        confirm: "Okay",
-      });
+      ZegoModelShow(
+        {
+          header: formatMessage({ id: "global.equipment" }),
+          contentText: formatMessage({ id: "global.equipmentDesc" }),
+          okText: "Okay",
+        },
+        document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+      );
       return;
     }
 
@@ -936,13 +954,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   async toggleCamera() {
+    const { formatMessage } = this.props.core.intl;
     if (this.props.core.status.videoRefuse) {
-      ZegoConfirm({
-        title: "Equipment authorization",
-        content:
-          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        confirm: "Okay",
-      });
+      ZegoModelShow(
+        {
+          header: formatMessage({ id: "global.equipment" }),
+          contentText: formatMessage({ id: "global.equipmentDesc" }),
+          okText: "Okay",
+        },
+        document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+      );
       return;
     }
     if (this.cameraStatus === -1) return;
