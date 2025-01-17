@@ -513,7 +513,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       (soundLevelList: ZegoSoundLevelInfo[]) => {
         let list: SoundLevelMap = {};
         soundLevelList.forEach((s) => {
-          let userId = s.streamID.split("_")[1];
+          const arr = s.streamID.split("_");
+          // 流ID 的组成是 roomid_userid_main, callkit 的房间ID带了下划线，所以获取userid方式需要改成倒序获取
+          let userId = arr[arr.length - 2];
           if (list[userId]) {
             list[userId][s.streamID] = Math.floor(s.soundLevel);
           } else {
@@ -608,7 +610,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       if (!this.props.core._config.showPreJoinView) {
         await this.props.core.deviceCheck();
         console.warn('[ZegoRoomMobile]deviceCheck', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
-        if (!this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
+        if (this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
           ZegoModelShow(
             {
               header: formatMessage({ id: "global.equipment" }),
@@ -760,6 +762,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     );
   }
   async createStream(): Promise<boolean> {
+    console.warn('[ZegoRoomMobile]createStream');
     if (
       !this.props.core._config.turnOnCameraWhenJoining &&
       !this.props.core._config.turnOnMicrophoneWhenJoining &&
@@ -794,6 +797,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           });
           this.props.core.localStream = localStream;
         } catch (error: any) {
+          console.error('[ZegoRoomMobile]createStream error', error);
+          // 有些设备不支持自定义分辨，创建流失败后就以默认分辨率再创建一次
           if (JSON.stringify(error).includes("constrain")) {
             localStream = await this.props.core.createZegoStream({
               camera: {
@@ -808,11 +813,18 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             this.props.core.localStream = localStream;
           }
           if (error?.code === 1103064) {
+            // 表示媒体流相关设备权限限制，可能是系统没有给浏览器摄像头、麦克风或屏幕采集权限
             this.props.core.status.videoRefuse = true;
             this.props.core.status.audioRefuse = true;
             this.setState({
               cameraOpen: false,
               micOpen: false,
+            });
+          }
+          if (error?.code === 1103065 || error?.code === 1103061) {
+            // 表示指定设备不可用于采集媒体流，可能是摄像头或麦克风被其他应用占用
+            ZegoToast({
+              content: this.props.core.intl.formatMessage({ id: "room.occupiedToast" }),
             });
           }
         }

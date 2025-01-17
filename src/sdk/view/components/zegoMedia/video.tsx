@@ -69,9 +69,11 @@ export default class ZegoVideo extends React.PureComponent<{
 				const videoObjectFit = !isScreenSharing ? this.props.core._config.videoScreenConfig?.objectFit : 'contain';
 				if (this.props.muted) {
 					// 本地预览流
+					console.warn('[video]initVideo 渲染本地流', this.props.userInfo);
 					(this.props.userInfo.streamList[0]?.media as ZegoLocalStream).playVideo(this.videoRef, { mirror: !isScreenSharing, objectFit: videoObjectFit })
 				} else {
 					// 连麦观众下麦，停止拉主播流又马上重新开始拉时，拉流还未成功时 createRemoteStreamView 会报错，拉流成功后还会继续渲染，暂不处理报错
+					console.warn('[video]initVideo 渲染对端流', this.props.userInfo);
 					try {
 						const remoteView = this.props.core.createRemoteStreamView(this.props.userInfo.streamList[0].media as MediaStream);
 						remoteView.play(this.videoRef, { mirror: !isScreenSharing, objectFit: videoObjectFit });

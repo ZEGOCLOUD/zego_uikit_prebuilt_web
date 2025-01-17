@@ -435,7 +435,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.props.core.onSoundLevelUpdate((soundLevelList: ZegoSoundLevelInfo[]) => {
 			let list: SoundLevelMap = {};
 			soundLevelList.forEach((s) => {
-				let userId = s.streamID.split("_")[1];
+				const arr = s.streamID.split("_");
+				// 流ID 的组成是 roomid_userid_main, callkit 的房间ID带了下划线，所以获取userid方式需要改成倒序获取
+				let userId = arr[arr.length - 2];
 				if (list[userId]) {
 					list[userId][s.streamID] = Math.floor(s.soundLevel);
 				} else {
@@ -693,11 +695,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} catch (error: any) {
 				console.error("【ZEGOCLOUD】createStream or publishLocalStream failed, Reason: ", JSON.stringify(error));
 				if (error?.code === 1103065 || error?.code === 1103061) {
+					// 1103065:表示指定设备不可用于采集媒体流，可能是摄像头或麦克风被其他应用占用
+					// 1103061:表示获取媒体流失败
 					ZegoToast({
 						content: formatMessage({ id: "room.occupiedToast" }),
 					});
 				}
 				if (error?.code === 1103064) {
+					// 1103064：表示媒体流相关设备权限限制，可能是系统没有给浏览器摄像头、麦克风或屏幕采集权限。
 					this.props.core.status.videoRefuse = true;
 					this.props.core.status.audioRefuse = true;
 					this.setState({
