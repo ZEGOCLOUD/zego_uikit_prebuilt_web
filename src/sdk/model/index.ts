@@ -2,8 +2,10 @@ import { ZegoSuperBoardView } from "zego-superboard-web"
 import type { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity"
 import { ZegoCloudRTCCore } from "../modules"
 import { ZegoCloudUser, ZegoCloudUserList } from "../modules/tools/UserListManager"
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
+import { AiDenoiseMode } from "zego-express-engine-webrtc/sdk/code/zh/ZegoVoiceChangerEntity.web"
 export interface ZegoCloudRemoteMedia {
-	media: MediaStream | undefined
+	media: ZegoLocalStream | MediaStream | undefined
 	fromUser: ZegoUser
 	micStatus: "OPEN" | "MUTE"
 	cameraStatus: "OPEN" | "MUTE"
@@ -14,6 +16,11 @@ export interface ZegoCloudRemoteMedia {
 	urlsHttpsHLS?: string
 	hasAudio?: boolean
 	hasVideo?: boolean
+}
+
+export interface ZegoUIKitCreateConfig {
+	cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] },
+	AiDenoiseConfig?: { mode: AiDenoiseMode }
 }
 
 export enum LiveRole {
@@ -233,6 +240,27 @@ export interface ZegoCloudRoomConfig {
 	// 2.13.0
 	// 房间内自定义view，位于视频上方
 	requireRoomForegroundView?: () => HTMLElement;
+	// 整体视频画面配置
+	videoScreenConfig?: {
+		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
+	}
+	// 发送消息回调
+	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
+	// Screen rotation Button
+	showRotatingScreenButton?: boolean;
+	// Screen rotation notification
+	onScreenRotation?: (currentScreen: 'landscape' | 'portrait') => void
+	// User status updated
+	onUserStateUpdated?: (status: ZegoUserState) => void
+	// Member view config
+	memberViewConfig?: {
+		operationListCustomButton?: () => Element
+	}
+}
+
+export enum ZegoUserState {
+	Normal = "Normal",
+	Banned = "Banned"
 }
 export enum RightPanelExpandedType {
 	None = "None",
@@ -246,6 +274,7 @@ export interface ZegoSignalingInRoomTextMessage {
 	orderKey: number
 	senderUserID: string
 	text: string
+	extendedData?: string
 }
 export interface ZegoSignalingInRoomCommandMessage {
 	messageID: string
@@ -453,6 +482,8 @@ export interface ZegoCallInvitationConfig {
 	// 默认值为false。
 	// 如果设置为false，则即使发起者离开，通话仍然可以继续。
 	endCallWhenInitiatorLeave?: boolean;
+	// onTokenWillExpire 还未进房前需要监听
+	onTokenWillExpire?: () => void
 }
 export type CancelCallInvitationFunc = (data?: string) => void // 取消邀请
 export type AcceptCallInvitationFunc = (data?: string) => void // 接受邀请
@@ -473,6 +504,7 @@ export type WaitingUser = ZegoUser & {
 export interface CallInvitationInfo {
 	callID: string
 	roomID: string
+	callOwner: ZegoUser
 	inviter: ZegoUser
 	invitees: ZegoUser[]
 	/** 已接受邀请的用户 */
@@ -503,6 +535,8 @@ export enum UserListMenuItemType {
 	InviteCohost = "InviteCohost",
 	DisagreeRequestCohost = "disagreeRequestCohost",
 	AgreeRequestCohost = "agreeRequestCohost",
+	BanSendingMessages = 'banSendingMessages',
+	CancelBanSendingMessages = 'cancelBanSendingMessages',
 }
 export const enum ReasonForRefusedInviteToCoHost {
 	Disagree, // 主动拒绝
@@ -536,4 +570,8 @@ export enum ZIMCallUserState {
 	Ended = 8,
 	NotYetReceived = 9,
 	BeCancelled = 10,
+}
+export enum ZegoUIKitMessageType {
+	rtcMessage = 1,
+	zimMessage = 2,
 }

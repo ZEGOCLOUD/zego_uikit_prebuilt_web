@@ -47,6 +47,7 @@ const zh = {
     "global.joinRoomFailed": "加入房间失败，请重试。（错误码：{code}）",
     "global.inviteMembers": "邀请成员",
     "global.invitees": "受邀请人",
+    "global.checkRTC": "该设备不支持 rtc 功能，请尝试其他设备",
 
     "browserCheck.join": "加入",
     "browserCheck.placeholder": "您的姓名",
@@ -106,6 +107,10 @@ const zh = {
     "room.requestExpired": "连麦请求已过期",
     "room.browserNotSupport": "您当前的浏览器不支持在直播间显示多个视频屏幕",
     "room.serviceNotAvailable": "该服务不可用，请联系直播服务提供商解决",
+    "room.resumePlayTips": "浏览器阻止音视频播放，请点击“恢复播放”。",
+    "room.resumePlay": "恢复播放",
+    "room.banSending": "禁止发言",
+    "room.cancelBanSending": "取消禁言",
 
     "mobileRoom.member": "成员",
     "mobileRoom.chat": "聊天",

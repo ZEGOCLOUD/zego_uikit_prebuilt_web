@@ -11,6 +11,12 @@ export class CallInvitationDialog extends React.Component<{
   incomingCallUrl?: string;
 }> {
   audioRef: HTMLAudioElement | null = null;
+  componentDidMount(): void {
+    window.addEventListener("beforeunload", () => {
+      // 在呼叫弹框页面刷新时，拒绝呼叫邀请
+      this.props.refuse && this.props.refuse();
+    })
+  }
   componentWillUnmount(): void {
     this.audioRef && (this.audioRef.src = "");
   }

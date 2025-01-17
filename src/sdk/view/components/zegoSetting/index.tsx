@@ -12,6 +12,8 @@ import { getVideoResolution } from "../../../util";
 import { SoundMeter } from "../../../modules/soundmeter";
 import { FormattedMessage } from "react-intl";
 import { isPc } from "../../../util";
+import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity"
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   state: {
     visible: boolean;
@@ -23,8 +25,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     micDevices: ZegoDeviceInfo[];
     speakerDevices: ZegoDeviceInfo[];
     cameraDevices: ZegoDeviceInfo[];
-    localVideoStream: MediaStream | undefined;
-    localAudioStream: MediaStream | undefined;
+    localVideoStream: ZegoLocalStream | undefined;
+    localAudioStream: ZegoLocalStream | undefined;
     audioVolume: number;
     speakerVolume: number;
     isSpeakerPlaying: boolean;
@@ -125,16 +127,17 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       const config = getVideoResolution(
         this.state.selectVideoResolution as string
       );
-      const source: ZegoLocalStreamConfig = {
+      const source: ZegoStreamOptions = {
         camera: {
-          video: true,
+          video: {
+            input: this.state.selectCamera,
+            quality: 4,
+            ...config,
+          },
           audio: false,
-          videoInput: this.state.selectCamera,
-          videoQuality: 4,
-          ...config,
         },
       };
-      const localVideoStream = await this.props.core.createStream(source);
+      const localVideoStream = await this.props.core.createZegoStream(source);
       this.setState({
         localVideoStream,
       });
@@ -151,14 +154,13 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
 
   async createAudioStream(): Promise<boolean> {
     try {
-      const source: ZegoLocalStreamConfig = {
+      const source: ZegoStreamOptions = {
         camera: {
           video: false,
-          audio: true,
-          audioInput: this.state.selectMic,
+          audio: { input: this.state.selectMic },
         },
       };
-      const localAudioStream = await this.props.core.createStream(source);
+      const localAudioStream = await this.props.core.createZegoStream(source);
       this.setState(
         {
           localAudioStream,
@@ -400,7 +402,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                           : ""
                           }`}
                       ></span>
-                      {Array(20)
+                      {Array(isPc() ? 20 : 16)
                         .fill(1)
                         .map((i, index) => (
                           <span
@@ -434,7 +436,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                           : ""
                           }`}
                       ></span>
-                      {Array(16)
+                      {Array(isPc() ? 16 : 12)
                         .fill(1)
                         .map((i, index) => (
                           <span
@@ -478,7 +480,17 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                     <label>
                       <FormattedMessage id="settings.preview" />
                     </label>
-                    <video
+                    <div className={ZegoSettingsCss.previewVideo}
+                      ref={(el: HTMLDivElement | null) => {
+                        if (
+                          el &&
+                          this.state.localVideoStream
+                        ) {
+                          (this.state.localVideoStream as ZegoLocalStream).playVideo(el, { mirror: true, objectFit: "cover" })
+                        }
+                      }}>
+                    </div>
+                    {/* <video
                       muted
                       autoPlay
                       className={ZegoSettingsCss.previewVideo}
@@ -486,12 +498,12 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                         if (
                           el &&
                           this.state.localVideoStream &&
-                          el.srcObject !== this.state.localVideoStream
+                          el.srcObject !== this.state.localVideoStream as any
                         ) {
-                          el.srcObject = this.state.localVideoStream;
+                          el.srcObject = this.state.localVideoStream as any;
                         }
                       }}
-                    ></video>
+                    ></video> */}
                   </div>
                   <div className={ZegoSettingsCss.device}>
                     <ZegoSelect

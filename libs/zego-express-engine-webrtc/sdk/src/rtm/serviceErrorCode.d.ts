@@ -1,0 +1,14 @@
+export declare const THIRD_TOKEN_AUTH_ERROR = 202002;
+export declare const OUT_OF_ROOM_LOGIN_FREQUENCY1 = 200207;
+export declare const OUT_OF_ROOM_LOGIN_FREQUENCY2 = 200208;
+export declare const ADD_USER_ERROR = 201002;
+export declare const FORBID_BLACK_USER = 205030;
+export declare const FORBID_TOKEN_BLACK_USER = 205035;
+export declare const USER_KICKOUT = 50013;
+export declare const RELOGIN_USER_HAS_LOGINED = 10015;
+export declare const SIGN_INVALID = 201002;
+export declare const ATTACK_REJECT = 202001;
+export declare const LOGINZPUSH_TOKEN_FAIL = 30019;
+export declare const TOKEN_ERRORS: number[];
+export declare const LIVEROOM_TOKEN_ERRORS: number[];
+export declare const TOKEN_EXPIREDS: number[];

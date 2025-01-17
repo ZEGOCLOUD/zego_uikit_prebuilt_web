@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { getNameFirstLetter, userNameColor, debounce, memberSearch } from "../../../../util"
 import ZegoUserListCss from "./zegoUserList.module.scss"
@@ -6,7 +6,35 @@ import { ZegoCloudUser, ZegoCloudUserList } from "../../../../modules/tools/User
 import { LiveRole, LiveStreamingMode, ScenarioModel, SoundLevelMap, UserListMenuItemType, ZegoUIKitLanguage } from "../../../../model"
 import ShowManageContext, { ShowManageType } from "../../context/showManage"
 import { FormattedMessage } from "react-intl";
+// @ts-ignore
+function convertDomNodeToReactElement(domNode: Element) {
+	if (!(domNode instanceof Element)) {
+		// 如果不是Element类型，可能是文本节点，直接返回其文本内容
+		// @ts-ignore
+		return domNode.nodeValue
+	}
 
+	const tag = domNode.tagName.toLowerCase()
+	const attrs = Array.from(domNode.attributes).reduce((props, attr) => {
+		if (attr.name === 'classname') {
+			// @ts-ignore
+			props['className'] = attr.value
+		} else if (attr.name === 'onclick') {
+			const func = JSON.parse(attr.value);
+			console.log('===click', func);
+			// @ts-ignore
+			props['onClick'] = new Function(...func.attr, func.functionBody)
+		} else {
+			// @ts-ignore
+			props[attr.name] = attr.value
+		}
+		return props
+	}, {})
+	// @ts-ignore
+	const children = Array.from(domNode.childNodes).map(convertDomNodeToReactElement)
+
+	return React.createElement(tag, attrs, ...children)
+}
 export class ZegoUserList extends React.PureComponent<{
 	core: ZegoCloudRTCCore
 	userList: ZegoCloudUserList
@@ -182,6 +210,20 @@ export class ZegoUserList extends React.PureComponent<{
 		this.hoverEl = null
 		el.classList.remove(`${ZegoUserListCss.showMenu}`, `${ZegoUserListCss.bottomMenu}`)
 	}
+	showForbiddenButton(user: ZegoCloudUser): boolean {
+		// if (!this.props.core._config.showForbiddenButton) return false
+		if (this.props.core.isHost(this.props.selfUserID)) {
+			return user.userID !== this.props.selfUserID
+		} else {
+			return user.userID === this.props.selfUserID
+		}
+	}
+	isBanSendingMessages(user: ZegoCloudUser) {
+		if (this.props.core._zimManager?.banList) {
+			const banList = this.props.core._zimManager?.banList
+			return banList.some((u) => u === user.userID)
+		}
+	}
 	render(): React.ReactNode {
 		const { formatMessage } = this.props.core.intl;
 		return (
@@ -315,6 +357,26 @@ export class ZegoUserList extends React.PureComponent<{
 												{formatMessage({ id: "room.remove" })}
 											</div>
 										)}
+										{this.showForbiddenButton(user) &&
+											(!this.isBanSendingMessages(user) ? (
+												<div
+													className={ZegoUserListCss.memberMenuItem}
+													onClick={() => {
+														this.props.handleMenuItem(UserListMenuItemType.BanSendingMessages, user)
+													}}
+												>
+													{formatMessage({ id: "room.banSending" })}
+												</div>
+											) : (
+												<div
+													className={ZegoUserListCss.memberMenuItem}
+													onClick={() =>
+														this.props.handleMenuItem(UserListMenuItemType.CancelBanSendingMessages, user)
+													}>
+													{formatMessage({ id: "room.cancelBanSending" })}
+												</div>)
+											)
+										}
 									</div>
 								</>
 							)}
@@ -398,6 +460,31 @@ export class ZegoUserList extends React.PureComponent<{
 											}>
 											{formatMessage({ id: "room.remove" })}
 										</div>
+									)}
+									{this.showForbiddenButton(user) &&
+										(!this.isBanSendingMessages(user) ? (
+											<div
+												className={ZegoUserListCss.memberMenuItem}
+												onClick={() => {
+													this.props.handleMenuItem(UserListMenuItemType.BanSendingMessages, user)
+												}}
+											>
+												{formatMessage({ id: "room.banSending" })}
+											</div>
+										) : (
+											<div
+												className={ZegoUserListCss.memberMenuItem}
+												onClick={() =>
+													this.props.handleMenuItem(UserListMenuItemType.CancelBanSendingMessages, user)
+												}>
+												{formatMessage({ id: "room.cancelBanSending" })}
+											</div>)
+										)
+									}
+									{this.props.core._config.memberViewConfig?.operationListCustomButton && (
+										<Fragment>
+											{convertDomNodeToReactElement(this.props.core._config.memberViewConfig?.operationListCustomButton())}
+										</Fragment>
 									)}
 								</div>
 							)}

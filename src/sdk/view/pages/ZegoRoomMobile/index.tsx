@@ -58,13 +58,14 @@ import { ZegoSettings } from "../../components/zegoSetting";
 import { ZegoMixPlayer } from "./components/zegoMixPlayer";
 import { ZegoBroadcastMessageInfo, ZegoUser } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity"
 import { FormattedMessage } from "react-intl";
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 import { ZegoInvitationList } from "./components/zegoInvitationList";
 
 type LayOutStatus = "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE" | "WHITEBOARD" | "INVITE_LIST";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   static contextType = ShowManageContext;
   state: {
-    localStream: undefined | MediaStream;
+    localStream: undefined | ZegoLocalStream;
     layOutStatus: LayOutStatus;
     userLayoutStatus: "Auto" | "Grid" | "Sidebar";
     zegoCloudUserList: ZegoCloudUserList;
@@ -96,6 +97,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     selectSpeaker: string | undefined;
     selectVideoResolution: string;
     showNonVideoUser: boolean;
+    showRotatingScreenButton: boolean; // 主动旋转屏幕
+    rotateType: 'toPortrait' | 'toLandscape'; // 旋转屏幕方向
   } = {
       micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining,
       cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,
@@ -130,6 +133,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       selectVideoResolution:
         this.props.core.status.videoResolution || this.props.core._config.videoResolutionList![0],
       showNonVideoUser: this.props.core._config.showNonVideoUser as boolean,
+      showRotatingScreenButton: this.props.core._config.showRotatingScreenButton || false,
+      rotateType: 'toLandscape',
     };
   micStatus: -1 | 0 | 1 = !!this.props.core._config.turnOnMicrophoneWhenJoining
     ? 1
@@ -224,7 +229,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
     preState: {
-      localStream: undefined | MediaStream;
+      localStream: undefined | ZegoLocalStream;
       layOutStatus: "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE";
       messageList: ZegoBroadcastMessageInfo[];
       notificationList: ZegoNotification[];
@@ -328,9 +333,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             return;
           }
           // 当呼叫发起者离开通话时，整个通话要结束时，离开房间
-          const inviterID = this.props.core._zimManager?.callInfo?.inviter?.userID
+          const callOwnerID = this.props.core._zimManager?.callInfo?.callOwner?.userID
           const endCallWhenInitiatorLeave = this.props.core._zimManager?.config?.endCallWhenInitiatorLeave
-          if (endCallWhenInitiatorLeave && userList.some(({ userID }) => userID === inviterID)) {
+          if (endCallWhenInitiatorLeave && userList.some(({ userID }) => userID === callOwnerID)) {
             this.confirmLeaveRoom(false, false);
             return;
           }
@@ -508,7 +513,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       (soundLevelList: ZegoSoundLevelInfo[]) => {
         let list: SoundLevelMap = {};
         soundLevelList.forEach((s) => {
-          let userId = s.streamID.split("_")[1];
+          const arr = s.streamID.split("_");
+          // 流ID 的组成是 roomid_userid_main, callkit 的房间ID带了下划线，所以获取userid方式需要改成倒序获取
+          let userId = arr[arr.length - 2];
           if (list[userId]) {
             list[userId][s.streamID] = Math.floor(s.soundLevel);
           } else {
@@ -599,6 +606,21 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     const logInRsp = await this.props.core.enterRoom();
     let massage = "";
     if (logInRsp === 0) {
+      // 没有预览 view 时，先检测摄像头/麦克风权限
+      if (!this.props.core._config.showPreJoinView) {
+        await this.props.core.deviceCheck();
+        console.warn('[ZegoRoomMobile]deviceCheck', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
+        if (this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
+          ZegoModelShow(
+            {
+              header: formatMessage({ id: "global.equipment" }),
+              contentText: formatMessage({ id: "global.equipmentDesc" }),
+              okText: "Okay",
+            },
+            document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+          );
+        }
+      }
       this.createStream();
       setTimeout(async () => {
         this.props.core._config.showMyCameraToggleButton &&
@@ -740,6 +762,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     );
   }
   async createStream(): Promise<boolean> {
+    console.warn('[ZegoRoomMobile]createStream');
     if (
       !this.props.core._config.turnOnCameraWhenJoining &&
       !this.props.core._config.turnOnMicrophoneWhenJoining &&
@@ -754,39 +777,43 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       !this.props.core.status.audioRefuse
     ) {
       try {
-        let localStream: MediaStream | null = null;
+        let localStream: ZegoLocalStream | null = null;
         try {
           const solution = getVideoResolution(this.state.selectVideoResolution);
-          localStream = await this.props.core.createStream({
+          localStream = await this.props.core.createZegoStream({
             camera: {
-              video: !this.props.core.status.videoRefuse,
-              audio: !this.props.core.status.audioRefuse,
-              videoInput: this.state.selectCamera,
-              audioInput: this.state.selectMic,
-              videoQuality: 4,
-              facingMode: this.faceModel ? "user" : "environment",
-              channelCount: this.props.core._config.enableStereo ? 2 : 1,
-              ...solution,
-              //   width: 640,
-              //   height: 360,
-              //   bitrate: 400,
-              //   frameRate: 15,
+              video: !this.props.core.status.videoRefuse ? {
+                input: this.state.selectCamera,
+                quality: 4,
+                facingMode: this.faceModel ? "user" : "environment",
+                ...solution,
+              } : false,
+              audio: !this.props.core.status.audioRefuse ? {
+                input: this.state.selectMic,
+                channelCount: this.props.core._config.enableStereo ? 2 : 1,
+              } : false,
             },
+            videoBitrate: solution.bitrate
           });
           this.props.core.localStream = localStream;
         } catch (error: any) {
+          console.error('[ZegoRoomMobile]createStream error', error);
+          // 有些设备不支持自定义分辨，创建流失败后就以默认分辨率再创建一次
           if (JSON.stringify(error).includes("constrain")) {
-            localStream = await this.props.core.createStream({
+            localStream = await this.props.core.createZegoStream({
               camera: {
-                video: !this.props.core.status.videoRefuse,
-                audio: !this.props.core.status.audioRefuse,
-                facingMode: this.faceModel ? "user" : "environment",
-                channelCount: this.props.core._config.enableStereo ? 2 : 1,
+                video: !this.props.core.status.videoRefuse ? {
+                  facingMode: this.faceModel ? "user" : "environment",
+                } : false,
+                audio: !this.props.core.status.audioRefuse ? {
+                  channelCount: this.props.core._config.enableStereo ? 2 : 1,
+                } : false,
               },
             });
             this.props.core.localStream = localStream;
           }
           if (error?.code === 1103064) {
+            // 表示媒体流相关设备权限限制，可能是系统没有给浏览器摄像头、麦克风或屏幕采集权限
             this.props.core.status.videoRefuse = true;
             this.props.core.status.audioRefuse = true;
             this.setState({
@@ -794,15 +821,21 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               micOpen: false,
             });
           }
+          if (error?.code === 1103065 || error?.code === 1103061) {
+            // 表示指定设备不可用于采集媒体流，可能是摄像头或麦克风被其他应用占用
+            ZegoToast({
+              content: this.props.core.intl.formatMessage({ id: "room.occupiedToast" }),
+            });
+          }
         }
 
         if (!localStream) return false;
 
-        this.props.core.mutePublishStreamVideo(
+        await this.props.core.mutePublishStreamVideo(
           localStream,
           !this.props.core._config.turnOnCameraWhenJoining
         );
-        this.props.core.muteMicrophone(
+        await this.props.core.muteMicrophone(
           !this.props.core._config.turnOnMicrophoneWhenJoining
         );
         this.setState({
@@ -877,13 +910,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }
   }
   async toggleMic() {
+    const { formatMessage } = this.props.core.intl;
     if (this.props.core.status.audioRefuse) {
-      ZegoConfirm({
-        title: "Equipment authorization",
-        content:
-          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        confirm: "Okay",
-      });
+      ZegoModelShow(
+        {
+          header: formatMessage({ id: "global.equipment" }),
+          contentText: formatMessage({ id: "global.equipmentDesc" }),
+          okText: "Okay",
+        },
+        document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+      );
       return;
     }
 
@@ -930,13 +966,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   async toggleCamera() {
+    const { formatMessage } = this.props.core.intl;
     if (this.props.core.status.videoRefuse) {
-      ZegoConfirm({
-        title: "Equipment authorization",
-        content:
-          "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
-        confirm: "Okay",
-      });
+      ZegoModelShow(
+        {
+          header: formatMessage({ id: "global.equipment" }),
+          contentText: formatMessage({ id: "global.equipmentDesc" }),
+          okText: "Okay",
+        },
+        document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+      );
       return;
     }
     if (this.cameraStatus === -1) return;
@@ -1528,6 +1567,31 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       });
       console.warn("AgreeRequestCohost", res);
     },
+    [UserListMenuItemType.BanSendingMessages]: async () => {
+      console.warn('BanSendingMessages', this.props.core._expressConfig.userID, this.props.core._zimManager?.banList);
+      const banList = this.props.core._zimManager?.banList;
+      const selectedUser = this._selectedUser.userID;
+      if (banList && !banList.some((userID) => userID === selectedUser)) {
+        banList.push(selectedUser);
+        const roomAttributes = {
+          ban: JSON.stringify(banList)
+        }
+        this.props.core._zimManager?.setRoomAttributes(roomAttributes);
+      }
+    },
+    [UserListMenuItemType.CancelBanSendingMessages]: async () => {
+      console.warn('CancelBanSendingMessages', this.props.core._expressConfig.userID, this.props.core._zimManager?.banList);
+      const banList = this.props.core._zimManager?.banList;
+      const selectedUser = this._selectedUser.userID;
+      if (banList) {
+        const index = banList.findIndex((id) => id === selectedUser);
+        banList.splice(index, 1);
+        const roomAttributes = {
+          ban: JSON.stringify(banList)
+        }
+        this.props.core._zimManager?.setRoomAttributes(roomAttributes);
+      }
+    }
   };
   private _selectedUser!: ZegoCloudUser;
   get showSelf() {
@@ -1816,6 +1880,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                   </div>
                 )}
               <ZegoMixPlayer
+                core={this.props.core}
                 userInfo={this.props.core.mixUser}
                 showFullScreen={
                   this.state.liveStatus === "1" &&
@@ -2034,6 +2099,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   clickVideo(e: MouseEvent) {
     // @ts-ignore
     let className: string = e.target.className;
+    let id: string = (e.target as any).id;
     let whiteboardClick = false;
     if (
       // @ts-ignore
@@ -2050,7 +2116,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       className.includes("zegoUserVideo_videoCommon") ||
       className.includes("zegoMore_more") ||
       className.includes("ZegoRoomMobile_ZegoRoom") ||
-      className.includes("zegoUserVideo_click")
+      className.includes("zegoUserVideo_click") ||
+      className.includes("zegoSidebar_") ||
+      id.includes("zg-rtc-video") // 使用zegostreamview播放时点击的video
     ) {
       if (!this.state.showFooter) {
         // 横屏白板不展示底部工具栏
@@ -2211,6 +2279,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     }, 1000);
   }
   onOrientationChange() {
+    const roomDom = document.querySelector('.ZegoRoomMobile_ZegoRoom') as HTMLDivElement;
+    roomDom.classList.remove('transform');
     let isScreenPortrait = this.state.isScreenPortrait;
     this.props.core._config.container
       ?.querySelectorAll("input")
@@ -2218,14 +2288,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (window.orientation === 180 || window.orientation === 0) {
       // 竖屏
       isScreenPortrait = true;
+      this.state.rotateType = 'toLandscape';
+      this.props.core.setScreenLayout(true);
     }
     if (window.orientation === 90 || window.orientation === -90) {
       // 横屏
       isScreenPortrait = false;
+      this.state.rotateType = 'toPortrait';
+      this.props.core.setScreenLayout(false);
     }
-
-    this.setState({});
-
     this.setState(
       {
         isScreenPortrait: isScreenPortrait,
@@ -2361,6 +2432,19 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           layOutStatus: "ONE_VIDEO",
         })
       })
+  }
+  rotatingScreen(type: "toPortrait" | "toLandscape") {
+    if (type === 'toLandscape') {
+      this.setState({
+        rotateType: 'toPortrait'
+      })
+      this.props.core.rotateToLandscape();
+    } else {
+      this.setState({
+        rotateType: 'toLandscape'
+      })
+      this.props.core.rotateToPortrait();
+    }
   }
 
   render(): React.ReactNode {
@@ -2603,6 +2687,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                     </span>
                   </a>
                 )}
+              {this.state.showRotatingScreenButton && this.props.core._config.scenario?.config?.role === LiveRole.Audience && (this.state.rotateType === 'toLandscape' ?
+                (<a className={`${ZegoRoomCss.toLandscapeButton}`} onClick={() => { this.rotatingScreen('toLandscape') }}></a>) :
+                (<a className={`${ZegoRoomCss.toPortraitButton}`} onClick={() => { this.rotatingScreen('toPortrait') }}></a>))}
             </div>
           )}
           {this.getListScreen()}

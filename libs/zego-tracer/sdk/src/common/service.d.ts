@@ -1,0 +1,32 @@
+import { StateCenter } from './stateCenter';
+import { ZEGO_ENV } from './zego.entity';
+export declare class LogService {
+    private _env;
+    private _product;
+    private _pro;
+    private _stateCenter;
+    private _service;
+    private _cmdSeq;
+    private _responseRouters;
+    private _url?;
+    get url(): string | undefined;
+    constructor(_env: ZEGO_ENV, _product: string, _pro: string, _stateCenter: StateCenter);
+    private _handleSendCommandMsgRsp;
+    onPush(): void;
+    closeHandler(handler: (evt: any) => void): void;
+    openHandler(handler: () => void): void;
+    errorHandler(handler: (evt: Event) => void): void;
+    private _getHeader;
+    startCheck(): void;
+    stopCheck(): void;
+    isDisConnect(): boolean;
+    createSocket(server: string): void;
+    closeSocket(isEnded?: boolean): void;
+    sendMessage(cmd: string, body: any[], suc?: Function, err?: Function, theHeader?: any): number;
+    on(cmd: string, callBack: (msg: any) => void): void;
+    private _zgp_lastRecvMsgTime?;
+    private checkHbTimer?;
+    private clearHbTimer;
+    private startHbTimer;
+    onHbTimeout(): void;
+}

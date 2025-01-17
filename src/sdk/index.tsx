@@ -19,6 +19,7 @@ import {
 	ZegoSignalingPluginNotificationConfig,
 	ZegoUIKitLanguage,
 	ZegoUser,
+	ZegoUIKitCreateConfig,
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
 import { generatePrebuiltToken, isPc } from "./util";
@@ -100,10 +101,10 @@ export class ZegoUIKitPrebuilt {
 		);
 	}
 
-	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt {
+	static create(kitToken: string, createConfig?: ZegoUIKitCreateConfig, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt {
 		const startTime = Date.now();
 		if (!ZegoUIKitPrebuilt.core && kitToken) {
-			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, cloudProxyConfig);
+			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, createConfig);
 			ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
 			const span = TracerConnect.createSpan(SpanEvent.Create, {
 				error: 0,
@@ -287,7 +288,7 @@ export class ZegoUIKitPrebuilt {
 		if (typeof command !== "object" || command === null) {
 			return Promise.reject("【ZEGOCLOUD】sendInRoomCustomCommand params error: command !!");
 		}
-		return await ZegoUIKitPrebuilt.core._zimManager.sendMessage(command, priority);
+		return await ZegoUIKitPrebuilt.core._zimManager.sendInRoomCustomMessage(command, priority);
 	}
 	// 主动退出房间
 	hangUp() {
@@ -330,5 +331,25 @@ export class ZegoUIKitPrebuilt {
 			return;
 		}
 		ZegoUIKitPrebuilt.core.updateCallingInvitationListConfig(config);
+	}
+
+	rotateToLandscape() {
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return;
+		}
+		ZegoUIKitPrebuilt.core.rotateToLandscape();
+	}
+
+	rotateToPortrait() {
+		if (!ZegoUIKitPrebuilt.core) {
+			console.error("【ZEGOCLOUD】 please call init first !!");
+			return;
+		}
+		ZegoUIKitPrebuilt.core.rotateToPortrait();
+	}
+
+	renewToken(kitToken: string): boolean {
+		return ZegoUIKitPrebuilt.core?.renewToken(kitToken)!;
 	}
 }

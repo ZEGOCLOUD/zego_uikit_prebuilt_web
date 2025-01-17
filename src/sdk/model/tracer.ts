@@ -5,8 +5,11 @@ export enum SpanEvent {
     Destory = 'destory',
 
     // web 查询问题打点
-    ZIMLoginRoom = 'zim/loginRoom',
-    ZIMLogoutRoom = 'zim/logoutRoom',
+    ZIMInit = 'zim/init',
+    ZIMLogin = 'zim/login',
+    ZIMJoinRoom = 'zim/joinroom',
+    ZIMLeaveRoom = 'zim/leaveroom',
+    ZIMConnectionStateChanged = 'zim/connectionStateChanged',
     RoomConfig = 'RoomConfig',
     Unmount = 'unmount',
 
@@ -18,7 +21,14 @@ export enum SpanEvent {
     InvitationReceived = 'invitationReceived',
     CallInvite = 'call/invite',
     DisplayNotification = 'call/displayNotification',
-    RespondInvitation = 'call/respondInvitation',
-    // InvitationReceived = 'call/invitationReceived',
-
+    CalleeRespondInvitation = 'call/callee/respondInvitation',
+    CallInvitationReceived = 'call/invitationReceived',
+    CallerRespondInvitation = 'call/caller/respondInvitation',
+    LiveStreamingHostInvite = 'livestreaming/cohost/host/invite',
+    LiveStreamingHostReceived = 'livestreaming/cohost/host/received',
+    LiveStreamingHostRespond = 'livestreaming/cohost/host/respond',
+    LiveStreamingHostStop = 'livestreaming/cohost/host/stop',
+    LiveStreamingAudienceInvite = 'livestreaming/cohost/audience/invite',
+    LiveStreamingAudienceReceived = 'livestreaming/cohost/audience/received',
+    LiveStreamingAudienceRespond = 'livestreaming/cohost/audience/respond'
 }

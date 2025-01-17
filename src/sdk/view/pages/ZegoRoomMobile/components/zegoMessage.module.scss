@@ -9,12 +9,14 @@
   align-items: flex-start;
   box-sizing: border-box;
   width: 100%;
-  height: 70vh;
+  height: 70%;
   background: #242736;
   border-radius: vw(46px) vw(46px) 0px 0px;
+
   &.msgListExpend {
-    height: 40vh;
+    height: 45%;
   }
+
   .msgListHeader {
     display: flex;
     align-items: center;
@@ -66,6 +68,7 @@
         line-height: vw(33px);
         background: rgba(255, 255, 255, 0.1);
         border-radius: vw(28px);
+
         img {
           position: absolute;
           top: 0;
@@ -83,6 +86,7 @@
         flex-direction: column;
         align-items: flex-start;
         color: #a4a4a4;
+
         .msgContentRightHeader {
           display: flex;
           font-weight: 400;
@@ -155,9 +159,11 @@
 
       .msgContentRight {
         align-items: flex-end;
+
         .msgContentRightBody {
           justify-content: flex-end;
         }
+
         p {
           background: #0055ff !important;
         }
@@ -175,6 +181,7 @@
     padding: vw(16px) vw(30px);
     background: #242736;
     box-shadow: 0px vw(-1px) 0px 0px #3d4054;
+
     input {
       flex: 1;
       box-sizing: border-box;
@@ -207,11 +214,13 @@
     }
   }
 }
+
 @media screen and (orientation: landscape) {
   .msgList {
     &.msgListExpend {
-      height: 70vh;
+      height: 70%;
     }
+
     .msgListContent {
       .msgContent {
         .msgContentRight {
