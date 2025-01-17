@@ -209,9 +209,6 @@ declare interface ZegoCloudRoomConfig {
 	showWaitingCallAcceptAudioVideoView?: boolean;
 	// Configure the call invitation list during a call
 	callingInvitationListConfig?: CallingInvitationListConfig;
-	// 2.13.0
-	// Custom view in the room, located above the video
-	requireRoomForegroundView?: () => HTMLElement;
 }
 
 export enum RightPanelExpandedType {

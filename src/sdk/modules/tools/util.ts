@@ -1,5 +1,5 @@
-import type { ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity";
-
+import type { ZegoBarrageMessageInfo, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity";
+import { ZegoUIKitMessageType, ZegoSignalingInRoomTextMessage } from '../../model';
 export function generateVideoView(isVideo: boolean, userID: string): HTMLMediaElement {
 	const mediaDom = document.createElement(isVideo ? "video" : "audio");
 	mediaDom.id = "zego-video-" + userID;
@@ -98,14 +98,34 @@ export const throttle: ThrottleFn = (func, delay) => {
 	};
 };
 // message maybe a string or a json string, need to be transformed
-export function transformMsg(msgs: ZegoBroadcastMessageInfo[]) {
+export function transformMsg(type: ZegoUIKitMessageType, msgs: ZegoBroadcastMessageInfo[] | ZegoSignalingInRoomTextMessage[]) {
 	return msgs.map((msg) => {
 		try {
-			const message = JSON.parse(msg.message);
-			return {
-				...msg,
-				message: message.msg !== undefined ? message.msg : msg.message,
-				attrs: message.attrs || "",
+			// const message = JSON.parse((msg as ZegoBroadcastMessageInfo).message) || JSON.parse((msg as ZegoSignalingInRoomTextMessage)?.text);
+			switch (type) {
+				case ZegoUIKitMessageType.rtcMessage: {
+					return {
+						...msg,
+						fromUser: (msg as ZegoBroadcastMessageInfo).fromUser,
+						message: (msg as ZegoBroadcastMessageInfo).message,
+						sendTime: (msg as ZegoBroadcastMessageInfo).sendTime,
+						messageID: msg.messageID,
+						// message: message.msg !== undefined ? message.msg : msg.message,
+						// attrs: (msg as ZegoBroadcastMessageInfo).attrs || "",
+					}
+				}
+				case ZegoUIKitMessageType.zimMessage: {
+					const fromUser = {
+						userID: (msg as ZegoSignalingInRoomTextMessage).senderUserID,
+						userName: JSON.parse((msg as ZegoSignalingInRoomTextMessage).extendedData!)?.userName,
+					}
+					return {
+						fromUser: fromUser,
+						message: (msg as ZegoBroadcastMessageInfo).message || (msg as ZegoSignalingInRoomTextMessage).text,
+						sendTime: (msg as ZegoBroadcastMessageInfo).sendTime || (msg as ZegoSignalingInRoomTextMessage).timestamp,
+						messageID: msg.messageID,
+					}
+				}
 			}
 		} catch (error) {
 			return msg;

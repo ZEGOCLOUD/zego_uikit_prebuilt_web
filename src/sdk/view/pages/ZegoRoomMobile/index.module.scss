@@ -23,6 +23,8 @@
   overflow: hidden;
   background: no-repeat center/cover;
   background-color: black;
+  transition: transform 0.3s ease-in-out;
+  transform-origin: center center;
 
   .footer {
     position: fixed;
@@ -301,6 +303,24 @@
         transform: rotate(45deg);
       }
     }
+
+    .toLandscapeButton {
+      position: absolute;
+      right: 10px;
+      background-image: url('../../../../assets/rotateToLandscape.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(46px) vw(46px);
+    }
+
+    .toPortraitButton {
+      position: absolute;
+      right: 10px;
+      background-image: url('../../../../assets/rotateToPortrait.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: vw(56px) vw(56px);
+    }
   }
 
   .notify {
@@ -506,7 +526,7 @@
   //   bottom: 40%;
   //   left: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
 
   .screenTopBar {
     position: fixed;

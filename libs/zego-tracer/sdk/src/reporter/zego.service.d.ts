@@ -1,0 +1,73 @@
+/// <reference types="node" />
+import { ENUM_REMOTE_TYPE, Queue, ZEGO_ENV, LogParams, ReportDataItem, ENUM_NETWORK_STATE, ENUM_CONNECT_STATE } from '../common/zego.entity';
+import { LogService } from '../common/service';
+import { StateCenter } from '../common/stateCenter';
+export declare class ZegoService {
+    private _env;
+    private _product;
+    private _pro;
+    private _stateCenter;
+    static instance: ZegoService;
+    service: LogService;
+    isDestroy: boolean;
+    logType: ENUM_REMOTE_TYPE;
+    url: string;
+    packageLen: number;
+    packagesDataSize: number;
+    PACKAGE_MAX_LEN: number;
+    msgID: number;
+    logUploadTimer: NodeJS.Timer | null;
+    logUploadInterval: number;
+    logCacheSend: string[];
+    logCacheMax: number;
+    tokenBucket: any;
+    reportQueue: Queue<any>;
+    private _reportDataCheckTimer;
+    private _reportDataCheckInterval;
+    postSucCallbackList: {
+        [index: string]: Function;
+    };
+    postFailCallbackList: {
+        [index: string]: Function;
+    };
+    failCount: number;
+    failStartTime: number;
+    netWorkFail: boolean;
+    logParams: LogParams;
+    networkState: ENUM_NETWORK_STATE;
+    state: ENUM_CONNECT_STATE;
+    private _wsFrequentShutdownCounter;
+    constructor(_env: ZEGO_ENV, bps: number, _product: string, _pro: string, _stateCenter: StateCenter);
+    destroy(): void;
+    bindWindowListener(): void;
+    _zgp_eventHandler: {
+        offline: () => void;
+        online: (event: any) => void;
+    };
+    handleNetConnect(): void;
+    setLogServer(url: string): boolean;
+    setLogUrlParams(logParams: LogParams): void;
+    private _openWebSocketLogServer;
+    private _stopWebSocketServer;
+    private _openHttpsLogServer;
+    private _stopHttpsServer;
+    private _sendHttpsLog;
+    private _sendHttpsLogWeb;
+    SendHttpsLogWeChatMini(reportDatas: any, dataLen: number, suc: Function, fail: Function): void;
+    openHandler(): void;
+    setPostSucCallback(product: string, callback: Function): void;
+    setPostFailCallback(product: string, callback: Function): void;
+    reportAllowed(): boolean;
+    report(reportDatas: any[], dataLen: number, product: string, immediately?: boolean): void;
+    setBps(bps: number): void;
+    startReport(immediately?: boolean): void;
+    private _failTooMuch;
+    sendReport(reportDatas: ReportDataItem[], dataLen: number, product: string): void;
+    resumeReport(): void;
+    reportData(reportDatas: ReportDataItem[], dataLen: number, product: string, suc: Function, fail: Function): void;
+    unsigned2signed(unsigned: any): string | number;
+    decodeReportQueue(): any;
+    readReportQueueData(): any[];
+    _zgp_setLogServerTimer?: number;
+    socketReconnect(immediately?: boolean, force?: boolean): boolean;
+}

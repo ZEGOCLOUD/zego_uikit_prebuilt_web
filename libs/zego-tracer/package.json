@@ -1,0 +1,21 @@
+{
+    "name": "zego-tracer",
+    "version": "1.0.6",
+    "description": "zego data report sdk",
+    "main": "./ZegoTracer.js",
+    "typings": "./sdk/src/index.d.ts",
+    "keywords": [
+        "sdk",
+        "zego",
+        "log",
+        "APM",
+        "express"
+    ],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "localforage": "1.10.0",
+        "crypto-js": "4.1.1",
+        "pako": "^2.1.0"
+    }
+}

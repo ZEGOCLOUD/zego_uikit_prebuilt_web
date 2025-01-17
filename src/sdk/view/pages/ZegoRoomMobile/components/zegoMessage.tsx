@@ -41,7 +41,7 @@ export class ZegoMessage extends React.PureComponent<{
     this.msgContentListRef.current?.scroll(
       0,
       this.msgContentListRef.current.scrollHeight -
-        this.msgContentListRef.current.clientHeight
+      this.msgContentListRef.current.clientHeight
     );
   }
 
@@ -55,7 +55,7 @@ export class ZegoMessage extends React.PureComponent<{
       this.msgContentListRef.current?.scroll(
         0,
         this.msgContentListRef.current.scrollHeight -
-          this.msgContentListRef.current.clientHeight
+        this.msgContentListRef.current.clientHeight
       );
     }
   }
@@ -68,6 +68,10 @@ export class ZegoMessage extends React.PureComponent<{
 
   handleSend() {
     if (!this.state.message.length) return;
+    if (this.props.core._zimManager?.banList.some((id) => id === this.props.core._expressConfig.userID)) {
+      ZegoToast({ content: '你已被禁言' })
+      return;
+    }
     const timestamp = new Date().getTime();
     if (this.sendTime > 0 && this.sendTime + 900 > timestamp) {
       ZegoToast({
@@ -99,7 +103,7 @@ export class ZegoMessage extends React.PureComponent<{
           this.msgContentListRef.current?.scroll(
             0,
             this.msgContentListRef.current.scrollHeight -
-              this.msgContentListRef.current.clientHeight
+            this.msgContentListRef.current.clientHeight
           );
         }
       );
@@ -143,11 +147,10 @@ export class ZegoMessage extends React.PureComponent<{
           {this.props.messageList.map((msg) => {
             return (
               <div
-                className={`${zegoMessageCss.msgContent} ${
-                  this.props.userID === msg.fromUser.userID
-                    ? zegoMessageCss.self
-                    : ""
-                }`}
+                className={`${zegoMessageCss.msgContent} ${this.props.userID === msg.fromUser.userID
+                  ? zegoMessageCss.self
+                  : ""
+                  }`}
                 key={msg.messageID}
               >
                 <i style={{ color: userNameColor(msg.fromUser.userName!) }}>
@@ -166,9 +169,8 @@ export class ZegoMessage extends React.PureComponent<{
                   <div className={zegoMessageCss.msgContentRightHeader}>
                     <span>{msg.fromUser.userName}</span>
                     <span>
-                      {`${
-                        new Date(msg.sendTime).getHours() >= 12 ? "PM" : "AM"
-                      }  ${DateFormat(msg.sendTime, "hh:mm")}`}
+                      {`${new Date(msg.sendTime).getHours() >= 12 ? "PM" : "AM"
+                        }  ${DateFormat(msg.sendTime, "hh:mm")}`}
                     </span>
                   </div>
                   <div className={zegoMessageCss.msgContentRightBody}>
@@ -178,8 +180,8 @@ export class ZegoMessage extends React.PureComponent<{
                           msg.status === "SENDING"
                             ? zegoMessageCss.loading
                             : msg.status === "SENDED"
-                            ? ""
-                            : zegoMessageCss.sendFailed
+                              ? ""
+                              : zegoMessageCss.sendFailed
                         }
                       ></i>
                     )}

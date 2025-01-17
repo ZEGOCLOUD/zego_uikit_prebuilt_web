@@ -33,8 +33,8 @@ export class ZegoMessage extends React.Component<{
 	state: {
 		message: string
 	} = {
-		message: "",
-	}
+			message: "",
+		}
 	sendTime = 0
 	msgListRef: RefObject<HTMLInputElement> = React.createRef()
 	componentDidMount() {
@@ -67,6 +67,9 @@ export class ZegoMessage extends React.Component<{
 		this.setState({
 			message: event.target.value.substring(0, 300),
 		})
+	}
+	isBan() {
+		return this.props.core._zimManager?.banList.some((id) => id === this.props.selfUserID);
 	}
 	render(): React.ReactNode {
 		const { formatMessage } = this.props.core.intl;
@@ -114,7 +117,7 @@ export class ZegoMessage extends React.Component<{
 						}}
 					/>
 					<button
-						disabled={!this.state.message.length}
+						disabled={!this.state.message.length || this.isBan()}
 						onClick={() => {
 							this.handleSend()
 						}}></button>

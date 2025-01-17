@@ -1,4 +1,4 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { getNameFirstLetter, userNameColor } from "../../../../util";
 import zegoUserVideoCss from "./zegoUserVideo.module.scss";
 import { ZegoMore } from "./zegoMore";
@@ -9,6 +9,7 @@ import ZegoAudio from "../../../components/zegoMedia/audio";
 import { FormattedMessage } from "react-intl";
 import { ZegoCloudRTCCore } from "../../../../modules";
 import { UserTypeEnum } from "../../../../model";
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 export class ZegoUserVideo extends React.PureComponent<{
   core: ZegoCloudRTCCore;
   user: ZegoCloudUser;
@@ -27,7 +28,8 @@ export class ZegoUserVideo extends React.PureComponent<{
 }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
-  videoEl: HTMLVideoElement | null = null;
+  localVideoRef: RefObject<HTMLDivElement> = React.createRef();
+  videoEl: HTMLVideoElement | HTMLDivElement | null = null;
   state: {
     isFullScreen: boolean;
   } = {
@@ -96,6 +98,7 @@ export class ZegoUserVideo extends React.PureComponent<{
           (this.props.user.streamList[0].media ||
             this.props.user.streamList[0].urlsHttpsFLV) && (
             <ZegoVideo
+              core={this.props.core}
               muted={this.props.muted}
               userInfo={this.props.user}
               classList={`${zegoUserVideoCss.videoCommon
@@ -106,7 +109,7 @@ export class ZegoUserVideo extends React.PureComponent<{
               onCanPlay={() => {
                 this.props.onCanPlay && this.props.onCanPlay();
               }}
-              videoRefs={(el: HTMLVideoElement) => {
+              videoRefs={(el: HTMLVideoElement | HTMLDivElement) => {
                 this.videoEl = el;
               }}
             ></ZegoVideo>

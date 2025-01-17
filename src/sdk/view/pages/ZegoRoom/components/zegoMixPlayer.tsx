@@ -3,7 +3,9 @@ import ZegoVideo from "../../../components/zegoMedia/video";
 import ZegoAudio from "../../../components/zegoMedia/audio";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import ZegoVideoPlayerCss from "./zegoVideoPlayer.module.scss";
+import { ZegoCloudRTCCore } from "../../../../modules";
 export class ZegoMixPlayer extends React.PureComponent<{
+  core: ZegoCloudRTCCore;
   userInfo: ZegoCloudUser;
   isPureAudio: boolean;
   isPureVideo: boolean;
@@ -60,6 +62,7 @@ export class ZegoMixPlayer extends React.PureComponent<{
     return (
       <div className={ZegoVideoPlayerCss.videoPlayerWrapper}>
         <ZegoVideo
+          core={this.props.core}
           muted={false}
           classList={ZegoVideoPlayerCss.videoCommon}
           userInfo={this.props.userInfo}

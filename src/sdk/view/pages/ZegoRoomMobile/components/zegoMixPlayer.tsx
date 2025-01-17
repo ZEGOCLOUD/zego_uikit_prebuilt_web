@@ -3,7 +3,9 @@ import ZegoVideo from "../../../components/zegoMedia/video";
 import ZegoAudio from "../../../components/zegoMedia/audio";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import zegoUserVideoCss from "./zegoUserVideo.module.scss";
+import { ZegoCloudRTCCore } from "../../../../modules";
 export class ZegoMixPlayer extends React.PureComponent<{
+  core: ZegoCloudRTCCore
   userInfo: ZegoCloudUser;
   showFullScreen?: boolean;
   isPureAudio?: boolean;
@@ -14,11 +16,11 @@ export class ZegoMixPlayer extends React.PureComponent<{
     // audioUser: ZegoCloudUser;
     isFullScreen: boolean;
   } = {
-    // videoUser: this.props.userInfo,
-    // audioUser: this.props.userInfo,
-    isFullScreen: false,
-  };
-  videoEl: HTMLVideoElement | null = null;
+      // videoUser: this.props.userInfo,
+      // audioUser: this.props.userInfo,
+      isFullScreen: false,
+    };
+  videoEl: HTMLVideoElement | HTMLDivElement | null = null;
   //   componentDidMount(): void {}
   //   componentDidUpdate(
   //     prevProps: Readonly<{ userInfo: ZegoCloudUser }>,
@@ -78,15 +80,16 @@ export class ZegoMixPlayer extends React.PureComponent<{
     return (
       <div className={`${zegoUserVideoCss.container} zegoUserVideo_click`}>
         <ZegoVideo
+          core={this.props.core}
           muted={false}
           userInfo={this.props.userInfo}
           classList={`${zegoUserVideoCss.videoCommon}`}
-          videoRefs={(el: HTMLVideoElement) => {
+          videoRefs={(el: HTMLVideoElement | HTMLDivElement) => {
             this.videoEl = el;
           }}
           isMixing={true}
-          //   isPureAudio={this.props.isPureAudio}
-          //   isPureVideo={this.props.isPureVideo}
+        //   isPureAudio={this.props.isPureAudio}
+        //   isPureVideo={this.props.isPureVideo}
         ></ZegoVideo>
         {/* {this.props.userInfo.streamList?.[0]?.media && (
           <ZegoAudio muted={false} userInfo={this.state.audioUser}></ZegoAudio>

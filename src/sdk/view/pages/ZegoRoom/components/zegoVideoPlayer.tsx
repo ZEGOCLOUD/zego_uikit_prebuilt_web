@@ -1,4 +1,4 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import { getNameFirstLetter, userNameColor } from "../../../../util";
 import ShowManageContext, { ShowManageType } from "../../context/showManage";
@@ -7,6 +7,7 @@ import ZegoVideo from "../../../components/zegoMedia/video";
 import { UserListMenuItemType, UserTypeEnum } from "../../../../model";
 import { FormattedMessage } from "react-intl";
 import { ZegoCloudRTCCore } from "../../../../modules";
+import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 export class VideoPlayer extends React.PureComponent<{
   core: ZegoCloudRTCCore
   userInfo: ZegoCloudUser;
@@ -23,6 +24,7 @@ export class VideoPlayer extends React.PureComponent<{
 }> {
   static contextType?: React.Context<ShowManageType> = ShowManageContext;
   context!: React.ContextType<typeof ShowManageContext>;
+  localVideoRef: RefObject<HTMLDivElement> = React.createRef();
   state = {
     hovered: false,
   };
@@ -69,6 +71,7 @@ export class VideoPlayer extends React.PureComponent<{
       isShownPin,
       showRemoveCohostButton,
     } = this.context;
+
     const { formatMessage } = this.props.core.intl;
     return (
       <div
@@ -85,6 +88,7 @@ export class VideoPlayer extends React.PureComponent<{
         }}
       >
         <ZegoVideo
+          core={this.props.core}
           muted={this.props.muted}
           classList={`${ZegoVideoPlayerCss.videoCommon}`}
           userInfo={this.props.userInfo}
