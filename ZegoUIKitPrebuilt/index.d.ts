@@ -323,6 +323,8 @@ declare interface ZegoCallInvitationConfig {
 	// Whether the whole call should end when the call originator leaves the call (causing other participants to leave together), The default value is false.
 	// If it is set to false, the call can continue even if the initiator leaves.
 	endCallWhenInitiatorLeave?: boolean;
+	// onTokenWillExpire 还未进房前需要监听
+	onTokenWillExpire?: () => void
 }
 
 declare interface ZegoSignalingPluginNotificationConfig {
