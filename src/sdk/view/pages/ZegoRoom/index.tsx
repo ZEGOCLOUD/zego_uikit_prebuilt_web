@@ -502,15 +502,30 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			if (!this.props.core._config.showPreJoinView) {
 				await this.props.core.deviceCheck();
 				console.warn('[ZegoRoom]deviceCheck', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
-				if (this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
-					ZegoModelShow(
-						{
-							header: formatMessage({ id: "global.equipment" }),
-							contentText: formatMessage({ id: "global.equipmentDesc" }),
-							okText: "Okay",
-						},
-						document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
-					);
+				console.warn('[]deviceCheck', this.props.core._zimManager?.callInfo);
+				// 语音通话时未授权摄像头不弹弹框提示
+				if (this.props.core._zimManager?.callInfo.type === 0) {
+					if (this.props.core.status.audioRefuse) {
+						ZegoModelShow(
+							{
+								header: formatMessage({ id: "global.equipment" }),
+								contentText: formatMessage({ id: "global.equipmentDesc" }),
+								okText: "Okay",
+							},
+							document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+						);
+					}
+				} else {
+					if (this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
+						ZegoModelShow(
+							{
+								header: formatMessage({ id: "global.equipment" }),
+								contentText: formatMessage({ id: "global.equipmentDesc" }),
+								okText: "Okay",
+							},
+							document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+						);
+					}
 				}
 			}
 			this.createStream();
