@@ -646,19 +646,26 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				const solution = getVideoResolution(this.state.selectVideoResolution);
 				const localStream = await this.props.core.createZegoStream({
 					camera: {
-						video: !this.props.core.status.videoRefuse ? {
-							input: this.state.selectCamera,
-							quality: 4,
-							...solution,
-						} : false,
-						audio: !this.props.core.status.audioRefuse ? {
-							input: this.state.selectMic,
-							channelCount: this.props.core._config.enableStereo ? 2 : 1,
-						} : false,
+						video: !this.props.core.status.videoRefuse
+							? {
+									input: this.state.selectCamera,
+									quality: 4,
+									...solution,
+							  }
+							: false,
+						audio: !this.props.core.status.audioRefuse
+							? {
+									input: this.state.selectMic,
+									channelCount: this.props.core._config.enableStereo ? 2 : 1,
+							  }
+							: false,
 					},
-					videoBitrate: solution.bitrate,
-				});
-				console.warn('[ZegoRoom]createZegoStream localStream', localStream)
+					videoBitrate: {
+						bitrate: solution.bitrate,
+						startBitrate: "target",
+					},
+				})
+				console.warn("[ZegoRoom]createZegoStream localStream", localStream)
 				this.props.core.localStream = localStream;
 				await this.props.core.mutePublishStreamVideo(
 					localStream,
@@ -677,6 +684,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					hasAudio: !this.props.core.status.audioRefuse,
 				});
 				try {
+					this.props.core.enableDualStream(localStream)
+					this.props.core.setLowStreamParameter(localStream, {
+						width: 120,
+						height: 90,
+						frameRate: 15,
+						bitRate: 100,
+					})
 					const res = this.props.core.publishLocalStream(localStream, "main", extraInfo);
 					if (res !== false) {
 						this.localStreamID = res as string;

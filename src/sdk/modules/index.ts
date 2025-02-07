@@ -72,19 +72,24 @@ export class ZegoCloudRTCCore {
 	eventEmitter = new EventEmitter()
 	// 多语言
 	intl: any
-	AiDenoiseConfig: { mode: AiDenoiseMode } | null = null;
+	AiDenoiseConfig: { mode: AiDenoiseMode } | null = null
 	//   static _soundMeter: SoundMeter;
 	// 当前屏幕状态
-	isScreenPortrait: boolean = true;
-	static getInstance(kitToken: string, createConfig?: ZegoUIKitCreateConfig, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoCloudRTCCore {
-		const config = getConfig(kitToken);
+	isScreenPortrait: boolean = true
+	static getInstance(
+		kitToken: string,
+		createConfig?: ZegoUIKitCreateConfig,
+		cloudProxyConfig?: { proxyList: { hostName: string; port?: number }[] }
+	): ZegoCloudRTCCore {
+		const config = getConfig(kitToken)
 		if (!ZegoCloudRTCCore._instance && config) {
 			// 开启云代理
-			createConfig?.cloudProxyConfig && (ZegoExpressEngine.setCloudProxyConfig(createConfig.cloudProxyConfig.proxyList, config.token, true));
+			createConfig?.cloudProxyConfig &&
+				ZegoExpressEngine.setCloudProxyConfig(createConfig.cloudProxyConfig.proxyList, config.token, true)
 			// 开启ai降噪
-			console.warn('===createConfig', createConfig?.AiDenoiseConfig);
+			console.warn("===createConfig", createConfig?.AiDenoiseConfig)
 			ZegoExpressEngine.use(VoiceChanger)
-			createConfig?.AiDenoiseConfig && (ZegoExpressEngine.use(VoiceChanger));
+			createConfig?.AiDenoiseConfig && ZegoExpressEngine.use(VoiceChanger)
 			ZegoCloudRTCCore._instance = new ZegoCloudRTCCore()
 			ZegoCloudRTCCore._instance._expressConfig = config
 			//   ZegoCloudRTCCore._soundMeter = new SoundMeter();
@@ -94,7 +99,11 @@ export class ZegoCloudRTCCore {
 			)
 			createConfig?.AiDenoiseConfig && (ZegoCloudRTCCore._instance.AiDenoiseConfig = createConfig.AiDenoiseConfig)
 			ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(ZegoCloudRTCCore._zg)
-			TracerConnect.createTracer(this._instance._expressConfig.appID, this._instance._expressConfig.token, this._instance._expressConfig.userID);
+			TracerConnect.createTracer(
+				this._instance._expressConfig.appID,
+				this._instance._expressConfig.token,
+				this._instance._expressConfig.userID
+			)
 		}
 
 		return ZegoCloudRTCCore._instance
@@ -111,10 +120,10 @@ export class ZegoCloudRTCCore {
 		speakerDeviceID?: string
 		videoResolution?: string
 	} = {
-			loginRsp: false,
-			videoRefuse: undefined,
-			audioRefuse: undefined,
-		}
+		loginRsp: false,
+		videoRefuse: undefined,
+		audioRefuse: undefined,
+	}
 	remoteStreamMap: { [index: string]: ZegoCloudRemoteMedia } = {}
 	waitingHandlerStreams: {
 		add: ZegoStreamList[]
@@ -127,98 +136,98 @@ export class ZegoCloudRTCCore {
 			ZIM?: ZIM
 		}
 	} = {
-			// @ts-ignore
-			container: undefined, // 挂载容器
-			preJoinViewConfig: {
-				title: "Join Room", // 标题设置，默认join Room
-				//   invitationLink: window.location.href, // 邀请链接，空则不显示，默认空
-			},
-			showPreJoinView: true, // 是否显示预览检测页面，默认显示
+		// @ts-ignore
+		container: undefined, // 挂载容器
+		preJoinViewConfig: {
+			title: "Join Room", // 标题设置，默认join Room
+			//   invitationLink: window.location.href, // 邀请链接，空则不显示，默认空
+		},
+		showPreJoinView: true, // 是否显示预览检测页面，默认显示
 
-			turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
-			turnOnCameraWhenJoining: true, // 是否开启自己的摄像头 ,默认开启
-			showMyCameraToggleButton: true, // 是否可以控制自己的麦克风,默认开启
-			showMyMicrophoneToggleButton: true, // 是否可以控制体自己的摄像头,默认开启
-			showAudioVideoSettingsButton: true,
+		turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+		turnOnCameraWhenJoining: true, // 是否开启自己的摄像头 ,默认开启
+		showMyCameraToggleButton: true, // 是否可以控制自己的麦克风,默认开启
+		showMyMicrophoneToggleButton: true, // 是否可以控制体自己的摄像头,默认开启
+		showAudioVideoSettingsButton: true,
 
-			showTextChat: true, // 是否开启聊天，默认开启   preJoinViewConfig: boolean，// 通话前检测页面是否需要，默认需要
-			showUserList: true, // 是否显示成员列表，默认展示
-			lowerLeftNotification: {
-				showUserJoinAndLeave: true, //是否显示成员进出，默认显示
-				showTextChat: true, // 是否显示未读消息，默认显示
-			},
-			branding: {
-				logoURL: "",
-			},
+		showTextChat: true, // 是否开启聊天，默认开启   preJoinViewConfig: boolean，// 通话前检测页面是否需要，默认需要
+		showUserList: true, // 是否显示成员列表，默认展示
+		lowerLeftNotification: {
+			showUserJoinAndLeave: true, //是否显示成员进出，默认显示
+			showTextChat: true, // 是否显示未读消息，默认显示
+		},
+		branding: {
+			logoURL: "",
+		},
 
-			showLeavingView: true, // 离开房间后页面，默认有
+		showLeavingView: true, // 离开房间后页面，默认有
 
-			maxUsers: 0, // 房间人数2～20，默认2
-			layout: "Auto", // 默认Default
+		maxUsers: 0, // 房间人数2～20，默认2
+		layout: "Auto", // 默认Default
 
-			showNonVideoUser: true, // 是否显示无视频用户，默认显示
-			showOnlyAudioUser: false, // 是否显示纯音频用户，默认显示
+		showNonVideoUser: true, // 是否显示无视频用户，默认显示
+		showOnlyAudioUser: false, // 是否显示纯音频用户，默认显示
 
-			useFrontFacingCamera: true,
+		useFrontFacingCamera: true,
 
-			onJoinRoom: () => { },
-			onLeaveRoom: () => { },
-			onUserJoin: (user: ZegoUser[]) => { }, // 用户进入回调
-			onUserLeave: (user: ZegoUser[]) => { }, // 用户退入回调
-			onUserAvatarSetter: (user: ZegoUser[]) => { }, // 用户可以设置头像时机回调
-			sharedLinks: [], // 产品链接描述
-			showScreenSharingButton: true, // 是否显示屏幕共享按钮
-			scenario: {
-				mode: ScenarioModel.OneONoneCall, // 场景选择
-				config: {
-					role: LiveRole.Host,
-					liveStreamingMode: undefined,
-					enableVideoMixing: false,
-					videoMixingLayout: VideoMixinLayoutType.AutoLayout,
-					videoMixingOutputResolution: VideoMixinOutputResolution._540P,
-				}, // 对应场景专有配置
-			},
+		onJoinRoom: () => {},
+		onLeaveRoom: () => {},
+		onUserJoin: (user: ZegoUser[]) => {}, // 用户进入回调
+		onUserLeave: (user: ZegoUser[]) => {}, // 用户退入回调
+		onUserAvatarSetter: (user: ZegoUser[]) => {}, // 用户可以设置头像时机回调
+		sharedLinks: [], // 产品链接描述
+		showScreenSharingButton: true, // 是否显示屏幕共享按钮
+		scenario: {
+			mode: ScenarioModel.OneONoneCall, // 场景选择
+			config: {
+				role: LiveRole.Host,
+				liveStreamingMode: undefined,
+				enableVideoMixing: false,
+				videoMixingLayout: VideoMixinLayoutType.AutoLayout,
+				videoMixingOutputResolution: VideoMixinOutputResolution._540P,
+			}, // 对应场景专有配置
+		},
 
-			facingMode: "user",
-			joinRoomCallback: () => { }, // 点击加入房间触发
-			leaveRoomCallback: () => { }, // 退出房间回调
-			userUpdateCallback: () => { },
-			showLayoutButton: true, // 是否显示布局切换按钮
-			showPinButton: true, // 是否显pin按钮
-			whiteboardConfig: {
-				showAddImageButton: false, //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
-				showCreateAndCloseButton: true,
-			},
-			videoResolutionList: [], //视频分辨率可选列表
-			plugins: {},
-			autoLeaveRoomWhenOnlySelfInRoom: false, // 当房间内只剩一个人的时候，自动退出房间
-			showRoomTimer: false, // 是否显示房间计时器
-			videoCodec: "H264", //视频编解码器
-			showRoomDetailsButton: true,
-			showInviteToCohostButton: false, // 主播是否展示邀请观众连麦按钮
-			showRemoveCohostButton: false, // 主播是否展示移下麦按钮
-			showRequestToCohostButton: false, // 观众是否展示申请连麦按钮
-			rightPanelExpandedType: RightPanelExpandedType.None,
-			autoHideFooter: true,
-			enableStereo: false,
-			showLeaveRoomConfirmDialog: true,
-			screenSharingConfig: {
-				resolution: ScreenSharingResolution.Auto,
-			},
-			language: ZegoUIKitLanguage.ENGLISH,
-			showMoreButton: true, // 是否显示更多按钮
-			showUserName: true, // 是否显示用户名
-			hideUsersById: [],
-			backgroundUrl: '',
-			showWaitingCallAcceptAudioVideoView: true,
-			callingInvitationListConfig: {
-				waitingSelectUsers: [],
-				defaultChecked: true,
-			},
-			videoScreenConfig: {
-				objectFit: "contain",
-			}
-		}
+		facingMode: "user",
+		joinRoomCallback: () => {}, // 点击加入房间触发
+		leaveRoomCallback: () => {}, // 退出房间回调
+		userUpdateCallback: () => {},
+		showLayoutButton: true, // 是否显示布局切换按钮
+		showPinButton: true, // 是否显pin按钮
+		whiteboardConfig: {
+			showAddImageButton: false, //  默认false， 开通文件共享功能，并引入插件，后才会生效； 否则使用会错误提示：“ Failed to add image, this feature is not supported.”
+			showCreateAndCloseButton: true,
+		},
+		videoResolutionList: [], //视频分辨率可选列表
+		plugins: {},
+		autoLeaveRoomWhenOnlySelfInRoom: false, // 当房间内只剩一个人的时候，自动退出房间
+		showRoomTimer: false, // 是否显示房间计时器
+		videoCodec: "H264", //视频编解码器
+		showRoomDetailsButton: true,
+		showInviteToCohostButton: false, // 主播是否展示邀请观众连麦按钮
+		showRemoveCohostButton: false, // 主播是否展示移下麦按钮
+		showRequestToCohostButton: false, // 观众是否展示申请连麦按钮
+		rightPanelExpandedType: RightPanelExpandedType.None,
+		autoHideFooter: true,
+		enableStereo: false,
+		showLeaveRoomConfirmDialog: true,
+		screenSharingConfig: {
+			resolution: ScreenSharingResolution.Auto,
+		},
+		language: ZegoUIKitLanguage.ENGLISH,
+		showMoreButton: true, // 是否显示更多按钮
+		showUserName: true, // 是否显示用户名
+		hideUsersById: [],
+		backgroundUrl: "",
+		showWaitingCallAcceptAudioVideoView: true,
+		callingInvitationListConfig: {
+			waitingSelectUsers: [],
+			defaultChecked: true,
+		},
+		videoScreenConfig: {
+			objectFit: "contain",
+		},
+	}
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage"
 	extraInfoKey = "extra_info"
 	_roomExtraInfo: { [index: string]: any } = {
@@ -231,19 +240,19 @@ export class ZegoCloudRTCCore {
 		micStatus: "OPEN" | "MUTE"
 		cameraStatus: "OPEN" | "MUTE"
 	} = {
-			streamID: "",
-			micStatus: "OPEN",
-			cameraStatus: "OPEN",
-		}
+		streamID: "",
+		micStatus: "OPEN",
+		cameraStatus: "OPEN",
+	}
 	localScreensharingStreamInfo: {
 		streamID: string
 		micStatus: "OPEN"
 		cameraStatus: "OPEN"
 	} = {
-			streamID: "",
-			micStatus: "OPEN",
-			cameraStatus: "OPEN",
-		}
+		streamID: "",
+		micStatus: "OPEN",
+		cameraStatus: "OPEN",
+	}
 	hasPublishedStream = false // 是否有已经推上去的流
 	mixStreamDomain = "" // 混流域名
 	mixUser = {} as ZegoCloudUser // 混流用户数据
@@ -255,7 +264,7 @@ export class ZegoCloudRTCCore {
 		)
 	}
 	get zg() {
-		return ZegoCloudRTCCore._zg;
+		return ZegoCloudRTCCore._zg
 	}
 	isHost(userID?: string): boolean {
 		userID ??= this._expressConfig.userID
@@ -445,8 +454,12 @@ export class ZegoCloudRTCCore {
 			if (!config.maxUsers) {
 				config.maxUsers = 0
 			}
-			if (!config.showLayoutButton) { config.showLayoutButton = true }
-			if (!config.showPinButton) { config.showPinButton = true }
+			if (!config.showLayoutButton) {
+				config.showLayoutButton = true
+			}
+			if (!config.showPinButton) {
+				config.showPinButton = true
+			}
 		}
 		if (config.scenario && config.scenario?.config?.role === LiveRole.Audience) {
 			config.showPinButton = false
@@ -559,11 +572,11 @@ export class ZegoCloudRTCCore {
 		if (config.console) {
 			let logLevel: "debug" | "info" | "warn" | "error" | "report" | "disable" = "debug"
 			if (config.console === "Info") {
-				logLevel = "warn"
+				logLevel = "info"
 			} else if (config.console === "Warning") {
 				logLevel = "warn"
 			} else if (config.console === "Error") {
-				logLevel = "warn"
+				logLevel = "error"
 			} else if (config.console === "None") {
 				logLevel = "disable"
 			}
@@ -572,7 +585,7 @@ export class ZegoCloudRTCCore {
 			})
 		}
 		if (this._config.language) {
-			this.changeIntl();
+			this.changeIntl()
 		}
 		return true
 	}
@@ -586,7 +599,7 @@ export class ZegoCloudRTCCore {
 					messages: i18nMap[this._config.language],
 				},
 				createIntlCache()
-			);
+			)
 		}
 	}
 
@@ -703,10 +716,10 @@ export class ZegoCloudRTCCore {
 		return LiveStreamingMode.RealTimeLive
 	}
 	async checkWebRTC(): Promise<boolean> {
-		console.warn('[ZegoCloudRTCCore]checkWebRTC')
+		console.warn("[ZegoCloudRTCCore]checkWebRTC")
 		try {
 			if (!this.isCDNLive) {
-				const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC");
+				const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC")
 				if (this._config.videoCodec === "H264") {
 					const H264 = await ZegoCloudRTCCore._zg.checkSystemRequirements("H264")
 					return !!webRTC.result && !!H264.result
@@ -720,33 +733,34 @@ export class ZegoCloudRTCCore {
 			}
 			return true
 		} catch (error) {
-			console.warn('[ZegoCloudRTCCore]checkWebRTC error', error)
+			console.warn("[ZegoCloudRTCCore]checkWebRTC error", error)
 			return false
 		}
-
 	}
 
 	// 检查摄像头麦克风权限
 	async deviceCheck() {
 		// 检查摄像头
-		console.warn('[ZegoCloudRTCCore]deviceCheck');
+		console.warn("[ZegoCloudRTCCore]deviceCheck")
 		// if (this.props.core._config.turnOnCameraWhenJoining) {
 		try {
-			await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
-				const cameras = await this.getCameras();
-				console.warn('[ZegoRoom]deviceCheck camera', cameras);
-				if (cameras.length < 1) {
-					this.status.videoRefuse = true
-				} else {
-					this.status.videoRefuse = false
-				}
-			})
+			await navigator.mediaDevices
+				.getUserMedia({ video: true })
+				.then(async (stream) => {
+					const cameras = await this.getCameras()
+					console.warn("[ZegoRoom]deviceCheck camera", cameras)
+					if (cameras.length < 1) {
+						this.status.videoRefuse = true
+					} else {
+						this.status.videoRefuse = false
+					}
+				})
 				.catch((error) => {
-					console.warn('getUserMedia error', error);
-					this.status.videoRefuse = true;
-				});
+					console.warn("getUserMedia error", error)
+					this.status.videoRefuse = true
+				})
 		} catch (error) {
-			this.status.videoRefuse = true;
+			this.status.videoRefuse = true
 		}
 		// } else {
 		// 	this.props.core.status.videoRefuse = true;
@@ -754,20 +768,22 @@ export class ZegoCloudRTCCore {
 		// 检查麦克风
 		// if (this.props.core._config.turnOnMicrophoneWhenJoining) {
 		try {
-			await navigator.mediaDevices.getUserMedia({ audio: true }).then(async (stream) => {
-				const mics = await this.getMicrophones();
-				if (mics.length < 1) {
-					this.status.audioRefuse = true
-				} else {
-					this.status.audioRefuse = false
-				}
-			})
+			await navigator.mediaDevices
+				.getUserMedia({ audio: true })
+				.then(async (stream) => {
+					const mics = await this.getMicrophones()
+					if (mics.length < 1) {
+						this.status.audioRefuse = true
+					} else {
+						this.status.audioRefuse = false
+					}
+				})
 				.catch((error) => {
-					console.warn('getUserMedia error', error);
-					this.status.audioRefuse = true;
-				});
+					console.warn("getUserMedia error", error)
+					this.status.audioRefuse = true
+				})
 		} catch (error) {
-			this.status.audioRefuse = true;
+			this.status.audioRefuse = true
 		}
 		// } else {
 		// 	this.props.core.status.audioRefuse = true;
@@ -820,7 +836,7 @@ export class ZegoCloudRTCCore {
 	}
 
 	useFrontCamera(localStream: MediaStream | ZegoLocalStream, enable: boolean): Promise<ZegoServerResponse> {
-		return ZegoCloudRTCCore._zg.useFrontCamera(localStream, enable);
+		return ZegoCloudRTCCore._zg.useFrontCamera(localStream, enable)
 	}
 
 	setVolume(media: HTMLVideoElement, volume: number): void {
@@ -828,13 +844,13 @@ export class ZegoCloudRTCCore {
 	}
 
 	async createZegoStream(source?: ZegoStreamOptions): Promise<ZegoLocalStream> {
-		const localStream = await ZegoCloudRTCCore._zg.createZegoStream(source);
+		const localStream = await ZegoCloudRTCCore._zg.createZegoStream(source)
 		if (ZegoCloudRTCCore._instance.AiDenoiseConfig) {
-			console.warn('[createZegoStream]open aiDenoise', ZegoCloudRTCCore._instance.AiDenoiseConfig)
-			await ZegoCloudRTCCore._zg.setAiDenoiseMode(localStream, ZegoCloudRTCCore._instance.AiDenoiseConfig.mode);
-			await ZegoCloudRTCCore._zg.enableAiDenoise(localStream, true);
+			console.warn("[createZegoStream]open aiDenoise", ZegoCloudRTCCore._instance.AiDenoiseConfig)
+			await ZegoCloudRTCCore._zg.setAiDenoiseMode(localStream, ZegoCloudRTCCore._instance.AiDenoiseConfig.mode)
+			await ZegoCloudRTCCore._zg.enableAiDenoise(localStream, true)
 		}
-		return localStream;
+		return localStream
 	}
 
 	async createAndPublishWhiteboard(parentDom: HTMLDivElement, name: string): Promise<ZegoSuperBoardView> {
@@ -1104,7 +1120,7 @@ export class ZegoCloudRTCCore {
 				streamList: ZegoStreamList[],
 				extendedData?: string
 			) => {
-				console.warn("【ZEGOCLOUD】roomStreamUpdate", roomID, streamList, updateType, extendedData);
+				console.warn("【ZEGOCLOUD】roomStreamUpdate", roomID, streamList, updateType, extendedData)
 				if (updateType === "ADD") {
 					this.mixStreamDomain = changeCDNUrlOrigin(streamList[0]?.urlsFLV?.replace(/[^/]+$/, "") || "")
 					this.waitingHandlerStreams.add = [...this.waitingHandlerStreams.add, ...streamList]
@@ -1212,9 +1228,11 @@ export class ZegoCloudRTCCore {
 		)
 		ZegoCloudRTCCore._zg.on("IMRecvBroadcastMessage", (roomID: string, chatData: ZegoBroadcastMessageInfo[]) => {
 			const newChatData = transformMsg(ZegoUIKitMessageType.rtcMessage, chatData)
-			this.onRoomMessageUpdateCallBack && this.onRoomMessageUpdateCallBack(roomID, newChatData as ZegoBroadcastMessageInfo[])
+			this.onRoomMessageUpdateCallBack &&
+				this.onRoomMessageUpdateCallBack(roomID, newChatData as ZegoBroadcastMessageInfo[])
 			newChatData.forEach((data) => {
-				this._config.onInRoomMessageReceived && this._config.onInRoomMessageReceived(data as ZegoBroadcastMessageInfo)
+				this._config.onInRoomMessageReceived &&
+					this._config.onInRoomMessageReceived(data as ZegoBroadcastMessageInfo)
 			})
 		})
 		// 房间内自定义消息
@@ -1249,7 +1267,7 @@ export class ZegoCloudRTCCore {
 						this.onChangeYourDeviceStatusCallback("Microphone", "CLOSE", fromUser)
 					return
 				}
-			} catch (error) { }
+			} catch (error) {}
 
 			this._config.onInRoomCommandReceived && this._config.onInRoomCommandReceived(fromUser, command)
 		})
@@ -1300,7 +1318,11 @@ export class ZegoCloudRTCCore {
 		if (this.zegoSuperBoard) {
 			// 监听远端新增白板
 			this.zegoSuperBoard.on("remoteSuperBoardSubViewAdded", async (uniqueID: string) => {
-				console.warn('[ZegoCloudRTCCore]remoteSuperBoardSubViewAdded', uniqueID, this._roomExtraInfo.live_status);
+				console.warn(
+					"[ZegoCloudRTCCore]remoteSuperBoardSubViewAdded",
+					uniqueID,
+					this._roomExtraInfo.live_status
+				)
 				await this.zegoSuperBoard.querySuperBoardSubViewList()
 				this.zegoSuperBoard.setToolType(1)
 				this.zegoSuperBoard.setBrushColor("#333333")
@@ -1336,10 +1358,12 @@ export class ZegoCloudRTCCore {
 		// this._config.onInRoomTextMessageReceived &&
 		// 	this._zimManager?.onRoomTextMessage(this._config.onInRoomTextMessageReceived)
 		this._zimManager?.onRoomTextMessage((msgs) => {
-			const newChatData = transformMsg(ZegoUIKitMessageType.zimMessage, msgs);
-			this.onRoomMessageUpdateCallBack && this.onRoomMessageUpdateCallBack(this._expressConfig.roomID, newChatData as ZegoBroadcastMessageInfo[])
+			const newChatData = transformMsg(ZegoUIKitMessageType.zimMessage, msgs)
+			this.onRoomMessageUpdateCallBack &&
+				this.onRoomMessageUpdateCallBack(this._expressConfig.roomID, newChatData as ZegoBroadcastMessageInfo[])
 			newChatData.forEach((data) => {
-				this._config.onInRoomMessageReceived && this._config.onInRoomMessageReceived(data as ZegoBroadcastMessageInfo)
+				this._config.onInRoomMessageReceived &&
+					this._config.onInRoomMessageReceived(data as ZegoBroadcastMessageInfo)
 			})
 		})
 		this._config.onInRoomCustomCommandReceived &&
@@ -1376,10 +1400,10 @@ export class ZegoCloudRTCCore {
 				const span = TracerConnect.createSpan(SpanEvent.LoginRoom, {
 					room_id: ZegoCloudRTCCore._instance._expressConfig.roomID,
 					error: 0,
-					msg: '',
+					msg: "",
 					start_time: Date.now(),
 				})
-				span.end();
+				span.end()
 				if (
 					this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
 					this._config.scenario.config?.role === LiveRole.Host &&
@@ -1431,14 +1455,14 @@ export class ZegoCloudRTCCore {
 				// @ts-ignore 日志上报
 				ZegoCloudRTCCore._zg.logger.info("zu.jr " + JSON.stringify(this.originConfig))
 			} catch (error) {
-				console.error('[ZegoCloudRTCCore]login error', error)
+				console.error("[ZegoCloudRTCCore]login error", error)
 			}
 		})
-		this._zimManager?.enterRoom();
+		this._zimManager?.enterRoom()
 		try {
 			ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300)
 		} catch (error) {
-			console.error('[ZegoCloudRTCCore]setSoundLevelDelegate error', error)
+			console.error("[ZegoCloudRTCCore]setSoundLevelDelegate error", error)
 		}
 		this.streamUpdateTimer(this.waitingHandlerStreams)
 		return resp
@@ -1466,11 +1490,11 @@ export class ZegoCloudRTCCore {
 					try {
 						// 防止流附加消息为空解析报错
 						extraInfo = JSON.parse(streamInfo.extraInfo)
-					} catch (err) { }
+					} catch (err) {}
 					try {
-						console.log('===isCDNLive', this.isCDNLive);
+						console.log("===isCDNLive", this.isCDNLive)
 						if (this.isCDNLive) {
-							console.log('===streaminfo', streamInfo);
+							console.log("===streaminfo", streamInfo)
 							if (!streamInfo.urlsFLV) {
 								this.coreErrorCallback(CoreError.notSupportCDNLive, "urlsFLV is empty")
 							}
@@ -1497,19 +1521,19 @@ export class ZegoCloudRTCCore {
 										? "OPEN"
 										: "MUTE"
 									: extraInfo?.isMicrophoneOn
-										? "OPEN"
-										: "MUTE",
+									? "OPEN"
+									: "MUTE",
 								cameraStatus: stream
 									? stream.getVideoTracks().length > 0
 										? "OPEN"
 										: "MUTE"
 									: extraInfo?.isCameraOn
-										? "OPEN"
-										: "MUTE",
+									? "OPEN"
+									: "MUTE",
 								state: "PLAYING",
 								streamID: streamInfo.streamID,
 							}
-							console.log('===拉流', stream?.getVideoTracks().length)
+							console.log("===拉流", stream?.getVideoTracks().length)
 						}
 
 						_streamList.push(this.remoteStreamMap[streamInfo.streamID])
@@ -1602,20 +1626,27 @@ export class ZegoCloudRTCCore {
 		if (extraInfo) {
 			publishOption = {
 				extraInfo,
-				trafficControlFocusOnMode: 1,
+				trafficControlFocusOnMode: 0,
+				trafficControlMinVideoMode: 0,
 			}
 		}
+		console.warn("publishLocalStream", publishOption)
 		const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media, {
 			...publishOption,
 			...{ videoCodec: this._config.videoCodec },
 		})
 		if (res) {
-			console.warn(`[ZegoCloudRTCCore]startPublishingStream success, time: ${new Date().getTime()}, streamID: ${streamID}`)
+			console.warn(
+				`[ZegoCloudRTCCore]startPublishingStream success, time: ${new Date().getTime()}, streamID: ${streamID}`
+			)
 		}
 		return res && streamID
 	}
 
-	async replaceTrack(media: MediaStream | ZegoLocalStream, mediaStreamTrack: MediaStreamTrack): Promise<ZegoServerResponse> {
+	async replaceTrack(
+		media: MediaStream | ZegoLocalStream,
+		mediaStreamTrack: MediaStreamTrack
+	): Promise<ZegoServerResponse> {
 		return ZegoCloudRTCCore._zg.replaceTrack(media as any, mediaStreamTrack)
 	}
 
@@ -1795,7 +1826,7 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.off("IMRecvCustomCommand")
 
 		ZegoCloudRTCCore._zg.setSoundLevelDelegate(false)
-		this.onNetworkStatusCallBack = () => { }
+		this.onNetworkStatusCallBack = () => {}
 		this.onRemoteMediaUpdateCallBack = async (
 			updateType: "DELETE" | "ADD" | "UPDATE",
 			streamList: ZegoCloudRemoteMedia[]
@@ -1807,10 +1838,10 @@ export class ZegoCloudRTCCore {
 			this.subscribeScreenStreamCallBack &&
 				this.subscribeScreenStreamCallBack([...this.zum.remoteScreenStreamList])
 		}
-		this.onRemoteUserUpdateCallBack = () => { }
-		this.onRoomMessageUpdateCallBack = () => { }
-		this.onRoomLiveStateUpdateCallBack = () => { }
-		this.subscribeUserListCallBack = () => { }
+		this.onRemoteUserUpdateCallBack = () => {}
+		this.onRoomMessageUpdateCallBack = () => {}
+		this.onRoomLiveStateUpdateCallBack = () => {}
+		this.subscribeUserListCallBack = () => {}
 		this.zum.reset()
 		this.localStreamInfo = {
 			streamID: "",
@@ -1852,19 +1883,19 @@ export class ZegoCloudRTCCore {
 		this.status.loginRsp = false
 		setTimeout(() => {
 			try {
-				ZegoCloudRTCCore._zg.logoutRoom();
+				ZegoCloudRTCCore._zg.logoutRoom()
 				const span = TracerConnect.createSpan(SpanEvent.LogoutRoom, {
 					room_id: this._expressConfig.roomID,
-					error: 0
+					error: 0,
 				})
-				span.end();
+				span.end()
 			} catch (error) {
 				const span = TracerConnect.createSpan(SpanEvent.LogoutRoom, {
 					room_id: this._expressConfig.roomID,
 					error: -1,
 					message: error,
 				})
-				span.end();
+				span.end()
 			}
 		}, 300)
 	}
@@ -2172,15 +2203,15 @@ export class ZegoCloudRTCCore {
 										? 16 + (videoWidth + 10) * i
 										: Math.floor((outWidth - videoWidth) / 2)
 									: i % 2 === 0
-										? 16
-										: 16 + videoWidth + 10,
+									? 16
+									: 16 + videoWidth + 10,
 							bottom: i <= 1 ? 16 + videoHeight : outHeight - 16,
 							right:
 								len === 3 && i === 2
 									? outWidth - Math.floor((outWidth - videoWidth) / 2)
 									: i % 2 === 0
-										? 16 + videoWidth
-										: outWidth - 16,
+									? 16 + videoWidth
+									: outWidth - 16,
 						},
 						label: {
 							text: u.userName!,
@@ -2395,94 +2426,101 @@ export class ZegoCloudRTCCore {
 	// 更新通话中邀请用户配置
 	updateCallingInvitationListConfig(config: CallingInvitationListConfig) {
 		this._config.callingInvitationListConfig = {
-			...this._config.callingInvitationListConfig || {},
+			...(this._config.callingInvitationListConfig || {}),
 			...config,
 		}
 	}
 
 	// 创建媒体流播放组件
 	createRemoteStreamView(remoteStream: MediaStream): ZegoStreamView {
-		return ZegoCloudRTCCore._zg.createRemoteStreamView(remoteStream);
+		return ZegoCloudRTCCore._zg.createRemoteStreamView(remoteStream)
 	}
 
 	setScreenLayout(type: boolean) {
-		this.isScreenPortrait = type;
+		this.isScreenPortrait = type
 	}
 	// h5下切换横屏布局
 	rotateToLandscape() {
-		const roomDom = document.querySelector('.ZegoRoomMobile_ZegoRoom') as HTMLDivElement;
+		const roomDom = document.querySelector(".ZegoRoomMobile_ZegoRoom") as HTMLDivElement
 		if (!roomDom) {
-			console.error("【ZEGOCLOUD】 please join Room !!");
-			return;
+			console.error("【ZEGOCLOUD】 please join Room !!")
+			return
 		}
-		const width = roomDom?.clientWidth;
-		const height = roomDom?.clientHeight;
+		const width = roomDom?.clientWidth
+		const height = roomDom?.clientHeight
 		if (this.isScreenPortrait) {
 			// 手机竖屏时点击旋转成横屏
-			const style = document.createElement('style');
+			const style = document.createElement("style")
 			style.innerHTML = `.transform {
          		width: ${height}px;
           		height: ${width}px;
           		transform: rotate(90deg) translate(${(height - width) / 2}px, ${(height - width) / 2}px);
         	}`
-			document.head.appendChild(style);
-			roomDom?.classList.add('transform');
+			document.head.appendChild(style)
+			roomDom?.classList.add("transform")
 		} else {
 			// 手机横屏时点击旋转成横屏
-			roomDom.classList.remove('transform');
+			roomDom.classList.remove("transform")
 		}
-		this._config.onScreenRotation && this._config.onScreenRotation('landscape');
+		this._config.onScreenRotation && this._config.onScreenRotation("landscape")
 	}
 	// h5下切换竖屏布局
 	rotateToPortrait() {
-		const roomDom = document.querySelector('.ZegoRoomMobile_ZegoRoom') as HTMLDivElement;
+		const roomDom = document.querySelector(".ZegoRoomMobile_ZegoRoom") as HTMLDivElement
 		if (!roomDom) {
-			console.error("【ZEGOCLOUD】 please join Room !!");
-			return;
+			console.error("【ZEGOCLOUD】 please join Room !!")
+			return
 		}
-		const width = roomDom?.clientWidth;
-		const height = roomDom?.clientHeight;
+		const width = roomDom?.clientWidth
+		const height = roomDom?.clientHeight
 
 		if (this.isScreenPortrait) {
 			// 手机竖屏时候点击旋转成竖屏
-			roomDom.classList.remove('transform');
+			roomDom.classList.remove("transform")
 		} else {
 			// 手机横屏时候点击旋转成竖屏
-			const style = document.createElement('style');
+			const style = document.createElement("style")
 			style.innerHTML = `.transform {
             	width: ${height}px;
             	height: ${width}px;
             	transform: rotate(-90deg) translate(${(width - height) / 2}px, ${(width - height) / 2}px);
           	}`
-			document.head.appendChild(style);
-			roomDom.classList.add('transform');
+			document.head.appendChild(style)
+			roomDom.classList.add("transform")
 		}
-		this._config.onScreenRotation && this._config.onScreenRotation('portrait');
+		this._config.onScreenRotation && this._config.onScreenRotation("portrait")
 	}
 
 	// 刷新token
 	renewToken(kitToken: string): boolean {
-		console.warn('[ZegoCloudRTCCore]renewToken');
-		const config = getConfig(kitToken);
-		let result: boolean = false;
-		this._zimManager?._zim?.renewToken(config!.token)
+		console.warn("[ZegoCloudRTCCore]renewToken")
+		const config = getConfig(kitToken)
+		let result: boolean = false
+		this._zimManager?._zim
+			?.renewToken(config!.token)
 			.then((res) => {
 				if (this._expressConfig.token) {
-					this._expressConfig.token = config?.token!;
+					this._expressConfig.token = config?.token!
 				}
-				console.warn('[ZegoCloudRTCCore]renewToken zim success11111', res)
+				console.warn("[ZegoCloudRTCCore]renewToken zim success11111", res)
 				if (this.status.loginRsp) {
 					const rtcRes = ZegoCloudRTCCore._zg.renewToken(config!.token)
-					console.warn('[ZegoCloudRTCCore]renewToken rtc success', rtcRes)
-					result = rtcRes;
+					console.warn("[ZegoCloudRTCCore]renewToken rtc success", rtcRes)
+					result = rtcRes
 				} else {
-					result = true;
+					result = true
 				}
 			})
 			.catch((error) => {
-				console.warn('[ZegoCloudRTCCore]renewToken zim error', error)
+				console.warn("[ZegoCloudRTCCore]renewToken zim error", error)
 				result = false
-			});
-		return result;
+			})
+		return result
+	}
+	enableDualStream(localStream: any) {
+		ZegoCloudRTCCore._zg.enableDualStream(localStream)
+	}
+	setLowStreamParameter(localStream: any, option: any) {
+		ZegoCloudRTCCore._zg.setLowStreamParameter(localStream, option)
 	}
 }

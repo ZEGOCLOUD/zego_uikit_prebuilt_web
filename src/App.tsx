@@ -220,250 +220,231 @@ export default class App extends React.PureComponent {
       this.myMeeting = async (element: HTMLDivElement) => {
         let token;
         if (urlToken) {
-          token = urlToken + '#' + window.btoa(JSON.stringify({
-            userID,
-            roomID,
-            userName: userName || getRandomName(),
-            appID: urlAppID
-          }));
-        } else {
-          token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, userName || getRandomName())).token;
-          // token = ZegoUIKitPrebuilt.generateKitTokenForTest(0, "", roomID, userID, userName || getRandomName())
-        }
-        const zp = ZegoUIKitPrebuilt.create(token);
-        //@ts-ignore // just for debugger
-        window.zp = zp
-        zp.express!.on("audioDeviceStateChanged", async (updateType, deviceType, deviceInfo) => {
-          if (isPc()) return
-          if (updateType === "ADD") {
-            if (deviceType === "Input") {
-              zp.express?.useAudioDevice(zp.localStream!, deviceInfo.deviceID)
-            }
-          } else if (updateType === "DELETE") {
-            const microphones = await zp.express?.getMicrophones()
-            if (microphones?.length) {
-              zp.express?.useAudioDevice(zp.localStream!, microphones[0].deviceID)
-            }
-          }
-        })
-        if (process.env.REACT_APP_PATH !== "live_stream") {
-          zp.addPlugins({ ZegoSuperBoardManager })
-        } else {
-          zp.addPlugins({ ZIM })
-          // @ts-ignore
-          ZIM.getInstance().setLogConfig({
-            logLevel: "error",
-          })
-        }
-        const param: ZegoCloudRoomConfig = {
-          container: element, // 挂载容器
-          console: ZegoUIKitPrebuilt.ConsoleNone,
-          sharedLinks,
-          scenario: {
-            mode,
-            config: {
-              role,
-              liveStreamingMode,
-              enableVideoMixing: enableMixing,
-              videoMixingOutputResolution: ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
-            },
-          },
-          turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
-          showRotatingScreenButton: true,
-          onScreenRotation: (current) => {
-            console.warn('===onScreenRotation', current);
-          },
-          onUserStateUpdated: (state) => {
-            console.warn('===onUserStateUpdated', state);
-          },
-          memberViewConfig: {
-            // operationListCustomButton: () => {
-            //   const button = document.createElement("button");
-            //   const style = document.createElement("style");
-
-            //   style.innerHTML = `.button {
-            //     width: 100%;
-            //      height: 100px;
-            //  }`
-            //   document.head.appendChild(style);
-            //   button?.setAttribute('className', 'button');
-            //   const func = {
-            //     attr: ["user"],
-            //     functionBody: "console.warn('custom ui click')"
-            //   }
-            //   button.setAttribute('onClick', JSON.stringify(func));
-            //   button.addEventListener('click', () => {
-            //     console.warn('custom ui click')
-            //   })
-            //   return button;
-            // }
-          },
-          // onSendMessageResult: (response) => {
-          //   console.warn('===onSendMessageResult', response);
-          // },
-          // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
-          // showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
-          //   showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
-          //   showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
-          //   showNonVideoUser: true,
-          // enableUserSearch: true,
-          // @ts-ignore
-          // showPreJoinView: true,
-          // showScreenSharingButton: false,
-          // showTextChat: false,
-          // showUserList: true,
-          // showRoomTimer: true,
-          // showRoomDetailsButton: true,
-          // autoHideFooter: false,
-          // preJoinViewConfig: {
-          //   title: "Join Room",
-          // },
-          //   showRoomDetailsButton: false,
-          // showLeavingView: true,
-          // maxUsers,
-          //   layout: "Auto",
-          onJoinRoom: () => {
-            // sessionStorage.setItem('roomID', zp.getRoomID());
-            console.warn("join room callback");
-            // window?.parent?.postMessage("joinRoom", "*")
-            this.postMessage({ type: 'joinRoom', data: null })
-            // demo 和 goenjoy 都设置20分钟体验限制 
-            // goenjoy 直播体验设置为20分钟
-            // const inGoEnjoyExperience = process.env.REACT_APP_PATH === "live_stream" && this.inIframe()
-            // const experienceTime = inGoEnjoyExperience ? 1200 : 300
-            // const experienceTimeTip = inGoEnjoyExperience ? 5 : 20
-            this.state.roomTimer = setInterval(() => {
-              this.state.roomTime = ++this.state.roomTime;
-              if (this.state.roomTime === 1200) {
-                this.showToast(this.state.lang === "zh" ? `仅功能体验，不作商业用途。每次不超过 20 分钟。` : `Only for functional experience, not for commercial use. Each session should not exceed 20 minutes.`);
-                zp.hangUp();
-              }
-            }, 1000);
-          }, // 退出房间回调
-          onLeaveRoom: () => {
-            console.warn("leave room callback");
-            // window?.parent?.postMessage("joinRoom", "*")
-            this.postMessage({ type: 'leaveRoom', data: null })
-            // 刷新20分钟限制
-            if (this.state.roomTimer) {
-              clearInterval(this.state.roomTimer);
-              this.state.roomTimer = null;
-              this.state.roomTime = 0;
-            }
-          },
-          onInRoomMessageReceived: (messageInfo) => {
-            console.warn("onInRoomMessageReceived", messageInfo)
-          },
-          onInRoomCommandReceived: (fromUser, command) => {
-            console.warn("onInRoomCommandReceived", fromUser, command)
-          },
-          onInRoomTextMessageReceived(messages) {
-            console.warn("onInRoomTextMessageReceived", messages)
-          },
-          onInRoomCustomCommandReceived(command) {
-            console.warn("onInRoomCustomCommandReceived", command)
-          },
-          //   showScreenSharingButton: true,
-          // screenSharingConfig: {
-          //   onError: (code) => {
-          //     let string = '';
-          //     switch (code) {
-          //       case 1103010: {
-          //         string = '无屏幕共享权限'
-          //         break;
-          //       }
-          //     }
-          //     return string;
-          //   }
-          // },
-          // lowerLeftNotification: {
-          //   showTextChat: true,
-          // },
-          // showOnlyAudioUser: true,
-          // branding: {
-          //   logoURL: require("./assets/zegocloud_logo.png"),
-          // },
-          // onUserAvatarSetter: (user) => {
-          //   user.forEach((u) => {
-          //     u.setUserAvatar &&
-          //       u.setUserAvatar(
-          //         // "https://images.pexels.com/photos/4172877/pexels-photo-4172877.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
-          //         `https://api.multiavatar.com/${u.userID}.svg?apikey=XqHm465NYsdLfb` // random avatar
-          //       )
-          //   })
-          // },
-          // videoResolutionList: [
-          //   ZegoUIKitPrebuilt.VideoResolution_360P,
-          //   ZegoUIKitPrebuilt.VideoResolution_180P,
-          //   ZegoUIKitPrebuilt.VideoResolution_480P,
-          //   ZegoUIKitPrebuilt.VideoResolution_720P,
-          // ],
-          // videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_360P,
-          // onLiveStart: (user) => {
-          //   console.warn("onLiveStart", user)
-          // },
-          // onLiveEnd: (user) => {
-          //   console.warn("onLiveEnd", user)
-          //   this.postMessage({ type: 'onLiveEnd', data: user })
-          // },
-          // onYouRemovedFromRoom: () => {
-          //   console.warn("【demo】onYouRemovedFromRoom")
-          //   this.showToast(`You've been removed by the host.`)
-          // },
-          // showTurnOffRemoteCameraButton: true,
-          // showTurnOffRemoteMicrophoneButton: true,
-          showRemoveUserButton: true,
-          // showPinButton: true,
-          showInviteToCohostButton: true,
-          showRemoveCohostButton: true,
-          showRequestToCohostButton: true,
-          // rightPanelExpandedType: RightPanelExpandedType.None,
-          // addInRoomMessageAttributes: () => {
-          //   return { lv: "9" }
-          // },
-          // customMessageUI: (msg) => {
-          // 	const wrapper = document.createElement("div")
-          // 	wrapper.classList.add("custom-message-wrapper")
-          //     if (userID === msg.fromUser.userID) {
-          //         wrapper.classList.add("send-message")
-          //     }
-          //     wrapper.innerHTML = `<div class="msgNameWrapper">
-          // 					<span class="name">${msg.fromUser.userName}</span>
-          // 					<span class="sendTime">
-          // 						${new Date(msg.sendTime).getHours() >= 12 ? "PM" : "AM"}  ${msg.sendTime}
-          // 					</span>
-          // 				</div>
-          // 				<p
-          // 					class="${msg.status === "SENDING" && 'loading'} ${
-          // 						msg.status === "FAILED" && 'error'
-          // 					}">
-          // 					${msg.message}
-          // 				</p>`
-          // 	return wrapper
-          // },
-          // language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
-          // leaveRoomDialogConfig: {
-          //   descriptionText: '',
-          //   confirmCallback: () => {
-          //     console.log('===demo confirmCallback');
-          //   }
-          // },
-          whiteboardConfig: {
-            // showAddImageButton: true,
-            // showCreateAndCloseButton: true,
-          },
-          // requireRoomForegroundView: () => {
-          //   const myView = document.createElement('div');
-          //   myView.classList.add("my-view");
-          //   const textData = [];
-          //   textData.forEach((msg) => {
-          //     const msgDom = document.createElement('div');
-          //     msgDom.innerHTML = msg;
-          //     myView.append(msgDom);
-          //   })
-          //   return myView;
-          // }
-        }
+			token =
+				urlToken +
+				"#" +
+				window.btoa(
+					JSON.stringify({
+						userID,
+						roomID,
+						userName: userName || getRandomName(),
+						appID: urlAppID,
+					})
+				)
+		} else {
+			// token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, userName || getRandomName())).token;
+			token = ZegoUIKitPrebuilt.generateKitTokenForTest(
+				1517205460,
+				"c79dfaa7971ef6f644f24731d0a7d093",
+				roomID,
+				userID,
+				userName || getRandomName(),
+				3600 * 24 * 7
+			)
+		}
+		const zp = ZegoUIKitPrebuilt.create(token)
+		//@ts-ignore // just for debugger
+		window.zp = zp
+		zp.express!.on("audioDeviceStateChanged", async (updateType, deviceType, deviceInfo) => {
+			if (isPc()) return
+			if (updateType === "ADD") {
+				if (deviceType === "Input") {
+					zp.express?.useAudioDevice(zp.localStream!, deviceInfo.deviceID)
+				}
+			} else if (updateType === "DELETE") {
+				const microphones = await zp.express?.getMicrophones()
+				if (microphones?.length) {
+					zp.express?.useAudioDevice(zp.localStream!, microphones[0].deviceID)
+				}
+			}
+		})
+		if (process.env.REACT_APP_PATH !== "live_stream") {
+			zp.addPlugins({ ZegoSuperBoardManager })
+		} else {
+			zp.addPlugins({ ZIM })
+			// @ts-ignore
+			ZIM.getInstance().setLogConfig({
+				logLevel: "error",
+			})
+		}
+		const param: ZegoCloudRoomConfig = {
+			console: ZegoUIKitPrebuilt.ConsoleInfo,
+			//   turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
+			//   turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
+			//   showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
+			//   showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
+			//   showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
+			//   showNonVideoUser: true,
+			enableUserSearch: true,
+			// @ts-ignore
+			container: element, // 挂载容器
+			//   showPreJoinView: false,
+			preJoinViewConfig: {
+				title: "Join Room",
+			},
+			//   showRoomDetailsButton: false,
+			showTextChat: true,
+			showUserList: true,
+			showLeavingView: true,
+			maxUsers,
+			//   layout: "Auto",
+			onJoinRoom: () => {
+				// sessionStorage.setItem('roomID', zp.getRoomID());
+				console.warn("join room callback")
+				// window?.parent?.postMessage("joinRoom", "*")
+				this.postMessage({ type: "joinRoom", data: null })
+				// demo 和 goenjoy 都设置20分钟体验限制
+				// goenjoy 直播体验设置为20分钟
+				// const inGoEnjoyExperience = process.env.REACT_APP_PATH === "live_stream" && this.inIframe()
+				// const experienceTime = inGoEnjoyExperience ? 1200 : 300
+				// const experienceTimeTip = inGoEnjoyExperience ? 5 : 20
+				this.state.roomTimer = setInterval(() => {
+					this.state.roomTime = ++this.state.roomTime
+					if (this.state.roomTime === 1200) {
+						this.showToast(
+							this.state.lang === "en"
+								? `Only for functional experience, not for commercial use. Each session should not exceed 20 minutes.`
+								: `仅功能体验，不作商业用途。每次不超过 20 分钟。`
+						)
+						zp.hangUp()
+					}
+				}, 1000)
+			}, // 退出房间回调
+			onLeaveRoom: () => {
+				console.warn("leave room callback")
+				// window?.parent?.postMessage("joinRoom", "*")
+				this.postMessage({ type: "leaveRoom", data: null })
+				// 刷新20分钟限制
+				if (this.state.roomTimer) {
+					clearInterval(this.state.roomTimer)
+					this.state.roomTimer = null
+					this.state.roomTime = 0
+				}
+			},
+			onInRoomMessageReceived: (messageInfo) => {
+				console.warn("onInRoomMessageReceived", messageInfo)
+			},
+			onInRoomCommandReceived: (fromUser, command) => {
+				console.warn("onInRoomCommandReceived", fromUser, command)
+			},
+			onInRoomTextMessageReceived(messages) {
+				console.warn("onInRoomTextMessageReceived", messages)
+			},
+			onInRoomCustomCommandReceived(command) {
+				console.warn("onInRoomCustomCommandReceived", command)
+			},
+			//   showScreenSharingButton: true,
+			// screenSharingConfig: {
+			//   onError: (code) => {
+			//     let string = '';
+			//     switch (code) {
+			//       case 1103010: {
+			//         string = '无屏幕共享权限'
+			//         break;
+			//       }
+			//     }
+			//     return string;
+			//   }
+			// },
+			lowerLeftNotification: {
+				showTextChat: true,
+			},
+			showOnlyAudioUser: true,
+			branding: {
+				logoURL: require("./assets/zegocloud_logo.png"),
+			},
+			sharedLinks,
+			scenario: {
+				mode,
+				config: {
+					role,
+					liveStreamingMode,
+					enableVideoMixing: enableMixing,
+					videoMixingOutputResolution: ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
+				},
+			},
+			onUserAvatarSetter: (user) => {
+				user.forEach((u) => {
+					u.setUserAvatar &&
+						u.setUserAvatar(
+							// "https://images.pexels.com/photos/4172877/pexels-photo-4172877.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
+							`https://api.multiavatar.com/${u.userID}.svg?apikey=XqHm465NYsdLfb` // random avatar
+						)
+				})
+			},
+			videoResolutionList: [
+				ZegoUIKitPrebuilt.VideoResolution_360P,
+				ZegoUIKitPrebuilt.VideoResolution_180P,
+				ZegoUIKitPrebuilt.VideoResolution_480P,
+				ZegoUIKitPrebuilt.VideoResolution_720P,
+			],
+			videoResolutionDefault: ZegoUIKitPrebuilt.VideoResolution_720P,
+			onLiveStart: (user) => {
+				console.warn("onLiveStart", user)
+			},
+			onLiveEnd: (user) => {
+				console.warn("onLiveEnd", user)
+				this.postMessage({ type: "onLiveEnd", data: user })
+			},
+			onYouRemovedFromRoom: () => {
+				console.warn("【demo】onYouRemovedFromRoom")
+				this.showToast(`You've been removed by the host.`)
+			},
+			showRoomTimer: true,
+			showTurnOffRemoteCameraButton: true,
+			showTurnOffRemoteMicrophoneButton: true,
+			showRemoveUserButton: true,
+			showPinButton: true,
+			showInviteToCohostButton: true,
+			showRemoveCohostButton: true,
+			showRequestToCohostButton: true,
+			rightPanelExpandedType: RightPanelExpandedType.None,
+			// addInRoomMessageAttributes: () => {
+			//   return { lv: "9" }
+			// },
+			// customMessageUI: (msg) => {
+			// 	const wrapper = document.createElement("div")
+			// 	wrapper.classList.add("custom-message-wrapper")
+			//     if (userID === msg.fromUser.userID) {
+			//         wrapper.classList.add("send-message")
+			//     }
+			//     wrapper.innerHTML = `<div class="msgNameWrapper">
+			// 					<span class="name">${msg.fromUser.userName}</span>
+			// 					<span class="sendTime">
+			// 						${new Date(msg.sendTime).getHours() >= 12 ? "PM" : "AM"}  ${msg.sendTime}
+			// 					</span>
+			// 				</div>
+			// 				<p
+			// 					class="${msg.status === "SENDING" && 'loading'} ${
+			// 						msg.status === "FAILED" && 'error'
+			// 					}">
+			// 					${msg.message}
+			// 				</p>`
+			// 	return wrapper
+			// },
+			language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
+			// leaveRoomDialogConfig: {
+			//   descriptionText: '',
+			//   confirmCallback: () => {
+			//     console.log('===demo confirmCallback');
+			//   }
+			// },
+			whiteboardConfig: {
+				// showAddImageButton: true,
+				// showCreateAndCloseButton: true,
+			},
+			// requireRoomForegroundView: () => {
+			//   const myView = document.createElement('div');
+			//   myView.classList.add("my-view");
+			//   const textData = [];
+			//   textData.forEach((msg) => {
+			//     const msgDom = document.createElement('div');
+			//     msgDom.innerHTML = msg;
+			//     myView.append(msgDom);
+			//   })
+			//   return myView;
+			// }
+		}
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"
         }
