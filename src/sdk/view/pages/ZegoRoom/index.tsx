@@ -651,6 +651,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 									input: this.state.selectCamera,
 									quality: 4,
 									...solution,
+									optimizationMode: "detail",
 							  }
 							: false,
 						audio: !this.props.core.status.audioRefuse
@@ -901,12 +902,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				};
 			}
 			const screenSharingStream = await this.props.core.createZegoStream({
-				// @ts-ignore
 				screen: {
-					...screenConfig,
+					video: { ...screenConfig, optimizationMode: "detail" },
 					audio: !isFireFox(),
 				},
-			});
+			})
 
 			const streamID = this.props.core.publishLocalStream(
 				screenSharingStream,
