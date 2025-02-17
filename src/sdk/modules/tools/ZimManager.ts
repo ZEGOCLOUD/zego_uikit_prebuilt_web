@@ -736,7 +736,7 @@ export class ZimManager {
 		if (this.callInfo.callID && !this.hasJoinedRoom) return Promise.reject("You already have a call invitation!");
 		if (!this.isServiceActivated) return Promise.reject("The call invitation service has not been activated.");
 		if (this.inSendOperation) return Promise.reject("send invitation repeat !!");
-		if (roomID && typeof roomID !== 'string') return Promise.reject("room ID should be string")
+
 		this.inSendOperation = true;
 		const inviteesID = invitees.map((i) => i.userID);
 		const zegoRoomID = roomID || `call_${this.expressConfig.userID}_${new Date().getTime()}`;

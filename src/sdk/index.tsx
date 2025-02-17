@@ -257,6 +257,8 @@ export class ZegoUIKitPrebuilt {
 		if (callType !== ZegoInvitationType.VideoCall && callType !== ZegoInvitationType.VoiceCall) {
 			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callType !!");
 		}
+		if (roomID && typeof roomID !== 'string') return Promise.reject("room ID should be string");
+
 		const span = TracerConnect.createSpan(SpanEvent.CallInvite, {
 			call_id: '',
 			callees,
