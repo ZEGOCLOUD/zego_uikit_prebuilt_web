@@ -729,23 +729,28 @@ export class ZegoCloudRTCCore {
 	// 检查摄像头麦克风权限
 	async deviceCheck() {
 		// 检查摄像头
-		console.warn('[ZegoCloudRTCCore]deviceCheck');
+		console.warn('[ZegoCloudRTCCore]deviceCheck', this._config.scenario?.mode, this._zimManager?.callInfo.type);
 		// if (this.props.core._config.turnOnCameraWhenJoining) {
-		try {
-			await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
-				const cameras = await this.getCameras();
-				console.warn('[ZegoRoom]deviceCheck camera', cameras);
-				if (cameras.length < 1) {
-					this.status.videoRefuse = true
-				} else {
-					this.status.videoRefuse = false
-				}
-			})
-				.catch((error) => {
-					console.warn('getUserMedia error', error);
-					this.status.videoRefuse = true;
-				});
-		} catch (error) {
+		// 语音通话不询问摄像头权限
+		if (String(this._zimManager?.callInfo.type) !== '0') {
+			try {
+				await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
+					const cameras = await this.getCameras();
+					console.warn('[ZegoRoom]deviceCheck camera', cameras);
+					if (cameras.length < 1) {
+						this.status.videoRefuse = true
+					} else {
+						this.status.videoRefuse = false
+					}
+				})
+					.catch((error) => {
+						console.warn('getUserMedia error', error);
+						this.status.videoRefuse = true;
+					});
+			} catch (error) {
+				this.status.videoRefuse = true;
+			}
+		} else {
 			this.status.videoRefuse = true;
 		}
 		// } else {

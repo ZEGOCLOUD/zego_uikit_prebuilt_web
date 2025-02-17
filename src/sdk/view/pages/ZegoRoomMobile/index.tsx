@@ -776,7 +776,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     );
   }
   async createStream(): Promise<boolean> {
-    console.warn('[ZegoRoomMobile]createStream');
+    console.warn('[ZegoRoomMobile]createStream, videoRefuse:', this.props.core.status.videoRefuse);
     if (
       !this.props.core._config.turnOnCameraWhenJoining &&
       !this.props.core._config.turnOnMicrophoneWhenJoining &&
@@ -844,14 +844,18 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         }
 
         if (!localStream) return false;
+        if (!this.props.core.status.videoRefuse) {
+          await this.props.core.mutePublishStreamVideo(
+            localStream,
+            !this.props.core._config.turnOnCameraWhenJoining
+          );
+        }
+        if (!this.props.core.status.audioRefuse) {
+          await this.props.core.muteMicrophone(
+            !this.props.core._config.turnOnMicrophoneWhenJoining
+          );
+        }
 
-        await this.props.core.mutePublishStreamVideo(
-          localStream,
-          !this.props.core._config.turnOnCameraWhenJoining
-        );
-        await this.props.core.muteMicrophone(
-          !this.props.core._config.turnOnMicrophoneWhenJoining
-        );
         this.setState({
           localStream,
           cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining,

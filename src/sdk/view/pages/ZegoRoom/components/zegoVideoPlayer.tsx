@@ -63,7 +63,7 @@ export class VideoPlayer extends React.PureComponent<{
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.userInfo?.streamList?.[0]?.streamID];
-    const height = volume === undefined ? 5 : Math.ceil((volume * 7) / 100);
+    const height = volume === undefined ? 0 : Math.ceil((volume * 7) / 100);
     let {
       showRemoveButton,
       showTurnOffCameraButton,

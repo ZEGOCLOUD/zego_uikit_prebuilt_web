@@ -675,11 +675,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				});
 				console.warn('[ZegoRoom]createZegoStream localStream', localStream)
 				this.props.core.localStream = localStream;
-				await this.props.core.mutePublishStreamVideo(
-					localStream,
-					!this.props.core._config.turnOnCameraWhenJoining
-				);
-				await this.props.core.muteMicrophone(!this.props.core._config.turnOnMicrophoneWhenJoining);
+				if (!this.props.core.status.videoRefuse) {
+					await this.props.core.mutePublishStreamVideo(
+						localStream,
+						!this.props.core._config.turnOnCameraWhenJoining
+					);
+				}
+				if (!this.props.core.status.audioRefuse) {
+					await this.props.core.muteMicrophone(!this.props.core._config.turnOnMicrophoneWhenJoining);
+				}
+
 				this.setState({
 					localStream,
 					cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
