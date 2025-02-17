@@ -883,22 +883,32 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			let screenConfig;
 			if (this.props.core._config.screenSharingConfig?.resolution === ScreenSharingResolution.Custom) {
 				screenConfig = {
-					videoQuality: 4,
-					bitRate: this.props.core._config.screenSharingConfig!.maxBitRate!,
-					width: this.props.core._config.screenSharingConfig!.width!,
-					height: this.props.core._config.screenSharingConfig!.height!,
-					frameRate: this.props.core._config.screenSharingConfig!.frameRate!,
+					video: {
+						quality: 4,
+						width: this.props.core._config.screenSharingConfig!.width!,
+						height: this.props.core._config.screenSharingConfig!.height!,
+						frameRate: this.props.core._config.screenSharingConfig!.frameRate!,
+					},
+					videoBitrate: this.props.core._config.screenSharingConfig!.maxBitRate!,
 				};
 			} else if (this.props.core._config.screenSharingConfig?.resolution !== ScreenSharingResolution.Auto) {
+				const resolution = getVideoResolution(this.props.core._config.screenSharingConfig!.resolution!);
 				screenConfig = {
-					videoQuality: 4,
-					...getVideoResolution(this.props.core._config.screenSharingConfig!.resolution!),
+					video: {
+						quality: 4,
+						width: resolution.width,
+						height: resolution.height,
+						frameRate: resolution.frameRate
+					},
+					videoBitrate: resolution.bitrate
 				};
 			} else {
 				screenConfig = {
-					videoQuality: 2,
-					bitRate: 1500,
-					frameRate: 15,
+					video: {
+						quality: 2,
+						frameRate: 15,
+					},
+					videoBitrate: 1500,
 				};
 			}
 			const screenSharingStream = await this.props.core.createZegoStream({
