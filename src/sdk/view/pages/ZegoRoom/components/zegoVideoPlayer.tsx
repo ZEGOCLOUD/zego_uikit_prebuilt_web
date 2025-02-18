@@ -138,7 +138,7 @@ export class VideoPlayer extends React.PureComponent<{
         }
 
         {!this.props.hiddenName && (
-          <div className={ZegoVideoPlayerCss.name}>
+          <div id="ZegoVideoPlayerName" className={ZegoVideoPlayerCss.name}>
             {!this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV && (
               <span
                 className={`${ZegoVideoPlayerCss.micIcon} ${this.props.userInfo?.streamList?.[0]?.micStatus !== "OPEN" &&
