@@ -4,8 +4,10 @@
   background: #ffffff;
   border-radius: 50%;
 }
+
 .videoPlayerWrapper {
   position: relative;
+
   .name {
     position: absolute;
     right: 10px;
@@ -20,7 +22,9 @@
     padding: 6px 10px;
     background-color: rgba($color: #464646, $alpha: 0.4);
     border-radius: 6px;
+
     p {
+      margin: 0;
       overflow: hidden;
       color: #ffffff;
       font-size: 14px;
@@ -30,6 +34,7 @@
       text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
     }
   }
+
   .nameTag {
     margin-left: 4px;
     color: #ffffff;
@@ -38,6 +43,7 @@
     word-wrap: nowrap;
     word-break: keep-all;
   }
+
   .micIcon {
     position: relative;
     flex: 1 0 auto;
@@ -48,7 +54,8 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    & > span {
+
+    &>span {
       position: absolute;
       bottom: 8px;
       left: 7px;
@@ -57,13 +64,16 @@
       background: #0055ff;
       border-radius: 4px;
     }
+
     &.close {
       background-image: url("../../../../sdkAssets/icon_inner_video_mic_close.png");
+
       &::before {
         display: none;
       }
     }
   }
+
   .cameraMask {
     position: absolute;
     top: 0;
@@ -77,7 +87,8 @@
     background-color: #242736;
     border-radius: 14px;
     overflow: hidden;
-    & > div {
+
+    &>div {
       width: 94px;
       height: 94px;
       font-weight: 600;
@@ -87,7 +98,8 @@
       background-color: rgba(255, 255, 255, 0.1);
       border-radius: 50%;
     }
-    & > img {
+
+    &>img {
       position: absolute;
       width: 94px;
       height: 94px;
@@ -95,6 +107,7 @@
       border-radius: 50%;
     }
   }
+
   .moreWrapperMask {
     position: absolute;
     top: 8px;
@@ -103,12 +116,14 @@
     padding-bottom: 10px;
     padding-left: 10px;
     cursor: pointer;
+
     &:hover {
       .moreMenu {
         display: block;
       }
     }
   }
+
   .moreWrapper {
     position: relative;
     display: flex;
@@ -124,12 +139,14 @@
     .moreIcon {
       @include dots;
       position: relative;
+
       &::before {
         @include dots;
         position: absolute;
         top: 5px;
         content: "";
       }
+
       &::after {
         @include dots;
         position: absolute;
@@ -137,6 +154,7 @@
         content: "";
       }
     }
+
     .moreMenu {
       position: absolute;
       top: 30px;
@@ -150,6 +168,7 @@
       border-radius: 6px;
       box-shadow: 0px 3px 6px 0px rgba(23, 24, 33, 0.75);
     }
+
     .moreMenuItem {
       display: flex;
       align-items: center;
@@ -160,10 +179,12 @@
       line-height: 20px;
       white-space: nowrap;
       border-radius: 4px;
+
       &:hover {
         background: #36394b;
       }
-      & > span {
+
+      &>span {
         width: 22px;
         height: 22px;
         margin-right: 10px;
@@ -172,22 +193,28 @@
         background-size: cover;
       }
     }
+
     .moreMenuPinIcon {
       background-image: url("../../../../sdkAssets/icon_member_pin_on@2x.png");
     }
+
     .moreMenuMicIcon {
       background-image: url("../../../../sdkAssets/Room_mic_open@2x.png");
     }
+
     .moreMenuCameraIcon {
       background-image: url("../../../../sdkAssets/Room_camera_open@2x.png");
     }
+
     .moreMenuRemoveIcon {
       background-image: url("../../../../sdkAssets/Room_member_remove@2x.png");
     }
+
     .moreMenuConnectIcon {
       background-image: url("../../../../sdkAssets/icon_member_connect@2x.png");
     }
   }
+
   .cancelBtn {
     position: absolute;
     bottom: 20px;
@@ -205,6 +232,7 @@
     cursor: pointer;
   }
 }
+
 .videoCommon {
   display: block;
   width: 100%;
