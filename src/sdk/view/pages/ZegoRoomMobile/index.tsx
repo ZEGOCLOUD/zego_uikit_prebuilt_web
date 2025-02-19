@@ -60,6 +60,7 @@ import { ZegoBroadcastMessageInfo, ZegoUser } from "zego-express-engine-webrtm/s
 import { FormattedMessage } from "react-intl";
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 import { ZegoInvitationList } from "./components/zegoInvitationList";
+import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity";
 
 type LayOutStatus = "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE" | "WHITEBOARD" | "INVITE_LIST";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
@@ -794,21 +795,38 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         let localStream: ZegoLocalStream | null = null;
         try {
           const solution = getVideoResolution(this.state.selectVideoResolution);
-          localStream = await this.props.core.createZegoStream({
-            camera: {
-              video: !this.props.core.status.videoRefuse ? {
-                input: this.state.selectCamera,
-                quality: 4,
-                facingMode: this.faceModel ? "user" : "environment",
-                ...solution,
-              } : false,
-              audio: !this.props.core.status.audioRefuse ? {
-                input: this.state.selectMic,
-                channelCount: this.props.core._config.enableStereo ? 2 : 1,
-              } : false,
-            },
-            videoBitrate: solution.bitrate
-          });
+          let source: ZegoStreamOptions;
+          const userAgent = navigator.userAgent;
+          if (/Samsung|SM-/i.test(userAgent)) {
+            source = {
+              camera: {
+                video: !this.props.core.status.videoRefuse ? {
+                  facingMode: this.faceModel ? "user" : "environment",
+                } : false,
+                audio: !this.props.core.status.audioRefuse ? {
+                  channelCount: this.props.core._config.enableStereo ? 2 : 1,
+                } : false,
+              },
+              videoBitrate: solution.bitrate
+            }
+          } else {
+            source = {
+              camera: {
+                video: !this.props.core.status.videoRefuse ? {
+                  // input: this.state.selectCamera,
+                  quality: 4,
+                  facingMode: this.faceModel ? "user" : "environment",
+                  ...solution,
+                } : false,
+                audio: !this.props.core.status.audioRefuse ? {
+                  // input: this.state.selectMic,
+                  channelCount: this.props.core._config.enableStereo ? 2 : 1,
+                } : false,
+              },
+              videoBitrate: solution.bitrate
+            }
+          }
+          localStream = await this.props.core.createZegoStream(source);
           this.props.core.localStream = localStream;
         } catch (error: any) {
           console.error('[ZegoRoomMobile]createStream error', error);
