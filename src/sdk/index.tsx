@@ -64,6 +64,7 @@ export class ZegoUIKitPrebuilt {
 	public express: ZegoExpressEngine | undefined;
 	constructor() {
 		this.express = ZegoCloudRTCCore._zg;
+		console.log('express version:', this.express.getVersion());
 		console.log('ZegoUIKitPrebuilt version: 2.14.2');
 	}
 	get localStream() {

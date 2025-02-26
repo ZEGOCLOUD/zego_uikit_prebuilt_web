@@ -268,7 +268,7 @@ export default class App extends React.PureComponent {
               videoMixingOutputResolution: ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
             },
           },
-          turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
+          // turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
           showRotatingScreenButton: true,
           onScreenRotation: (current) => {
             console.warn('===onScreenRotation', current);
@@ -322,9 +322,12 @@ export default class App extends React.PureComponent {
           // showLeavingView: true,
           // maxUsers,
           //   layout: "Auto",
-          onJoinRoom: () => {
+          onUserJoin: async (user) => {
+            console.warn("[demo]onUserJoin", user);
+          },
+          onJoinRoom: async () => {
             // sessionStorage.setItem('roomID', zp.getRoomID());
-            console.warn("join room callback");
+            console.warn("[demo]join room callback");
             // window?.parent?.postMessage("joinRoom", "*")
             this.postMessage({ type: 'joinRoom', data: null })
             // demo 和 goenjoy 都设置20分钟体验限制 

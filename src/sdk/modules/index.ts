@@ -1167,19 +1167,21 @@ export class ZegoCloudRTCCore {
 		})
 		ZegoCloudRTCCore._zg.on("remoteCameraStatusUpdate", (streamID: string, status: "OPEN" | "MUTE") => {
 			console.warn("remoteCameraStatusUpdate", streamID, status)
-			if (this.remoteStreamMap[streamID]) {
-				this.remoteStreamMap[streamID].cameraStatus = status
-				this.onRemoteMediaUpdateCallBack &&
-					this.onRemoteMediaUpdateCallBack("UPDATE", [this.remoteStreamMap[streamID]])
-			}
+			// 小程序的回调会默认打开，不用这个回调去判断摄像头开关状态
+			// if (this.remoteStreamMap[streamID]) {
+			// 	this.remoteStreamMap[streamID].cameraStatus = status
+			// 	this.onRemoteMediaUpdateCallBack &&
+			// 		this.onRemoteMediaUpdateCallBack("UPDATE", [this.remoteStreamMap[streamID]])
+			// }
 		})
 		ZegoCloudRTCCore._zg.on("remoteMicStatusUpdate", (streamID: string, status: "OPEN" | "MUTE") => {
 			console.warn("remoteMicStatusUpdate", streamID, status)
-			if (this.remoteStreamMap[streamID]) {
-				this.remoteStreamMap[streamID].micStatus = status
-				this.onRemoteMediaUpdateCallBack &&
-					this.onRemoteMediaUpdateCallBack("UPDATE", [this.remoteStreamMap[streamID]])
-			}
+			// 小程序的回调会默认打开，不用这个回调去判断麦克风开关状态
+			// if (this.remoteStreamMap[streamID]) {
+			// 	this.remoteStreamMap[streamID].micStatus = status
+			// 	this.onRemoteMediaUpdateCallBack &&
+			// 		this.onRemoteMediaUpdateCallBack("UPDATE", [this.remoteStreamMap[streamID]])
+			// }
 		})
 		ZegoCloudRTCCore._zg.on("playerStateUpdate", (streamInfo: ZegoPlayerState) => {
 			console.warn("【ZEGOCLOUD】playerStateUpdate", streamInfo, this.remoteStreamMap)
@@ -1497,20 +1499,8 @@ export class ZegoCloudRTCCore {
 							this.remoteStreamMap[streamInfo.streamID] = {
 								fromUser: streamInfo.user,
 								media: stream,
-								micStatus: stream
-									? stream.getAudioTracks().length > 0
-										? "OPEN"
-										: "MUTE"
-									: extraInfo?.isMicrophoneOn
-										? "OPEN"
-										: "MUTE",
-								cameraStatus: stream
-									? stream.getVideoTracks().length > 0
-										? "OPEN"
-										: "MUTE"
-									: extraInfo?.isCameraOn
-										? "OPEN"
-										: "MUTE",
+								micStatus: extraInfo?.isMicrophoneOn ? "OPEN" : "MUTE",
+								cameraStatus: extraInfo?.isCameraOn ? "OPEN" : "MUTE",
 								state: "PLAYING",
 								streamID: streamInfo.streamID,
 							}
