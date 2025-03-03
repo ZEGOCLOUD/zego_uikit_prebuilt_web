@@ -1862,6 +1862,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 								this.props.core._zimManager?._inRoomInviteMg.removeCohost(user.userID);
 							}
 						})
+						// 关闭白板
+						if (this.state.isZegoWhiteboardSharing) {
+							this.closeWhiteboardSharing();
+						}
 						this.setState({
 							liveCountdown: -1,
 						});
