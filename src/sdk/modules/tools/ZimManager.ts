@@ -795,7 +795,7 @@ export class ZimManager {
 		}
 		if (this.hasJoinedRoom) {
 			if (!canInvitingInCalling) {
-				return Promise.reject('You already have a call invitation!')
+				return Promise.reject('You have joined the room!')
 			}
 			if (onlyInitiatorCanInvite && this.expressConfig.userID !== this.callInfo.inviter?.userID) {
 				return Promise.reject('Only initiator can invite')
@@ -1202,6 +1202,7 @@ export class ZimManager {
 			?.leaveRoom(roomID)
 			.then((res: any) => {
 				console.warn("【zim leaveRoom】success");
+				this.clearCallInfo();
 				const span = TracerConnect.createSpan(SpanEvent.ZIMLeaveRoom, {
 					room_id: roomID,
 					error: 0,
