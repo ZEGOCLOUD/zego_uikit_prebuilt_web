@@ -2552,7 +2552,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                     }}></a>
                 )}
 
-              {this.props.core._config.showMyCameraToggleButton && (
+              {this.props.core._config.showMyCameraToggleButton && String(this.props.core._zimManager?.callInfo.type) !== '0' && (
                 <a
                   className={this.state.cameraOpen ? ZegoRoomCss.toggleCamera : ZegoRoomCss.cameraClose}
                   onClick={() => {

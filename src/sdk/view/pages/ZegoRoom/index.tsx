@@ -502,7 +502,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			if (!this.props.core._config.showPreJoinView) {
 				await this.props.core.deviceCheck();
 				console.warn('[ZegoRoom]deviceCheck', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
-				console.warn('[]deviceCheck', this.props.core._zimManager?.callInfo);
+				console.warn('[ZegoRoom]deviceCheck callInfo', this.props.core._zimManager?.callInfo);
 				// 语音通话时未授权摄像头不弹弹框提示
 				if (this.props.core._zimManager?.callInfo.type === 0) {
 					if (this.props.core.status.audioRefuse) {
@@ -810,12 +810,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	async toggleCamera(): Promise<boolean> {
+		console.warn('[ZEGOCLOUD] toggleCamera', this.cameraStatus)
 		const { formatMessage } = this.props.core.intl;
 		if (this.props.core.status.videoRefuse) {
-			// if (!this.props.core._config.turnOnCameraWhenJoining) {
-			// 	await this.deviceCheck(true);
-			// 	await this.createStream();
-			// } else {
 			ZegoModelShow(
 				{
 					header: formatMessage({ id: "global.equipment" }),
@@ -825,7 +822,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
 			);
 			return Promise.resolve(false);
-			// }
 		}
 		if (this.cameraStatus === -1) return Promise.resolve(false);
 		this.cameraStatus = -1;
@@ -2211,7 +2207,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 										this.toggleMic()
 									}}></div>
 							)}
-							{this.props.core._config.showMyCameraToggleButton && (
+							{this.props.core._config.showMyCameraToggleButton && String(this.props.core._zimManager?.callInfo.type) !== '0' && (
 								<div
 									id="ZegoRoomCameraButton"
 									className={`${ZegoRoomCss.cameraButton} ${!this.state.cameraOpen && ZegoRoomCss.close
