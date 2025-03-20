@@ -638,8 +638,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
       this.createStream();
       setTimeout(async () => {
-        this.props.core._config.showMyCameraToggleButton &&
-          (this.cameraDevices = await this.props.core.getCameras());
+        if (String(this.props.core._zimManager?.callInfo.type) !== '0') {
+          this.props.core._config.showMyCameraToggleButton &&
+            (this.cameraDevices = await this.props.core.getCameras());
+        }
       }, 4000);
       return;
     } else if (logInRsp === 1002034) {
@@ -844,7 +846,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             });
             this.props.core.localStream = localStream;
           }
-          if (error?.code === 1103064) {
+          if (error?.errorCode === 1103064) {
             // 表示媒体流相关设备权限限制，可能是系统没有给浏览器摄像头、麦克风或屏幕采集权限
             this.props.core.status.videoRefuse = true;
             this.props.core.status.audioRefuse = true;
@@ -853,7 +855,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               micOpen: false,
             });
           }
-          if (error?.code === 1103065 || error?.code === 1103061) {
+          if (error?.errorCode === 1103065 || error?.errorCode === 1103061) {
             // 表示指定设备不可用于采集媒体流，可能是摄像头或麦克风被其他应用占用
             ZegoToast({
               content: this.props.core.intl.formatMessage({ id: "room.occupiedToast" }),
@@ -910,12 +912,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           "【ZEGOCLOUD】createStream or publishLocalStream failed,Reason: ",
           JSON.stringify(error)
         );
-        if (error?.code === 1103065 || error?.code === 1103061) {
+        if (error?.errorCode === 1103065 || error?.errorCode === 1103061) {
           ZegoToast({
             content: this.props.core.intl.formatMessage({ id: "room.occupiedToast" }),
           });
         }
-        if (error?.code === 1103064) {
+        if (error?.errorCode === 1103064) {
           this.props.core.status.videoRefuse = true;
           this.props.core.status.audioRefuse = true;
           this.setState({

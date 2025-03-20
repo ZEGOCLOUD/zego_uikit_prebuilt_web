@@ -714,14 +714,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				return true;
 			} catch (error: any) {
 				console.error("【ZEGOCLOUD】createStream or publishLocalStream failed, Reason: ", JSON.stringify(error));
-				if (error?.code === 1103065 || error?.code === 1103061) {
+				if (error?.errorCode === 1103065 || error?.errorCode === 1103061) {
 					// 1103065:表示指定设备不可用于采集媒体流，可能是摄像头或麦克风被其他应用占用
 					// 1103061:表示获取媒体流失败
 					ZegoToast({
 						content: formatMessage({ id: "room.occupiedToast" }),
 					});
 				}
-				if (error?.code === 1103064) {
+				if (error?.errorCode === 1103064) {
 					// 1103064：表示媒体流相关设备权限限制，可能是系统没有给浏览器摄像头、麦克风或屏幕采集权限。
 					this.props.core.status.videoRefuse = true;
 					this.props.core.status.audioRefuse = true;
@@ -942,7 +942,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		} catch (error: any) {
 			console.warn("screen sharing canceled or error", error);
 			if (!this.props.core._config.screenSharingConfig?.onError) {
-				if (error?.code === 1103043) {
+				if (error?.errorCode === 1103043) {
 					ZegoModelShow(
 						{
 							header: formatMessage({ id: "global.notice" }),
@@ -951,7 +951,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						},
 						document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
 					);
-				} else if (error?.code === 1103010 && error?.msg.includes("Permission")) {
+				} else if (error?.errorCode === 1103010 && error?.extendedData.includes("Permission")) {
 					ZegoModelShow(
 						{
 							header: formatMessage({ id: "global.shareAuthority" }),
@@ -960,14 +960,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						},
 						document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
 					);
-				} else if (error?.code !== 1103042) {
+				} else if (error?.errorCode !== 1103042) {
 					ZegoToast({
-						content: formatMessage({ id: "room.presentingFailed" }, { code: error?.code || -1 }),
+						content: formatMessage({ id: "room.presentingFailed" }, { code: error?.errorCode || -1 }),
 					});
 				}
 			} else {
 				// custom toast text
-				const customToastText = this.props.core._config.screenSharingConfig?.onError(error?.code);
+				const customToastText = this.props.core._config.screenSharingConfig?.onError(error?.errorCode);
 				// no text, Business side customization toast
 				if (!customToastText) return;
 				ZegoToast({

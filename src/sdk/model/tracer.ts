@@ -10,7 +10,7 @@ export enum SpanEvent {
     ZIMJoinRoom = 'zim/joinroom',
     ZIMLeaveRoom = 'zim/leaveroom',
     ZIMConnectionStateChanged = 'zim/connectionStateChanged',
-    RoomConfig = 'RoomConfig',
+    RoomConfig = 'roomConfig',
     Unmount = 'unmount',
 
     // 与native统一上报事件
