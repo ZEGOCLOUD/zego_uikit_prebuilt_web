@@ -16,6 +16,7 @@ import {
 	ZegoServerResponse,
 	ZegoSoundLevelInfo,
 	ZegoStreamList,
+	ZegoVideoCodecID,
 } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web"
 
 import { ZegoBroadcastMessageInfo, ZegoRoomExtraInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d"
@@ -727,12 +728,12 @@ export class ZegoCloudRTCCore {
 	}
 
 	// 检查摄像头麦克风权限
-	async deviceCheck() {
+	async deviceCheck(checkCamera = false) {
 		// 检查摄像头
-		console.warn('[ZegoCloudRTCCore]deviceCheck', this._config.scenario?.mode, this._zimManager?.callInfo.type);
+		console.warn('[ZegoCloudRTCCore]deviceCheck', this._config.scenario?.mode, this._zimManager?.callInfo.type, this.status.videoRefuse, this.status.audioRefuse);
 		// if (this.props.core._config.turnOnCameraWhenJoining) {
 		// 语音通话不询问摄像头权限
-		if (String(this._zimManager?.callInfo.type) !== '0') {
+		if (checkCamera || String(this._zimManager?.callInfo.type) !== '0') {
 			try {
 				await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
 					const cameras = await this.getCameras();
@@ -744,7 +745,7 @@ export class ZegoCloudRTCCore {
 					}
 				})
 					.catch((error) => {
-						console.warn('getUserMedia error', error);
+						console.warn('[ZegoCloudRTCCore]getUserMedia video error', error);
 						this.status.videoRefuse = true;
 					});
 			} catch (error) {
@@ -768,7 +769,7 @@ export class ZegoCloudRTCCore {
 				}
 			})
 				.catch((error) => {
-					console.warn('getUserMedia error', error);
+					console.warn('[ZegoCloudRTCCore]getUserMedia audio error', error);
 					this.status.audioRefuse = true;
 				});
 		} catch (error) {
@@ -1235,6 +1236,7 @@ export class ZegoCloudRTCCore {
 				) {
 					// 被移除房间的通知
 					// 通知UI层leaveRoom
+					console.warn('[ZegoCloudRTCCore]IMRecvCustomCommand zego_remove_user', fromUser);
 					this.onKickedOutRoomCallback && this.onKickedOutRoomCallback()
 					return
 				}
@@ -1302,6 +1304,9 @@ export class ZegoCloudRTCCore {
 		})
 		ZegoCloudRTCCore._zg.on("screenSharingEnded", (stream: MediaStream) => {
 			this.onScreenSharingEndedCallBack && this.onScreenSharingEndedCallBack(stream)
+		})
+		ZegoCloudRTCCore._zg.on("publisherVideoEncoderChanged", (fromCodecID: ZegoVideoCodecID, toCodecID: ZegoVideoCodecID, streamID: string) => {
+			console.warn('[ZegoCloudRTCCore]publisherVideoEncoderChanged]', fromCodecID, toCodecID, streamID)
 		})
 
 		if (this.zegoSuperBoard) {
@@ -1602,7 +1607,7 @@ export class ZegoCloudRTCCore {
 		}
 		const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media, {
 			...publishOption,
-			...{ videoCodec: this._config.videoCodec },
+			...{ videoCodec: this._config.videoCodec, enableAutoSwitchVideoCodec: true },
 		})
 		if (res) {
 			console.warn(`[ZegoCloudRTCCore]startPublishingStream success, time: ${new Date().getTime()}, streamID: ${streamID}`)
@@ -1788,6 +1793,7 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.off("soundLevelUpdate")
 		ZegoCloudRTCCore._zg.off("screenSharingEnded")
 		ZegoCloudRTCCore._zg.off("IMRecvCustomCommand")
+		ZegoCloudRTCCore._zg.off("publisherVideoEncoderChanged")
 
 		ZegoCloudRTCCore._zg.setSoundLevelDelegate(false)
 		this.onNetworkStatusCallBack = () => { }

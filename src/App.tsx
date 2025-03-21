@@ -227,6 +227,7 @@ export default class App extends React.PureComponent {
             appID: urlAppID
           }));
         } else {
+          console.log("【Zego Demo】app generateToken", userID);
           token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, userName || getRandomName())).token;
           // token = ZegoUIKitPrebuilt.generateKitTokenForTest(0, "", roomID, userID, userName || getRandomName())
         }
@@ -339,12 +340,13 @@ export default class App extends React.PureComponent {
               this.state.roomTime = ++this.state.roomTime;
               if (this.state.roomTime === 1200) {
                 this.showToast(this.state.lang === "zh" ? `仅功能体验，不作商业用途。每次不超过 20 分钟。` : `Only for functional experience, not for commercial use. Each session should not exceed 20 minutes.`);
+                console.warn('[demo] leave room by 20 minutes limit');
                 zp.hangUp();
               }
             }, 1000);
           }, // 退出房间回调
           onLeaveRoom: () => {
-            console.warn("leave room callback");
+            console.warn("[demo]leave room callback");
             // window?.parent?.postMessage("joinRoom", "*")
             this.postMessage({ type: 'leaveRoom', data: null })
             // 刷新20分钟限制
@@ -383,9 +385,9 @@ export default class App extends React.PureComponent {
           //   showTextChat: true,
           // },
           // showOnlyAudioUser: true,
-          // branding: {
-          //   logoURL: require("./assets/zegocloud_logo.png"),
-          // },
+          branding: {
+            logoURL: require("./assets/zegocloud_logo.png"),
+          },
           // onUserAvatarSetter: (user) => {
           //   user.forEach((u) => {
           //     u.setUserAvatar &&
@@ -480,11 +482,11 @@ export default class App extends React.PureComponent {
       };
     }
 
-    // test 通话恢复
+    // // test 通话恢复
     // if (sessionStorage.getItem('roomID')) {
     //   let token = ZegoUIKitPrebuilt.generateKitTokenForTest(
-    //     252984006,
-    //     "16435f3bdb307f****b3f9e4259a29f0",
+    //     2013980891,
+    //     "684c8af5d3eb04eb891c6c8a07538979",
     //     sessionStorage.getItem('roomID') as string,
     //     userID,
     //     "user_" + userID,
@@ -494,6 +496,7 @@ export default class App extends React.PureComponent {
     //   this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
     //   this.zp.joinRoom({
     //     showPreJoinView: false,
+    //     showLeavingView: false,
     //   });
     //   console.log('===roomid', sessionStorage.getItem('roomID'))
     // }
@@ -572,6 +575,7 @@ export default class App extends React.PureComponent {
           this.state.roomTime = ++this.state.roomTime;
           if (this.state.roomTime === 1200) {
             this.showToast(this.state.lang === "zh" ? "仅功能体验，不作商业用途。每次不超过 20 分钟。" : "Only for functional experience, not for commercial use. Each session should not exceed 20 minutes.");
+            console.warn('[demo] leave room by 20 minutes limit');
             this.zp.hangUp();
           }
         }, 1000);
@@ -594,15 +598,15 @@ export default class App extends React.PureComponent {
             defaultChecked: true
           },
           onLeaveRoom: () => {
-            console.warn("leave room callback", this.state.showPreviewHeader);
+            console.warn("[demo]leave room callback", this.state.showPreviewHeader, this.state.roomTimer);
             // // window?.parent?.postMessage("joinRoom", "*")
             // this.postMessage({ type: 'leaveRoom', data: null })
-            // // 刷新20分钟限制
-            // if (this.state.roomTimer) {
-            //   clearInterval(this.state.roomTimer);
-            //   this.state.roomTimer = null;
-            //   this.state.roomTime = 0;
-            // }
+            // 刷新20分钟限制
+            if (this.state.roomTimer) {
+              clearInterval(this.state.roomTimer);
+              this.state.roomTimer = null;
+              this.state.roomTime = 0;
+            }
           },
           showLeavingView: true,
           // turnOnCameraWhenJoining: false,
@@ -614,7 +618,7 @@ export default class App extends React.PureComponent {
         };
       },
       onCallInvitationEnded: (reason, data) => {
-        console.warn("【demo】onCallInvitationEnded", reason, data, this.state.showPreviewHeader);
+        console.warn("[demo]onCallInvitationEnded", reason, data, this.state.showPreviewHeader, this.state.roomTimer);
         // if (reason === "Canceled") {
         //   this.showToast("The call has been canceled.");
         // }
@@ -784,7 +788,7 @@ export default class App extends React.PureComponent {
         }, 1000);
       }, // 退出房间回调
       onLeaveRoom: () => {
-        console.warn("leave room callback");
+        console.warn("[demo]leave room callback");
         // window?.parent?.postMessage("joinRoom", "*")
         this.postMessage({ type: 'leaveRoom', data: null })
         // 刷新20分钟限制
@@ -1469,7 +1473,7 @@ export default class App extends React.PureComponent {
           </div>
         } */}
 
-        {<div className="upload-btn" style={{ position: "absolute", left: "5px", bottom: "10px", zIndex: '1000' }}
+        {<div className="upload-btn" style={{ position: "fixed", left: "5px", bottom: "10px", zIndex: '1000' }}
           onClick={() => {
             // @ts-ignore
             ZIM.getInstance().uploadLog()

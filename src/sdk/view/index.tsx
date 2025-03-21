@@ -145,7 +145,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           const meetingEl = privacy.previousElementSibling as HTMLDivElement;
 
           nav && (nav.style.display = "none");
-          meetingEl.style.height = "100%";
+          meetingEl.style.height = "auto";
           privacy.style.display = "none";
           if (!isPc()) {
             meetingEl.style.marginTop = "0";
@@ -163,7 +163,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           <ZegoRoom
             core={this.props.core}
             leaveRoom={(isKickedOut = false, isCallQuit = true) => {
-              console.log('【ZegoRoom】 leave room')
+              console.log('[KitComponent]leave room, isKickedOut:', isKickedOut)
               if (isKickedOut) {
                 // 被踢出房间回到预览页
                 if (this.props.core._config.showPreJoinView) {
@@ -199,6 +199,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           <ZegoRoomMobile
             core={this.props.core}
             leaveRoom={(isKickedOut = false, isCallQuit = true) => {
+              console.log('[KitComponent]leave room, isKickedOut:', isKickedOut)
               if (isKickedOut) {
                 // 被踢出房间回到预览页
                 if (this.props.core._config.showPreJoinView) {

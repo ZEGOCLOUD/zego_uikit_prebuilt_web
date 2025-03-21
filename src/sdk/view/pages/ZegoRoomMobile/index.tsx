@@ -637,12 +637,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         }
       }
       this.createStream();
-      setTimeout(async () => {
-        if (String(this.props.core._zimManager?.callInfo.type) !== '0') {
-          this.props.core._config.showMyCameraToggleButton &&
-            (this.cameraDevices = await this.props.core.getCameras());
-        }
-      }, 4000);
+
+      // 这段代码导致首次询问拒绝或忽略时后续又弹框询问，暂时注释
+      // setTimeout(async () => {
+      //   this.props.core._config.showMyCameraToggleButton &&
+      //     (this.cameraDevices = await this.props.core.getCameras());
+      // }, 4000);
       return;
     } else if (logInRsp === 1002034) {
       // 登录房间的用户数超过该房间配置的最大用户数量限制（测试环境下默认房间最大用户数为 50，正式环境无限制）。
@@ -2544,7 +2544,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             <div className={ZegoRoomCss.footer}>
               {this.props.core._config.showMyCameraToggleButton &&
                 (this.props.core._config.scenario?.mode !== ScenarioModel.LiveStreaming ||
-                  this.props.core._config.scenario?.config?.role === LiveRole.Cohost) && (
+                  this.props.core._config.scenario?.config?.role === LiveRole.Cohost) && String(this.props.core._zimManager?.callInfo.type) !== '0' && (
                   <a
                     className={`${ZegoRoomCss.switchCamera}`}
                     onClick={() => {
