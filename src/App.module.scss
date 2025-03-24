@@ -637,7 +637,8 @@
 
   &.callInvitation {
     .callInvitationWrapper {
-      height: calc(100% - 8.8vw);
+      height: auto;
+      flex: 1 0 auto;
 
       .invitationModel {
         box-sizing: border-box;
@@ -777,14 +778,14 @@
     }
 
     .mobileServiceTips {
-      position: inherit;
-      bottom: 0;
-      left: 0;
-      z-index: unset;
+      // position: inherit;
+      // bottom: 0;
+      // left: 0;
+      // z-index: unset;
       box-sizing: border-box;
-      margin-top: vw(100px);
-      margin-bottom: vw(12px);
-      padding: 0;
+      // margin-top: vw(100px);
+      // margin-bottom: vw(12px);
+      // padding: 0;
       color: #ababb5;
       // font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
@@ -792,7 +793,7 @@
       line-height: vw(33px);
       white-space: nowrap;
       background-color: #ffffff;
-      transform: none;
+      // transform: none;
     }
   }
 

@@ -502,15 +502,30 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			if (!this.props.core._config.showPreJoinView) {
 				await this.props.core.deviceCheck();
 				console.warn('[ZegoRoom]deviceCheck', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
-				if (this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
-					ZegoModelShow(
-						{
-							header: formatMessage({ id: "global.equipment" }),
-							contentText: formatMessage({ id: "global.equipmentDesc" }),
-							okText: "Okay",
-						},
-						document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
-					);
+				console.warn('[ZegoRoom]deviceCheck callInfo', this.props.core._zimManager?.callInfo);
+				// 语音通话时未授权摄像头不弹弹框提示
+				if (this.props.core._zimManager?.callInfo.type === 0) {
+					if (this.props.core.status.audioRefuse) {
+						ZegoModelShow(
+							{
+								header: formatMessage({ id: "global.equipment" }),
+								contentText: formatMessage({ id: "global.equipmentDesc" }),
+								okText: "Okay",
+							},
+							document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+						);
+					}
+				} else {
+					if (this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
+						ZegoModelShow(
+							{
+								header: formatMessage({ id: "global.equipment" }),
+								contentText: formatMessage({ id: "global.equipmentDesc" }),
+								okText: "Okay",
+							},
+							document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+						);
+					}
 				}
 			}
 			this.createStream();
@@ -660,11 +675,16 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				});
 				console.warn('[ZegoRoom]createZegoStream localStream', localStream)
 				this.props.core.localStream = localStream;
-				await this.props.core.mutePublishStreamVideo(
-					localStream,
-					!this.props.core._config.turnOnCameraWhenJoining
-				);
-				await this.props.core.muteMicrophone(!this.props.core._config.turnOnMicrophoneWhenJoining);
+				if (!this.props.core.status.videoRefuse) {
+					await this.props.core.mutePublishStreamVideo(
+						localStream,
+						!this.props.core._config.turnOnCameraWhenJoining
+					);
+				}
+				if (!this.props.core.status.audioRefuse) {
+					await this.props.core.muteMicrophone(!this.props.core._config.turnOnMicrophoneWhenJoining);
+				}
+
 				this.setState({
 					localStream,
 					cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
@@ -694,14 +714,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				return true;
 			} catch (error: any) {
 				console.error("【ZEGOCLOUD】createStream or publishLocalStream failed, Reason: ", JSON.stringify(error));
-				if (error?.code === 1103065 || error?.code === 1103061) {
+				if (error?.errorCode === 1103065 || error?.errorCode === 1103061) {
 					// 1103065:表示指定设备不可用于采集媒体流，可能是摄像头或麦克风被其他应用占用
 					// 1103061:表示获取媒体流失败
 					ZegoToast({
 						content: formatMessage({ id: "room.occupiedToast" }),
 					});
 				}
-				if (error?.code === 1103064) {
+				if (error?.errorCode === 1103064) {
 					// 1103064：表示媒体流相关设备权限限制，可能是系统没有给浏览器摄像头、麦克风或屏幕采集权限。
 					this.props.core.status.videoRefuse = true;
 					this.props.core.status.audioRefuse = true;
@@ -790,12 +810,9 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	async toggleCamera(): Promise<boolean> {
+		console.warn('[ZEGOCLOUD] toggleCamera', this.cameraStatus)
 		const { formatMessage } = this.props.core.intl;
 		if (this.props.core.status.videoRefuse) {
-			// if (!this.props.core._config.turnOnCameraWhenJoining) {
-			// 	await this.deviceCheck(true);
-			// 	await this.createStream();
-			// } else {
 			ZegoModelShow(
 				{
 					header: formatMessage({ id: "global.equipment" }),
@@ -805,7 +822,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
 			);
 			return Promise.resolve(false);
-			// }
 		}
 		if (this.cameraStatus === -1) return Promise.resolve(false);
 		this.cameraStatus = -1;
@@ -868,22 +884,32 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			let screenConfig;
 			if (this.props.core._config.screenSharingConfig?.resolution === ScreenSharingResolution.Custom) {
 				screenConfig = {
-					videoQuality: 4,
-					bitRate: this.props.core._config.screenSharingConfig!.maxBitRate!,
-					width: this.props.core._config.screenSharingConfig!.width!,
-					height: this.props.core._config.screenSharingConfig!.height!,
-					frameRate: this.props.core._config.screenSharingConfig!.frameRate!,
+					video: {
+						quality: 4,
+						width: this.props.core._config.screenSharingConfig!.width!,
+						height: this.props.core._config.screenSharingConfig!.height!,
+						frameRate: this.props.core._config.screenSharingConfig!.frameRate!,
+					},
+					videoBitrate: this.props.core._config.screenSharingConfig!.maxBitRate!,
 				};
 			} else if (this.props.core._config.screenSharingConfig?.resolution !== ScreenSharingResolution.Auto) {
+				const resolution = getVideoResolution(this.props.core._config.screenSharingConfig!.resolution!);
 				screenConfig = {
-					videoQuality: 4,
-					...getVideoResolution(this.props.core._config.screenSharingConfig!.resolution!),
+					video: {
+						quality: 4,
+						width: resolution.width,
+						height: resolution.height,
+						frameRate: resolution.frameRate
+					},
+					videoBitrate: resolution.bitrate
 				};
 			} else {
 				screenConfig = {
-					videoQuality: 2,
-					bitRate: 1500,
-					frameRate: 15,
+					video: {
+						quality: 2,
+						frameRate: 15,
+					},
+					videoBitrate: 1500,
 				};
 			}
 			const screenSharingStream = await this.props.core.createZegoStream({
@@ -912,7 +938,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		} catch (error: any) {
 			console.warn("screen sharing canceled or error", error);
 			if (!this.props.core._config.screenSharingConfig?.onError) {
-				if (error?.code === 1103043) {
+				if (error?.errorCode === 1103043) {
 					ZegoModelShow(
 						{
 							header: formatMessage({ id: "global.notice" }),
@@ -921,7 +947,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						},
 						document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
 					);
-				} else if (error?.code === 1103010 && error?.msg.includes("Permission")) {
+				} else if (error?.errorCode === 1103010 && error?.extendedData.includes("Permission")) {
 					ZegoModelShow(
 						{
 							header: formatMessage({ id: "global.shareAuthority" }),
@@ -930,14 +956,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						},
 						document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
 					);
-				} else if (error?.code !== 1103042) {
+				} else if (error?.errorCode !== 1103042) {
 					ZegoToast({
-						content: formatMessage({ id: "room.presentingFailed" }, { code: error?.code || -1 }),
+						content: formatMessage({ id: "room.presentingFailed" }, { code: error?.errorCode || -1 }),
 					});
 				}
 			} else {
 				// custom toast text
-				const customToastText = this.props.core._config.screenSharingConfig?.onError(error?.code);
+				const customToastText = this.props.core._config.screenSharingConfig?.onError(error?.errorCode);
 				// no text, Business side customization toast
 				if (!customToastText) return;
 				ZegoToast({
@@ -1832,6 +1858,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 								this.props.core._zimManager?._inRoomInviteMg.removeCohost(user.userID);
 							}
 						})
+						// 关闭白板
+						if (this.state.isZegoWhiteboardSharing) {
+							this.closeWhiteboardSharing();
+						}
 						this.setState({
 							liveCountdown: -1,
 						});
@@ -2177,7 +2207,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 										this.toggleMic()
 									}}></div>
 							)}
-							{this.props.core._config.showMyCameraToggleButton && (
+							{this.props.core._config.showMyCameraToggleButton && String(this.props.core._zimManager?.callInfo.type) !== '0' && (
 								<div
 									id="ZegoRoomCameraButton"
 									className={`${ZegoRoomCss.cameraButton} ${!this.state.cameraOpen && ZegoRoomCss.close

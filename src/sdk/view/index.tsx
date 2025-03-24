@@ -52,33 +52,33 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
     this.destroyNodeWhenNoView();
   }
 
-  async deviceCheck(): Promise<void> {
-    // 没有预览页面才检查，预览页本身就会检查
-    if (!this.props.core._config.showPreJoinView) {
-      // 检查摄像头
-      if (this.props.core._config.turnOnCameraWhenJoining) {
-        try {
-          const cameras = await this.props.core.getCameras();
-          cameras.length < 1 && (this.props.core.status.videoRefuse = true);
-        } catch (error) {
-          this.props.core.status.videoRefuse = true;
-        }
-      } else {
-        // this.props.core.status.videoRefuse = true;
-      }
-      // 检查麦克风
-      if (this.props.core._config.turnOnMicrophoneWhenJoining) {
-        try {
-          const mics = await this.props.core.getMicrophones();
-          mics.length < 1 && (this.props.core.status.audioRefuse = true);
-        } catch (error) {
-          this.props.core.status.audioRefuse = true;
-        }
-      } else {
-        // this.props.core.status.audioRefuse = true;
-      }
-    }
-  }
+  // async deviceCheck(): Promise<void> {
+  //   // 没有预览页面才检查，预览页本身就会检查
+  //   if (!this.props.core._config.showPreJoinView) {
+  //     // 检查摄像头
+  //     if (this.props.core._config.turnOnCameraWhenJoining) {
+  //       try {
+  //         const cameras = await this.props.core.getCameras();
+  //         cameras.length < 1 && (this.props.core.status.videoRefuse = true);
+  //       } catch (error) {
+  //         this.props.core.status.videoRefuse = true;
+  //       }
+  //     } else {
+  //       // this.props.core.status.videoRefuse = true;
+  //     }
+  //     // 检查麦克风
+  //     if (this.props.core._config.turnOnMicrophoneWhenJoining) {
+  //       try {
+  //         const mics = await this.props.core.getMicrophones();
+  //         mics.length < 1 && (this.props.core.status.audioRefuse = true);
+  //       } catch (error) {
+  //         this.props.core.status.audioRefuse = true;
+  //       }
+  //     } else {
+  //       // this.props.core.status.audioRefuse = true;
+  //     }
+  //   }
+  // }
 
   nextPage() {
     this.setState((state: { step: number }) => {
@@ -145,7 +145,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           const meetingEl = privacy.previousElementSibling as HTMLDivElement;
 
           nav && (nav.style.display = "none");
-          meetingEl.style.height = "100%";
+          meetingEl.style.height = "auto";
           privacy.style.display = "none";
           if (!isPc()) {
             meetingEl.style.marginTop = "0";
@@ -163,7 +163,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           <ZegoRoom
             core={this.props.core}
             leaveRoom={(isKickedOut = false, isCallQuit = true) => {
-              console.log('【ZegoRoom】 leave room')
+              console.log('[KitComponent]leave room, isKickedOut:', isKickedOut)
               if (isKickedOut) {
                 // 被踢出房间回到预览页
                 if (this.props.core._config.showPreJoinView) {
@@ -199,6 +199,7 @@ export class ZegoCloudRTCKitComponent extends React.Component<{
           <ZegoRoomMobile
             core={this.props.core}
             leaveRoom={(isKickedOut = false, isCallQuit = true) => {
+              console.log('[KitComponent]leave room, isKickedOut:', isKickedOut)
               if (isKickedOut) {
                 // 被踢出房间回到预览页
                 if (this.props.core._config.showPreJoinView) {

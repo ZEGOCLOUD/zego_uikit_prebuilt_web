@@ -16,6 +16,7 @@ import {
 	ZegoServerResponse,
 	ZegoSoundLevelInfo,
 	ZegoStreamList,
+	ZegoVideoCodecID,
 } from "zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity.web"
 
 import { ZegoBroadcastMessageInfo, ZegoRoomExtraInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d"
@@ -727,25 +728,30 @@ export class ZegoCloudRTCCore {
 	}
 
 	// 检查摄像头麦克风权限
-	async deviceCheck() {
+	async deviceCheck(checkCamera = false) {
 		// 检查摄像头
-		console.warn('[ZegoCloudRTCCore]deviceCheck');
+		console.warn('[ZegoCloudRTCCore]deviceCheck', this._config.scenario?.mode, this._zimManager?.callInfo.type, this.status.videoRefuse, this.status.audioRefuse);
 		// if (this.props.core._config.turnOnCameraWhenJoining) {
-		try {
-			await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
-				const cameras = await this.getCameras();
-				console.warn('[ZegoRoom]deviceCheck camera', cameras);
-				if (cameras.length < 1) {
-					this.status.videoRefuse = true
-				} else {
-					this.status.videoRefuse = false
-				}
-			})
-				.catch((error) => {
-					console.warn('getUserMedia error', error);
-					this.status.videoRefuse = true;
-				});
-		} catch (error) {
+		// 语音通话不询问摄像头权限
+		if (checkCamera || String(this._zimManager?.callInfo.type) !== '0') {
+			try {
+				await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
+					const cameras = await this.getCameras();
+					console.warn('[ZegoRoom]deviceCheck camera', cameras);
+					if (cameras.length < 1) {
+						this.status.videoRefuse = true
+					} else {
+						this.status.videoRefuse = false
+					}
+				})
+					.catch((error) => {
+						console.warn('[ZegoCloudRTCCore]getUserMedia video error', error);
+						this.status.videoRefuse = true;
+					});
+			} catch (error) {
+				this.status.videoRefuse = true;
+			}
+		} else {
 			this.status.videoRefuse = true;
 		}
 		// } else {
@@ -763,7 +769,7 @@ export class ZegoCloudRTCCore {
 				}
 			})
 				.catch((error) => {
-					console.warn('getUserMedia error', error);
+					console.warn('[ZegoCloudRTCCore]getUserMedia audio error', error);
 					this.status.audioRefuse = true;
 				});
 		} catch (error) {
@@ -1162,19 +1168,21 @@ export class ZegoCloudRTCCore {
 		})
 		ZegoCloudRTCCore._zg.on("remoteCameraStatusUpdate", (streamID: string, status: "OPEN" | "MUTE") => {
 			console.warn("remoteCameraStatusUpdate", streamID, status)
-			if (this.remoteStreamMap[streamID]) {
-				this.remoteStreamMap[streamID].cameraStatus = status
-				this.onRemoteMediaUpdateCallBack &&
-					this.onRemoteMediaUpdateCallBack("UPDATE", [this.remoteStreamMap[streamID]])
-			}
+			// 小程序的回调会默认打开，不用这个回调去判断摄像头开关状态
+			// if (this.remoteStreamMap[streamID]) {
+			// 	this.remoteStreamMap[streamID].cameraStatus = status
+			// 	this.onRemoteMediaUpdateCallBack &&
+			// 		this.onRemoteMediaUpdateCallBack("UPDATE", [this.remoteStreamMap[streamID]])
+			// }
 		})
 		ZegoCloudRTCCore._zg.on("remoteMicStatusUpdate", (streamID: string, status: "OPEN" | "MUTE") => {
 			console.warn("remoteMicStatusUpdate", streamID, status)
-			if (this.remoteStreamMap[streamID]) {
-				this.remoteStreamMap[streamID].micStatus = status
-				this.onRemoteMediaUpdateCallBack &&
-					this.onRemoteMediaUpdateCallBack("UPDATE", [this.remoteStreamMap[streamID]])
-			}
+			// 小程序的回调会默认打开，不用这个回调去判断麦克风开关状态
+			// if (this.remoteStreamMap[streamID]) {
+			// 	this.remoteStreamMap[streamID].micStatus = status
+			// 	this.onRemoteMediaUpdateCallBack &&
+			// 		this.onRemoteMediaUpdateCallBack("UPDATE", [this.remoteStreamMap[streamID]])
+			// }
 		})
 		ZegoCloudRTCCore._zg.on("playerStateUpdate", (streamInfo: ZegoPlayerState) => {
 			console.warn("【ZEGOCLOUD】playerStateUpdate", streamInfo, this.remoteStreamMap)
@@ -1228,6 +1236,7 @@ export class ZegoCloudRTCCore {
 				) {
 					// 被移除房间的通知
 					// 通知UI层leaveRoom
+					console.warn('[ZegoCloudRTCCore]IMRecvCustomCommand zego_remove_user', fromUser);
 					this.onKickedOutRoomCallback && this.onKickedOutRoomCallback()
 					return
 				}
@@ -1295,6 +1304,9 @@ export class ZegoCloudRTCCore {
 		})
 		ZegoCloudRTCCore._zg.on("screenSharingEnded", (stream: MediaStream) => {
 			this.onScreenSharingEndedCallBack && this.onScreenSharingEndedCallBack(stream)
+		})
+		ZegoCloudRTCCore._zg.on("publisherVideoEncoderChanged", (fromCodecID: ZegoVideoCodecID, toCodecID: ZegoVideoCodecID, streamID: string) => {
+			console.warn('[ZegoCloudRTCCore]publisherVideoEncoderChanged]', fromCodecID, toCodecID, streamID)
 		})
 
 		if (this.zegoSuperBoard) {
@@ -1492,20 +1504,8 @@ export class ZegoCloudRTCCore {
 							this.remoteStreamMap[streamInfo.streamID] = {
 								fromUser: streamInfo.user,
 								media: stream,
-								micStatus: stream
-									? stream.getAudioTracks().length > 0
-										? "OPEN"
-										: "MUTE"
-									: extraInfo?.isMicrophoneOn
-										? "OPEN"
-										: "MUTE",
-								cameraStatus: stream
-									? stream.getVideoTracks().length > 0
-										? "OPEN"
-										: "MUTE"
-									: extraInfo?.isCameraOn
-										? "OPEN"
-										: "MUTE",
+								micStatus: extraInfo?.isMicrophoneOn ? "OPEN" : "MUTE",
+								cameraStatus: extraInfo?.isCameraOn ? "OPEN" : "MUTE",
 								state: "PLAYING",
 								streamID: streamInfo.streamID,
 							}
@@ -1607,7 +1607,7 @@ export class ZegoCloudRTCCore {
 		}
 		const res = ZegoCloudRTCCore._zg.startPublishingStream(streamID, media, {
 			...publishOption,
-			...{ videoCodec: this._config.videoCodec },
+			...{ videoCodec: this._config.videoCodec, enableAutoSwitchVideoCodec: true },
 		})
 		if (res) {
 			console.warn(`[ZegoCloudRTCCore]startPublishingStream success, time: ${new Date().getTime()}, streamID: ${streamID}`)
@@ -1793,6 +1793,7 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.off("soundLevelUpdate")
 		ZegoCloudRTCCore._zg.off("screenSharingEnded")
 		ZegoCloudRTCCore._zg.off("IMRecvCustomCommand")
+		ZegoCloudRTCCore._zg.off("publisherVideoEncoderChanged")
 
 		ZegoCloudRTCCore._zg.setSoundLevelDelegate(false)
 		this.onNetworkStatusCallBack = () => { }

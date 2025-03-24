@@ -64,7 +64,8 @@ export class ZegoUIKitPrebuilt {
 	public express: ZegoExpressEngine | undefined;
 	constructor() {
 		this.express = ZegoCloudRTCCore._zg;
-		console.log('ZegoUIKitPrebuilt version: 2.11.2');
+		console.log('express version:', this.express.getVersion());
+		console.log('ZegoUIKitPrebuilt version: 2.14.2');
 	}
 	get localStream() {
 		return ZegoUIKitPrebuilt.core?.localStream;
@@ -257,6 +258,8 @@ export class ZegoUIKitPrebuilt {
 		if (callType !== ZegoInvitationType.VideoCall && callType !== ZegoInvitationType.VoiceCall) {
 			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callType !!");
 		}
+		if (roomID && typeof roomID !== 'string') return Promise.reject("room ID should be string");
+
 		const span = TracerConnect.createSpan(SpanEvent.CallInvite, {
 			call_id: '',
 			callees,

@@ -153,7 +153,7 @@ export class TracerConnect {
                 deviceID: this.getDeviceId(),
                 env: 0,
                 importantLevel: 0,
-                serverUrl: "wss://weblogger-wss-alpha.coolacloud.com/zglog/tlog",// 正式环境"wss://weblogger-wss.coolzcloud.com/zglog/tlog",
+                serverUrl: "wss://weblogger-wss.coolzcloud.com/zglog/tlog", //"wss://weblogger-wss-alpha.coolacloud.com/zglog/tlog",
                 levels: [0, 10, 30, 50, 80],
                 spanStart: (span: any) => {
                     console.warn('spanStart', span);
@@ -191,7 +191,7 @@ export class TracerConnect {
                     user_id: userID,
                     platform: 'web',
                     platform_version: '',
-                    uikit_version: '2.14.0'//ZegoCloudRTCCore.getVersion(),
+                    uikit_version: `zego_uikit: 2.14.2; zego_express: ${ZegoCloudRTCCore._zg.getVersion()}; zego_zim: 2.16.0;`,
                 },
             });
             const startCommonField = new Map();
