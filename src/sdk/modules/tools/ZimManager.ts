@@ -431,110 +431,110 @@ export class ZimManager {
 			console.warn("【ZIMManager】callUserStateChanged", callUserList, callID, this.expressConfig.userID, this.callInfo);
 			callUserList.forEach(({ state, userID, extendedData }) => {
 				// 邀请者
-				if (this.expressConfig.userID === this.callInfo?.inviter?.userID) {
-					// 本人网络断开取消
-					if (state === ZIMCallUserState.Cancelled) {
-						if (callInvitationControl.isWaitingPageShow) {
-							callInvitationControl.callInvitationWaitingPageHide();
-							this.clearOutgoingTimer();
-							this.endCall(CallInvitationEndReason.Canceled);
-						}
-					}
+				if (ZegoUIKitPrebuilt.core?._config.scenario?.mode === "LiveStreaming") {
 					// 不处理本人的状态变化
 					if (userID === this.expressConfig.userID) return
-					if (state === ZIMCallUserState.Rejected) {
-						this.callInvitationRejected({ callID, invitee: userID, extendedData })
-						switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
-							case "LiveStreaming": {
-								if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
-									const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
-										call_id: callID,
-										action: 'refuse'
-									})
-									span.end()
-								} else {
-									const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
-										call_id: callID,
-										action: 'refuse'
-									})
-									span.end()
-								}
-							}
-								break;
-							case "OneONoneCall": {
-								const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
-									call_id: callID,
-									action: 'refuse'
-								})
-								span.end();
-							}
-								break
-						}
-					}
 					if (state === ZIMCallUserState.Accepted) {
-						this.callInvitationAccepted({ callID, invitee: userID, extendedData })
-						switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
-							case "LiveStreaming": {
-								if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
-									const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
-										call_id: callID,
-										action: 'accept'
-									})
-									span.end()
-								} else {
-									const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
-										call_id: callID,
-										action: 'accept'
-									})
-									span.end()
-								}
-							}
-								break
-							case "OneONoneCall": {
-								const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
-									call_id: callID,
-									action: 'accept'
-								})
-								span.end();
-							}
-								break
+						// this.callInvitationAccepted({ callID, invitee: userID, extendedData })
+						if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
+							const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+								call_id: callID,
+								action: 'accept'
+							})
+							span.end()
+						} else {
+							const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+								call_id: callID,
+								action: 'accept'
+							})
+							span.end()
 						}
-					}
-					if (state === ZIMCallUserState.Timeout) {
-						this.callInviteesAnsweredTimeout({ callID, invitees: [userID] })
-						const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
-							call_id: callID,
-							action: 'timeout'
-						})
-						span.end();
-					}
-					// if (state === ZIMCallUserState.Ended) {
-					// 	if (callInvitationControl.isDialogShow) {
-					// 		callInvitationControl.callInvitationDialogHide();
-					// 		this.clearIncomingTimer();
-					// 		this.endCall(CallInvitationEndReason.Canceled);
-					// 	}
-					// }
-					// @ts-ignore
-					if (state === ZIMCallUserState.BeCancelled) {
-						this.removeWaitingUser(userID);
 					}
 				} else {
-					// 被邀请者
-					// 退出状态，邀请者在发送邀请过程中退出，被邀请者需要隐藏邀请弹框
-					if (state === ZIMCallUserState.Quit && this.callInfo?.inviter.userID === userID) {
-						if (callInvitationControl.isDialogShow) {
-							callInvitationControl.callInvitationDialogHide();
-							this.clearIncomingTimer();
-							this.endCall(CallInvitationEndReason.Canceled);
+					if (this.expressConfig.userID === this.callInfo?.inviter?.userID) {
+						// 本人网络断开取消
+						if (state === ZIMCallUserState.Cancelled) {
+							if (callInvitationControl.isWaitingPageShow) {
+								callInvitationControl.callInvitationWaitingPageHide();
+								this.clearOutgoingTimer();
+								this.endCall(CallInvitationEndReason.Canceled);
+							}
 						}
-					}
-					// 断网时接受，恢复网络处理被邀请者接受逻辑
-					if (state === ZIMCallUserState.Accepted && userID === this.expressConfig.userID) {
-						if (callInvitationControl.isDialogShow) {
-							this.clearIncomingTimer();
-							this.notifyJoinRoomCallback();
-							callInvitationControl.callInvitationDialogHide();
+						// 不处理本人的状态变化
+						if (userID === this.expressConfig.userID) return
+						if (state === ZIMCallUserState.Rejected) {
+							this.callInvitationRejected({ callID, invitee: userID, extendedData })
+							// switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
+							// 	case "LiveStreaming": {
+							// 		if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
+							// 			const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+							// 				call_id: callID,
+							// 				action: 'refuse'
+							// 			})
+							// 			span.end()
+							// 		} else {
+							// 			const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+							// 				call_id: callID,
+							// 				action: 'refuse'
+							// 			})
+							// 			span.end()
+							// 		}
+							// 	}
+							// 		break;
+							// 	case "OneONoneCall": {
+							const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
+								call_id: callID,
+								action: 'refuse'
+							})
+							span.end();
+							// 	}
+							// 		break
+							// }
+						}
+						if (state === ZIMCallUserState.Accepted) {
+							this.callInvitationAccepted({ callID, invitee: userID, extendedData })
+							const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+								call_id: callID,
+								action: 'accept'
+							})
+							span.end()
+						}
+						if (state === ZIMCallUserState.Timeout) {
+							this.callInviteesAnsweredTimeout({ callID, invitees: [userID] })
+							const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
+								call_id: callID,
+								action: 'timeout'
+							})
+							span.end();
+						}
+						// if (state === ZIMCallUserState.Ended) {
+						// 	if (callInvitationControl.isDialogShow) {
+						// 		callInvitationControl.callInvitationDialogHide();
+						// 		this.clearIncomingTimer();
+						// 		this.endCall(CallInvitationEndReason.Canceled);
+						// 	}
+						// }
+						// @ts-ignore
+						if (state === ZIMCallUserState.BeCancelled) {
+							this.removeWaitingUser(userID);
+						}
+					} else {
+						// 被邀请者
+						// 退出状态，邀请者在发送邀请过程中退出，被邀请者需要隐藏邀请弹框
+						if (state === ZIMCallUserState.Quit && this.callInfo?.inviter.userID === userID) {
+							if (callInvitationControl.isDialogShow) {
+								callInvitationControl.callInvitationDialogHide();
+								this.clearIncomingTimer();
+								this.endCall(CallInvitationEndReason.Canceled);
+							}
+						}
+						// 断网时接受，恢复网络处理被邀请者接受逻辑
+						if (state === ZIMCallUserState.Accepted && userID === this.expressConfig.userID) {
+							if (callInvitationControl.isDialogShow) {
+								this.clearIncomingTimer();
+								this.notifyJoinRoomCallback();
+								callInvitationControl.callInvitationDialogHide();
+							}
 						}
 					}
 				}
@@ -736,6 +736,7 @@ export class ZimManager {
 		if (this.callInfo.callID && !this.hasJoinedRoom) return Promise.reject("You already have a call invitation!");
 		if (!this.isServiceActivated) return Promise.reject("The call invitation service has not been activated.");
 		if (this.inSendOperation) return Promise.reject("send invitation repeat !!");
+
 		this.inSendOperation = true;
 		const inviteesID = invitees.map((i) => i.userID);
 		const zegoRoomID = roomID || `call_${this.expressConfig.userID}_${new Date().getTime()}`;
@@ -794,7 +795,7 @@ export class ZimManager {
 		}
 		if (this.hasJoinedRoom) {
 			if (!canInvitingInCalling) {
-				return Promise.reject('You already have a call invitation!')
+				return Promise.reject('You have joined the room!')
 			}
 			if (onlyInitiatorCanInvite && this.expressConfig.userID !== this.callInfo.inviter?.userID) {
 				return Promise.reject('Only initiator can invite')
@@ -1201,6 +1202,7 @@ export class ZimManager {
 			?.leaveRoom(roomID)
 			.then((res: any) => {
 				console.warn("【zim leaveRoom】success");
+				this.clearCallInfo();
 				const span = TracerConnect.createSpan(SpanEvent.ZIMLeaveRoom, {
 					room_id: roomID,
 					error: 0,

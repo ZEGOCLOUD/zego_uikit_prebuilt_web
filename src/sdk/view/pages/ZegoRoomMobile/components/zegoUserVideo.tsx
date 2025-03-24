@@ -86,7 +86,7 @@ export class ZegoUserVideo extends React.PureComponent<{
   render(): React.ReactNode {
     const volume =
       this.props.volume?.[this.props.user?.streamList?.[0]?.streamID];
-    const height = volume === undefined ? 7 : Math.ceil((volume * 7) / 100);
+    const height = volume === undefined ? 0 : Math.ceil((volume * 7) / 100);
     let { userInfo } = this.context;
 
     return (

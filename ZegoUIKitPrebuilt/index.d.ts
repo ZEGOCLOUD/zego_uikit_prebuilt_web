@@ -1,4 +1,3 @@
-import { ZegoUIKitCreateConfig } from "../src/sdk/model";
 
 declare type ZegoCloudRTCCore = {};
 declare type ZegoExpressEngine = {};
@@ -349,9 +348,19 @@ declare enum MessagePriority {
 	High = 3,
 }
 
-export enum ZegoUIKitLanguage {
+declare enum ZegoUIKitLanguage {
 	CHS = "zh-CN", // 中文
 	ENGLISH = "en-US", // 英文
+}
+
+declare interface ZegoUIKitCreateConfig {
+	cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] },
+	AiDenoiseConfig?: { mode: AiDenoiseMode }
+}
+
+declare enum AiDenoiseMode {
+	AI = 0,
+	AIBalanced = 1
 }
 export declare class ZegoUIKitPrebuilt {
 	static core: ZegoCloudRTCCore | undefined;

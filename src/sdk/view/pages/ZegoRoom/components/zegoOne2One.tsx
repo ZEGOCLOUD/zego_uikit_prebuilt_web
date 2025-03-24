@@ -14,10 +14,9 @@ export class ZegoOne2One extends React.PureComponent<{
   userList: ZegoCloudUser[];
 }> {
   componentDidMount(): void {
-    console.warn('===zegoone2one', this.props.userList);
+    console.warn('[ZegoOne2One]componentDidMount', this.props.userList);
   }
   componentDidUpdate(prevProps: Readonly<{ core: ZegoCloudRTCCore; selfInfo: { userID: string; }; onLocalStreamPaused: () => void; handleMenuItem?: Function; soundLevel?: SoundLevelMap; userList: ZegoCloudUser[]; }>, prevState: Readonly<{}>, snapshot?: any): void {
-    // console.warn('===zegoone2one', this.props.userList);
   }
   getVideoScreen() {
     const { showMoreButton, showUserName } = this.props.core._config;
