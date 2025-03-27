@@ -625,7 +625,7 @@ export class ZimManager {
 			callID,
 			invitee,
 			extendedData,
-		}, callInvitationControl.isWaitingPageShow, this.callInfo.invitees);
+		});
 		this._inRoomInviteMg.onCallInvitationRefused(callID, invitee, extendedData);
 		if (!this.callInfo.callID) return;
 		let reason;
