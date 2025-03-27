@@ -86,13 +86,35 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					// frameRate: 15,
 				},
 			});
-		} catch (error) {
+		} catch (error: any) {
 			this.videoRefuse = true;
 			this.audioRefuse = true;
 			this.setState({
 				isVideoOpening: false,
 			});
 			console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(error));
+			if (error && error.errorCode === 1103064) {
+				//@ts-ignore
+				navigator.permissions.query({ name: "microphone" }).then(permissionStatus => {
+					console.log('麦克风权限状态:', permissionStatus.state);
+					if (permissionStatus.state === 'granted') {
+						this.audioRefuse = false;
+					}
+				});
+				//@ts-ignore
+				navigator.permissions.query({ name: "camera" }).then(permissionStatus => {
+					console.log('摄像头权限状态:', permissionStatus.state);
+					if (permissionStatus.state === 'granted') {
+						this.videoRefuse = false;
+					}
+				});
+				const { formatMessage } = this.props.core.intl;
+				ZegoConfirm({
+					title: formatMessage({ id: "global.equipment" }),
+					content: formatMessage({ id: "global.equipmentDesc" }),
+					confirm: "Okay",
+				});
+			}
 		}
 
 		this.setState(
@@ -118,12 +140,12 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 	}
 
 	async toggleStream(type: "video" | "audio") {
+		const { formatMessage } = this.props.core.intl;
 		if (type === "video") {
 			if (this.videoRefuse) {
 				ZegoConfirm({
-					title: "Equipment authorization",
-					content:
-						"We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+					title: formatMessage({ id: "global.equipment" }),
+					content: formatMessage({ id: "global.equipmentDesc" }),
 					confirm: "Okay",
 				});
 				return;
@@ -144,9 +166,8 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		} else if (type === "audio") {
 			if (this.audioRefuse) {
 				ZegoConfirm({
-					title: "Equipment authorization",
-					content:
-						"We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+					title: formatMessage({ id: "global.equipment" }),
+					content: formatMessage({ id: "global.equipmentDesc" }),
 					confirm: "Okay",
 				});
 				return;

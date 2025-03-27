@@ -446,7 +446,7 @@ export default class App extends React.PureComponent {
           // 				</p>`
           // 	return wrapper
           // },
-          // language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
+          language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
           // leaveRoomDialogConfig: {
           //   descriptionText: '',
           //   confirmCallback: () => {
@@ -607,6 +607,9 @@ export default class App extends React.PureComponent {
               this.state.roomTimer = null;
               this.state.roomTime = 0;
             }
+            // 进房后sdk设置了容器高度为100%，呼叫邀请退房时没有重置高度，这里需要重置一下，不然会导致首页样式错乱
+            const dom = document.querySelector('#callInvitationWrapper') as HTMLElement;
+            dom.style.height = "auto";
           },
           showLeavingView: true,
           // turnOnCameraWhenJoining: false,
@@ -1183,7 +1186,7 @@ export default class App extends React.PureComponent {
               }`}></div>
         )}
         {this.state.callInvitation && (
-          <div className={APP.callInvitationWrapper}>
+          <div id="callInvitationWrapper" className={APP.callInvitationWrapper}>
             <div className={APP.invitationModel}>
               <div className={APP.invitationUserHeader}>
                 <div className={APP.invitationAvatar}>

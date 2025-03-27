@@ -36,6 +36,8 @@ const en = {
     "global.loginRoomFailed": "Login room Failed",
     "global.equipment": "Equipment authorization",
     "global.equipmentDesc": "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+    "global.micPermission": "In the video call scenario, please grant microphone permissions before operating the device.",
+    "global.cameraPermission": "In the video call scenario, please grant camera permissions before operating the device.",
     "global.browserNotSupportSharing": "Your browser does not support screen sharing.",
     "global.shareAuthority": "Grant access to share your screen",
     "global.shareAuthorityDesc": "Your system does not have access to share a screen from the browser. Please grant access to share your screen on your system settings.",

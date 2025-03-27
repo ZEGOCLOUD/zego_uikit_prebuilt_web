@@ -36,6 +36,8 @@ const zh = {
     "global.loginRoomFailed": "登录房间失败",
     "global.equipment": "设备授权",
     "global.equipmentDesc": "我们无法检测到您的设备。请检查您的设备，并允许我们在浏览器的地址栏中访问您的设备，然后重新加载此页面。",
+    "global.micPermission": "视频通话场景中，请先授予麦克风权限，再操作设备",
+    "global.cameraPermission": "视频通话场景中，请先授予摄像头权限，再操作设备",
     "global.browserNotSupportSharing": "您的浏览器不支持屏幕共享。",
     "global.shareAuthority": "授予共享屏幕的访问权限",
     "global.shareAuthorityDesc": "您的系统没有浏览器共享屏幕的权限，请在系统设置上授予共享屏幕的访问权限。",

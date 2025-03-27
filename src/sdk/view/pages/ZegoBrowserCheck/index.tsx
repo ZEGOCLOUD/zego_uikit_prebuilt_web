@@ -3,7 +3,7 @@ import ZegoBrowserCheckCss from "./index.module.scss";
 import { copy } from "../../../modules/tools/util";
 import { ZegoBrowserCheckProp } from "../../../model";
 import { ZegoSettings } from "../../components/zegoSetting";
-import { ZegoModel, ZegoModelShow } from "../../components/zegoModel";
+import { ZegoModelShow } from "../../components/zegoModel";
 import { getVideoResolution, throttle } from "../../../util";
 import { FormattedMessage } from "react-intl";
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
@@ -20,7 +20,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     isCopied: false, //  是否已经点击复制链接
     isJoinRoomFailed: false, // 是否加入房间失败
     joinRoomErrorTip: `Failed to join the room.`, // 加入房间失败提示
-    showDeviceAuthorAlert: false, // 控制设备权限警告弹窗
     selectMic: undefined,
     selectSpeaker: undefined,
     selectCamera: undefined,
@@ -159,7 +158,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     audioOpen: boolean
   ): Promise<ZegoLocalStream | undefined> {
     let localStream: ZegoLocalStream | undefined;
-    console.warn('======createstream', videoOpen, audioOpen, this.state.selectCamera, this.state);
+    console.warn('[ZegoBrowserCheck]createstream', videoOpen, audioOpen, this.state.selectCamera, this.state);
     try {
       // 开关摄像头时才提示
       if (videoOpen) {
@@ -181,7 +180,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         },
         videoBitrate: solution.bitrate
       });
-    } catch (error) {
+    } catch (error: any) {
       this.videoRefuse = true;
       this.audioRefuse = true;
       this.setState({
@@ -191,6 +190,31 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         "【ZEGOCLOUD】toggleStream/createStream failed !!",
         JSON.stringify(error)
       );
+      if (error && error.errorCode === 1103064) {
+        //@ts-ignore
+        navigator.permissions.query({ name: "microphone" }).then(permissionStatus => {
+          console.log('麦克风权限状态:', permissionStatus.state);
+          if (permissionStatus.state === 'granted') {
+            this.audioRefuse = false;
+          }
+        });
+        //@ts-ignore
+        navigator.permissions.query({ name: "camera" }).then(permissionStatus => {
+          console.log('摄像头权限状态:', permissionStatus.state);
+          if (permissionStatus.state === 'granted') {
+            this.videoRefuse = false;
+          }
+        });
+        const { formatMessage } = this.props.core.intl;
+        ZegoModelShow(
+          {
+            header: formatMessage({ id: "global.equipment" }),
+            contentText: formatMessage({ id: "global.equipmentDesc" }),
+            okText: "Okay",
+          },
+          document.querySelector(`.${ZegoBrowserCheckCss.support}`)
+        );
+      }
     }
 
     this.setState(
@@ -215,13 +239,13 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   }
 
   async toggleStream(type: "video" | "audio") {
+    const { formatMessage } = this.props.core.intl;
     if (type === "video") {
       if (this.videoRefuse) {
         ZegoModelShow(
           {
-            header: "Equipment authorization",
-            contentText:
-              "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+            header: formatMessage({ id: "global.equipment" }),
+            contentText: formatMessage({ id: "global.equipmentDesc" }),
             okText: "Okay",
           },
           document.querySelector(`.${ZegoBrowserCheckCss.support}`)
@@ -261,16 +285,14 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       if (this.audioRefuse) {
         ZegoModelShow(
           {
-            header: "Equipment authorization",
-            contentText:
-              "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again.",
+            header: formatMessage({ id: "global.equipment" }),
+            contentText: formatMessage({ id: "global.equipmentDesc" }),
             okText: "Okay",
           },
           document.querySelector(`.${ZegoBrowserCheckCss.support}`)
         );
         return;
       }
-      console.warn('===toggleaudio', this.state.localStream);
       const audioOpen = !this.state.audioOpen;
       if (!this.state.localStream) {
         if (!this.state.selectCamera || !this.state.selectMic || !this.state.selectSpeaker) {
@@ -287,7 +309,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         if (audioOpen) {
           (this.state.localStream as ZegoLocalStream).playAudio();
         } else {
-          console.warn('===stop audio', this.state.localStream);
           (this.state.localStream as ZegoLocalStream).stopAudio();
         }
         // this.props.core.muteMicrophone(audioOpen);
@@ -528,17 +549,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
             )}
           </div>
         </div>
-        {this.state.showDeviceAuthorAlert && (
-          <ZegoModel
-            header={"Equipment authorization"}
-            contentText={
-              "We can't detect your devices. Please check your devices and allow us access your devices in your browser's address bar. Then reload this page and try again."
-            }
-            okText="Okay"
-            onOk={() => {
-              this.setState({ showDeviceAuthorAlert: false });
-            }}></ZegoModel>
-        )}
         {this.state.showZegoSettings && (
           <ZegoSettings
             core={this.props.core}

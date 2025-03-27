@@ -656,7 +656,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		) {
 			return false;
 		}
-		if (!this.props.core.status.videoRefuse || !this.props.core.status.audioRefuse) {
+		if (!this.props.core.status.videoRefuse) {
 			try {
 				const solution = getVideoResolution(this.state.selectVideoResolution);
 				const localStream = await this.props.core.createZegoStream({
@@ -768,7 +768,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			);
 			return;
 		}
-
+		if (String(this.props.core._zimManager?.callInfo.type) !== '0' && this.props.core.status.videoRefuse) {
+			ZegoModelShow(
+				{
+					header: formatMessage({ id: "global.equipment" }),
+					contentText: formatMessage({ id: "global.cameraPermission" }),
+					okText: "Okay",
+				},
+				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+			);
+			return;
+		}
 		if (this.micStatus === -1) return;
 		this.micStatus = -1;
 
@@ -817,6 +827,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				{
 					header: formatMessage({ id: "global.equipment" }),
 					contentText: formatMessage({ id: "global.equipmentDesc" }),
+					okText: "Okay",
+				},
+				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+			);
+			return Promise.resolve(false);
+		}
+		if (String(this.props.core._zimManager?.callInfo.type) !== '0' && this.props.core.status.audioRefuse) {
+			ZegoModelShow(
+				{
+					header: formatMessage({ id: "global.equipment" }),
+					contentText: formatMessage({ id: "global.micPermission" }),
 					okText: "Okay",
 				},
 				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
