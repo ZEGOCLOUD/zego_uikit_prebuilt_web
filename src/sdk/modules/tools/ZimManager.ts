@@ -625,7 +625,7 @@ export class ZimManager {
 			callID,
 			invitee,
 			extendedData,
-		});
+		}, callInvitationControl.isWaitingPageShow, this.callInfo.invitees);
 		this._inRoomInviteMg.onCallInvitationRefused(callID, invitee, extendedData);
 		if (!this.callInfo.callID) return;
 		let reason;
@@ -650,10 +650,10 @@ export class ZimManager {
 			})
 			span.end();
 		}
-		if (callInvitationControl.isWaitingPageShow) {
+		if (this.callInfo.invitees.length <= 1) {
 			// 单人邀请，隐藏waitingPage,清除callInfo
 			this.clearOutgoingTimer();
-			callInvitationControl.callInvitationWaitingPageHide();
+			callInvitationControl.isWaitingPageShow && callInvitationControl.callInvitationWaitingPageHide();
 			this.endCall(reason === "busy" ? CallInvitationEndReason.Busy : CallInvitationEndReason.Declined);
 		} else {
 			// 多人邀请，
