@@ -268,8 +268,10 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       } else {
         if (videoOpen && this.localVideoRef.current) {
           (this.state.localStream as ZegoLocalStream).playVideo(this.localVideoRef.current, { objectFit: 'cover' });
+          this.props.core.enableVideoCaptureDevice(this.state.localStream, true);
         } else {
           (this.state.localStream as ZegoLocalStream).stopVideo();
+          this.props.core.enableVideoCaptureDevice(this.state.localStream, false);
         }
         // if (
         //   /Firefox/.test(navigator.userAgent) &&

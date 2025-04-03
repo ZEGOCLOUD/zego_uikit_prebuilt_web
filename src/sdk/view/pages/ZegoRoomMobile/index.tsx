@@ -1045,6 +1045,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         this.state.localStream,
         this.state.cameraOpen
       );
+      // 关闭时需要停止采集摄像头
+      this.props.core.enableVideoCaptureDevice(this.state.localStream, !this.state.cameraOpen);
       try {
         await this.props.core.setStreamExtraInfo(
           this.localStreamID as string,
