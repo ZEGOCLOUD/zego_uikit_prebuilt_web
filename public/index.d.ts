@@ -403,6 +403,7 @@ export declare class ZegoUIKitPrebuilt {
 		userName?: string
 	): string;
 	static create(kitToken: string, createConfig?: ZegoUIKitCreateConfig): ZegoUIKitPrebuilt;
+	static getVersion(): string;
 	addPlugins(plugins?: { ZegoSuperBoardManager?: any; ZIM?: any }): void;
 	joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
 	destroy(): void;

@@ -117,6 +117,9 @@ export class ZegoUIKitPrebuilt {
 		}
 		return ZegoUIKitPrebuilt._instance;
 	}
+	static getVersion(): string {
+		return '2.14.3' // SDK_VERSION;
+	}
 
 	addPlugins(plugins?: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager; ZIM?: typeof ZIM }) {
 		// @ts-ignore

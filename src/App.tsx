@@ -232,6 +232,7 @@ export default class App extends React.PureComponent {
           // token = ZegoUIKitPrebuilt.generateKitTokenForTest(0, "", roomID, userID, userName || getRandomName())
         }
         const zp = ZegoUIKitPrebuilt.create(token);
+        console.log('[demo]getVersion', ZegoUIKitPrebuilt.getVersion());
         //@ts-ignore // just for debugger
         window.zp = zp
         zp.express!.on("audioDeviceStateChanged", async (updateType, deviceType, deviceInfo) => {

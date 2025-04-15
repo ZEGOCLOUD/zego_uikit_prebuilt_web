@@ -129,9 +129,6 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					if (videoOpen) {
 						localStream.playVideo(this.localVideoRef.current, { objectFit: 'cover' });
 					}
-					if (audioOpen) {
-						localStream.playAudio();
-					}
 				}
 			}
 		);

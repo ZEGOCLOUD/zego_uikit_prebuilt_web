@@ -908,8 +908,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			if (this.props.core._config.screenSharingConfig?.resolution === ScreenSharingResolution.Custom) {
 				screenConfig = {
 					video: {
-						// express 3.8.0 版本传 quality 为 4 时，会出现屏幕共享报错的问题，先注释规避
-						// quality: 4,
+						quality: 4,
 						width: this.props.core._config.screenSharingConfig!.width!,
 						height: this.props.core._config.screenSharingConfig!.height!,
 						frameRate: this.props.core._config.screenSharingConfig!.frameRate!,
@@ -920,8 +919,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				const resolution = getVideoResolution(this.props.core._config.screenSharingConfig!.resolution!);
 				screenConfig = {
 					video: {
-						// express 3.8.0 版本传 quality 为 4 时，会出现屏幕共享报错的问题，先注释规避
-						// quality: 4,
+						quality: 4,
 						width: resolution.width,
 						height: resolution.height,
 						frameRate: resolution.frameRate
@@ -940,9 +938,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			const screenSharingStream = await this.props.core.createZegoStream({
 				// @ts-ignore
 				screen: {
-					...screenConfig,
+					...screenConfig.video,
 					audio: !isFireFox(),
 				},
+				videoBitrate: screenConfig.videoBitrate,
 			});
 
 			const streamID = this.props.core.publishLocalStream(
