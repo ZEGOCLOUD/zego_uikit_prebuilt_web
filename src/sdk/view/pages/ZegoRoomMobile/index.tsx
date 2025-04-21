@@ -1186,15 +1186,24 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       } else {
         message = msg
       }
-
-      resp = await this.props.core.sendRoomMessage(message)
+      if (this.props.core._config.sendMessageChannel) {
+        if (this.props.core._config.sendMessageChannel === "ZIM") {
+          resp = await this.props.core._zimManager?.sendTextMessage(message);
+          console.log('mytag sendMessage', resp)
+          this.props.core._config.onSendMessageResult && this.props.core._config.onSendMessageResult(resp);
+        } else {
+          resp = await this.props.core.sendRoomMessage(message);
+        }
+      } else {
+        resp = await this.props.core.sendRoomMessage(message);
+      }
     } catch (err) {
       console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
     }
     this.setState((state: { messageList: ZegoBroadcastMessageInfo2[] }) => {
       const _messageList = state.messageList.map((msg) => {
         if (msg.messageID === messageID) {
-          msg.status = resp.errorCode === 0 ? "SENDED" : "FAILED";
+          msg.status = resp?.errorCode === 0 ? "SENDED" : "FAILED";
         }
         return msg;
       });
@@ -2423,13 +2432,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   // 设置扬声器 ID
   private setAllSinkId(speakerId: string) {
-    const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
-    room?.querySelectorAll("video").forEach((video: any) => {
-      video?.setSinkId?.(speakerId || "");
-    });
-    room?.querySelectorAll("audio").forEach((audio: any) => {
-      audio?.setSinkId?.(speakerId || "");
-    });
+    for (let key in this.props.core.remoteStreamMap) {
+      this.props.core.remoteStreamMap[key].view?.useAudioOutputDevice(speakerId);
+    }
+    // const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
+    // room?.querySelectorAll("video").forEach((video: any) => {
+    //   video?.setSinkId?.(speakerId || "");
+    // });
+    // room?.querySelectorAll("audio").forEach((audio: any) => {
+    //   audio?.setSinkId?.(speakerId || "");
+    // });
   }
 
   get backgroundUrl() {

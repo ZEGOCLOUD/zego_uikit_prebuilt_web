@@ -230,6 +230,9 @@ declare interface ZegoCloudRoomConfig {
 	memberViewConfig?: {
 		operationListCustomButton?: () => Element
 	}
+	// 2.14.0
+	// Message sending channel configuration
+	sendMessageChannel?: "RTC" | "ZIM"
 }
 
 export enum ZegoUserState {

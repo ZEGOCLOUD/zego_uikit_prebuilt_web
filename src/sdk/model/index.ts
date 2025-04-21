@@ -4,6 +4,7 @@ import { ZegoCloudRTCCore } from "../modules"
 import { ZegoCloudUser, ZegoCloudUserList } from "../modules/tools/UserListManager"
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
 import { AiDenoiseMode } from "zego-express-engine-webrtc/sdk/code/zh/ZegoVoiceChangerEntity.web"
+import { ZegoStreamView } from "zego-express-engine-webrtc/sdk/code/zh/ZegoStreamView.web"
 export interface ZegoCloudRemoteMedia {
 	media: ZegoLocalStream | MediaStream | undefined
 	fromUser: ZegoUser
@@ -16,6 +17,7 @@ export interface ZegoCloudRemoteMedia {
 	urlsHttpsHLS?: string
 	hasAudio?: boolean
 	hasVideo?: boolean
+	view?: ZegoStreamView
 }
 
 export interface ZegoUIKitCreateConfig {
@@ -256,6 +258,9 @@ export interface ZegoCloudRoomConfig {
 	memberViewConfig?: {
 		operationListCustomButton?: () => Element
 	}
+	// 2.14.0
+	// 消息发送通道配置
+	sendMessageChannel?: "RTC" | "ZIM"
 }
 
 export enum ZegoUserState {

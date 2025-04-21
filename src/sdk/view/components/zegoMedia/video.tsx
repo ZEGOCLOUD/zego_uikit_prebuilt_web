@@ -77,6 +77,10 @@ export default class ZegoVideo extends React.PureComponent<{
 					try {
 						const remoteView = this.props.core.createRemoteStreamView(this.props.userInfo.streamList[0].media as MediaStream);
 						remoteView.play(this.videoRef, { mirror: !isScreenSharing, objectFit: videoObjectFit });
+						// 首页切换扬声器之后进房渲染view需要切换
+						remoteView.useAudioOutputDevice(this.props.core.status.speakerDeviceID || 'default');
+						// 存储 zegoStreamView
+						this.props.core.remoteStreamMap[this.props.userInfo.streamList[0].streamID].view = remoteView;
 					} catch (error) {
 						console.log('createRemoteStreamView error', error);
 					}

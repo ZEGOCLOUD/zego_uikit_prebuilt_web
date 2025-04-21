@@ -673,7 +673,20 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					},
 					videoBitrate: solution.bitrate,
 				});
-				console.warn('[ZegoRoom]createZegoStream localStream', localStream)
+				console.warn('[ZegoRoom]createZegoStream localStream', localStream, {
+					camera: {
+						video: !this.props.core.status.videoRefuse ? {
+							input: this.state.selectCamera,
+							quality: 4,
+							...solution,
+						} : false,
+						audio: !this.props.core.status.audioRefuse ? {
+							input: this.state.selectMic,
+							channelCount: this.props.core._config.enableStereo ? 2 : 1,
+						} : false,
+					},
+					videoBitrate: solution.bitrate,
+				})
 				this.props.core.localStream = localStream;
 				if (!this.props.core.status.videoRefuse) {
 					await this.props.core.mutePublishStreamVideo(
@@ -1105,11 +1118,15 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} else {
 				message = msg
 			}
-			if (this.props.core._zimManager) {
-				resp = await this.props.core._zimManager?.sendTextMessage(message);
-				this.props.core._config.onSendMessageResult && this.props.core._config.onSendMessageResult(resp);
+			if (this.props.core._config.sendMessageChannel) {
+				if (this.props.core._config.sendMessageChannel === "ZIM") {
+					resp = await this.props.core._zimManager?.sendTextMessage(message);
+					this.props.core._config.onSendMessageResult && this.props.core._config.onSendMessageResult(resp);
+				} else {
+					resp = await this.props.core.sendRoomMessage(message);
+				}
 			} else {
-				resp = await this.props.core.sendRoomMessage(message)
+				resp = await this.props.core.sendRoomMessage(message);
 			}
 		} catch (err) {
 			console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
@@ -1927,13 +1944,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 
 	// 设置扬声器 ID
 	private setAllSinkId(speakerId: string) {
-		const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
-		room?.querySelectorAll("video").forEach((video: any) => {
-			video?.setSinkId?.(speakerId || "");
-		});
-		room?.querySelectorAll("audio").forEach((audio: any) => {
-			audio?.setSinkId?.(speakerId || "");
-		});
+		for (let key in this.props.core.remoteStreamMap) {
+			this.props.core.remoteStreamMap[key].view?.useAudioOutputDevice(speakerId);
+		}
+
+		// const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
+		// room?.querySelectorAll("video").forEach((video: any) => {
+		// 	video?.setSinkId?.(speakerId || "");
+		// });
+		// room?.querySelectorAll("audio").forEach((audio: any) => {
+		// 	audio?.setSinkId?.(speakerId || "");
+		// });
 	}
 	showTurnOffMicrophoneButton(user: ZegoCloudUser) {
 		if (!this.props.core._config.showTurnOffRemoteMicrophoneButton) return false;
