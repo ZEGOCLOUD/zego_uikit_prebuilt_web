@@ -228,7 +228,10 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         if (this.localVideoRef.current && localStream) {
           if (videoOpen) {
             localStream.playVideo(this.localVideoRef.current, { objectFit: 'cover' });
+          } else {
+            localStream.stopVideo();
           }
+          this.props.core.enableVideoCaptureDevice(localStream, videoOpen);
         }
       }
     );
@@ -265,11 +268,10 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       } else {
         if (videoOpen && this.localVideoRef.current) {
           (this.state.localStream as ZegoLocalStream).playVideo(this.localVideoRef.current, { objectFit: 'cover' });
-          this.props.core.enableVideoCaptureDevice(this.state.localStream, true);
         } else {
           (this.state.localStream as ZegoLocalStream).stopVideo();
-          this.props.core.enableVideoCaptureDevice(this.state.localStream, false);
         }
+        this.props.core.enableVideoCaptureDevice(this.state.localStream, videoOpen);
         // if (
         //   /Firefox/.test(navigator.userAgent) &&
         //   this.videoRef.current &&
