@@ -113,6 +113,7 @@ const zh = {
     "room.resumePlay": "恢复播放",
     "room.banSending": "禁止发言",
     "room.cancelBanSending": "取消禁言",
+    "room.enableBackgroundProcessFailed": "开启背景虚化/虚拟背景失败",
 
     "mobileRoom.member": "成员",
     "mobileRoom.chat": "聊天",

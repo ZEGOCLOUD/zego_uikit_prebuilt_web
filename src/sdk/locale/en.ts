@@ -117,6 +117,7 @@ const en = {
     "room.resumePlay": "Resume",
     "room.banSending": "Ban sending messages",
     "room.cancelBanSending": "Cancel the message ban",
+    "room.enableBackgroundProcessFailed": "Failed to enable background blur/virtual background.",
 
     "mobileRoom.member": "Member",
     "mobileRoom.chat": "Chat",

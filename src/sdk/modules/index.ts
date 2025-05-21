@@ -4,6 +4,7 @@ import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zeg
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
 import {
 	AiDenoiseMode,
+	BackgroundBlurOptions,
 	ZegoDeviceInfo,
 	ZegoLocalStreamConfig,
 	ZegoMixStreamAdvance,
@@ -50,6 +51,7 @@ import { i18nMap } from '../locale';
 import { ZegoStreamView } from "zego-express-engine-webrtc/sdk/code/zh/ZegoStreamView.web"
 // import { AiDenoise } from "zego-express-engine-webrtc/aidenoise";
 import { VoiceChanger } from "zego-express-engine-webrtc/voice-changer";
+import { BackgroundProcess } from 'zego-express-engine-webrtc/background-process';
 import { TracerConnect } from "./tools/ZegoTracer"
 import { SpanEvent } from "../model/tracer"
 
@@ -74,30 +76,35 @@ export class ZegoCloudRTCCore {
 	// 多语言
 	intl: any
 	AiDenoiseConfig: { mode: AiDenoiseMode } | null = null;
+	BackgroundProcessConfig: {
+		blurDegree?: 1 | 2 | 3, source?: HTMLImageElement,
+		objectFit?: 'fill' | 'contain' | 'cover', initialized?: boolean, enabled?: boolean
+	} | null = null;
 	//   static _soundMeter: SoundMeter;
 	// 当前屏幕状态
 	isScreenPortrait: boolean = true;
 	static getInstance(kitToken: string, createConfig?: ZegoUIKitCreateConfig, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoCloudRTCCore {
 		const config = getConfig(kitToken);
+		console.warn('===createConfig', createConfig?.BackgroundProcessConfig, config);
 		if (!ZegoCloudRTCCore._instance && config) {
 			// 开启云代理
 			createConfig?.cloudProxyConfig && (ZegoExpressEngine.setCloudProxyConfig(createConfig.cloudProxyConfig.proxyList, config.token, true));
 			// 开启ai降噪
-			console.warn('===createConfig', createConfig?.AiDenoiseConfig);
-			ZegoExpressEngine.use(VoiceChanger)
 			createConfig?.AiDenoiseConfig && (ZegoExpressEngine.use(VoiceChanger));
-			ZegoCloudRTCCore._instance = new ZegoCloudRTCCore()
-			ZegoCloudRTCCore._instance._expressConfig = config
+			// 开启背景处理
+			createConfig?.BackgroundProcessConfig && (ZegoExpressEngine.use(BackgroundProcess));
+			ZegoCloudRTCCore._instance = new ZegoCloudRTCCore();
+			ZegoCloudRTCCore._instance._expressConfig = config;
 			//   ZegoCloudRTCCore._soundMeter = new SoundMeter();
 			ZegoCloudRTCCore._zg = new ZegoExpressEngine(
 				ZegoCloudRTCCore._instance._expressConfig.appID,
 				"wss://webliveroom" + ZegoCloudRTCCore._instance._expressConfig.appID + "-api.zegocloud.com/ws"
 			)
-			createConfig?.AiDenoiseConfig && (ZegoCloudRTCCore._instance.AiDenoiseConfig = createConfig.AiDenoiseConfig)
-			ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(ZegoCloudRTCCore._zg)
+			createConfig?.AiDenoiseConfig && (ZegoCloudRTCCore._instance.AiDenoiseConfig = createConfig.AiDenoiseConfig);
+			createConfig?.BackgroundProcessConfig && (ZegoCloudRTCCore._instance.BackgroundProcessConfig = createConfig.BackgroundProcessConfig);
+			ZegoCloudRTCCore._instance.zum = new ZegoCloudUserListManager(ZegoCloudRTCCore._zg);
 			TracerConnect.createTracer(this._instance._expressConfig.appID, this._instance._expressConfig.token, this._instance._expressConfig.userID);
 		}
-
 		return ZegoCloudRTCCore._instance
 	}
 	// static getVersion(): string {
@@ -218,6 +225,7 @@ export class ZegoCloudRTCCore {
 			},
 			videoScreenConfig: {
 				objectFit: "contain",
+				mirror: false,
 			}
 		}
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage"
@@ -840,6 +848,33 @@ export class ZegoCloudRTCCore {
 			await ZegoCloudRTCCore._zg.setAiDenoiseMode(localStream, ZegoCloudRTCCore._instance.AiDenoiseConfig.mode);
 			await ZegoCloudRTCCore._zg.enableAiDenoise(localStream, true);
 		}
+		if (ZegoCloudRTCCore._instance.BackgroundProcessConfig && localStream) {
+			if (!ZegoCloudRTCCore._instance.BackgroundProcessConfig.initialized) {
+				try {
+					ZegoCloudRTCCore._zg.initBackgroundModule &&
+						await ZegoCloudRTCCore._zg.initBackgroundModule(0, `./assets`)
+							.then(() => {
+								console.log("初始化背景处理模块成功");
+								ZegoCloudRTCCore._instance.BackgroundProcessConfig!.initialized = true;
+							});
+				} catch (err) {
+					// 控制台打印初始化背景处理模块错误
+					console.error("初始化背景模块失败", err);
+				}
+			}
+			console.warn('[createZegoStream]open backgroundProcess', localStream, ZegoCloudRTCCore._instance.BackgroundProcessConfig)
+			if (ZegoCloudRTCCore._instance.BackgroundProcessConfig.blurDegree) {
+				ZegoCloudRTCCore._zg.setBackgroundBlurOptions(localStream, {
+					blurDegree: ZegoCloudRTCCore._instance.BackgroundProcessConfig.blurDegree  // 虚化等级 1、2	、3，等级越大，虚化程度越高
+				});
+			} else {
+				ZegoCloudRTCCore._zg.setVirtualBackgroundOptions(localStream, {
+					source: ZegoCloudRTCCore._instance.BackgroundProcessConfig.source,
+					objectFit: ZegoCloudRTCCore._instance.BackgroundProcessConfig.objectFit,
+				})
+			}
+		}
+		this._config.onLocalStreamCreated && this._config.onLocalStreamCreated(localStream);
 		return localStream;
 	}
 
@@ -2485,5 +2520,44 @@ export class ZegoCloudRTCCore {
 				result = false
 			});
 		return result;
+	}
+
+	// 关闭背景虚化及虚拟背景
+	async closeBackgroundProcess() {
+		if (this.localStream) {
+			try {
+				const res = await ZegoCloudRTCCore._zg.enableBackgroundProcess(this.localStream, false, 0);
+				if (res.errorCode === 0) {
+					ZegoCloudRTCCore._instance.BackgroundProcessConfig!.enabled = false;
+				}
+				return res;
+			} catch (error: ZegoServerResponse | any) {
+				console.log('[ZegoCloudRTCCore]closeBackgroundProcess error', error);
+				return error;
+			}
+		} else {
+			console.warn('[ZegoCloudRTCCore]closeBackgroundProcess localStream is null');
+			return { errorCode: -1, extendedData: 'localStream is null' };
+		}
+	}
+
+	// 开启背景虚化及虚拟背景
+	async openBackgroundProcess(): Promise<ZegoServerResponse> {
+		if (this.localStream) {
+			try {
+				const res = await ZegoCloudRTCCore._zg.enableBackgroundProcess(this.localStream, true, 0);
+				console.log('[ZegoCloudRTCCore]openBackgroundProcess', res);
+				if (res.errorCode === 0) {
+					ZegoCloudRTCCore._instance.BackgroundProcessConfig!.enabled = true;
+				}
+				return res;
+			} catch (error: ZegoServerResponse | any) {
+				console.warn('[ZegoCloudRTCCore]openBackgroundProcess error', error);
+				return error;
+			}
+		} else {
+			console.warn('[ZegoCloudRTCCore]openBackgroundProcess localStream is null');
+			return { errorCode: -1, extendedData: 'localStream is null' };
+		}
 	}
 }

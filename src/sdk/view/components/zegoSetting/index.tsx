@@ -486,7 +486,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                           el &&
                           this.state.localVideoStream
                         ) {
-                          (this.state.localVideoStream as ZegoLocalStream).playVideo(el, { mirror: true, objectFit: "cover" })
+                          (this.state.localVideoStream as ZegoLocalStream).playVideo(el, { objectFit: "cover" })
                         }
                       }}>
                     </div>

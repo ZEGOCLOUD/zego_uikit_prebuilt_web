@@ -118,7 +118,7 @@ export class ZegoUIKitPrebuilt {
 		return ZegoUIKitPrebuilt._instance;
 	}
 	static getVersion(): string {
-		return '2.14.3' // SDK_VERSION;
+		return '2.14.3-beta' // SDK_VERSION;
 	}
 
 	addPlugins(plugins?: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager; ZIM?: typeof ZIM }) {
@@ -357,5 +357,19 @@ export class ZegoUIKitPrebuilt {
 
 	renewToken(kitToken: string): boolean {
 		return ZegoUIKitPrebuilt.core?.renewToken(kitToken)!;
+	}
+	async closeBackgroundProcess() {
+		if (ZegoUIKitPrebuilt.core?.BackgroundProcessConfig!.initialized) {
+			return await ZegoUIKitPrebuilt.core?.closeBackgroundProcess();
+		} else {
+			console.error("【ZEGOCLOUD】please init background process first !!");
+		}
+	}
+	async openBackgroundProcess() {
+		if (ZegoUIKitPrebuilt.core?.BackgroundProcessConfig!.initialized) {
+			return await ZegoUIKitPrebuilt.core?.openBackgroundProcess();
+		} else {
+			console.error("【ZEGOCLOUD】please init background process first !!");
+		}
 	}
 }

@@ -227,7 +227,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       () => {
         if (this.localVideoRef.current && localStream) {
           if (videoOpen) {
-            localStream.playVideo(this.localVideoRef.current, { objectFit: 'cover' });
+            localStream.playVideo(this.localVideoRef.current, { mirror: this.props.core._config.videoScreenConfig?.mirror, objectFit: 'cover' });
           } else {
             localStream.stopVideo();
           }

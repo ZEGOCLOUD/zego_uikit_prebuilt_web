@@ -16,7 +16,7 @@ import {
 	ZegoUIKitLanguage,
 } from "../../../model";
 import ZegoRoomCss from "./index.module.scss";
-import { ZegoUser, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import { ZegoUser, ZegoBroadcastMessageInfo, ZegoServerResponse } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
@@ -713,6 +713,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					const res = this.props.core.publishLocalStream(localStream, "main", extraInfo);
 					if (res !== false) {
 						this.localStreamID = res as string;
+					} else {
+						// 推流失败就销毁创建的流
+						console.error("【ZEGOCLOUD】publishStream failed: It may be that the background process is not turned on.", res);
+						this.props.core.destroyStream(localStream);
+						this.setState({
+							localStream: null,
+						});
+						return false;
 					}
 				} catch (error) {
 					// 推流失败就销毁创建的流
@@ -756,10 +764,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	stopPublish() {
 		try {
 			this.localStreamID && this.props.core.stopPublishingStream(this.localStreamID);
-			console.log('===mytag', this.state.localStream)
 			this.state.localStream && this.props.core.destroyStream(this.state.localStream);
 			this.props.core.localStream = undefined;
-
 			this.setState({
 				localStream: null,
 			});
@@ -2075,6 +2081,21 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		return this.props.core._zimManager?.callInfo?.invitees || []
 	}
 
+	async toggleBackgroundBlur() {
+		const { formatMessage } = this.props.core.intl;
+		let res: ZegoServerResponse;
+		if (this.props.core.BackgroundProcessConfig?.enabled) {
+			res = await this.props.core.closeBackgroundProcess();
+		} else {
+			res = await this.props.core.openBackgroundProcess();
+		}
+		if (res && res.errorCode) {
+			ZegoToast({
+				content: formatMessage({ id: "room.enableBackgroundProcessFailed" }),
+			});
+		}
+	}
+
 	render(): React.ReactNode {
 		const startIndex = this.state.notificationList.length < 4 ? 0 : this.state.notificationList.length - 2;
 		const { formatMessage } = this.props.core.intl
@@ -2282,7 +2303,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 											this.toggleWhiteboardSharing()
 										}}></div>
 								)}
-
+							{this.props.core._config.showBackgroundProcessButton &&
+								(<div id="ZegoRoomBackgroundProcessButton"
+									className={`${ZegoRoomCss.backgroundBlurButton} ${!this.props.core.BackgroundProcessConfig?.enabled && ZegoRoomCss.close}`}
+									onClick={() => { this.toggleBackgroundBlur() }}>
+								</div>)
+							}
 							{(this.props.core._config.showAudioVideoSettingsButton ||
 								this.props.core._config.showLayoutButton) && (
 									<div

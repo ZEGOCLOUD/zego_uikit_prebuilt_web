@@ -22,7 +22,12 @@ export interface ZegoCloudRemoteMedia {
 
 export interface ZegoUIKitCreateConfig {
 	cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] },
-	AiDenoiseConfig?: { mode: AiDenoiseMode }
+	AiDenoiseConfig?: { mode: AiDenoiseMode },
+	BackgroundProcessConfig?: {
+		blurDegree?: 1 | 2 | 3,
+		source?: HTMLImageElement,
+		objectFit?: 'fill' | 'contain' | 'cover',
+	}
 }
 
 export enum LiveRole {
@@ -245,6 +250,7 @@ export interface ZegoCloudRoomConfig {
 	// 整体视频画面配置
 	videoScreenConfig?: {
 		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
+		mirror?: boolean // 是否镜像，默认 false
 	}
 	// 发送消息回调
 	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
@@ -261,6 +267,10 @@ export interface ZegoCloudRoomConfig {
 	// 2.14.0
 	// 消息发送通道配置
 	sendMessageChannel?: "RTC" | "ZIM"
+	// 2.15.0
+	// 背景虚化及虚拟背景开关按钮
+	showBackgroundProcessButton?: boolean
+	onLocalStreamCreated?: (stream: ZegoLocalStream) => void
 }
 
 export enum ZegoUserState {

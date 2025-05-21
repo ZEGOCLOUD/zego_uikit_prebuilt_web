@@ -435,7 +435,7 @@ export class ZimManager {
 					// 不处理本人的状态变化
 					if (userID === this.expressConfig.userID) return
 					if (state === ZIMCallUserState.Accepted) {
-						// this.callInvitationAccepted({ callID, invitee: userID, extendedData })
+						this.callInvitationAccepted({ callID, invitee: userID, extendedData })
 						if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
 							const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
 								call_id: callID,
