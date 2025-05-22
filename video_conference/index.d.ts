@@ -209,6 +209,39 @@ declare interface ZegoCloudRoomConfig {
 	showWaitingCallAcceptAudioVideoView?: boolean;
 	// Configure the call invitation list during a call
 	callingInvitationListConfig?: CallingInvitationListConfig;
+	// 2.13.0
+	// Custom view in the room, located above the video
+	requireRoomForegroundView?: () => HTMLElement;
+	// 2.13.1
+	// Overall video screen configuration
+	videoScreenConfig?: {
+		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
+		mirror?: boolean // 视频画面是否镜像，默认 false
+	}
+	// Send Message Response
+	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
+	// Screen rotation Button
+	showRotatingScreenButton?: boolean;
+	// Screen rotation notification
+	onScreenRotation?: () => void
+	// User status updated
+	onUserStateUpdated?: (status: ZegoUserState) => void
+	// Member view config
+	memberViewConfig?: {
+		operationListCustomButton?: () => Element
+	}
+	// 2.14.0
+	// Message sending channel configuration
+	sendMessageChannel?: "RTC" | "ZIM"
+	// 2.15.0
+	// 背景虚化及虚拟背景开关按钮
+	showBackgroundProcessButton?: boolean
+	onLocalStreamCreated?: (stream) => void
+}
+
+export enum ZegoUserState {
+	Normal = "Normal",
+	Banned = "Banned"
 }
 
 export enum RightPanelExpandedType {
@@ -296,6 +329,8 @@ declare interface ZegoCallInvitationConfig {
 	// Whether the whole call should end when the call originator leaves the call (causing other participants to leave together), The default value is false.
 	// If it is set to false, the call can continue even if the initiator leaves.
 	endCallWhenInitiatorLeave?: boolean;
+	// onTokenWillExpire 还未进房前需要监听
+	onTokenWillExpire?: () => void
 }
 
 declare interface ZegoSignalingPluginNotificationConfig {
@@ -320,9 +355,19 @@ declare enum MessagePriority {
 	High = 3,
 }
 
-export enum ZegoUIKitLanguage {
+declare enum ZegoUIKitLanguage {
 	CHS = "zh-CN", // 中文
 	ENGLISH = "en-US", // 英文
+}
+
+declare interface ZegoUIKitCreateConfig {
+	cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] },
+	AiDenoiseConfig?: { mode: AiDenoiseMode }
+}
+
+declare enum AiDenoiseMode {
+	AI = 0,
+	AIBalanced = 1
 }
 export declare class ZegoUIKitPrebuilt {
 	static core: ZegoCloudRTCCore | undefined;
@@ -364,7 +409,8 @@ export declare class ZegoUIKitPrebuilt {
 		userID: string,
 		userName?: string
 	): string;
-	static create(kitToken: string, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoUIKitPrebuilt;
+	static create(kitToken: string, createConfig?: ZegoUIKitCreateConfig): ZegoUIKitPrebuilt;
+	static getVersion(): string;
 	addPlugins(plugins?: { ZegoSuperBoardManager?: any; ZIM?: any }): void;
 	joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
 	destroy(): void;
@@ -388,4 +434,11 @@ export declare class ZegoUIKitPrebuilt {
 	getRoomID(): string;
 	// 2.11.0
 	updateCallingInvitationListConfig(config: CallingInvitationListConfig): void
+	// 2.13.0
+	rotateToLandscape(): void
+	rotateToPortrait(): void
+	renewToken(): boolean
+	// 2.15.0
+	closeBackgroundProcess(): void
+	openBackgroundProcess(): void
 }
