@@ -822,10 +822,6 @@ export class ZegoCloudRTCCore {
 		return ZegoCloudRTCCore._zg.getCameras()
 	}
 
-	useVideoDevice(localStream: MediaStream, deviceID: string): Promise<ZegoServerResponse> {
-		return ZegoCloudRTCCore._zg.useVideoDevice(localStream, deviceID)
-	}
-
 	getMicrophones(): Promise<ZegoDeviceInfo[]> {
 		return ZegoCloudRTCCore._zg.getMicrophones()
 	}
@@ -843,6 +839,7 @@ export class ZegoCloudRTCCore {
 
 	async createZegoStream(source?: ZegoStreamOptions): Promise<ZegoLocalStream> {
 		const localStream = await ZegoCloudRTCCore._zg.createZegoStream(source);
+		this.localStream = localStream;
 		if (ZegoCloudRTCCore._instance.AiDenoiseConfig) {
 			console.warn('[createZegoStream]open aiDenoise', ZegoCloudRTCCore._instance.AiDenoiseConfig)
 			await ZegoCloudRTCCore._zg.setAiDenoiseMode(localStream, ZegoCloudRTCCore._instance.AiDenoiseConfig.mode);
@@ -1128,6 +1125,7 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.off("publishQualityUpdate")
 		ZegoCloudRTCCore._zg.off("soundLevelUpdate")
 		ZegoCloudRTCCore._zg.off("IMRecvCustomCommand")
+		ZegoCloudRTCCore._zg.off("videoDeviceStateChanged")
 
 		if (this.zegoSuperBoard) {
 			// 监听远端新增白板
@@ -1342,6 +1340,9 @@ export class ZegoCloudRTCCore {
 		})
 		ZegoCloudRTCCore._zg.on("publisherVideoEncoderChanged", (fromCodecID: ZegoVideoCodecID, toCodecID: ZegoVideoCodecID, streamID: string) => {
 			console.warn('[ZegoCloudRTCCore]publisherVideoEncoderChanged]', fromCodecID, toCodecID, streamID)
+		})
+		ZegoCloudRTCCore._zg.on("videoDeviceStateChanged", (updateType: 'DELETE' | 'ADD', deviceInfo: { deviceName: string; deviceID: string; }) => {
+			console.warn('[ZegoCloudRTCCore]videoDeviceStateChanged]', updateType, deviceInfo)
 		})
 
 		if (this.zegoSuperBoard) {

@@ -183,7 +183,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					console.warn('===stop audio', this.state.localStream);
 					(this.state.localStream as ZegoLocalStream).stopAudio();
 				}
-				// this.props.core.muteMicrophone(audioOpen);
+				this.props.core.muteMicrophone(audioOpen);
 			}
 			this.setState({ audioOpen });
 		}

@@ -220,7 +220,6 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   }
   async toggleCamera(deviceID: string) {
     if (!this.state.localVideoStream) return;
-
     const res = await this.props.core.useCameraDevice(
       this.state.localVideoStream,
       deviceID

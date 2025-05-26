@@ -1236,6 +1236,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		console.log('【ZegoRoom】leaveRoom function', isKickedOut, isCallQuit)
 		this.props.core._zimManager?._inRoomInviteMg?.audienceCancelRequest();
 		this.state.isScreenSharingBySelf && this.closeScreenSharing();
+		this.props.core.BackgroundProcessConfig?.enabled && this.props.core.closeBackgroundProcess();
 		this.state.localStream && this.props.core.destroyStream(this.state.localStream);
 		this.props.core.localStream = undefined;
 		this.props.core.leaveRoom();

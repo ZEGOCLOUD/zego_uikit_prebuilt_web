@@ -214,7 +214,6 @@ export default class App extends React.PureComponent {
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
       console.warn("【Zego Demo】app call_invitation");
-
       this.initCallInvitation(urlAppID ? urlAppID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken, backgroundProcess);
       this.state.showSettingsBtn = true;
     } else {
@@ -263,6 +262,12 @@ export default class App extends React.PureComponent {
             }
           }
         })
+        // zp.express!.on("roomStreamUpdate", (roomID: string,
+        //   updateType: "DELETE" | "ADD",
+        //   streamList: any[],
+        //   extendedData?: string) => {
+        //   console.log('[demo]roomStreamUpdate', roomID, updateType, streamList, extendedData);
+        // })
         if (process.env.REACT_APP_PATH !== "live_stream") {
           zp.addPlugins({ ZegoSuperBoardManager })
         } else {
@@ -479,6 +484,9 @@ export default class App extends React.PureComponent {
           showBackgroundProcessButton: true,
           onLocalStreamCreated: (stream) => {
             console.log('onLocalStreamCreated', stream);
+            // zp.express!.setCaptureAudioFrameCallback(stream, (data) => {
+            // console.log('===setCaptureAudioFrameCallback', data);
+            // })
             // setTimeout(async () => {
             //   const res = await zp.openBackgroundProcess();
             //   console.log('====openBackgroundProcess', res)
