@@ -137,7 +137,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
           audio: false,
         },
       };
-      const localVideoStream = await this.props.core.createZegoStream(source);
+      const localVideoStream = await this.props.core.createZegoStream(source, true);
       this.setState({
         localVideoStream,
       });
@@ -160,7 +160,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
           audio: { input: this.state.selectMic },
         },
       };
-      const localAudioStream = await this.props.core.createZegoStream(source);
+      const localAudioStream = await this.props.core.createZegoStream(source, true);
       this.setState(
         {
           localAudioStream,
@@ -220,7 +220,6 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   }
   async toggleCamera(deviceID: string) {
     if (!this.state.localVideoStream) return;
-
     const res = await this.props.core.useCameraDevice(
       this.state.localVideoStream,
       deviceID
@@ -486,7 +485,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
                           el &&
                           this.state.localVideoStream
                         ) {
-                          (this.state.localVideoStream as ZegoLocalStream).playVideo(el, { mirror: true, objectFit: "cover" })
+                          (this.state.localVideoStream as ZegoLocalStream).playVideo(el, { objectFit: "cover" })
                         }
                       }}>
                     </div>

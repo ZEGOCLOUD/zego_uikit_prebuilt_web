@@ -10,6 +10,7 @@ import {
   ScenarioModel,
   ZegoCloudRoomConfig,
   ZegoInvitationType,
+  ZegoUIKitCreateConfig,
   ZegoUIKitLanguage,
   ZegoUser,
 } from "./sdk/model";
@@ -98,7 +99,7 @@ export default class App extends React.PureComponent {
     const enableMixing = getUrlParams().get("mixing") === "1" || false;
     const urlToken = getUrlParams().get("token")?.replace(/\s/g, '+') || "";
     const urlAppID = Number(getUrlParams().get("appID"));
-
+    const backgroundProcess = getUrlParams().get("backgroundProcess") || "false";
     let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
       role_p === "Host"
@@ -213,8 +214,7 @@ export default class App extends React.PureComponent {
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
       console.warn("【Zego Demo】app call_invitation");
-
-      this.initCallInvitation(urlAppID ? urlAppID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken);
+      this.initCallInvitation(urlAppID ? urlAppID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken, backgroundProcess);
       this.state.showSettingsBtn = true;
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
@@ -231,9 +231,24 @@ export default class App extends React.PureComponent {
           token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, userName || getRandomName())).token;
           // token = ZegoUIKitPrebuilt.generateKitTokenForTest(0, "", roomID, userID, userName || getRandomName())
         }
-        const zp = ZegoUIKitPrebuilt.create(token);
+        let createConfig: ZegoUIKitCreateConfig = {
+          BackgroundProcessConfig: {
+            blurDegree: 1
+          }
+        };
+        if (backgroundProcess === "virtual") {
+          const img = document.createElement("img");
+          img.src = require("./sdk/sdkAssets/background.jpg");
+          createConfig.BackgroundProcessConfig = {
+            source: img,
+            objectFit: "cover",
+          };
+        }
+        const zp = ZegoUIKitPrebuilt.create(token, createConfig);
+        console.log('[demo]getVersion', ZegoUIKitPrebuilt.getVersion());
         //@ts-ignore // just for debugger
-        window.zp = zp
+        window.zp = zp;
+        // zp.express!.setDebugVerbose(true);
         zp.express!.on("audioDeviceStateChanged", async (updateType, deviceType, deviceInfo) => {
           if (isPc()) return
           if (updateType === "ADD") {
@@ -247,10 +262,16 @@ export default class App extends React.PureComponent {
             }
           }
         })
+        // zp.express!.on("roomStreamUpdate", (roomID: string,
+        //   updateType: "DELETE" | "ADD",
+        //   streamList: any[],
+        //   extendedData?: string) => {
+        //   console.log('[demo]roomStreamUpdate', roomID, updateType, streamList, extendedData);
+        // })
         if (process.env.REACT_APP_PATH !== "live_stream") {
           zp.addPlugins({ ZegoSuperBoardManager })
         } else {
-          zp.addPlugins({ ZIM })
+          zp.addPlugins({ ZIM, ZegoSuperBoardManager })
           // @ts-ignore
           ZIM.getInstance().setLogConfig({
             logLevel: "error",
@@ -258,7 +279,7 @@ export default class App extends React.PureComponent {
         }
         const param: ZegoCloudRoomConfig = {
           container: element, // 挂载容器
-          console: ZegoUIKitPrebuilt.ConsoleNone,
+          console: ZegoUIKitPrebuilt.ConsoleError,
           sharedLinks,
           scenario: {
             mode,
@@ -388,6 +409,9 @@ export default class App extends React.PureComponent {
           branding: {
             logoURL: require("./assets/zegocloud_logo.png"),
           },
+          // videoScreenConfig: {
+          //   mirror: true
+          // },
           // onUserAvatarSetter: (user) => {
           //   user.forEach((u) => {
           //     u.setUserAvatar &&
@@ -457,6 +481,17 @@ export default class App extends React.PureComponent {
             // showAddImageButton: true,
             // showCreateAndCloseButton: true,
           },
+          showBackgroundProcessButton: true,
+          onLocalStreamCreated: (stream) => {
+            console.log('onLocalStreamCreated', stream);
+            // zp.express!.setCaptureAudioFrameCallback(stream, (data) => {
+            // console.log('===setCaptureAudioFrameCallback', data);
+            // })
+            // setTimeout(async () => {
+            //   const res = await zp.openBackgroundProcess();
+            //   console.log('====openBackgroundProcess', res)
+            // }, 5000);
+          },
           // requireRoomForegroundView: () => {
           //   const myView = document.createElement('div');
           //   myView.classList.add("my-view");
@@ -501,8 +536,7 @@ export default class App extends React.PureComponent {
     //   console.log('===roomid', sessionStorage.getItem('roomID'))
     // }
   }
-  private async initCallInvitation(appID: number, userID: string, roomID: string, urlToken: string) {
-    console.log('===init', appID, userID);
+  private async initCallInvitation(appID: number, userID: string, roomID: string, urlToken: string, backgroundProcess?: string) {
     this.state.userID = userID;
     this.state.userName = "user_" + userID;
     this.state.callInvitation = true;
@@ -519,9 +553,22 @@ export default class App extends React.PureComponent {
     } else {
       kitToken = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
       // @ts-ignore
-      // token = ZegoUIKitPrebuilt.generateKitTokenForTest(550374443, '6402e3cadb20e8d4c4937faf614e1434', 1, '610', 'mes')
+      // kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(1056033799, '86d062c8ea82690db13fb132826d2d2a', 1, '1702', 'user_1702ss')
     }
-    this.zp = ZegoUIKitPrebuilt.create(kitToken);
+    let createConfig: ZegoUIKitCreateConfig = {
+      BackgroundProcessConfig: {
+        blurDegree: 1
+      }
+    };
+    if (backgroundProcess === "virtual") {
+      const img = document.createElement("img");
+      img.src = require("./sdk/sdkAssets/background.jpg");
+      createConfig.BackgroundProcessConfig = {
+        source: img,
+        objectFit: "cover",
+      };
+    }
+    this.zp = ZegoUIKitPrebuilt.create(kitToken, createConfig);
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
     //@ts-ignore // just for debugger
     window.zp = this.zp;
@@ -612,12 +659,22 @@ export default class App extends React.PureComponent {
             dom.style.height = "auto";
           },
           showLeavingView: true,
+          // videoScreenConfig: {
+          //   mirror: true
+          // },
+          showBackgroundProcessButton: true,
           // turnOnCameraWhenJoining: false,
           // turnOnMicrophoneWhenJoining: false,
           // autoLeaveRoomWhenOnlySelfInRoom: false,
           // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
           // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
-
+          onLocalStreamCreated: (stream) => {
+            console.log('onLocalStreamCreated', stream);
+            // setTimeout(async () => {
+            //   const res = await this.zp.openBackgroundProcess();
+            //   console.log('====openBackgroundProcess', res)
+            // }, 5000);
+          },
         };
       },
       onCallInvitationEnded: (reason, data) => {

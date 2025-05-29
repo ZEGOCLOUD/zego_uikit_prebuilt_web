@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> hotfix/2.14.3
 declare type ZegoCloudRTCCore = {};
 declare type ZegoExpressEngine = {};
 declare interface ZegoUser {
@@ -217,6 +220,7 @@ declare interface ZegoCloudRoomConfig {
 	// Overall video screen configuration
 	videoScreenConfig?: {
 		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
+		mirror?: boolean // 视频画面是否镜像，默认 false
 	}
 	// Send Message Response
 	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
@@ -230,6 +234,13 @@ declare interface ZegoCloudRoomConfig {
 	memberViewConfig?: {
 		operationListCustomButton?: () => Element
 	}
+	// 2.14.0
+	// Message sending channel configuration
+	sendMessageChannel?: "RTC" | "ZIM"
+	// 2.15.0
+	// 背景虚化及虚拟背景开关按钮
+	showBackgroundProcessButton?: boolean
+	onLocalStreamCreated?: (stream) => void
 }
 
 export enum ZegoUserState {
@@ -403,6 +414,7 @@ export declare class ZegoUIKitPrebuilt {
 		userName?: string
 	): string;
 	static create(kitToken: string, createConfig?: ZegoUIKitCreateConfig): ZegoUIKitPrebuilt;
+	static getVersion(): string;
 	addPlugins(plugins?: { ZegoSuperBoardManager?: any; ZIM?: any }): void;
 	joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
 	destroy(): void;
@@ -430,4 +442,7 @@ export declare class ZegoUIKitPrebuilt {
 	rotateToLandscape(): void
 	rotateToPortrait(): void
 	renewToken(): boolean
+	// 2.15.0
+	closeBackgroundProcess(): void
+	openBackgroundProcess(): void
 }

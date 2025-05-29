@@ -85,7 +85,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					// bitrate: 400,
 					// frameRate: 15,
 				},
-			});
+			}, true);
 		} catch (error: any) {
 			this.videoRefuse = true;
 			this.audioRefuse = true;
@@ -127,11 +127,11 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 			() => {
 				if (this.localVideoRef.current && localStream) {
 					if (videoOpen) {
-						localStream.playVideo(this.localVideoRef.current, { objectFit: 'cover' });
+						localStream.playVideo(this.localVideoRef.current, { mirror: this.props.core._config.videoScreenConfig?.mirror, objectFit: 'cover' });
+					} else {
+						localStream.stopVideo();
 					}
-					if (audioOpen) {
-						localStream.playAudio();
-					}
+					this.props.core.enableVideoCaptureDevice(localStream, videoOpen);
 				}
 			}
 		);
@@ -159,6 +159,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 				} else {
 					(this.state.localStream as ZegoLocalStream).stopVideo();
 				}
+				this.props.core.enableVideoCaptureDevice(this.state.localStream, videoOpen);
 				// this.props.core.destroyStream(this.state.localStream);
 				// this.setState({ localStream: undefined });
 			}
@@ -182,7 +183,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					console.warn('===stop audio', this.state.localStream);
 					(this.state.localStream as ZegoLocalStream).stopAudio();
 				}
-				// this.props.core.muteMicrophone(audioOpen);
+				this.props.core.muteMicrophone(audioOpen);
 			}
 			this.setState({ audioOpen });
 		}

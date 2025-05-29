@@ -53,6 +53,19 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   async componentDidMount() {
     this.onResize();
     window.addEventListener("resize", this.throttleResize.bind(this), false);
+    this.props.core.zg.on("videoDeviceStateChanged", async (updateType: 'DELETE' | 'ADD', deviceInfo: { deviceName: string; deviceID: string; }) => {
+      console.warn('[ZegoCloudRTCCore]videoDeviceStateChanged]', updateType, deviceInfo);
+      if (updateType === 'DELETE') {
+        const { selectCamera } = this.state;
+        if (selectCamera === deviceInfo.deviceID) {
+          const cameraDevices = await this.props.core.getCameras();
+          this.setState({
+            selectCamera: cameraDevices[0]?.deviceID,
+          });
+          this.props.core.useCameraDevice(this.state.localStream!, cameraDevices[0]?.deviceID);
+        }
+      }
+    })
     this.setState({
       userName: this.props.core._expressConfig.userName,
     });
@@ -87,8 +100,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     window.removeEventListener("resize", this.throttleResize.bind(this), false);
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
-    // this.state.localAudioStream &&
-    //   this.props.core.destroyStream(this.state.localAudioStream);
   }
   onResize() {
     if (
@@ -179,7 +190,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           },
         },
         videoBitrate: solution.bitrate
-      });
+      }, true);
     } catch (error: any) {
       this.videoRefuse = true;
       this.audioRefuse = true;
@@ -227,11 +238,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       () => {
         if (this.localVideoRef.current && localStream) {
           if (videoOpen) {
-            localStream.playVideo(this.localVideoRef.current, { objectFit: 'cover' });
+            localStream.playVideo(this.localVideoRef.current, { mirror: this.props.core._config.videoScreenConfig?.mirror, objectFit: 'cover' });
+          } else {
+            localStream.stopVideo();
           }
-          if (audioOpen) {
-            localStream.playAudio();
-          }
+          this.props.core.enableVideoCaptureDevice(localStream, videoOpen);
         }
       }
     );
@@ -253,7 +264,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         return;
       }
       const videoOpen = !this.state.videoOpen;
-      console.warn('===togglevideo', this.state.localStream, this.state.selectCamera);
       if (!this.state.localStream) {
         if (!this.state.selectCamera || !this.state.selectMic || !this.state.selectSpeaker) {
           const devices = await this.getDevices();
@@ -271,6 +281,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         } else {
           (this.state.localStream as ZegoLocalStream).stopVideo();
         }
+        this.props.core.enableVideoCaptureDevice(this.state.localStream, videoOpen);
         // if (
         //   /Firefox/.test(navigator.userAgent) &&
         //   this.videoRef.current &&
@@ -311,7 +322,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         } else {
           (this.state.localStream as ZegoLocalStream).stopAudio();
         }
-        // this.props.core.muteMicrophone(audioOpen);
+        this.props.core.muteMicrophone(audioOpen);
       }
       this.setState({ audioOpen });
     }
@@ -570,7 +581,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                   selectMic: deviceID,
                 },
                 () => {
-                  this.createStream(this.state.videoOpen, this.state.audioOpen);
+                  this.props.core.useMicrophoneDevice(this.state.localStream!, this.state.selectMic!);
                 }
               );
             }}
@@ -580,7 +591,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
                   selectCamera: deviceID,
                 },
                 () => {
-                  this.createStream(this.state.videoOpen, this.state.audioOpen);
+                  this.props.core.useCameraDevice(this.state.localStream!, this.state.selectCamera!);
                 }
               );
             }}

@@ -394,6 +394,14 @@
   }
 }
 
+.backgroundBlurButton {
+  background-image: url("../../../sdkAssets/icon_background_blur_open.png");
+
+  &.close {
+    background-image: url("../../../sdkAssets/icon_background_blur_close.png");
+  }
+}
+
 .moreButton {
   position: relative;
   background-image: url("../../../sdkAssets/icon_inner_more.png");

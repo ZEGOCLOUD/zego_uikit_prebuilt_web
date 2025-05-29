@@ -16,7 +16,7 @@ import {
 	ZegoUIKitLanguage,
 } from "../../../model";
 import ZegoRoomCss from "./index.module.scss";
-import { ZegoUser, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
+import { ZegoUser, ZegoBroadcastMessageInfo, ZegoServerResponse } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity.d";
 
 import { ZegoTimer } from "./components/zegoTimer";
 import { ZegoOne2One } from "./components/zegoOne2One";
@@ -167,7 +167,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.props.core.eventEmitter.on("hangUp", () => {
 			this.leaveRoom();
 		});
-		this.props.core.eventEmitter.on("cancelCall", this.forceUpdateView)
+		this.props.core.eventEmitter.on("cancelCall", this.forceUpdateView);
+		this.props.core.eventEmitter.on("cameraDeviceChanged", (deviceID: string) => {
+			this.state.selectCamera = deviceID;
+		});
 		// 点击其他区域时, 隐藏更多弹窗)
 		document.addEventListener("click", this.onOpenSettings);
 		window.addEventListener("resize", this.onWindowResize.bind(this));
@@ -673,7 +676,20 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					},
 					videoBitrate: solution.bitrate,
 				});
-				console.warn('[ZegoRoom]createZegoStream localStream', localStream)
+				console.warn('[ZegoRoom]createZegoStream localStream', localStream, {
+					camera: {
+						video: !this.props.core.status.videoRefuse ? {
+							input: this.state.selectCamera,
+							quality: 4,
+							...solution,
+						} : false,
+						audio: !this.props.core.status.audioRefuse ? {
+							input: this.state.selectMic,
+							channelCount: this.props.core._config.enableStereo ? 2 : 1,
+						} : false,
+					},
+					videoBitrate: solution.bitrate,
+				})
 				this.props.core.localStream = localStream;
 				if (!this.props.core.status.videoRefuse) {
 					await this.props.core.mutePublishStreamVideo(
@@ -700,6 +716,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					const res = this.props.core.publishLocalStream(localStream, "main", extraInfo);
 					if (res !== false) {
 						this.localStreamID = res as string;
+					} else {
+						// 推流失败就销毁创建的流
+						console.error("【ZEGOCLOUD】publishStream failed: It may be that the background process is not turned on.", res);
+						this.props.core.destroyStream(localStream);
+						this.setState({
+							localStream: null,
+						});
+						return false;
 					}
 				} catch (error) {
 					// 推流失败就销毁创建的流
@@ -743,10 +767,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	stopPublish() {
 		try {
 			this.localStreamID && this.props.core.stopPublishingStream(this.localStreamID);
-			console.log('===mytag', this.state.localStream)
 			this.state.localStream && this.props.core.destroyStream(this.state.localStream);
 			this.props.core.localStream = undefined;
-
 			this.setState({
 				localStream: null,
 			});
@@ -850,6 +872,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		let result;
 		if (this.state.localStream && this.state.localStream.getVideoTracks().length > 0) {
 			result = await this.props.core.mutePublishStreamVideo(this.state.localStream, this.state.cameraOpen);
+			// 关闭时需要停止采集摄像头
+			this.props.core.enableVideoCaptureDevice(this.state.localStream, !this.state.cameraOpen);
 			try {
 				await this.props.core.setStreamExtraInfo(
 					this.localStreamID as string,
@@ -936,9 +960,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			const screenSharingStream = await this.props.core.createZegoStream({
 				// @ts-ignore
 				screen: {
-					...screenConfig,
+					...screenConfig.video,
 					audio: !isFireFox(),
 				},
+				videoBitrate: screenConfig.videoBitrate,
 			});
 
 			const streamID = this.props.core.publishLocalStream(
@@ -1102,11 +1127,15 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} else {
 				message = msg
 			}
-			if (this.props.core._zimManager) {
-				resp = await this.props.core._zimManager?.sendTextMessage(message);
-				this.props.core._config.onSendMessageResult && this.props.core._config.onSendMessageResult(resp);
+			if (this.props.core._config.sendMessageChannel) {
+				if (this.props.core._config.sendMessageChannel === "ZIM") {
+					resp = await this.props.core._zimManager?.sendTextMessage(message);
+					this.props.core._config.onSendMessageResult && this.props.core._config.onSendMessageResult(resp);
+				} else {
+					resp = await this.props.core.sendRoomMessage(message);
+				}
 			} else {
-				resp = await this.props.core.sendRoomMessage(message)
+				resp = await this.props.core.sendRoomMessage(message);
 			}
 		} catch (err) {
 			console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
@@ -1210,6 +1239,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		console.log('【ZegoRoom】leaveRoom function', isKickedOut, isCallQuit)
 		this.props.core._zimManager?._inRoomInviteMg?.audienceCancelRequest();
 		this.state.isScreenSharingBySelf && this.closeScreenSharing();
+		this.props.core.BackgroundProcessConfig?.enabled && this.props.core.closeBackgroundProcess();
 		this.state.localStream && this.props.core.destroyStream(this.state.localStream);
 		this.props.core.localStream = undefined;
 		this.props.core.leaveRoom();
@@ -1924,13 +1954,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 
 	// 设置扬声器 ID
 	private setAllSinkId(speakerId: string) {
-		const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
-		room?.querySelectorAll("video").forEach((video: any) => {
-			video?.setSinkId?.(speakerId || "");
-		});
-		room?.querySelectorAll("audio").forEach((audio: any) => {
-			audio?.setSinkId?.(speakerId || "");
-		});
+		for (let key in this.props.core.remoteStreamMap) {
+			this.props.core.remoteStreamMap[key].view?.useAudioOutputDevice(speakerId);
+		}
+
+		// const room = document.querySelector(`.${ZegoRoomCss.ZegoRoom}`);
+		// room?.querySelectorAll("video").forEach((video: any) => {
+		// 	video?.setSinkId?.(speakerId || "");
+		// });
+		// room?.querySelectorAll("audio").forEach((audio: any) => {
+		// 	audio?.setSinkId?.(speakerId || "");
+		// });
 	}
 	showTurnOffMicrophoneButton(user: ZegoCloudUser) {
 		if (!this.props.core._config.showTurnOffRemoteMicrophoneButton) return false;
@@ -2049,6 +2083,21 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	// 已邀请的用户列表
 	getSelectedUsers() {
 		return this.props.core._zimManager?.callInfo?.invitees || []
+	}
+
+	async toggleBackgroundBlur() {
+		const { formatMessage } = this.props.core.intl;
+		let res: ZegoServerResponse;
+		if (this.props.core.BackgroundProcessConfig?.enabled) {
+			res = await this.props.core.closeBackgroundProcess();
+		} else {
+			res = await this.props.core.openBackgroundProcess();
+		}
+		if (res && res.errorCode) {
+			ZegoToast({
+				content: formatMessage({ id: "room.enableBackgroundProcessFailed" }),
+			});
+		}
 	}
 
 	render(): React.ReactNode {
@@ -2258,7 +2307,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 											this.toggleWhiteboardSharing()
 										}}></div>
 								)}
-
+							{this.props.core._config.showBackgroundProcessButton &&
+								(<div id="ZegoRoomBackgroundProcessButton"
+									className={`${ZegoRoomCss.backgroundBlurButton} ${!this.props.core.BackgroundProcessConfig?.enabled && ZegoRoomCss.close}`}
+									onClick={() => { this.toggleBackgroundBlur() }}>
+								</div>)
+							}
 							{(this.props.core._config.showAudioVideoSettingsButton ||
 								this.props.core._config.showLayoutButton) && (
 									<div
@@ -2477,6 +2531,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 										selectCamera: deviceID,
 									},
 									async () => {
+										console.log("[ZegoRoom]onCameraChange", this.state.localStream);
 										if (this.state.localStream) {
 											await this.props.core.useCameraDevice(this.state.localStream, deviceID)
 											this.setState({

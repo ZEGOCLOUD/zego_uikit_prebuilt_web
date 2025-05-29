@@ -230,6 +230,9 @@ declare interface ZegoCloudRoomConfig {
 	memberViewConfig?: {
 		operationListCustomButton?: () => Element
 	}
+	// 2.14.0
+	// Message sending channel configuration
+	sendMessageChannel?: "RTC" | "ZIM"
 }
 
 export enum ZegoUserState {
@@ -403,6 +406,7 @@ export declare class ZegoUIKitPrebuilt {
 		userName?: string
 	): string;
 	static create(kitToken: string, createConfig?: ZegoUIKitCreateConfig): ZegoUIKitPrebuilt;
+	static getVersion(): string;
 	addPlugins(plugins?: { ZegoSuperBoardManager?: any; ZIM?: any }): void;
 	joinRoom(roomConfig?: ZegoCloudRoomConfig): void;
 	destroy(): void;
