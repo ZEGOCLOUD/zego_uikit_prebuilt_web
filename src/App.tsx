@@ -233,7 +233,7 @@ export default class App extends React.PureComponent {
         }
         let createConfig: ZegoUIKitCreateConfig = {
           BackgroundProcessConfig: {
-            blurDegree: 3
+            blurDegree: 1
           }
         };
         if (backgroundProcess === "virtual") {
@@ -557,7 +557,7 @@ export default class App extends React.PureComponent {
     }
     let createConfig: ZegoUIKitCreateConfig = {
       BackgroundProcessConfig: {
-        blurDegree: 3
+        blurDegree: 1
       }
     };
     if (backgroundProcess === "virtual") {
@@ -659,9 +659,9 @@ export default class App extends React.PureComponent {
             dom.style.height = "auto";
           },
           showLeavingView: true,
-          videoScreenConfig: {
-            mirror: true
-          },
+          // videoScreenConfig: {
+          //   mirror: true
+          // },
           showBackgroundProcessButton: true,
           // turnOnCameraWhenJoining: false,
           // turnOnMicrophoneWhenJoining: false,

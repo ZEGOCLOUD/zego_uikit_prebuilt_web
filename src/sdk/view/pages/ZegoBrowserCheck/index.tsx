@@ -100,7 +100,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     window.removeEventListener("resize", this.throttleResize.bind(this), false);
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
-    this.props.core.zg.off("videoDeviceStateChanged")
   }
   onResize() {
     if (
@@ -191,7 +190,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           },
         },
         videoBitrate: solution.bitrate
-      });
+      }, true);
     } catch (error: any) {
       this.videoRefuse = true;
       this.audioRefuse = true;
@@ -265,7 +264,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         return;
       }
       const videoOpen = !this.state.videoOpen;
-      console.warn('===togglevideo', this.state.localStream, this.state.selectCamera);
       if (!this.state.localStream) {
         if (!this.state.selectCamera || !this.state.selectMic || !this.state.selectSpeaker) {
           const devices = await this.getDevices();

@@ -85,7 +85,7 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 					// bitrate: 400,
 					// frameRate: 15,
 				},
-			});
+			}, true);
 		} catch (error: any) {
 			this.videoRefuse = true;
 			this.audioRefuse = true;

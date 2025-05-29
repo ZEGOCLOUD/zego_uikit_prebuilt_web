@@ -167,7 +167,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.props.core.eventEmitter.on("hangUp", () => {
 			this.leaveRoom();
 		});
-		this.props.core.eventEmitter.on("cancelCall", this.forceUpdateView)
+		this.props.core.eventEmitter.on("cancelCall", this.forceUpdateView);
+		this.props.core.eventEmitter.on("cameraDeviceChanged", (deviceID: string) => {
+			this.state.selectCamera = deviceID;
+		});
 		// 点击其他区域时, 隐藏更多弹窗)
 		document.addEventListener("click", this.onOpenSettings);
 		window.addEventListener("resize", this.onWindowResize.bind(this));
@@ -2528,6 +2531,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 										selectCamera: deviceID,
 									},
 									async () => {
+										console.log("[ZegoRoom]onCameraChange", this.state.localStream);
 										if (this.state.localStream) {
 											await this.props.core.useCameraDevice(this.state.localStream, deviceID)
 											this.setState({

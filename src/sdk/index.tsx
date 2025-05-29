@@ -65,7 +65,7 @@ export class ZegoUIKitPrebuilt {
 	constructor() {
 		this.express = ZegoCloudRTCCore._zg;
 		console.log('express version:', this.express.getVersion());
-		console.log('ZegoUIKitPrebuilt version: 2.14.2');
+		console.log('ZegoUIKitPrebuilt version: 2.15.0');
 	}
 	get localStream() {
 		return ZegoUIKitPrebuilt.core?.localStream;
@@ -118,7 +118,7 @@ export class ZegoUIKitPrebuilt {
 		return ZegoUIKitPrebuilt._instance;
 	}
 	static getVersion(): string {
-		return '2.14.3-beta' // SDK_VERSION;
+		return '2.15.0' // SDK_VERSION;
 	}
 
 	addPlugins(plugins?: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager; ZIM?: typeof ZIM }) {

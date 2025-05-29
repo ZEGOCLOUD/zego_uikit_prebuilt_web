@@ -837,14 +837,16 @@ export class ZegoCloudRTCCore {
 		media.volume = volume
 	}
 
-	async createZegoStream(source?: ZegoStreamOptions): Promise<ZegoLocalStream> {
+	async createZegoStream(source?: ZegoStreamOptions, preview?: boolean): Promise<ZegoLocalStream> {
 		const localStream = await ZegoCloudRTCCore._zg.createZegoStream(source);
-		this.localStream = localStream;
+
+		// ai降噪配置
 		if (ZegoCloudRTCCore._instance.AiDenoiseConfig) {
 			console.warn('[createZegoStream]open aiDenoise', ZegoCloudRTCCore._instance.AiDenoiseConfig)
 			await ZegoCloudRTCCore._zg.setAiDenoiseMode(localStream, ZegoCloudRTCCore._instance.AiDenoiseConfig.mode);
 			await ZegoCloudRTCCore._zg.enableAiDenoise(localStream, true);
 		}
+		// 背景虚化及虚拟背景功能配置
 		if (ZegoCloudRTCCore._instance.BackgroundProcessConfig && localStream) {
 			if (!ZegoCloudRTCCore._instance.BackgroundProcessConfig.initialized) {
 				try {
@@ -871,7 +873,11 @@ export class ZegoCloudRTCCore {
 				})
 			}
 		}
-		this._config.onLocalStreamCreated && this._config.onLocalStreamCreated(localStream);
+		// 不是预览流再通知业务层
+		if (!preview) {
+			this.localStream = localStream;
+			this._config.onLocalStreamCreated && this._config.onLocalStreamCreated(localStream);
+		}
 		return localStream;
 	}
 
@@ -953,10 +959,13 @@ export class ZegoCloudRTCCore {
 	}
 
 	useCameraDevice(media: ZegoLocalStream | MediaStream, deviceID: string): Promise<ZegoServerResponse> {
-		return ZegoCloudRTCCore._zg.useVideoDevice(media, deviceID)
+		this.status.cameraDeviceID = deviceID;
+		this.eventEmitter.emit("cameraDeviceChanged", deviceID);
+		return ZegoCloudRTCCore._zg.useVideoDevice(media, deviceID);
 	}
 
 	useMicrophoneDevice(media: MediaStream | ZegoLocalStream, deviceID: string): Promise<ZegoServerResponse> {
+		this.status.micDeviceID = deviceID;
 		return ZegoCloudRTCCore._zg.useAudioDevice(media, deviceID)
 	}
 
@@ -1341,8 +1350,15 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.on("publisherVideoEncoderChanged", (fromCodecID: ZegoVideoCodecID, toCodecID: ZegoVideoCodecID, streamID: string) => {
 			console.warn('[ZegoCloudRTCCore]publisherVideoEncoderChanged]', fromCodecID, toCodecID, streamID)
 		})
-		ZegoCloudRTCCore._zg.on("videoDeviceStateChanged", (updateType: 'DELETE' | 'ADD', deviceInfo: { deviceName: string; deviceID: string; }) => {
-			console.warn('[ZegoCloudRTCCore]videoDeviceStateChanged]', updateType, deviceInfo)
+		ZegoCloudRTCCore._zg.on("videoDeviceStateChanged", async (updateType: 'DELETE' | 'ADD', deviceInfo: { deviceName: string; deviceID: string; }) => {
+			console.warn('[ZegoCloudRTCCore]videoDeviceStateChanged', updateType, deviceInfo, this.status.cameraDeviceID);
+			if (updateType === 'DELETE') {
+				const { cameraDeviceID } = this.status;
+				if (cameraDeviceID === deviceInfo.deviceID) {
+					const cameraDevices = await this.getCameras();
+					this.useCameraDevice(this.localStream!, cameraDevices[0]?.deviceID);
+				}
+			}
 		})
 
 		if (this.zegoSuperBoard) {
@@ -1830,6 +1846,7 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.off("screenSharingEnded")
 		ZegoCloudRTCCore._zg.off("IMRecvCustomCommand")
 		ZegoCloudRTCCore._zg.off("publisherVideoEncoderChanged")
+		ZegoCloudRTCCore._zg.off("videoDeviceStateChanged")
 
 		ZegoCloudRTCCore._zg.setSoundLevelDelegate(false)
 		this.onNetworkStatusCallBack = () => { }
