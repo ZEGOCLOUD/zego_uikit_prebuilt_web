@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> hotfix/2.14.3
 declare type ZegoCloudRTCCore = {};
 declare type ZegoExpressEngine = {};
 declare interface ZegoUser {
