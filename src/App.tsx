@@ -298,6 +298,12 @@ export default class App extends React.PureComponent {
           onUserStateUpdated: (state) => {
             console.warn('===onUserStateUpdated', state);
           },
+          onStreamUpdate: (streamID) => {
+            console.warn('===onStreamUpdate', streamID);
+            // zp.express?.setAudioFrameCallback(streamID, (data) => {
+            //   console.log('setAudioFrameCallback', data);
+            // })
+          },
           memberViewConfig: {
             // operationListCustomButton: () => {
             //   const button = document.createElement("button");

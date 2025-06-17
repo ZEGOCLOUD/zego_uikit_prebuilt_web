@@ -225,6 +225,7 @@ export default class InRoomInviteManager {
     data?: string,
     clear: boolean = true
   ) {
+    if (!(callID || this.receivedInviteInfo.callID)) return;
     try {
       let extendedData = "";
       if (data) {
@@ -378,7 +379,6 @@ export default class InRoomInviteManager {
         };
         this.notifyInviteToCoHostCallback(inviter_name);
       }
-
       return;
     }
     if (type === ZegoInvitationType.RemoveCoHost) {

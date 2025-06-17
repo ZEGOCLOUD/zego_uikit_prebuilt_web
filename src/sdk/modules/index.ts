@@ -1561,7 +1561,8 @@ export class ZegoCloudRTCCore {
 								state: "PLAYING",
 								streamID: streamInfo.streamID,
 							}
-							console.log('===拉流', stream?.getVideoTracks().length)
+							console.log('===拉流', stream?.getVideoTracks().length);
+							this._config.onStreamUpdate && this._config.onStreamUpdate(streamInfo.streamID);
 						}
 
 						_streamList.push(this.remoteStreamMap[streamInfo.streamID])

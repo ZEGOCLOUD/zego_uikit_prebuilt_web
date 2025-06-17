@@ -237,6 +237,8 @@ declare interface ZegoCloudRoomConfig {
 	// 背景虚化及虚拟背景开关按钮
 	showBackgroundProcessButton?: boolean
 	onLocalStreamCreated?: (stream) => void
+	// 2.16.0
+	onStreamUpdate?: (streamId: string) => void
 }
 
 export enum ZegoUserState {

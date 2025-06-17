@@ -450,6 +450,12 @@ export class ZimManager {
 							span.end()
 						}
 					}
+					if (state === ZIMCallUserState.Rejected) {
+						this.callInvitationRejected({ callID, invitee: userID, extendedData })
+					}
+					if (state === ZIMCallUserState.Timeout) {
+						this.callInviteesAnsweredTimeout({ callID, invitees: [userID] })
+					}
 				} else {
 					if (this.expressConfig.userID === this.callInfo?.inviter?.userID) {
 						// 本人网络断开取消
@@ -464,32 +470,11 @@ export class ZimManager {
 						if (userID === this.expressConfig.userID) return
 						if (state === ZIMCallUserState.Rejected) {
 							this.callInvitationRejected({ callID, invitee: userID, extendedData })
-							// switch (ZegoUIKitPrebuilt.core?._config.scenario?.mode) {
-							// 	case "LiveStreaming": {
-							// 		if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
-							// 			const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
-							// 				call_id: callID,
-							// 				action: 'refuse'
-							// 			})
-							// 			span.end()
-							// 		} else {
-							// 			const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
-							// 				call_id: callID,
-							// 				action: 'refuse'
-							// 			})
-							// 			span.end()
-							// 		}
-							// 	}
-							// 		break;
-							// 	case "OneONoneCall": {
 							const span = TracerConnect.createSpan(SpanEvent.CallerRespondInvitation, {
 								call_id: callID,
 								action: 'refuse'
 							})
 							span.end();
-							// 	}
-							// 		break
-							// }
 						}
 						if (state === ZIMCallUserState.Accepted) {
 							this.callInvitationAccepted({ callID, invitee: userID, extendedData })
