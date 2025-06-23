@@ -503,6 +503,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		if (logInRsp === 0) {
 			// 没有预览 view 时，先检测摄像头/麦克风权限
 			if (!this.props.core._config.showPreJoinView) {
+				// 直播kit不开启连麦功能时观众端不需要检测
+				if (this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
+					&& this.props.core._config.scenario?.config?.role === LiveRole.Audience
+					&& !this.props.core._config.showRequestToCohostButton) return;
 				await this.props.core.deviceCheck();
 				console.warn('[ZegoRoom]deviceCheck', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
 				console.warn('[ZegoRoom]deviceCheck callInfo', this.props.core._zimManager?.callInfo);
