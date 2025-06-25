@@ -969,7 +969,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				},
 				videoBitrate: screenConfig.videoBitrate,
 			});
-
 			const streamID = this.props.core.publishLocalStream(
 				screenSharingStream,
 				"screensharing",
@@ -977,7 +976,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					isCameraOn: true,
 					isMicrophoneOn: true,
 					hasVideo: screenSharingStream.getVideoTracks().length > 0,
-					hasAudio: screenSharingStream.getAudioTracks()?.[0].enabled,
+					hasAudio: screenSharingStream.getAudioTracks()?.[0]?.enabled,
 				})
 			);
 			streamID && (this.screenSharingStreamID = streamID as string);
