@@ -211,7 +211,7 @@ export class ZegoUserList extends React.PureComponent<{
 		el.classList.remove(`${ZegoUserListCss.showMenu}`, `${ZegoUserListCss.bottomMenu}`)
 	}
 	showForbiddenButton(user: ZegoCloudUser): boolean {
-		// if (!this.props.core._config.showForbiddenButton) return false
+		if (this.props.core._config.scenario?.mode !== ScenarioModel.LiveStreaming) return false;
 		if (this.props.core.isHost(this.props.selfUserID)) {
 			return user.userID !== this.props.selfUserID
 		} else {

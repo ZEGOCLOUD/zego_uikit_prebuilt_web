@@ -454,8 +454,10 @@ export class ZegoCloudRTCCore {
 			if (!config.maxUsers) {
 				config.maxUsers = 0
 			}
-			if (!config.showLayoutButton) { config.showLayoutButton = true }
-			if (!config.showPinButton) { config.showPinButton = true }
+			if (!config.hasOwnProperty('showLayoutButton')) {
+				config.showLayoutButton = true
+			}
+			if (!config.hasOwnProperty('showPinButton')) { config.showPinButton = true }
 		}
 		if (config.scenario && config.scenario?.config?.role === LiveRole.Audience) {
 			config.showPinButton = false

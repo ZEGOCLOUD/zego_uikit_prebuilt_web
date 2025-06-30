@@ -1,5 +1,5 @@
 import React from "react";
-import { UserListMenuItemType } from "../../../../model";
+import { ScenarioModel, UserListMenuItemType } from "../../../../model";
 import { ZegoCloudUser } from "../../../../modules/tools/UserListManager";
 import zegoManageCss from "./zegoManage.module.scss";
 import { FormattedMessage } from "react-intl";
@@ -21,7 +21,7 @@ export class ZegoManage extends React.PureComponent<{
     this.props.selectCallback && this.props.selectCallback(type, value);
   }
   showForbiddenButton(): boolean {
-    // if (!this.props.core._config.showForbiddenButton) return false
+    if (this.props.core._config.scenario?.mode !== ScenarioModel.LiveStreaming) return false;
     const currentUserID = this.props.core._expressConfig.userID;
     if (this.props.core.isHost(currentUserID)) {
       return currentUserID !== this.props.selectedUser.userID
