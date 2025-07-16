@@ -26,7 +26,7 @@ const zh = {
     "global.networkMobile": "正在尝试重新连接...",
     "global.mute": "静音",
     "global.stop": "停止",
-    "global.enter": "进入",
+    "global.entered": "进入",
     "global.quit": "退出",
     "global.room": "房间",
     "global.agree": "同意",

@@ -437,6 +437,8 @@ export class ZimManager {
 					if (state === ZIMCallUserState.Accepted) {
 						this.callInvitationAccepted({ callID, invitee: userID, extendedData })
 						if (ZegoUIKitPrebuilt.core?.isHost(this.expressConfig.userID)) {
+							// 设置观众连麦状态，用于停止直播后结束连麦
+							ZegoUIKitPrebuilt.core?.zum.setCoconnection(userID, true);
 							const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
 								call_id: callID,
 								action: 'accept'

@@ -34,6 +34,7 @@ export enum LiveRole {
 	Host = "Host",
 	Cohost = "Cohost",
 	Audience = "Audience",
+	Coconnection = "Coconnection", // 连麦观众
 }
 
 export enum ScenarioModel {
@@ -250,7 +251,8 @@ export interface ZegoCloudRoomConfig {
 	// 整体视频画面配置
 	videoScreenConfig?: {
 		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
-		mirror?: boolean // 是否镜像，默认 false
+		localMirror?: boolean // 本端视频画面是否镜像，默认 true
+		pullStreamMirror?: boolean // 拉流端视频画面是否镜像，默认 false
 	}
 	// 发送消息回调
 	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void

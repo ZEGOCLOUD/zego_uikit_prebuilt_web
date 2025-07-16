@@ -71,16 +71,16 @@ export default class ZegoVideo extends React.PureComponent<{
 					// 本地预览流
 					console.warn('[video]initVideo 渲染本地流', this.props.userInfo);
 					const media = this.props.userInfo.streamList[0]?.media as ZegoLocalStream;
-					media.playVideo(this.videoRef, { mirror: !isScreenSharing ? this.props.core._config.videoScreenConfig?.mirror : false, objectFit: videoObjectFit })
+					media.playVideo(this.videoRef, { mirror: !isScreenSharing ? this.props.core._config.videoScreenConfig?.localMirror || true : false, objectFit: videoObjectFit })
 					if (this.props.userInfo.streamList[0]?.cameraStatus === 'MUTE') {
 						this.props.core.enableVideoCaptureDevice(media, false);
 					}
 				} else {
 					// 连麦观众下麦，停止拉主播流又马上重新开始拉时，拉流还未成功时 createRemoteStreamView 会报错，拉流成功后还会继续渲染，暂不处理报错
-					console.warn('[video]initVideo 渲染对端流', this.props.userInfo);
+					console.warn('[video]initVideo 渲染对端流', this.props.core._config.videoScreenConfig);
 					try {
 						const remoteView = this.props.core.createRemoteStreamView(this.props.userInfo.streamList[0].media as MediaStream);
-						remoteView.play(this.videoRef, { mirror: !isScreenSharing ? this.props.core._config.videoScreenConfig?.mirror : false, objectFit: videoObjectFit });
+						remoteView.play(this.videoRef, { mirror: !isScreenSharing ? this.props.core._config.videoScreenConfig?.pullStreamMirror || false : false, objectFit: videoObjectFit });
 						// 首页切换扬声器之后进房渲染view需要切换
 						remoteView.useAudioOutputDevice(this.props.core.status.speakerDeviceID || 'default');
 						// 存储 zegoStreamView

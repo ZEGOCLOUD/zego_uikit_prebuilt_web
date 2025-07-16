@@ -26,7 +26,7 @@ const en = {
     "global.networkMobile": "Trying to reconnect...",
     "global.mute": "Mute",
     "global.stop": "Stop",
-    "global.enter": "enter",
+    "global.entered": "entered",
     "global.quit": "quit",
     "global.room": " the room",
     "global.agree": "Agree",

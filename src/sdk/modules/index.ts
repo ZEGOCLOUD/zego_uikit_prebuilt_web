@@ -1,6 +1,6 @@
 import { generateStreamID, getConfig, changeCDNUrlOrigin, throttle, transformMsg, compareVersion } from "./tools/util"
 import { ZegoExpressEngine } from "zego-express-engine-webrtc"
-import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity"
+import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity.web"
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
 import {
 	AiDenoiseMode,
@@ -225,7 +225,8 @@ export class ZegoCloudRTCCore {
 			},
 			videoScreenConfig: {
 				objectFit: "contain",
-				mirror: false,
+				localMirror: true,
+				pullStreamMirror: false,
 			}
 		}
 	_currentPage: "BrowserCheckPage" | "Room" | "RejoinRoom" = "BrowserCheckPage"
@@ -601,11 +602,11 @@ export class ZegoCloudRTCCore {
 		}
 	}
 
-	// Audience变成Cohost
+	// Audience变成Coconnection
 	async changeAudienceToCohostInLiveStream() {
 		const config = this._config
-		config.scenario!.config!.role = LiveRole.Cohost
-		this.zum.role = LiveRole.Cohost
+		config.scenario!.config!.role = LiveRole.Coconnection
+		this.zum.role = LiveRole.Coconnection
 
 		config.turnOnMicrophoneWhenJoining = true
 		config.turnOnCameraWhenJoining = true
@@ -1203,10 +1204,11 @@ export class ZegoCloudRTCCore {
 			}
 		)
 		ZegoCloudRTCCore._zg.on("roomExtraInfoUpdate", (roomID: string, roomExtraInfoList: ZegoRoomExtraInfo[]) => {
+			console.warn("roomExtraInfoUpdate", roomID, roomExtraInfoList, JSON.stringify(this.roomExtraInfo));
 			roomExtraInfoList.forEach((info) => {
 				if (info.key === this.extraInfoKey) {
-					this.roomExtraInfo = JSON.parse(info.value)
-					console.warn("roomExtraInfo", this.roomExtraInfo)
+					this.roomExtraInfo = JSON.parse(info.value);
+					console.warn("roomExtraInfoUpdate", this.roomExtraInfo);
 				}
 			})
 		})

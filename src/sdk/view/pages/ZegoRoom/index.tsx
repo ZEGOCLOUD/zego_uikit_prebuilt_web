@@ -272,7 +272,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				if (this.props.core._config.lowerLeftNotification?.showUserJoinAndLeave) {
 					userList.forEach((u) => {
 						notificationList.push({
-							content: u.userName + " " + (updateType === "ADD" ? formatMessage({ id: "global.enter" }) : formatMessage({ id: "global.quit" })) + formatMessage({ id: "global.room" }),
+							content: u.userName + " " + (updateType === "ADD" ? formatMessage({ id: "global.entered" }) : formatMessage({ id: "global.quit" })) + formatMessage({ id: "global.room" }),
 							type: "USER",
 							userName: u.userName,
 							messageID: randomNumber(5),
@@ -523,7 +523,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						);
 					}
 				} else {
-					if (this.props.core.status.videoRefuse || this.props.core.status.audioRefuse) {
+					if (this.props.core.status.videoRefuse && this.props.core.status.audioRefuse) {
 						ZegoModelShow(
 							{
 								header: formatMessage({ id: "global.equipment" }),
@@ -794,17 +794,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			);
 			return;
 		}
-		if (String(this.props.core._zimManager?.callInfo.type) !== '0' && this.props.core.status.videoRefuse) {
-			ZegoModelShow(
-				{
-					header: formatMessage({ id: "global.equipment" }),
-					contentText: formatMessage({ id: "global.cameraPermission" }),
-					okText: "Okay",
-				},
-				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
-			);
-			return;
-		}
+		// if (String(this.props.core._zimManager?.callInfo.type) !== '0' && this.props.core.status.videoRefuse) {
+		// 	ZegoModelShow(
+		// 		{
+		// 			header: formatMessage({ id: "global.equipment" }),
+		// 			contentText: formatMessage({ id: "global.cameraPermission" }),
+		// 			okText: "Okay",
+		// 		},
+		// 		document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+		// 	);
+		// 	return;
+		// }
 		if (this.micStatus === -1) return;
 		this.micStatus = -1;
 
@@ -859,17 +859,17 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			);
 			return Promise.resolve(false);
 		}
-		if (String(this.props.core._zimManager?.callInfo.type) !== '0' && this.props.core.status.audioRefuse) {
-			ZegoModelShow(
-				{
-					header: formatMessage({ id: "global.equipment" }),
-					contentText: formatMessage({ id: "global.micPermission" }),
-					okText: "Okay",
-				},
-				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
-			);
-			return Promise.resolve(false);
-		}
+		// if (String(this.props.core._zimManager?.callInfo.type) !== '0' && this.props.core.status.audioRefuse) {
+		// 	ZegoModelShow(
+		// 		{
+		// 			header: formatMessage({ id: "global.equipment" }),
+		// 			contentText: formatMessage({ id: "global.micPermission" }),
+		// 			okText: "Okay",
+		// 		},
+		// 		document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+		// 	);
+		// 	return Promise.resolve(false);
+		// }
 		if (this.cameraStatus === -1) return Promise.resolve(false);
 		this.cameraStatus = -1;
 
@@ -1788,6 +1788,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 							this.cohostToBeAudience();
 						} else {
 							this.props.core._zimManager?._inRoomInviteMg.removeCohost(user.userID);
+							this.props.core.zum.setCoconnection(user.userID, false);
 						}
 					},
 				},
@@ -1801,6 +1802,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			this.setState({
 				unreadInviteList: this.state.unreadInviteList,
 			});
+			this.props.core.zum.setCoconnection(user.userID, false);
 			console.warn("DisagreeRequestCohost", res);
 		},
 		[UserListMenuItemType.AgreeRequestCohost]: async (user: ZegoCloudUser) => {
@@ -1815,6 +1817,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			this.setState({
 				unreadInviteList: this.state.unreadInviteList,
 			});
+			this.props.core.zum.setCoconnection(user.userID, true);
 			console.warn("AgreeRequestCohost", res);
 		},
 		[UserListMenuItemType.BanSendingMessages]: async (user: ZegoCloudUser) => {
@@ -1906,10 +1909,11 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					onOk: async () => {
 						// stop live
 						await this.props.core.setLive("stop");
-						// 结束所有连麦
+						// 结束所有观众连麦
 						this.getAllUser().forEach((user) => {
-							if (user.userID !== this.props.core._expressConfig.userID && user.streamList.length) {
+							if (user.coconnection) {
 								this.props.core._zimManager?._inRoomInviteMg.removeCohost(user.userID);
+								this.props.core.zum.setCoconnection(user.userID, false);
 							}
 						})
 						// 关闭白板
@@ -1924,6 +1928,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
 			);
 		} else if (this.state.liveCountdown === -1) {
+			const extraInfo = JSON.stringify({
+				isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
+				isMicrophoneOn: this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
+				hasVideo: !this.props.core.status.videoRefuse,
+				hasAudio: !this.props.core.status.audioRefuse,
+			});
+			this.state.localStream && this.props.core.publishLocalStream(this.state.localStream, "main", extraInfo);
 			this.setState(
 				{
 					liveCountdown: 3,

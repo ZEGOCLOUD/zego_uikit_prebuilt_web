@@ -18,9 +18,10 @@ export type ZegoCloudUser = ZegoUser & {
   requestCohost?: undefined | number;
   invited?: boolean;
   type?: UserTypeEnum;
+  coconnection?: boolean;
 };
 export class ZegoCloudUserListManager {
-  constructor(private zg: ZegoExpressEngine) {}
+  constructor(private zg: ZegoExpressEngine) { }
   showNonVideo = true;
   showOnlyAudioUser = false;
   screenNumber = !isPc() ? 10 : 6;
@@ -60,6 +61,15 @@ export class ZegoCloudUserListManager {
       }
       return u;
     });
+  }
+
+  setCoconnection(userID?: string, coconnection?: boolean): void {
+    this.remoteUserList = this.remoteUserList.map((u) => {
+      if (u.userID === userID) {
+        u.coconnection = coconnection;
+      }
+      return u;
+    })
   }
 
   setShowNonVideo(enable: boolean): Promise<boolean> {
@@ -329,7 +339,7 @@ export class ZegoCloudUserListManager {
     this.isLive = state;
     if (
       this.scenario === ScenarioModel.LiveStreaming &&
-      this.role === LiveRole.Audience
+      (this.role === LiveRole.Audience || this.role === LiveRole.Coconnection)
     ) {
       //如果是混流&&观众的话，就不要去拉单流
       if (this.enableVideoMixing) return;

@@ -12,7 +12,7 @@ import { getVideoResolution } from "../../../util";
 import { SoundMeter } from "../../../modules/soundmeter";
 import { FormattedMessage } from "react-intl";
 import { isPc } from "../../../util";
-import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity"
+import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity.web"
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   state: {
