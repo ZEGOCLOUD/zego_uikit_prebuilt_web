@@ -789,7 +789,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       return false;
     }
 
-    if (!this.props.core.status.videoRefuse) {
+    if (!this.props.core.status.videoRefuse || !this.props.core.status.audioRefuse) {
       try {
         let localStream: ZegoLocalStream | null = null;
         try {
