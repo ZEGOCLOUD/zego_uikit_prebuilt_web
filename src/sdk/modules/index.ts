@@ -1028,9 +1028,14 @@ export class ZegoCloudRTCCore {
 						userID: this._expressConfig.userID,
 						userName: this._expressConfig.userID,
 					})
+			} else if (this._roomExtraInfo.live_status === "1" && value.live_status === "1"
+				&& this._config.scenario?.config?.role === LiveRole.Audience) {
+				// 直播状态未变化，可能主播离开房间
+				// 解决主播离开重新进房，观众无法拉到流问题
+				return;
 			}
-			this._roomExtraInfo = value
-			this.zum.setLiveStates(this._roomExtraInfo.live_status)
+			this._roomExtraInfo = value;
+			this.zum.setLiveStates(this._roomExtraInfo.live_status);
 			this.onRoomLiveStateUpdateCallBack?.(this._roomExtraInfo.live_status)
 			this.onRoomMixingStateUpdateCallBack?.(this._roomExtraInfo.isMixing)
 			// 直播时设置房间属性host

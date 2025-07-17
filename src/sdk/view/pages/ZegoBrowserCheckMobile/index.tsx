@@ -65,7 +65,14 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		// this.state.localAudioStream && this.props.core.destroyStream(this.state.localAudioStream);
 		window.removeEventListener("resize", this.onResize);
 	}
+
 	async createStream(videoOpen: boolean, audioOpen: boolean): Promise<ZegoLocalStream | undefined> {
+		const micDevices = await this.props.core.getMicrophones();
+		const cameraDevices = await this.props.core.getCameras();
+		this.videoRefuse = cameraDevices && cameraDevices[0]?.deviceID ? false : true;
+		this.audioRefuse = micDevices && micDevices[0]?.deviceID ? false : true;
+
+		console.warn("[ZegoBrowserCheck]createstream", this.videoRefuse, this.audioRefuse)
 		let localStream: ZegoLocalStream | undefined;
 		try {
 			if (videoOpen) {
@@ -75,15 +82,10 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 			}
 			localStream = await this.props.core.createZegoStream({
 				camera: {
-					video: {
+					video: !this.videoRefuse ? {
 						facingMode: this.props.core._config.useFrontFacingCamera ? "user" : "environment",
-					},
-					audio: true,
-					// videoQuality: 4,
-					// width: 640,
-					// height: 360,
-					// bitrate: 400,
-					// frameRate: 15,
+					} : false,
+					audio: !this.audioRefuse ? true : false,
 				},
 			}, true);
 		} catch (error: any) {

@@ -180,17 +180,19 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       const solution = getVideoResolution(this.state.selectVideoResolution);
       localStream = await this.props.core.createZegoStream({
         camera: {
-          video: {
+          video: this.state.selectCamera ? {
             input: this.state.selectCamera,
             quality: 4,
             ...solution,
-          },
-          audio: {
+          } : false,
+          audio: this.state.selectMic ? {
             input: this.state.selectMic
-          },
+          } : false,
         },
         videoBitrate: solution.bitrate
       }, true);
+      this.videoRefuse = this.state.selectCamera ? false : true;
+      this.audioRefuse = this.state.selectMic ? false : true;
     } catch (error: any) {
       this.videoRefuse = true;
       this.audioRefuse = true;

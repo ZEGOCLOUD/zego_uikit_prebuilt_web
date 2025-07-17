@@ -1934,7 +1934,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				hasVideo: !this.props.core.status.videoRefuse,
 				hasAudio: !this.props.core.status.audioRefuse,
 			});
-			this.state.localStream && this.props.core.publishLocalStream(this.state.localStream, "main", extraInfo);
+			// 进房就推流了，无需再次推流
+			// this.state.localStream && this.props.core.publishLocalStream(this.state.localStream, "main", extraInfo);
 			this.setState(
 				{
 					liveCountdown: 3,
