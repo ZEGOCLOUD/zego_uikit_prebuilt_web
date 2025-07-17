@@ -434,7 +434,7 @@ export default class App extends React.PureComponent {
             logoURL: require("./assets/zegocloud_logo.png"),
           },
           // videoScreenConfig: {
-          //   mirror: true
+          // localMirror: true
           // },
           // onUserAvatarSetter: (user) => {
           //   user.forEach((u) => {
@@ -637,7 +637,7 @@ export default class App extends React.PureComponent {
         if (this.state.invitees.length > 1) {
           this.showToast("Waiting for others to join the call.");
         }
-        const waitingSelectUsers = this.state.waitingUsers.map((id) => ({
+        const waitingSelectUsers = this.state.waitingUsers.map((id) => (id !== '' && {
           userID: id,
           userName: `user_${id}`,
         }));
@@ -684,7 +684,7 @@ export default class App extends React.PureComponent {
           },
           showLeavingView: true,
           // videoScreenConfig: {
-          //   mirror: true
+          //   localMirror: true
           // },
           showBackgroundProcessButton: true,
           // turnOnCameraWhenJoining: false,

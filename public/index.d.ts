@@ -216,7 +216,8 @@ declare interface ZegoCloudRoomConfig {
 	// Overall video screen configuration
 	videoScreenConfig?: {
 		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
-		mirror?: boolean // 视频画面是否镜像，默认 false
+		localMirror?: boolean // 本端视频画面是否镜像，默认 true
+		pullStreamMirror?: boolean // 拉流端视频画面是否镜像，默认 false
 	}
 	// Send Message Response
 	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void

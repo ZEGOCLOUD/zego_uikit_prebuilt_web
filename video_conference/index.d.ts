@@ -216,7 +216,8 @@ declare interface ZegoCloudRoomConfig {
 	// Overall video screen configuration
 	videoScreenConfig?: {
 		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
-		mirror?: boolean // 视频画面是否镜像，默认 false
+		localMirror?: boolean // 本端视频画面是否镜像，默认 true
+		pullStreamMirror?: boolean // 拉流端视频画面是否镜像，默认 false
 	}
 	// Send Message Response
 	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
@@ -237,6 +238,8 @@ declare interface ZegoCloudRoomConfig {
 	// 背景虚化及虚拟背景开关按钮
 	showBackgroundProcessButton?: boolean
 	onLocalStreamCreated?: (stream) => void
+	// 2.16.0
+	onStreamUpdate?: (streamId: string) => void
 }
 
 export enum ZegoUserState {
