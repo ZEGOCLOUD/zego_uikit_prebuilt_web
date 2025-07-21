@@ -55,7 +55,7 @@
 		"react-app-polyfill": "^3.0.0",
 		"react-dom": "^18.2.0",
 		"react-intl": "^6.0.4",
-		"zego-express-engine-webrtc": "^3.8.0",
+		"zego-express-engine-webrtc": "3.10.0",
 		"zego-superboard-web": "2.16.1",
 		"zego-tracer": "file:libs/zego-tracer",
 		"zego-zim-web": "2.16.0"
