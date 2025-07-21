@@ -162,6 +162,7 @@ declare interface ZegoCloudRoomConfig {
 	rightPanelExpandedType?: RightPanelExpandedType // Controls the type of the information displayed on the right panel, display "None" by default.
 	autoHideFooter?: boolean // Whether to enable the footer auto-hide feature, enabled by default.
 	enableUserSearch?: boolean // Whether to enable the user search feature, false by default.
+	videoCodec?: "H264" | "VP8" // video codec
 	// 1.4 Leaving view
 	showLeavingView?: boolean // Whether to display the leaving view. Displayed by default.
 	showLeaveRoomConfirmDialog?: boolean // When leaving the room, whether to display a confirmation pop-up window, the default is true
