@@ -586,6 +586,9 @@ export class ZegoCloudRTCCore {
 		if (this._config.language) {
 			this.changeIntl();
 		}
+		if (!config.videoScreenConfig) {
+			config.videoScreenConfig = { ...this._config.videoScreenConfig }
+		}
 		return true
 	}
 

@@ -1100,7 +1100,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       return;
     }
 
-    let targetModel = false;
+    let targetModel = false; // true 为前置，false 为后置
     if (this.faceModel === -1) {
       return;
     } else if (this.faceModel === 0) {
@@ -1111,6 +1111,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     // this.state.localStream.getAudioTracks()[0].stop();
     try {
       this.props.core.useFrontCamera(this.state.localStream, targetModel);
+      const videoDom = document.getElementById(this.localStreamID);
+      if (!targetModel) {
+        videoDom && (videoDom.style.transform = "rotateY(180deg)");
+      } else {
+        videoDom && (videoDom.style.transform = "");
+      }
       // const solution = getVideoResolution(
       //   this.props.core._config.videoResolutionList![0]
       // );
