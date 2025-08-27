@@ -1168,20 +1168,21 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   async sendMessage(msg: string) {
     let messageID = randomNumber(3);
+    const newMsg = {
+      fromUser: {
+        userID: this.props.core._expressConfig.userID,
+        userName: this.props.core._expressConfig.userName,
+      },
+      message: msg,
+      sendTime: Date.now(),
+      messageID,
+      status: "SENDING",
+    }
     this.setState((state: { messageList: ZegoBroadcastMessageInfo2[] }) => {
       return {
         messageList: [
           ...state.messageList,
-          {
-            fromUser: {
-              userID: this.props.core._expressConfig.userID,
-              userName: this.props.core._expressConfig.userName,
-            },
-            message: msg,
-            sendTime: Date.now(),
-            messageID,
-            status: "SENDING",
-          },
+          newMsg,
         ],
       };
     });
@@ -1203,9 +1204,25 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           this.props.core._config.onSendMessageResult && this.props.core._config.onSendMessageResult(resp);
         } else {
           resp = await this.props.core.sendRoomMessage(message);
+          this.props.core._config.onSendMessageResult &&
+            this.props.core._config.onSendMessageResult({
+              errCode: resp.errorCode,
+              message: msg,
+              fromUser: newMsg.fromUser,
+              sendTime: newMsg.sendTime,
+              messageID: resp.messageID
+            });
         }
       } else {
         resp = await this.props.core.sendRoomMessage(message);
+        this.props.core._config.onSendMessageResult &&
+          this.props.core._config.onSendMessageResult({
+            errCode: resp.errorCode,
+            message: msg,
+            fromUser: newMsg.fromUser,
+            sendTime: newMsg.sendTime,
+            messageID: resp.messageID
+          });
       }
     } catch (err) {
       console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));

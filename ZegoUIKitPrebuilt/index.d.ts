@@ -1,4 +1,3 @@
-
 declare type ZegoCloudRTCCore = {};
 declare type ZegoExpressEngine = {};
 declare interface ZegoUser {
@@ -163,6 +162,7 @@ declare interface ZegoCloudRoomConfig {
 	rightPanelExpandedType?: RightPanelExpandedType // Controls the type of the information displayed on the right panel, display "None" by default.
 	autoHideFooter?: boolean // Whether to enable the footer auto-hide feature, enabled by default.
 	enableUserSearch?: boolean // Whether to enable the user search feature, false by default.
+	videoCodec?: "H264" | "VP8" // video codec
 	// 1.4 Leaving view
 	showLeavingView?: boolean // Whether to display the leaving view. Displayed by default.
 	showLeaveRoomConfirmDialog?: boolean // When leaving the room, whether to display a confirmation pop-up window, the default is true
@@ -217,9 +217,11 @@ declare interface ZegoCloudRoomConfig {
 	// Overall video screen configuration
 	videoScreenConfig?: {
 		objectFit?: "cover" | "contain" | "fill" // 视频画面显示模式，默认 "contain"
+		localMirror?: boolean // 本端视频画面是否镜像，默认 true
+		pullStreamMirror?: boolean // 拉流端视频画面是否镜像，默认 false
 	}
 	// Send Message Response
-	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
+	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string, fromUser?: ZegoUser, sendTime?: number, messageID?: number }) => void
 	// Screen rotation Button
 	showRotatingScreenButton?: boolean;
 	// Screen rotation notification
@@ -233,6 +235,12 @@ declare interface ZegoCloudRoomConfig {
 	// 2.14.0
 	// Message sending channel configuration
 	sendMessageChannel?: "RTC" | "ZIM"
+	// 2.15.0
+	// 背景虚化及虚拟背景开关按钮
+	showBackgroundProcessButton?: boolean
+	onLocalStreamCreated?: (stream) => void
+	// 2.16.0
+	onStreamUpdate?: (streamId: string) => void
 }
 
 export enum ZegoUserState {
@@ -434,4 +442,7 @@ export declare class ZegoUIKitPrebuilt {
 	rotateToLandscape(): void
 	rotateToPortrait(): void
 	renewToken(): boolean
+	// 2.15.0
+	closeBackgroundProcess(): void
+	openBackgroundProcess(): void
 }

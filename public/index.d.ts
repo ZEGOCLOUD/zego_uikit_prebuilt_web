@@ -221,7 +221,7 @@ declare interface ZegoCloudRoomConfig {
 		pullStreamMirror?: boolean // 拉流端视频画面是否镜像，默认 false
 	}
 	// Send Message Response
-	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
+	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string, fromUser?: ZegoUser, sendTime?: number, messageID?: number }) => void
 	// Screen rotation Button
 	showRotatingScreenButton?: boolean;
 	// Screen rotation notification
