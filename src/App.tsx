@@ -52,10 +52,12 @@ export default class App extends React.PureComponent {
     },
   };
   state: any = {
+    myMeetingKey: 0,
+    currentMode: ScenarioModel.OneONoneCall,
     showPreviewHeader: getUrlParams().get("preHeader") || "show",
     docs: this.docsLink[process.env.REACT_APP_PATH || "video_conference"][getUrlParams().get("lang") || "en"],
     showSettings: false,
-    showSettingsBtn: false,
+    showSettingsBtn: true,
     showInvitationSettings: false,
     liveStreamingMode:
       getUrlParams().get("liveStreamingMode") || "RealTimeLive",
@@ -78,6 +80,9 @@ export default class App extends React.PureComponent {
     onlyInitiatorCanInvite: false,
     showWaitingCallAcceptAudioVideoView: false,
     waitingUsers: [],
+    showPreJoinView: true,
+    turnOnCameraWhenJoining: sessionStorage.getItem("turnOnCameraWhenJoining") ? (sessionStorage.getItem("turnOnCameraWhenJoining") === "true" ? true : false) : true,
+    turnOnMicrophoneWhenJoining: sessionStorage.getItem("turnOnMicrophoneWhenJoining") ? (sessionStorage.getItem("turnOnMicrophoneWhenJoining") === "true" ? true : false) : true,
   };
   refuseBtn = React.createRef();
   acceptBtn = React.createRef();
@@ -116,7 +121,6 @@ export default class App extends React.PureComponent {
     let maxUsers = 50;
     let showNonVideoUser = getUrlParams().get("showNonVideoUser") || undefined;
     let liveStreamingMode;
-    let mode = ScenarioModel.OneONoneCall;
 
     //@ts-ignore // just for debugger
     window.ZegoUIKitPrebuilt = ZegoUIKitPrebuilt;
@@ -175,7 +179,7 @@ export default class App extends React.PureComponent {
       });
     } else if (process.env.REACT_APP_PATH === "live_stream") {
       console.warn("【Zego Demo】app live_stream");
-      mode = ScenarioModel.LiveStreaming;
+      this.state.currentMode = ScenarioModel.LiveStreaming;
       liveStreamingMode = this.getLiveStreamingMode();
       if (role === LiveRole.Host || role === LiveRole.Cohost) {
         sharedLinks.push({
@@ -204,7 +208,7 @@ export default class App extends React.PureComponent {
       });
     } else if (process.env.REACT_APP_PATH === "video_conference") {
       console.warn("【Zego Demo】app video_conference");
-      mode = ScenarioModel.VideoConference;
+      this.state.currentMode = ScenarioModel.VideoConference;
       sharedLinks.push({
         name: "Personal link",
         url:
@@ -217,7 +221,7 @@ export default class App extends React.PureComponent {
       });
     } else if (process.env.REACT_APP_PATH === "group_call") {
       console.warn("【Zego Demo】app group_call");
-      mode = ScenarioModel.GroupCall;
+      this.state.currentMode = ScenarioModel.GroupCall;
       sharedLinks.push({
         name: "Personal link",
         url:
@@ -228,7 +232,6 @@ export default class App extends React.PureComponent {
           "&role=Cohost" +
           "&lang=" + this.state.lang,
       });
-
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
       console.warn("【Zego Demo】app call_invitation");
@@ -300,7 +303,7 @@ export default class App extends React.PureComponent {
           console: ZegoUIKitPrebuilt.ConsoleError,
           sharedLinks,
           scenario: {
-            mode,
+            mode: this.state.currentMode,
             config: {
               role,
               liveStreamingMode,
@@ -308,7 +311,6 @@ export default class App extends React.PureComponent {
               videoMixingOutputResolution: ZegoUIKitPrebuilt.VideoMixinOutputResolution._540P,
             },
           },
-          // turnOnMicrophoneWhenJoining: false, // 是否开启自己的麦克风,默认开启
           showRotatingScreenButton: true,
           onScreenRotation: (current) => {
             console.warn('===onScreenRotation', current);
@@ -347,14 +349,15 @@ export default class App extends React.PureComponent {
           // onSendMessageResult: (response) => {
           //   console.warn('===onSendMessageResult', response);
           // },
-          // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
           // showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
           //   showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
           //   showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
           //   showNonVideoUser: true,
           // enableUserSearch: true,
-          // @ts-ignore
-          // showPreJoinView: true,
+          // demo可动态配置项
+          showPreJoinView: sessionStorage.getItem("showPreJoinView") ? (sessionStorage.getItem("showPreJoinView") === "true" ? true : false) : true,
+          turnOnCameraWhenJoining: this.state.turnOnCameraWhenJoining, // 是否开启自己的摄像头 ,默认开启
+          turnOnMicrophoneWhenJoining: this.state.turnOnMicrophoneWhenJoining, // 是否开启自己的麦克风,默认开启
           // showScreenSharingButton: false,
           // showTextChat: false,
           // showUserList: true,
@@ -688,7 +691,6 @@ export default class App extends React.PureComponent {
           // },
           showBackgroundProcessButton: true,
           // turnOnCameraWhenJoining: false,
-          // turnOnMicrophoneWhenJoining: false,
           // autoLeaveRoomWhenOnlySelfInRoom: false,
           // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
           // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
@@ -1023,6 +1025,102 @@ export default class App extends React.PureComponent {
     console.log('postMessage', JSON.stringify({ type, data }))
     _win.postMessage(JSON.stringify({ type, data }), '*')
   }
+
+  settingsContent = () => {
+    switch (this.state.currentMode) {
+      case ScenarioModel.LiveStreaming:
+        {
+          return (
+            <>
+              {isPc() && (
+                <div className={APP.settingsMode}>Live streaming mode</div>
+              )}
+              <div className={APP.settingsModeList}>
+                <div
+                  className={`${APP.settingsModeItem} ${this.state.liveStreamingMode === "LiveStreaming"
+                    ? APP.settingsModeItemSelected
+                    : ""
+                    }`}
+                  onClick={() => {
+                    this.handleSelectMode("LiveStreaming");
+                  }}>
+                  <p>Live Streaming</p>
+                  <span></span>
+                </div>
+                <div
+                  className={`${APP.settingsModeItem} ${this.state.liveStreamingMode ===
+                    "InteractiveLiveStreaming"
+                    ? APP.settingsModeItemSelected
+                    : ""
+                    }`}
+                  onClick={() => {
+                    this.handleSelectMode("InteractiveLiveStreaming");
+                  }}>
+                  <p>Interactive Live Streaming</p>
+                  <span></span>
+                </div>
+                <div
+                  className={`${APP.settingsModeItem} ${this.state.liveStreamingMode === "RealTimeLive"
+                    ? APP.settingsModeItemSelected
+                    : ""
+                    }`}
+                  onClick={() => {
+                    this.handleSelectMode("RealTimeLive");
+                  }}>
+                  <p>Real-time Live</p>
+                  <span></span>
+                </div>
+              </div>
+              {isPc() && (
+                <div
+                  className={APP.settingsBtn}
+                  onClick={() => {
+                    this.handleSettingsConfirm();
+                  }}>
+                  Confirm
+                </div>
+              )}
+            </>
+          )
+        }
+      case ScenarioModel.VideoConference:
+        {
+          return (
+            <>
+              {isPc() && (
+                <div className={APP.settingsModeList}>
+                  <div className={`${APP.settingsModeItem} ${this.state.showPreJoinView ? APP.settingsModeItemSelected : ""}`}
+                    onClick={() => {
+                      sessionStorage.setItem("showPreJoinView", String(!this.state.showPreJoinView));
+                      this.setState({ showPreJoinView: !this.state.showPreJoinView })
+                    }}>
+                    <p title="为false时需在sessionStorage中清掉">showPreJoinView</p>
+                    <span></span>
+                  </div>
+                  <div className={`${APP.settingsModeItem} ${this.state.turnOnCameraWhenJoining ? APP.settingsModeItemSelected : ""}`}
+                    onClick={() => {
+                      sessionStorage.setItem("turnOnCameraWhenJoining", String(!this.state.turnOnCameraWhenJoining));
+                      this.setState({ turnOnCameraWhenJoining: !this.state.turnOnCameraWhenJoining });
+                    }}>
+                    <p title="修改后需要刷新页面">turnOnCameraWhenJoining</p>
+                    <span></span>
+                  </div>
+                  <div className={`${APP.settingsModeItem} ${this.state.turnOnMicrophoneWhenJoining ? APP.settingsModeItemSelected : ""}`}
+                    onClick={() => {
+                      sessionStorage.setItem("turnOnMicrophoneWhenJoining", String(!this.state.turnOnMicrophoneWhenJoining));
+                      this.setState({ turnOnMicrophoneWhenJoining: !this.state.turnOnMicrophoneWhenJoining });
+                    }}>
+                    <p title="修改后需要刷新页面">turnOnMicrophoneWhenJoining</p>
+                    <span></span>
+                  </div>
+                </div>
+              )}
+            </>
+          );
+        }
+    }
+  }
+
   render(): React.ReactNode {
     return (
       <div
@@ -1192,54 +1290,7 @@ export default class App extends React.PureComponent {
                   }}></span>
               </div>
               <div className={APP.settingsBody}>
-                {isPc() && (
-                  <div className={APP.settingsMode}>Live streaming mode</div>
-                )}
-                <div className={APP.settingsModeList}>
-                  <div
-                    className={`${APP.settingsModeItem} ${this.state.liveStreamingMode === "LiveStreaming"
-                      ? APP.settingsModeItemSelected
-                      : ""
-                      }`}
-                    onClick={() => {
-                      this.handleSelectMode("LiveStreaming");
-                    }}>
-                    <p>Live Streaming</p>
-                    <span></span>
-                  </div>
-                  <div
-                    className={`${APP.settingsModeItem} ${this.state.liveStreamingMode ===
-                      "InteractiveLiveStreaming"
-                      ? APP.settingsModeItemSelected
-                      : ""
-                      }`}
-                    onClick={() => {
-                      this.handleSelectMode("InteractiveLiveStreaming");
-                    }}>
-                    <p>Interactive Live Streaming</p>
-                    <span></span>
-                  </div>
-                  <div
-                    className={`${APP.settingsModeItem} ${this.state.liveStreamingMode === "RealTimeLive"
-                      ? APP.settingsModeItemSelected
-                      : ""
-                      }`}
-                    onClick={() => {
-                      this.handleSelectMode("RealTimeLive");
-                    }}>
-                    <p>Real-time Live</p>
-                    <span></span>
-                  </div>
-                </div>
-                {isPc() && (
-                  <div
-                    className={APP.settingsBtn}
-                    onClick={() => {
-                      this.handleSettingsConfirm();
-                    }}>
-                    Confirm
-                  </div>
-                )}
+                {this.settingsContent()}
               </div>
             </div>
           </div>

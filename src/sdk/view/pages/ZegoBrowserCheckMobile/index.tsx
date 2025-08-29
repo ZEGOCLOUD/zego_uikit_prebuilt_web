@@ -47,8 +47,27 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		});
 		const videoOpen = !!this.props.core._config.turnOnCameraWhenJoining;
 		const audioOpen = !!this.props.core._config.turnOnMicrophoneWhenJoining;
+		// 获取摄像头权限
+		//@ts-ignore
+		const cameraStatus = await navigator.permissions.query({ name: "camera" });
+		this.videoRefuse = cameraStatus.state.includes('denied');
+
+		// 获取麦克风权限
+		//@ts-ignore
+		const micStatus = await navigator.permissions.query({ name: "microphone" });
+		this.audioRefuse = micStatus.state.includes('denied');
+
 		if (videoOpen || audioOpen) {
-			await this.createStream(videoOpen, audioOpen);
+			if (!this.videoRefuse || !this.audioRefuse) {
+				await this.createStream(videoOpen, audioOpen);
+			} else {
+				// 没有摄像头和麦克风权限
+				this.setState({
+					audioOpen: false,
+					videoOpen: false,
+					isVideoOpening: false,
+				});
+			}
 		} else {
 			this.setState({
 				audioOpen: audioOpen,

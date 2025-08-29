@@ -960,17 +960,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       );
       return;
     }
-    if (String(this.props.core._zimManager?.callInfo.type) !== '0' && this.props.core.status.videoRefuse) {
-      ZegoModelShow(
-        {
-          header: formatMessage({ id: "global.equipment" }),
-          contentText: formatMessage({ id: "global.cameraPermission" }),
-          okText: "Okay",
-        },
-        document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
-      );
-      return;
-    }
+    // if (String(this.props.core._zimManager?.callInfo.type) !== '0' && this.props.core.status.videoRefuse) {
+    //   ZegoModelShow(
+    //     {
+    //       header: formatMessage({ id: "global.equipment" }),
+    //       contentText: formatMessage({ id: "global.cameraPermission" }),
+    //       okText: "Okay",
+    //     },
+    //     document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+    //   );
+    //   return;
+    // }
     if (this.micStatus === -1) return;
     this.micStatus = -1;
 
@@ -1086,11 +1086,14 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   async switchCamera() {
     const { formatMessage } = this.props.core.intl;
     if (this.props.core.status.videoRefuse) {
-      ZegoConfirm({
-        title: formatMessage({ id: "global.equipment" }),
-        content: formatMessage({ id: "global.equipmentDesc" }),
-        confirm: "Okay",
-      });
+      ZegoModelShow(
+        {
+          header: formatMessage({ id: "global.equipment" }),
+          contentText: formatMessage({ id: "global.equipmentDesc" }),
+          okText: "Okay",
+        },
+        document.querySelector(`.${ZegoRoomCss.ZegoRoom}`)
+      );
       return;
     }
     if (this.cameraDevices.length === 0) {

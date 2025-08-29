@@ -72,7 +72,7 @@ export default class ZegoVideo extends React.PureComponent<{
 					console.warn('[video]initVideo 渲染本地流', this.props.userInfo);
 					const media = this.props.userInfo.streamList[0]?.media as ZegoLocalStream;
 					media.playVideo(this.videoRef, { mirror: !isScreenSharing ? this.props.core._config.videoScreenConfig?.localMirror : false, objectFit: videoObjectFit })
-					if (this.props.userInfo.streamList[0]?.cameraStatus === 'MUTE') {
+					if (media.videoCaptureStream && this.props.userInfo.streamList[0]?.cameraStatus === 'MUTE') {
 						this.props.core.enableVideoCaptureDevice(media, false);
 					}
 				} else {

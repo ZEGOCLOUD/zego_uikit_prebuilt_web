@@ -10,7 +10,7 @@ import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStr
 
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
-    localStream: undefined,
+    localStream: undefined as ZegoLocalStream | undefined,
     // localVideoStream: undefined,
     // localAudioStream: undefined,
     userName: "xxx",
@@ -71,24 +71,70 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     });
     const videoOpen = !!this.props.core._config.turnOnCameraWhenJoining;
     const audioOpen = !!this.props.core._config.turnOnMicrophoneWhenJoining;
-    if (videoOpen || audioOpen) {
-      const devices = await this.getDevices();
-      this.setState(
-        {
-          ...devices,
-        },
-        async () => {
-          if (videoOpen || audioOpen) {
-            await this.createStream(videoOpen, audioOpen);
-          } else {
-            this.setState({
-              audioOpen: audioOpen,
-              videoOpen: videoOpen,
-            });
-          }
+
+    // 获取摄像头权限
+    //@ts-ignore
+    const cameraStatus = await navigator.permissions.query({ name: "camera" });
+    this.videoRefuse = cameraStatus.state.includes('denied');
+    // 获取麦克风权限
+    //@ts-ignore
+    const micStatus = await navigator.permissions.query({ name: "microphone" });
+    this.audioRefuse = micStatus.state.includes('denied');
+
+    cameraStatus.onchange = () => {
+      if (cameraStatus.state === 'granted') {
+        this.videoRefuse = false;
+      } else {
+        this.state.localStream && this.props.core.destroyStream(this.state.localStream);
+        this.videoRefuse = true;
+        this.setState({
+          videoOpen: false,
+          isVideoOpening: false,
+          localStream: undefined,
+        })
+        if (!this.audioRefuse) {
+          this.createStream(false, true);
         }
-      );
+      }
+    }
+    micStatus.onchange = async () => {
+      if (micStatus.state === 'granted') {
+        this.audioRefuse = false;
+      } else {
+        this.state.localStream && this.props.core.destroyStream(this.state.localStream);
+        this.audioRefuse = true;
+        this.setState({
+          audioOpen: false,
+          localStream: undefined,
+        })
+        if (!this.videoRefuse) {
+          this.createStream(true, false);
+        }
+      }
+    }
+
+    if (videoOpen || audioOpen) {
+      // config 设置了开启摄像头/麦克风
+      if (!this.videoRefuse || !this.audioRefuse) {
+        const devices = await this.getDevices();
+        this.setState(
+          {
+            ...devices,
+          },
+          async () => {
+            await this.createStream(videoOpen, audioOpen);
+          }
+        );
+      } else {
+        // 没有摄像头和麦克风权限
+        this.setState({
+          audioOpen: false,
+          videoOpen: false,
+          isVideoOpening: false,
+        });
+      }
     } else {
+      // 没有配置开启摄像头或麦克风
       this.setState({
         audioOpen: audioOpen,
         videoOpen: videoOpen,
@@ -180,27 +226,20 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       const solution = getVideoResolution(this.state.selectVideoResolution);
       localStream = await this.props.core.createZegoStream({
         camera: {
-          video: this.state.selectCamera ? {
+          video: !this.videoRefuse ? {
             input: this.state.selectCamera,
             quality: 4,
             ...solution,
           } : false,
-          audio: this.state.selectMic ? {
+          audio: !this.audioRefuse ? {
             input: this.state.selectMic
           } : false,
         },
         videoBitrate: solution.bitrate
       }, true);
-      this.videoRefuse = this.state.selectCamera ? false : true;
-      this.audioRefuse = this.state.selectMic ? false : true;
     } catch (error: any) {
-      this.videoRefuse = true;
-      this.audioRefuse = true;
-      this.setState({
-        isVideoOpening: false,
-      });
       console.error(
-        "【ZEGOCLOUD】toggleStream/createStream failed !!",
+        "【ZEGOCLOUD】createStream failed !!",
         JSON.stringify(error)
       );
       if (error && error.errorCode === 1103064) {
@@ -244,7 +283,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
           } else {
             localStream.stopVideo();
           }
-          this.props.core.enableVideoCaptureDevice(localStream, videoOpen);
+          localStream.videoCaptureStream && this.props.core.enableVideoCaptureDevice(localStream, videoOpen);
         }
       }
     );
@@ -266,7 +305,19 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         return;
       }
       const videoOpen = !this.state.videoOpen;
-      if (!this.state.localStream) {
+      if (this.state.localStream && this.state.localStream.videoCaptureStream) {
+        if (videoOpen && this.localVideoRef.current) {
+          (this.state.localStream as ZegoLocalStream).playVideo(this.localVideoRef.current, { objectFit: 'cover' });
+        } else {
+          (this.state.localStream as ZegoLocalStream).stopVideo();
+        }
+        this.props.core.enableVideoCaptureDevice(this.state.localStream, videoOpen);
+      } else {
+        if (this.state.localStream) {
+          // 存在纯音频流，需要重新创建流
+          this.props.core.destroyStream(this.state.localStream);
+          this.setState({ localStream: undefined });
+        }
         if (!this.state.selectCamera || !this.state.selectMic || !this.state.selectSpeaker) {
           const devices = await this.getDevices();
           this.setState({
@@ -277,21 +328,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         } else {
           await this.createStream(videoOpen, this.state.audioOpen);
         }
-      } else {
-        if (videoOpen && this.localVideoRef.current) {
-          (this.state.localStream as ZegoLocalStream).playVideo(this.localVideoRef.current, { objectFit: 'cover' });
-        } else {
-          (this.state.localStream as ZegoLocalStream).stopVideo();
-        }
-        this.props.core.enableVideoCaptureDevice(this.state.localStream, videoOpen);
-        // if (
-        //   /Firefox/.test(navigator.userAgent) &&
-        //   this.videoRef.current &&
-        //   this.state.localStream
-        // ) {
-        //   // eslint-disable-next-line no-self-assign
-        //   this.videoRef.current.srcObject = this.videoRef.current.srcObject;
-        // }
       }
       this.setState({ videoOpen });
     } else if (type === "audio") {
@@ -307,7 +343,19 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         return;
       }
       const audioOpen = !this.state.audioOpen;
-      if (!this.state.localStream) {
+      if (this.state.localStream && this.state.localStream.audioCaptureStream) {
+        if (audioOpen) {
+          (this.state.localStream as ZegoLocalStream).playAudio();
+        } else {
+          (this.state.localStream as ZegoLocalStream).stopAudio();
+        }
+        this.props.core.muteMicrophone(audioOpen);
+      } else {
+        if (this.state.localStream) {
+          // 存在纯视频流，需要重新创建流
+          this.props.core.destroyStream(this.state.localStream);
+          this.setState({ localStream: undefined });
+        }
         if (!this.state.selectCamera || !this.state.selectMic || !this.state.selectSpeaker) {
           const devices = await this.getDevices();
           this.setState({
@@ -318,13 +366,6 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         } else {
           await this.createStream(this.state.videoOpen, audioOpen);
         }
-      } else {
-        if (audioOpen) {
-          (this.state.localStream as ZegoLocalStream).playAudio();
-        } else {
-          (this.state.localStream as ZegoLocalStream).stopAudio();
-        }
-        this.props.core.muteMicrophone(audioOpen);
       }
       this.setState({ audioOpen });
     }

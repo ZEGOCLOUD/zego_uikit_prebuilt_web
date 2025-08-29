@@ -147,7 +147,7 @@ export class ZimManager {
 			.catch((err: any) => {
 				// 登录失败
 				this.isLogin = false;
-				console.error("【ZIMManager】zim login failed !!", err);
+				console.error("【ZIMManager】zim login failed !!", this.expressConfig.userID, err);
 				if (err.code === 6000014) {
 					this.isServiceActivated = false;
 					return;
