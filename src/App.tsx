@@ -80,9 +80,17 @@ export default class App extends React.PureComponent {
     onlyInitiatorCanInvite: false,
     showWaitingCallAcceptAudioVideoView: false,
     waitingUsers: [],
+    role: getUrlParams().get("role") || "Host",
     showPreJoinView: true,
     turnOnCameraWhenJoining: sessionStorage.getItem("turnOnCameraWhenJoining") ? (sessionStorage.getItem("turnOnCameraWhenJoining") === "true" ? true : false) : true,
     turnOnMicrophoneWhenJoining: sessionStorage.getItem("turnOnMicrophoneWhenJoining") ? (sessionStorage.getItem("turnOnMicrophoneWhenJoining") === "true" ? true : false) : true,
+    showTurnOffRemoteCameraButton: sessionStorage.getItem("showTurnOffRemoteCameraButton") ? (sessionStorage.getItem("showTurnOffRemoteCameraButton") === "true" ? true : false) : false,
+    showTurnOffRemoteMicrophoneButton: sessionStorage.getItem("showTurnOffRemoteMicrophoneButton") ? (sessionStorage.getItem("showTurnOffRemoteMicrophoneButton") === "true" ? true : false) : false,
+    showMyCameraToggleButton: sessionStorage.getItem("showMyCameraToggleButton") ? (sessionStorage.getItem("showMyCameraToggleButton") === "true" ? true : false) : true,
+    showMyMicrophoneToggleButton: sessionStorage.getItem("showMyMicrophoneToggleButton") ? (sessionStorage.getItem("showMyMicrophoneToggleButton") === "true" ? true : false) : true,
+    showAudioVideoSettingsButton: sessionStorage.getItem("showAudioVideoSettingsButton") ? (sessionStorage.getItem("showAudioVideoSettingsButton") === "true" ? true : false) : true,
+    showTextChat: sessionStorage.getItem("showTextChat") ? (sessionStorage.getItem("showTextChat") === "true" ? true : false) : true,
+    showUserList: sessionStorage.getItem("showUserList") ? (sessionStorage.getItem("showUserList") === "true" ? true : false) : true,
   };
   refuseBtn = React.createRef();
   acceptBtn = React.createRef();
@@ -349,18 +357,21 @@ export default class App extends React.PureComponent {
           // onSendMessageResult: (response) => {
           //   console.warn('===onSendMessageResult', response);
           // },
-          // showMyCameraToggleButton: false, // 是否显示控制自己的麦克风按钮,默认显示
-          //   showMyMicrophoneToggleButton: true, // 是否显示控制自己摄像头按钮,默认显示
-          //   showAudioVideoSettingsButton: true, // 是否显示音视频设置按钮,默认显示
           //   showNonVideoUser: true,
           // enableUserSearch: true,
           // demo可动态配置项
           showPreJoinView: sessionStorage.getItem("showPreJoinView") ? (sessionStorage.getItem("showPreJoinView") === "true" ? true : false) : true,
-          turnOnCameraWhenJoining: this.state.turnOnCameraWhenJoining, // 是否开启自己的摄像头 ,默认开启
-          turnOnMicrophoneWhenJoining: this.state.turnOnMicrophoneWhenJoining, // 是否开启自己的麦克风,默认开启
+          turnOnCameraWhenJoining: role === LiveRole.Audience ? false : this.state.turnOnCameraWhenJoining, // 是否开启自己的摄像头 ,默认开启
+          turnOnMicrophoneWhenJoining: role === LiveRole.Audience ? false : this.state.turnOnMicrophoneWhenJoining, // 是否开启自己的麦克风,默认开启
+          showTurnOffRemoteCameraButton: this.state.showTurnOffRemoteCameraButton,
+          showTurnOffRemoteMicrophoneButton: this.state.showTurnOffRemoteMicrophoneButton,
+          showMyCameraToggleButton: role === LiveRole.Audience ? false : this.state.showMyCameraToggleButton, // 是否显示控制自己的麦克风按钮,默认显示
+          showMyMicrophoneToggleButton: role === LiveRole.Audience ? false : this.state.showMyMicrophoneToggleButton, // 是否显示控制自己摄像头按钮,默认显示
+          showAudioVideoSettingsButton: role === LiveRole.Audience ? false : this.state.showAudioVideoSettingsButton, // 是否显示音视频设置按钮,默认显示
+          showTextChat: this.state.showTextChat,
+          showUserList: this.state.showUserList,
           // showScreenSharingButton: false,
-          // showTextChat: false,
-          // showUserList: true,
+
           // showRoomTimer: true,
           // showRoomDetailsButton: true,
           // autoHideFooter: false,
@@ -466,8 +477,6 @@ export default class App extends React.PureComponent {
           //   console.warn("【demo】onYouRemovedFromRoom")
           //   this.showToast(`You've been removed by the host.`)
           // },
-          // showTurnOffRemoteCameraButton: true,
-          // showTurnOffRemoteMicrophoneButton: true,
           showRemoveUserButton: true,
           // showPinButton: true,
           showInviteToCohostButton: true,
@@ -834,12 +843,12 @@ export default class App extends React.PureComponent {
   }
   handleSettingsConfirm() {
     let param = getUrlParams();
-    if (param.get("liveStreamingMode") === this.state.liveStreamingMode) {
-      this.setState({
-        showSettings: false,
-      });
-      return;
-    }
+    // if (param.get("liveStreamingMode") === this.state.liveStreamingMode) {
+    //   this.setState({
+    //     showSettings: false,
+    //   });
+    //   return;
+    // }
     param.set("liveStreamingMode", this.state.liveStreamingMode);
     window.location.href =
       window.location.origin +
@@ -1072,6 +1081,73 @@ export default class App extends React.PureComponent {
                 </div>
               </div>
               {isPc() && (
+                <>
+                  <div className={APP.settingsMode}>User List</div>
+                  <div className={APP.settingsModeList}>
+                    {this.state.role !== LiveRole.Audience && (
+                      <>
+                        <div className={`${APP.settingsModeItem} ${this.state.showMyCameraToggleButton ? APP.settingsModeItemSelected : ""}`}
+                          onClick={() => {
+                            sessionStorage.setItem("showMyCameraToggleButton", String(!this.state.showMyCameraToggleButton));
+                            this.setState({ showMyCameraToggleButton: !this.state.showMyCameraToggleButton })
+                          }}>
+                          <p>showMyCameraToggleButton</p>
+                          <span></span>
+                        </div>
+                        <div className={`${APP.settingsModeItem} ${this.state.showMyMicrophoneToggleButton ? APP.settingsModeItemSelected : ""}`}
+                          onClick={() => {
+                            sessionStorage.setItem("showMyMicrophoneToggleButton", String(!this.state.showMyMicrophoneToggleButton));
+                            this.setState({ showMyMicrophoneToggleButton: !this.state.showMyMicrophoneToggleButton })
+                          }}>
+                          <p>showMyMicrophoneToggleButton</p>
+                          <span></span>
+                        </div>
+                        <div className={`${APP.settingsModeItem} ${this.state.showAudioVideoSettingsButton ? APP.settingsModeItemSelected : ""}`}
+                          onClick={() => {
+                            sessionStorage.setItem("showAudioVideoSettingsButton", String(!this.state.showAudioVideoSettingsButton));
+                            this.setState({ showAudioVideoSettingsButton: !this.state.showAudioVideoSettingsButton })
+                          }}>
+                          <p>showAudioVideoSettingsButton</p>
+                          <span></span>
+                        </div>
+                      </>
+                    )}
+                    <div className={`${APP.settingsModeItem} ${this.state.showTurnOffRemoteCameraButton ? APP.settingsModeItemSelected : ""}`}
+                      onClick={() => {
+                        sessionStorage.setItem("showTurnOffRemoteCameraButton", String(!this.state.showTurnOffRemoteCameraButton));
+                        this.setState({ showTurnOffRemoteCameraButton: !this.state.showTurnOffRemoteCameraButton })
+                      }}>
+                      <p>showTurnOffRemoteCameraButton</p>
+                      <span></span>
+                    </div>
+                    <div className={`${APP.settingsModeItem} ${this.state.showTurnOffRemoteMicrophoneButton ? APP.settingsModeItemSelected : ""}`}
+                      onClick={() => {
+                        sessionStorage.setItem("showTurnOffRemoteMicrophoneButton", String(!this.state.showTurnOffRemoteMicrophoneButton));
+                        this.setState({ showTurnOffRemoteMicrophoneButton: !this.state.showTurnOffRemoteMicrophoneButton })
+                      }}>
+                      <p>showTurnOffRemoteMicrophoneButton</p>
+                      <span></span>
+                    </div>
+                    <div className={`${APP.settingsModeItem} ${this.state.showTextChat ? APP.settingsModeItemSelected : ""}`}
+                      onClick={() => {
+                        sessionStorage.setItem("showTextChat", String(!this.state.showTextChat));
+                        this.setState({ showTextChat: !this.state.showTextChat })
+                      }}>
+                      <p>showTextChat</p>
+                      <span></span>
+                    </div>
+                    <div className={`${APP.settingsModeItem} ${this.state.showUserList ? APP.settingsModeItemSelected : ""}`}
+                      onClick={() => {
+                        sessionStorage.setItem("showUserList", String(!this.state.showUserList));
+                        this.setState({ showUserList: !this.state.showUserList })
+                      }}>
+                      <p>showUserList</p>
+                      <span></span>
+                    </div>
+                  </div>
+                </>
+              )}
+              {isPc() && (
                 <div
                   className={APP.settingsBtn}
                   onClick={() => {
@@ -1080,6 +1156,7 @@ export default class App extends React.PureComponent {
                   Confirm
                 </div>
               )}
+
             </>
           )
         }

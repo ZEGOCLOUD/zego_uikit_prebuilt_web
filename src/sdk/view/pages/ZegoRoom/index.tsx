@@ -129,6 +129,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	showNotSupported = 0;
 	notSupportMultipleVideoNotice = 0;
 	inviteModelRoot: any = null;
+
+	private cameraPermissionStatus: PermissionStatus | null = null;
+	private micPermissionStatus: PermissionStatus | null = null;
+
 	get showHeader(): boolean {
 		return !!(
 			this.props.core._config.branding?.logoURL ||
@@ -231,14 +235,22 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.state.isScreenSharingBySelf && this.closeScreenSharing();
 		this.state.localStream && this.props.core.destroyStream(this.state.localStream);
 		this.props.core.localStream = undefined;
-		this.props.core.eventEmitter.off("cancelCall", this.forceUpdateView)
+		this.props.core.eventEmitter.off("cancelCall", this.forceUpdateView);
+		if (this.micPermissionStatus) {
+			this.micPermissionStatus.onchange = null;
+		}
+		if (this.cameraPermissionStatus) {
+			this.cameraPermissionStatus.onchange = null;
+		}
 	}
 	async initSDK() {
 		const { formatMessage } = this.props.core.intl;
 		//@ts-ignore
 		const cameraStatus = await navigator.permissions.query({ name: "camera" });
+		this.cameraPermissionStatus = cameraStatus;
 		//@ts-ignore
 		const micStatus = await navigator.permissions.query({ name: "microphone" });
+		this.micPermissionStatus = micStatus;
 		// 没有检测页直接进房，videoRefuse 和 audioRefuse 为 undefined，初始化时重新赋值
 		if (this.props.core.status.videoRefuse === undefined || this.props.core.status.audioRefuse === undefined) {
 			this.props.core.status.videoRefuse = cameraStatus.state.includes('denied');
@@ -252,7 +264,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			if (cameraStatus.state === 'granted') {
 				this.props.core.status.videoRefuse = false;
 			} else {
-				this.state.cameraOpen && await this.toggleCamera();
+				// this.state.cameraOpen && await this.toggleCamera();
+				this.setState({
+					cameraOpen: !this.state.cameraOpen,
+				}, () => {
+					ZegoToast({
+						content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.state.cameraOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+					});
+				})
 				this.state.localStream && this.stopPublish();
 				this.props.core.status.videoRefuse = true;
 				if (!this.props.core.status.audioRefuse) {
@@ -266,7 +285,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			if (micStatus.state === 'granted') {
 				this.props.core.status.audioRefuse = false;
 			} else {
-				this.state.micOpen && await this.toggleMic();
+				// this.state.micOpen && await this.toggleMic();
+				this.setState({
+					micOpen: !this.state.micOpen,
+				}, () => {
+					ZegoToast({
+						content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.state.micOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+					});
+				})
 				this.state.localStream && this.stopPublish();
 				this.props.core.status.audioRefuse = true;
 				if (!this.props.core.status.videoRefuse) {

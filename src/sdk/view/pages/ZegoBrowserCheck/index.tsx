@@ -43,6 +43,9 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   audioRefuse = this.props.core.status.audioRefuse;
   videoRefuse = this.props.core.status.videoRefuse;
 
+  private cameraPermissionStatus: PermissionStatus | null = null;
+  private micPermissionStatus: PermissionStatus | null = null;
+
   constructor(props: ZegoBrowserCheckProp) {
     super(props);
     this.videoRef = React.createRef();
@@ -75,10 +78,12 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     // 获取摄像头权限
     //@ts-ignore
     const cameraStatus = await navigator.permissions.query({ name: "camera" });
+    this.cameraPermissionStatus = cameraStatus;
     this.videoRefuse = cameraStatus.state.includes('denied');
     // 获取麦克风权限
     //@ts-ignore
     const micStatus = await navigator.permissions.query({ name: "microphone" });
+    this.micPermissionStatus = micStatus;
     this.audioRefuse = micStatus.state.includes('denied');
 
     cameraStatus.onchange = () => {
@@ -146,6 +151,12 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     window.removeEventListener("resize", this.throttleResize.bind(this), false);
     this.state.localStream &&
       this.props.core.destroyStream(this.state.localStream);
+    if (this.micPermissionStatus) {
+      this.micPermissionStatus.onchange = null;
+    }
+    if (this.cameraPermissionStatus) {
+      this.cameraPermissionStatus.onchange = null;
+    }
   }
   onResize() {
     if (

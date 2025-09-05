@@ -155,7 +155,7 @@
       top: 50%;
       left: 50%;
       width: 380px;
-      height: 319px;
+      // height: 319px;
       background: #ffffff;
       border: 1px solid #dde0e3;
       border-radius: 8px;
@@ -197,10 +197,10 @@
       .settingsBody {
         box-sizing: border-box;
         width: 100%;
-        padding: 26px;
+        padding: 0 26px 26px;
 
         .settingsMode {
-          margin-bottom: 24px;
+          margin: 20px 0 8px 0;
           padding: 0 16px;
           color: #666666;
           font-weight: 400;
