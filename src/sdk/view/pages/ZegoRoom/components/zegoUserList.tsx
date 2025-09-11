@@ -213,9 +213,9 @@ export class ZegoUserList extends React.PureComponent<{
 	showForbiddenButton(user: ZegoCloudUser): boolean {
 		if (this.props.core._config.scenario?.mode !== ScenarioModel.LiveStreaming) return false;
 		if (this.props.core.isHost(this.props.selfUserID)) {
-			return user.userID !== this.props.selfUserID
+			return user.userID !== this.props.selfUserID;
 		} else {
-			return user.userID === this.props.selfUserID
+			return false;
 		}
 	}
 	isBanSendingMessages(user: ZegoCloudUser) {

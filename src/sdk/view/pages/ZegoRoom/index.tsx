@@ -77,6 +77,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		isRequestingCohost: boolean; // 是否正在申请连麦
 		unreadInviteList: Set<string>; // 是否有未读的连麦申请
 		isMixing: "1" | "0"; // 是否
+		isCreatingStream: boolean; // 是否正在创建流
 	} = {
 			localStream: undefined,
 			layOutStatus: this.initLayout(),
@@ -114,6 +115,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			isRequestingCohost: false,
 			unreadInviteList: new Set(),
 			isMixing: "0",
+			isCreatingStream: false,
 		};
 
 	settingsRef: RefObject<HTMLDivElement> = React.createRef();
@@ -266,10 +268,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} else {
 				// this.state.cameraOpen && await this.toggleCamera();
 				this.setState({
-					cameraOpen: !this.state.cameraOpen,
+					cameraOpen: false,
 				}, () => {
 					ZegoToast({
-						content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.state.cameraOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+						content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + this.props.core.intl.formatMessage({ id: "room.off" }),
 					});
 				})
 				this.state.localStream && this.stopPublish();
@@ -287,10 +289,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} else {
 				// this.state.micOpen && await this.toggleMic();
 				this.setState({
-					micOpen: !this.state.micOpen,
+					micOpen: false,
 				}, () => {
 					ZegoToast({
-						content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.state.micOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+						content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + this.props.core.intl.formatMessage({ id: "room.off" }),
 					});
 				})
 				this.state.localStream && this.stopPublish();
@@ -718,7 +720,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	}
 
 	async createStream(): Promise<boolean> {
-		console.warn('[ZegoRoom]createZegoStream', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse, this.state.cameraOpen)
+		console.warn('[ZegoRoom]createZegoStream', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse)
+		// 如果正在创建流，则直接返回false，避免重复调用
+		if (this.state.isCreatingStream) {
+			console.warn('[ZegoRoom]createStream is already in progress, skip');
+			return false;
+		}
 		const { formatMessage } = this.props.core.intl;
 		if (
 			!this.props.core._config.turnOnCameraWhenJoining &&
@@ -729,6 +736,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			return false;
 		}
 		if (!this.props.core.status.videoRefuse || !this.props.core.status.audioRefuse) {
+			// 设置正在创建流的状态
+			this.setState({ isCreatingStream: true });
 			try {
 				const solution = getVideoResolution(this.state.selectVideoResolution);
 				const localStream = await this.props.core.createZegoStream({
@@ -745,7 +754,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					},
 					videoBitrate: solution.bitrate,
 				});
-				console.warn('[ZegoRoom]createZegoStream localStream', this.state.cameraOpen)
 				this.props.core.localStream = localStream;
 				if (!this.props.core.status.videoRefuse) {
 					await this.props.core.mutePublishStreamVideo(
@@ -789,7 +797,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					});
 					return false;
 				}
-
+				// 无论成功失败，都设置正在创建流的状态为false
+				this.setState({ isCreatingStream: false });
 				return true;
 			} catch (error: any) {
 				console.error("【ZEGOCLOUD】createStream or publishLocalStream failed, Reason: ", JSON.stringify(error));
@@ -809,6 +818,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						micOpen: false,
 					});
 				}
+				// 无论成功失败，都设置正在创建流的状态为false
+				this.setState({ isCreatingStream: false });
 				return false;
 			}
 		} else {
@@ -833,6 +844,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		}
 	}
 	async toggleMic() {
+		console.warn('[ZEGOCLOUD] toggleMic', this.state.localStream, this.state.localStream?.getVideoTracks(), this.state.micOpen);
 		const { formatMessage } = this.props.core.intl;
 		if (this.props.core.status.audioRefuse) {
 			ZegoModelShow(
@@ -895,14 +907,13 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.state.micOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
 				});
 			})
-
 		}
 
 		return !!result;
 	}
 
 	async toggleCamera(): Promise<boolean> {
-		console.warn('[ZEGOCLOUD] toggleCamera', this.state.localStream, this.state.localStream?.getVideoTracks())
+		console.warn('[ZEGOCLOUD] toggleCamera', this.state.localStream, this.state.localStream?.getVideoTracks(), this.state.cameraOpen)
 		const { formatMessage } = this.props.core.intl;
 		if (this.props.core.status.videoRefuse) {
 			ZegoModelShow(
@@ -920,7 +931,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		if (this.state.localStream && this.state.localStream.getVideoTracks().length > 0) {
 			result = await this.props.core.mutePublishStreamVideo(this.state.localStream, this.state.cameraOpen);
 			// 关闭时需要停止采集摄像头
-			this.props.core.enableVideoCaptureDevice(this.state.localStream, !this.state.cameraOpen);
+			await this.props.core.enableVideoCaptureDevice(this.state.localStream, !this.state.cameraOpen);
 			try {
 				await this.props.core.setStreamExtraInfo(
 					this.localStreamID as string,
@@ -2217,7 +2228,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 					whiteboard_brushColor: this.props.core.zegoSuperBoard?.getBrushColor() || "",
 					whiteboard_isFontBold: this.props.core.zegoSuperBoard?.isFontBold(),
 					whiteboard_isFontItalic: this.props.core.zegoSuperBoard?.isFontItalic(),
-					whiteboard_showAddImage: this.props.core._config.whiteboardConfig?.showAddImageButton,
+					whiteboard_showAddImage: this.props.core._config.language === 'zh-CN' && this.props.core._config.whiteboardConfig?.showAddImageButton,
 					userInfo: { userID: this.props.core._expressConfig.userID },
 					whiteboard_showCreateClose: this.props.core._config.whiteboardConfig?.showCreateAndCloseButton,
 				}}>

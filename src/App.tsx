@@ -116,7 +116,7 @@ export default class App extends React.PureComponent {
     const enableMixing = getUrlParams().get("mixing") === "1" || false;
     const urlToken = getUrlParams().get("token")?.replace(/\s/g, '+') || "";
     const urlAppID = Number(getUrlParams().get("appID"));
-    const backgroundProcess = getUrlParams().get("backgroundProcess") || "false";
+    const backgroundProcess = getUrlParams().get("backgroundProcess") || false;
     let role_p = getUrlParams().get("role") || "Host";
     let role: LiveRole =
       role_p === "Host"
@@ -273,7 +273,7 @@ export default class App extends React.PureComponent {
             objectFit: "cover",
           };
         }
-        const zp = ZegoUIKitPrebuilt.create(token, createConfig);
+        const zp = ZegoUIKitPrebuilt.create(token, backgroundProcess ? createConfig : {});
         console.log('[demo]getVersion', ZegoUIKitPrebuilt.getVersion());
         //@ts-ignore // just for debugger
         window.zp = zp;
@@ -604,7 +604,7 @@ export default class App extends React.PureComponent {
         objectFit: "cover",
       };
     }
-    this.zp = ZegoUIKitPrebuilt.create(kitToken, createConfig);
+    this.zp = ZegoUIKitPrebuilt.create(kitToken, backgroundProcess ? createConfig : {});
     this.zp.addPlugins({ ZegoSuperBoardManager, ZIM });
     //@ts-ignore // just for debugger
     window.zp = this.zp;
