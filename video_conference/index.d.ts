@@ -162,6 +162,7 @@ declare interface ZegoCloudRoomConfig {
 	rightPanelExpandedType?: RightPanelExpandedType // Controls the type of the information displayed on the right panel, display "None" by default.
 	autoHideFooter?: boolean // Whether to enable the footer auto-hide feature, enabled by default.
 	enableUserSearch?: boolean // Whether to enable the user search feature, false by default.
+	videoCodec?: "H264" | "VP8" // video codec
 	// 1.4 Leaving view
 	showLeavingView?: boolean // Whether to display the leaving view. Displayed by default.
 	showLeaveRoomConfirmDialog?: boolean // When leaving the room, whether to display a confirmation pop-up window, the default is true
@@ -220,7 +221,7 @@ declare interface ZegoCloudRoomConfig {
 		pullStreamMirror?: boolean // 拉流端视频画面是否镜像，默认 false
 	}
 	// Send Message Response
-	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string }) => void
+	onSendMessageResult?: (response: { errCode: number, message: string, timestamp?: string, fromUser?: ZegoUser, sendTime?: number, messageID?: number }) => void
 	// Screen rotation Button
 	showRotatingScreenButton?: boolean;
 	// Screen rotation notification
