@@ -3,6 +3,7 @@
   flex-direction: column;
   background: #f2f2f2;
   border-radius: 14px;
+
   .top {
     display: flex;
     align-items: center;
@@ -11,10 +12,12 @@
     padding: 0 25px 0 30px;
     background: #ffffff;
     border-radius: 14px 14px 0 0;
+
     .toolLeft {
       display: flex;
       align-items: center;
       justify-content: center;
+
       .undo,
       .redo,
       .zoom,
@@ -30,9 +33,11 @@
         background-size: 18px;
         border-radius: 6px;
       }
+
       .undo {
         margin-right: 16px;
         background-image: url(../../../../sdkAssets/icon_undo_gray@2x.png);
+
         &:hover {
           background: #f5f7fa;
           background-image: url(../../../../sdkAssets/icon_undo_blue@2x.png);
@@ -46,6 +51,7 @@
 
       .redo {
         background-image: url(../../../../sdkAssets/icon_redo_gray@2x.png);
+
         &:hover {
           background: #f5f7fa;
           background-image: url(../../../../sdkAssets/icon_redo_blue@2x.png);
@@ -56,12 +62,15 @@
           cursor: pointer;
         }
       }
+
       .zoom {
         width: 122px;
       }
+
       .page {
         width: 128px;
       }
+
       .zoom,
       .page {
         display: flex;
@@ -73,6 +82,7 @@
         background: #ffffff;
         border: 1px solid #dedede;
         border-radius: 6px;
+
         i {
           width: 24px;
           height: 24px;
@@ -82,8 +92,10 @@
           background-size: 18px;
           border-radius: 6px;
         }
+
         .zoom_sub {
           background-image: url(../../../../sdkAssets/icon_reduce_gray@2x.png);
+
           &:hover {
             background: #f5f7fa;
             background-image: url(../../../../sdkAssets/icon_reduce_blue@2x.png);
@@ -94,8 +106,10 @@
             cursor: pointer;
           }
         }
+
         .zoom_add {
           background-image: url(../../../../sdkAssets/icon_add_gray@2x.png);
+
           &:hover {
             background: #f5f7fa;
             background-image: url(../../../../sdkAssets/icon_add_blue@2x.png);
@@ -106,8 +120,10 @@
             cursor: pointer;
           }
         }
+
         .page_sub {
           background-image: url(../../../../sdkAssets/icon_left_gray@2x.png);
+
           &:hover {
             background: #f5f7fa;
             background-image: url(../../../../sdkAssets/icon_left_blue@2x.png);
@@ -118,8 +134,10 @@
             cursor: pointer;
           }
         }
+
         .page_add {
           background-image: url(../../../../sdkAssets/icon_right_gray@2x.png);
+
           &:hover {
             background: #f5f7fa;
             background-image: url(../../../../sdkAssets/icon_right_blue@2x.png);
@@ -130,27 +148,32 @@
             cursor: pointer;
           }
         }
+
         span {
           color: #2a2a2a;
           font-weight: 400;
           font-size: 16px;
           line-height: 22px;
         }
+
         .page_value,
         .page_value_total {
           width: 24px;
           height: 24px;
           text-align: center;
         }
+
         .page_value {
           background: #f5f7fa;
           border-radius: 6px;
         }
+
         .page_value_total {
           color: #666666;
         }
       }
     }
+
     .stop {
       display: flex;
       align-items: center;
@@ -165,6 +188,7 @@
       background: #ffffff;
       border: 1px solid #ff4a50;
       border-radius: 6px;
+
       &:hover {
         color: #ffffff;
         background: #ff4a50;
@@ -174,6 +198,7 @@
       }
     }
   }
+
   .content {
     position: relative;
     display: flex;
@@ -182,10 +207,12 @@
     justify-content: center;
     height: 100%;
     padding: 10px;
+
     pre {
       padding-right: 5px;
-      line-height: 2;
+      // line-height: 2;
     }
+
     .contentRight {
       flex: 1;
       background: #f2f2f2;
