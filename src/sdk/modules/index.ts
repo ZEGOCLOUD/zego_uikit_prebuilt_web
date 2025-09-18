@@ -879,11 +879,6 @@ export class ZegoCloudRTCCore {
 				})
 			}
 		}
-		// 不是预览流再通知业务层
-		if (!preview) {
-			this.localStream = localStream;
-			this._config.onLocalStreamCreated && this._config.onLocalStreamCreated(localStream);
-		}
 		return localStream;
 	}
 

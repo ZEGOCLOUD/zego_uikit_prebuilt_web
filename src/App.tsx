@@ -321,13 +321,13 @@ export default class App extends React.PureComponent {
           },
           showRotatingScreenButton: true,
           onScreenRotation: (current) => {
-            console.warn('===onScreenRotation', current);
+            console.warn('[config]onScreenRotation', current);
           },
           onUserStateUpdated: (state) => {
-            console.warn('===onUserStateUpdated', state);
+            console.warn('[config]onUserStateUpdated', state);
           },
           onStreamUpdate: (streamID) => {
-            console.warn('===onStreamUpdate', streamID);
+            console.warn('[config]onStreamUpdate', streamID);
             // zp.express?.setAudioFrameCallback(streamID, (data) => {
             //   console.log('setAudioFrameCallback', data);
             // })
@@ -383,11 +383,11 @@ export default class App extends React.PureComponent {
           // maxUsers,
           //   layout: "Auto",
           onUserJoin: async (user) => {
-            console.warn("[demo]onUserJoin", user);
+            console.warn("[config]onUserJoin", user);
           },
           onJoinRoom: async () => {
             // sessionStorage.setItem('roomID', zp.getRoomID());
-            console.warn("[demo]join room callback");
+            console.warn("[config]onJoinRoom");
             // window?.parent?.postMessage("joinRoom", "*")
             this.postMessage({ type: 'joinRoom', data: null })
             // demo 和 goenjoy 都设置20分钟体验限制 
@@ -405,7 +405,7 @@ export default class App extends React.PureComponent {
             }, 1000);
           }, // 退出房间回调
           onLeaveRoom: () => {
-            console.warn("[demo]leave room callback");
+            console.warn("[config]onLeaveRoom");
             // window?.parent?.postMessage("joinRoom", "*")
             this.postMessage({ type: 'leaveRoom', data: null })
             // 刷新20分钟限制
@@ -416,16 +416,16 @@ export default class App extends React.PureComponent {
             }
           },
           onInRoomMessageReceived: (messageInfo) => {
-            console.warn("onInRoomMessageReceived", messageInfo)
+            console.warn("[config]onInRoomMessageReceived", messageInfo)
           },
           onInRoomCommandReceived: (fromUser, command) => {
-            console.warn("onInRoomCommandReceived", fromUser, command)
+            console.warn("[config]onInRoomCommandReceived", fromUser, command)
           },
           onInRoomTextMessageReceived(messages) {
-            console.warn("onInRoomTextMessageReceived", messages)
+            console.warn("[config]onInRoomTextMessageReceived", messages)
           },
           onInRoomCustomCommandReceived(command) {
-            console.warn("onInRoomCustomCommandReceived", command)
+            console.warn("[config]onInRoomCustomCommandReceived", command)
           },
           //   showScreenSharingButton: true,
           // screenSharingConfig: {
@@ -518,16 +518,6 @@ export default class App extends React.PureComponent {
             // showCreateAndCloseButton: true,
           },
           showBackgroundProcessButton: true,
-          onLocalStreamCreated: (stream) => {
-            console.log('onLocalStreamCreated', stream);
-            // zp.express!.setCaptureAudioFrameCallback(stream, (data) => {
-            // console.log('===setCaptureAudioFrameCallback', data);
-            // })
-            // setTimeout(async () => {
-            //   const res = await zp.openBackgroundProcess();
-            //   console.log('====openBackgroundProcess', res)
-            // }, 5000);
-          },
           // requireRoomForegroundView: () => {
           //   const myView = document.createElement('div');
           //   myView.classList.add("my-view");
@@ -539,6 +529,21 @@ export default class App extends React.PureComponent {
           //   })
           //   return myView;
           // }
+          onLocalStreamUpdated: (type, streamID, stream) => {
+            console.warn('[config]onLocalStreamUpdated', type, streamID, stream);
+          },
+          onWhiteboardUpdated: (type, whiteboardId) => {
+            console.warn('[config]onWhiteboardUpdated', type, whiteboardId);
+          },
+          onScreenSharingStreamUpdated: (type, streamID, stream) => {
+            console.warn('[config]onScreenSharingStreamUpdated', type, streamID, stream);
+          },
+          onCameraStateUpdated: (state) => {
+            console.warn('[config]onCameraStateUpdated', state);
+          },
+          onMicrophoneStateUpdated: (state) => {
+            console.warn('[config]onMicrophoneStateUpdated', state)
+          },
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"
@@ -703,13 +708,6 @@ export default class App extends React.PureComponent {
           // autoLeaveRoomWhenOnlySelfInRoom: false,
           // turnOnMicrophoneWhenJoining: true, // 是否开启自己的麦克风,默认开启
           // turnOnCameraWhenJoining: false, // 是否开启自己的摄像头 ,默认开启
-          onLocalStreamCreated: (stream) => {
-            console.log('onLocalStreamCreated', stream);
-            // setTimeout(async () => {
-            //   const res = await this.zp.openBackgroundProcess();
-            //   console.log('====openBackgroundProcess', res)
-            // }, 5000);
-          },
         };
       },
       onCallInvitationEnded: (reason, data) => {

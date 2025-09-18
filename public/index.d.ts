@@ -238,9 +238,13 @@ declare interface ZegoCloudRoomConfig {
 	// 2.15.0
 	// 背景虚化及虚拟背景开关按钮
 	showBackgroundProcessButton?: boolean
-	onLocalStreamCreated?: (stream) => void
 	// 2.16.0
 	onStreamUpdate?: (streamId: string) => void
+	onLocalStreamUpdated?: (type: "created" | "published" | "stopped", streamId: string, stream?) => void
+	onScreenSharingStreamUpdated?: (type: "created" | "published" | "closed", streamId: string, stream?) => void
+	onWhiteboardUpdated?: (type: "created" | "closed", whiteboardId: string) => void
+	onCameraStateUpdated?: (state: "ON" | "OFF") => void
+	onMicrophoneStateUpdated?: (state: "ON" | "OFF") => void
 }
 
 export enum ZegoUserState {
