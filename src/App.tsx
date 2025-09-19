@@ -529,14 +529,14 @@ export default class App extends React.PureComponent {
           //   })
           //   return myView;
           // }
-          onLocalStreamUpdated: (type, streamID, stream) => {
-            console.warn('[config]onLocalStreamUpdated', type, streamID, stream);
+          onLocalStreamUpdated: (state, streamID, stream) => {
+            console.warn('[config]onLocalStreamUpdated', state, streamID, stream);
           },
-          onWhiteboardUpdated: (type, whiteboardId) => {
-            console.warn('[config]onWhiteboardUpdated', type, whiteboardId);
+          onWhiteboardUpdated: (state, whiteboardId) => {
+            console.warn('[config]onWhiteboardUpdated', state, whiteboardId);
           },
-          onScreenSharingStreamUpdated: (type, streamID, stream) => {
-            console.warn('[config]onScreenSharingStreamUpdated', type, streamID, stream);
+          onScreenSharingStreamUpdated: (state, streamID, stream) => {
+            console.warn('[config]onScreenSharingStreamUpdated', state, streamID, stream);
           },
           onCameraStateUpdated: (state) => {
             console.warn('[config]onCameraStateUpdated', state);

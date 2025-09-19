@@ -240,9 +240,9 @@ declare interface ZegoCloudRoomConfig {
 	showBackgroundProcessButton?: boolean
 	// 2.16.0
 	onStreamUpdate?: (streamId: string) => void
-	onLocalStreamUpdated?: (type: "created" | "published" | "stopped", streamId: string, stream?) => void
-	onScreenSharingStreamUpdated?: (type: "created" | "published" | "closed", streamId: string, stream?) => void
-	onWhiteboardUpdated?: (type: "created" | "closed", whiteboardId: string) => void
+	onLocalStreamUpdated?: (state: "created" | "published" | "stopped", streamId: string, stream?) => void
+	onScreenSharingStreamUpdated?: (state: "created" | "published" | "closed", streamId: string, stream?) => void
+	onWhiteboardUpdated?: (state: "created" | "closed", whiteboardId: string) => void
 	onCameraStateUpdated?: (state: "ON" | "OFF") => void
 	onMicrophoneStateUpdated?: (state: "ON" | "OFF") => void
 }
