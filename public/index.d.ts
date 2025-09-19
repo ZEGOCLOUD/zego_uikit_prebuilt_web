@@ -225,7 +225,7 @@ declare interface ZegoCloudRoomConfig {
 	// Screen rotation Button
 	showRotatingScreenButton?: boolean;
 	// Screen rotation notification
-	onScreenRotation?: () => void
+	onScreenRotation?: (currentScreen: 'landscape' | 'portrait') => void
 	// User status updated
 	onUserStateUpdated?: (status: ZegoUserState) => void
 	// Member view config

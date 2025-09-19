@@ -273,11 +273,17 @@ export interface ZegoCloudRoomConfig {
 	// 背景虚化及虚拟背景开关按钮
 	showBackgroundProcessButton?: boolean
 	// 2.16.0
+	// 流新增回调，可获取到流新增时的流id
 	onStreamUpdate?: (streamId: string) => void
+	// 本地流状态更新回调
 	onLocalStreamUpdated?: (state: "created" | "published" | "stopped", streamId: string, stream?: ZegoLocalStream) => void
+	// 屏幕共享流状态更新回调
 	onScreenSharingStreamUpdated?: (state: "created" | "published" | "closed", streamId: string, stream?: ZegoLocalStream) => void
+	// 白板状态更新回调
 	onWhiteboardUpdated?: (state: "created" | "closed", whiteboardId: string) => void
+	// 摄像头状态更新回调
 	onCameraStateUpdated?: (state: "ON" | "OFF") => void
+	// 麦克风状态更新回调·
 	onMicrophoneStateUpdated?: (state: "ON" | "OFF") => void
 }
 
