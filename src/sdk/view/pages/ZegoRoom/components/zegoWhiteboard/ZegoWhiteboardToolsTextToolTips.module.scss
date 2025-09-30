@@ -1,0 +1,144 @@
+.textTools {
+  position: absolute;
+  top: -118px;
+  left: 45px;
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 200px;
+  padding: 16px;
+  background-color: #ffffff;
+  border: 1px solid #f2f2f2;
+  border-radius: 6px;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.04);
+  &.twoRows {
+    left: 105px;
+  }
+  div {
+    margin: 0;
+    padding: 0;
+    &:hover {
+      background-color: #ffffff;
+    }
+  }
+
+  .textTools_font,
+  .textTools_size,
+  .textTools_color {
+    // h3 {
+    //   &:hover {
+    //     background-color: #ffffff;
+    //   }
+    // }
+    width: 100%;
+    height: auto;
+    color: #666666;
+    font-weight: 400;
+    font-size: 12px !important;
+    line-height: 17px;
+    ul {
+      display: flex;
+      flex-direction: row;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: 8px;
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f5f7fa;
+        i {
+          display: inline-block;
+          background: #dedede;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+  .textTools_font {
+    li {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      background-position: center;
+      background-size: contain;
+      border-radius: 6px;
+    }
+    li:first-child {
+      background-image: url(../../../../../sdkAssets/text_bold_gray@2x.png);
+      &.selected {
+        background-color: #0055ff;
+        background-image: url(../../../../../sdkAssets/text_bold_white@2x.png) !important;
+      }
+      &:hover {
+        // color: #0055ff;
+        background-image: url(../../../../../sdkAssets/text_bold_blue@2x.png);
+      }
+    }
+    li:last-child {
+      background-image: url(../../../../../sdkAssets/text_xieti_gray@2x.png);
+      &.selected {
+        background-color: #0055ff;
+        background-image: url(../../../../../sdkAssets/text_xieti_white@2x.png) !important;
+      }
+      &:hover {
+        background-image: url(../../../../../sdkAssets/text_xieti_blue@2x.png);
+        // color: #0055ff;
+      }
+    }
+  }
+  .textTools_size {
+    margin-top: 16px;
+    li {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      color: #2a2a2a;
+      font-weight: 400;
+      line-height: 16px;
+      border-radius: 6px;
+      &.selected {
+        color: #ffffff !important;
+        background-color: #0055ff;
+      }
+      &:hover {
+        color: #0055ff;
+      }
+    }
+  }
+  .textTools_color {
+    margin-top: 16px;
+    ul {
+      flex-wrap: wrap;
+      li {
+        box-sizing: border-box;
+        width: 16px;
+        height: 16px;
+        margin-right: 14px;
+        margin-bottom: 8px;
+
+        border-radius: 50%;
+        &.selected,
+        &:hover {
+          background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@2x.png);
+          background-position: center;
+          background-size: contain;
+        }
+      }
+      li:first-child {
+        border: 2px solid #dedede;
+        &.selected,
+        &:hover {
+          background-image: url(../../../../../sdkAssets/icon_tools_font_color_selected@3x.png);
+          background-position: center;
+          background-size: contain;
+        }
+      }
+      li:nth-child(6n + 6) {
+        margin-right: 0px;
+      }
+    }
+  }
+}

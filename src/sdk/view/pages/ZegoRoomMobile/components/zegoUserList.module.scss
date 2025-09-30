@@ -1,0 +1,205 @@
+@import "../../../../var.scss";
+.memberList {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  z-index: 202;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  height: 70vh;
+  background: #242736;
+  border-radius: vw(46px) vw(46px) 0px 0px;
+  .memberListHeader {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: vw(15px) vw(23px) vw(13px) vw(23px);
+    color: #ffffff;
+    font-weight: 400;
+    font-size: vw(36px);
+    box-shadow: 0px 1px 0px 0px rgba(61, 64, 84, 1);
+    .memberHide {
+      width: vw(70px);
+      height: vw(70px);
+      margin-right: 11px;
+      background-image: url(../../../../sdkMobileAssets/Room_member_hide@2x.png);
+      background-size: contain;
+    }
+  }
+  .memberListContent {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    overflow: auto;
+    .member {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      width: 100%;
+      margin-top: vw(48px);
+      padding-right: vw(34px);
+      padding-left: vw(36px);
+      .memberName {
+        display: flex;
+        align-items: center;
+        i {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: vw(72px);
+          height: vw(72px);
+          margin-right: vw(24px);
+          color: #557bff;
+          font-weight: 600;
+          font-size: vw(24px);
+          font-style: normal;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: vw(36px);
+          img {
+            position: absolute;
+            top: 0;
+            width: vw(72px);
+            height: vw(72px);
+            object-fit: cover;
+            border-radius: 50%;
+          }
+        }
+        span {
+          max-width: vw(300px);
+          overflow: hidden;
+          color: #ffffff;
+          font-weight: 500;
+          font-size: vw(32px);
+          line-height: vw(45px);
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+      .memberHandlers {
+        i {
+          display: inline-block;
+          width: vw(44px);
+          height: vw(44px);
+          margin-left: vw(24px);
+          font-style: normal;
+          background-repeat: no-repeat;
+          background-size: contain;
+        }
+        .memberCameraMute {
+          background-image: url(../../../../sdkMobileAssets/Room_member_camera_mute@2x.png);
+        }
+        .memberCameraOpen {
+          background-image: url(../../../../sdkMobileAssets/Room_member_camera_open@2x.png);
+        }
+
+        .memberMicMute {
+          background-image: url(../../../../sdkMobileAssets/Room_member_mic_mute@2x.png);
+        }
+        .memberMicOpen {
+          background-image: url(../../../../sdkMobileAssets/Room_member_mic_open@2x.png);
+        }
+
+        .memberUnPin {
+          background-image: url(../../../../sdkMobileAssets/Room_pin_mute@2x.png);
+        }
+        .memberPined {
+          background-image: url(../../../../sdkMobileAssets/Room_pin@2x.png);
+        }
+      }
+      .invitedState {
+        color: #7f818a;
+        font-weight: 500;
+        font-size: vw(32px);
+        line-height: vw(44px);
+      }
+      .requestCohostWrapper {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        & > div {
+          padding: vw(12px) vw(26px);
+          color: #fff;
+          font-weight: 500;
+          font-size: vw(26px);
+          line-height: vw(37px);
+          border-radius: vw(28px);
+        }
+        .disagreeBtn {
+          margin-right: vw(20px);
+          background-color: rgba($color: #fff, $alpha: 0.1);
+        }
+        .agreeBtn {
+          background-color: #0055ff;
+        }
+      }
+    }
+  }
+  .memberSearch {
+    margin-right: vw(34px);
+    margin-left: vw(36px);
+    margin-top: vw(30px);
+    height: vw(68px);
+    display: flex; 
+    align-items: center;
+    border-radius:vw(34px);
+    background-color: #1f2022;
+    flex: 0 0 auto;
+    width: calc(100% - 8.8vmin);
+    span {
+        width: vw(32px);
+        height: vw(32px);
+        background-color: #0055ff;
+    }
+    .memberSearchPrefix {
+        margin-left: vw(28px);
+        margin-right: vw(12px);
+        background: url('../../../../sdkAssets/member_search.png') no-repeat center;
+        background-size: 100%;
+    }
+    .memberSearchSuffix {
+        margin-right: vw(28px);
+        margin-left: vw(12px);
+        background: url('../../../../sdkAssets/member_search_close.png') no-repeat center, #85878b;
+        border-radius: 50%;
+        background-size: 100%;
+        cursor: pointer;
+    }
+    input {
+        flex-grow: 1;
+        border: none;
+        outline: none;
+        font-size: vw(30px);
+        color: #edf1fa;
+        background-color: #1f2022;
+        
+    }
+  }
+  .noResult {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+    & > div {
+        width: vw(180px);
+        height: vw(180px);
+        background: url('../../../../sdkAssets/member_search_empty.png') no-repeat center;
+        background-size: 100%;
+        margin-top: vw(-28px);
+    }
+    & > p {
+        font-size: vw(28px);
+        color: #85878b;
+        margin: 0;
+        text-align: center;
+    }
+  }
+}

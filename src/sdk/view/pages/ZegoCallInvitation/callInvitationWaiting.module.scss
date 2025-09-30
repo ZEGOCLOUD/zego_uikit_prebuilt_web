@@ -1,0 +1,153 @@
+@import "../../../var.scss";
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  text-align: center;
+  background: #1c1f2e;
+  .tip {
+    margin-top: 13.333vh;
+    margin-bottom: 16.6667vh;
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 37px;
+  }
+  .userWrapper {
+    width: 244px;
+    margin: 0 auto 25.667vh;
+    .avatar {
+      position: relative;
+      width: 136px;
+      height: 136px;
+      margin: 0 auto 20px;
+      color: #e9473a;
+      font-weight: 600;
+      font-size: 40px;
+      line-height: 136px;
+      text-transform: uppercase;
+
+      background: #333543;
+      border-radius: 50%;
+      & > img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        background: #333543;
+      }
+    }
+    .userName {
+      width: 244px;
+      overflow: hidden;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: 22px;
+      line-height: 30px;
+      text-overflow: ellipsis;
+      word-break: keep-all;
+    }
+  }
+  .endBtn {
+    width: 146px;
+    height: 46px;
+    margin: 0 auto 14.778vh;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 46px;
+    background: #e8543b;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+}
+.mobileWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background: #1c1f2e;
+  .tip {
+    margin-top: vw(50px);
+    margin-bottom: vw(36px);
+    color: #ffffff;
+    font-weight: 400;
+    font-size: vw(36px);
+    line-height: 37px;
+  }
+  .userWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .avatar {
+      position: relative;
+      width: vw(140px);
+      height: vw(140px);
+      margin-bottom: vw(14px);
+      font-weight: 600;
+      font-size: vw(41px);
+      line-height: vw(140px);
+      text-transform: uppercase;
+      background: #333543;
+      border-radius: 50%;
+      & > img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        background: #333543;
+      }
+    }
+    .userName {
+      width: 80vw;
+      overflow: hidden;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(30px);
+      line-height: vw(42px);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+  .endBtn {
+    width: vw(130px);
+    height: vw(130px);
+    margin: vw(83px) auto vw(90px);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0;
+    background: url("../../../sdkMobileAssets/icon_call_invitation_cancel.png")
+        no-repeat center,
+      #e8543b;
+    background-size: vw(81px) vw(81px), cover;
+    border-radius: 50%;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+@media screen and (orientation: landscape) {
+  .mobileWrapper {
+    .endBtn {
+      margin-top: vw(60px);
+      margin-bottom: vw(14px);
+    }
+  }
+}

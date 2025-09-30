@@ -1,0 +1,267 @@
+@import "../../../var.scss";
+
+.ZegoBrowserCheckSupport {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0 0 auto 0;
+  background-color: #ffffff;
+
+  .videoScree {
+    position: relative;
+    justify-content: center;
+    width: vw(496px);
+    height: vw(496px);
+    margin: 0 vw(127px);
+    overflow: hidden;
+    background-color: #1c1f2e;
+    border-radius: vw(24px);
+
+    .video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background-color: #2a2a2a;
+      border-radius: vw(24px);
+
+      // transform: rotateY(180deg);
+      &.fill {
+        object-fit: fill;
+      }
+    }
+
+    .hideVideo {
+      width: 1px;
+      height: 1px;
+    }
+
+    .videoTip {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      width: 100%;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(32px);
+      line-height: vw(45px);
+      text-align: center;
+      transform: translate(-50%, -50%);
+    }
+
+    .noCamera {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: vw(136px);
+      height: vw(136px);
+      color: #557bff;
+      font-weight: 600;
+      font-size: vw(46px);
+      line-height: vw(65px);
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: vw(78px);
+      transform: translate(-50%, -50%);
+    }
+
+    .handler {
+      position: absolute;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding-bottom: vw(21px);
+      background: linear-gradient(180deg,
+          rgba(51, 51, 51, 0) 0%,
+          rgba(51, 51, 51, 0.6) 100%);
+      border-radius: 0px 0px vw(24px) vw(24px);
+
+      i {
+        display: block;
+        width: vw(87.85px);
+        height: vw(88px);
+        border: vw(2px) solid #ffffff;
+        border-radius: vw(88px);
+      }
+
+      .micOpen {
+        margin-right: vw(46px);
+        background: url(../../../sdkMobileAssets/mic_open@2x.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: vw(52px);
+      }
+
+      .micClose {
+        margin-right: vw(46px);
+        background: url(../../../sdkMobileAssets/mic_close@2x.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: vw(52px);
+      }
+
+      .cameraOpen {
+        background: url(../../../sdkMobileAssets/camera_open@2x.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: vw(52px);
+      }
+
+      .cameraClose {
+        background: url(../../../sdkMobileAssets/camera_close@2x.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: vw(52px);
+      }
+    }
+  }
+
+  .joinScreen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: vw(50px);
+
+    .joinRoom {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      margin-bottom: vw(37px);
+      padding: 0 vw(90px);
+
+      input {
+        box-sizing: border-box;
+        width: vw(440px);
+        height: vw(94px);
+        padding: vw(25px) vw(30px);
+        color: #ababb5;
+        font-weight: 500;
+        font-size: vw(32px);
+
+        line-height: vw(45px);
+        border: vw(2px) solid #333333;
+        border-radius: vw(18px);
+        outline: none;
+
+        &:focus {
+          color: #2a2a2a;
+          border: vw(2px) solid #0055ff;
+        }
+      }
+
+      .focus {
+        color: #2a2a2a;
+        border: vw(2px) solid #0055ff;
+      }
+
+      button {
+        height: vw(94px);
+        margin-left: vw(26px);
+        padding: vw(25px) vw(20px) vw(24px) vw(20px);
+        color: #ffffff;
+        font-weight: 500;
+        font-size: vw(32px);
+        // font-family: PingFangSC-Medium, PingFang SC;
+        line-height: vw(45px);
+        background: rgba(0, 85, 255, 0.3);
+        border: 0;
+        border-radius: vw(18px);
+      }
+
+      .active {
+        background: rgba(0, 85, 255, 1);
+      }
+
+      label {
+        position: absolute;
+        left: vw(120px);
+        height: vw(14px);
+        padding: 0 vw(10px);
+        color: #0055ff;
+        font-weight: 400;
+        font-size: vw(24px);
+        // font-family: PingFangSC-Regular, PingFang SC;
+        line-height: 0px;
+        background: #ffffff;
+      }
+    }
+
+    .inviteLink {
+      display: flex;
+      align-items: center;
+      margin: vw(13px) auto;
+      padding: vw(18px) vw(25px) vw(18px) vw(32px);
+      background: #f5f7fa;
+      border-radius: 9px;
+
+      .inviteLinkWrapperLeft {
+        h3 {
+          color: #2a2a2a;
+          font-weight: 500;
+          font-size: vw(32px);
+          line-height: vw(45px);
+        }
+
+        input {
+          flex: 1;
+          width: vw(434px);
+          height: vw(37px);
+          padding: 0;
+          color: #a4a4a4;
+          font-weight: 400;
+          font-size: vw(26px);
+          line-height: vw(37px);
+          background: #f5f7fa;
+          border: 0;
+          outline: none;
+
+          :focus {
+            color: rgba(42, 42, 42, 1);
+          }
+        }
+      }
+
+      button {
+        width: vw(44px);
+        height: vw(44px);
+        margin-left: vw(28px);
+        background: #f5f7fa;
+        background-image: url(../../../sdkMobileAssets/icon_conpy@2x.png);
+        background-size: contain;
+        border: 0;
+        border-radius: vw(18px);
+      }
+
+      .copied {
+        background-image: url(../../../sdkMobileAssets/icon_copied@2x.png);
+      }
+    }
+  }
+}
+
+@media screen and (orientation: landscape) {
+  .ZegoBrowserCheckSupport {
+    .joinScreen {
+      .joinRoom {
+        input {
+          width: vw(604px);
+        }
+      }
+
+      .inviteLink {
+        .inviteLinkWrapperLeft {
+          input {
+            width: vw(604px);
+          }
+        }
+      }
+    }
+  }
+}

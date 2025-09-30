@@ -1,0 +1,65 @@
+.ZegoBrowserCheckNotSupport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 203;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: rgba($color: #2a2a2a, $alpha: 0.5);
+  .content {
+    box-sizing: border-box;
+    width: 302px;
+    padding: 26px;
+    background: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.2);
+  }
+  .tipsHeader {
+    margin-bottom: 18px;
+    color: #2a2a2a;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 16px;
+  }
+  .tipsText {
+    color: #2a2a2a;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+.buttonWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 24px;
+  .okButton,
+  .cancelButton {
+    box-sizing: border-box;
+    min-width: 74px;
+    margin-left: 10px;
+    padding: 3px;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .okButton {
+    color: #fff;
+    background-color: #0055ff;
+    border: 1px solid #0055ff;
+  }
+  .cancelButton {
+    color: #0055ff;
+    background-color: #fff;
+    &:hover {
+      border: 1px solid #0055ff;
+    }
+  }
+}

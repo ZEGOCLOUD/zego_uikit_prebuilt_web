@@ -1,0 +1,867 @@
+@import "./var.scss";
+
+.app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: #f5f6f9;
+
+  .nav {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: 100%;
+    height: 64px;
+    padding: 14px 20px;
+    background: #edf0f3;
+    background-color: rgba(0, 0, 0, 0);
+
+    .LOGO {
+      width: 182px;
+      height: 37px;
+      background-image: url(./assets/logo_zegocloud@2x.png);
+      background-size: contain;
+    }
+
+    .link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .link_item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 4px;
+      padding: 6px 10px;
+      color: #666666;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      text-decoration: none;
+      cursor: pointer;
+
+      span {
+        width: 20px;
+        height: 20px;
+        margin-right: 6px;
+      }
+
+      &:hover {
+        .text {
+          color: #0055ff;
+        }
+
+        .icon__doc {
+          background-image: url("./assets/icon_doc_hover.png");
+          color: #0055ff;
+        }
+
+        .icon__github {
+          background-image: url("./assets/icon_github_hover.png");
+          color: #0055ff;
+        }
+      }
+    }
+
+    .icon__doc {
+      background: url("./assets/icon_doc.png") no-repeat center/cover;
+    }
+
+    .icon__github {
+      background: url("./assets/icon_github.png") no-repeat center/cover;
+    }
+
+    .icon_settings {
+      background: url("./assets/icon_settings.png") no-repeat center/cover;
+    }
+
+    .lang_box {
+      z-index: 10001;
+      position: absolute;
+      top: 38px;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 80px;
+      background-color: white;
+      text-align: center;
+      border-radius: 10px;
+      border: 1px solid #e6e6e6;
+
+      span {
+        margin-right: 0;
+        padding: 8px 0;
+        width: 80%;
+
+        &:first-child {
+          border-bottom: 1px solid #e6e6e6;
+        }
+
+        &:hover {
+          cursor: pointer;
+          color: #0055ff;
+        }
+      }
+    }
+  }
+
+  .myMeeting {
+    flex: 1 0 auto;
+    width: 100%;
+  }
+
+  .serviceTips {
+    position: fixed;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    flex: 0 0 auto;
+    width: 100%;
+    color: #ababb5;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    transform: translateX(-50%);
+
+    a {
+      color: #0055ff;
+      text-decoration: none;
+    }
+  }
+
+  .pcServiceTips {
+    position: relative;
+    margin-top: 10px;
+  }
+
+  .pcSettingsModel {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+
+    .settingsWrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 380px;
+      // height: 319px;
+      background: #ffffff;
+      border: 1px solid #dde0e3;
+      border-radius: 8px;
+      box-shadow: 0px 3px 6px 0px rgba(79, 79, 83, 0.2);
+      transform: translate(-50%, -50%);
+
+      .settingsHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-sizing: border-box;
+        width: 100%;
+        height: 44px;
+        padding: 0 20px;
+        background: #ffffff;
+        border-bottom: 1px solid #edeff3;
+        border-radius: 8px 8px 0px 0px;
+
+        p {
+          color: #2a2a2a;
+          font-weight: 600;
+          font-size: 14px;
+          font-family: PingFangSC-Semibold, PingFang SC;
+          line-height: 16px;
+        }
+
+        .settingsClose {
+          width: 18px;
+          height: 18px;
+          background: url("./assets/icon_settings_close.png") no-repeat center/cover;
+          cursor: pointer;
+
+          &:hover {
+            background: url("./assets/icon_settings_close_hover.png") no-repeat center/cover;
+          }
+        }
+      }
+
+      .settingsBody {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0 26px 26px;
+
+        .settingsMode {
+          margin: 20px 0 8px 0;
+          padding: 0 16px;
+          color: #666666;
+          font-weight: 400;
+          font-size: 12px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          line-height: 17px;
+        }
+      }
+
+      .settingsModeItem {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 32px;
+        padding: 0 16px;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &:not(:last-of-type) {
+          margin-bottom: 18px;
+        }
+
+        &:hover {
+          background: #f5f7fa;
+        }
+
+        p {
+          color: #2a2a2a;
+          font-weight: 400;
+          font-size: 14px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          line-height: 20px;
+        }
+
+        span {
+          width: 15px;
+          height: 16px;
+          background: url("./assets/icon_check_off@2x.png") no-repeat center/cover;
+        }
+
+        &.settingsModeItemSelected {
+          p {
+            color: #0055ff;
+          }
+
+          span {
+            background: url("./assets/icon_check_on@2x.png") no-repeat center/cover;
+          }
+        }
+      }
+
+      .settingsBtn {
+        width: 222px;
+        height: 32px;
+        margin: 24px auto 0;
+        color: #ffffff;
+        font-weight: 500;
+        font-size: 14px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        line-height: 32px;
+        text-align: center;
+        background: #0055ff;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .invitationInput {
+        box-sizing: border-box;
+        width: calc(100% - 10px);
+        height: 32px;
+        margin: 16px 5px;
+        padding: 10px;
+        color: #333333;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 22px;
+        border: 1px solid #333333;
+        border-radius: 6px;
+
+        &::placeholder {
+          color: #ababb5;
+          font-weight: 500;
+          font-size: 16px;
+          line-height: 22px;
+          outline: none;
+        }
+
+        &:focus {
+          outline: none;
+        }
+
+        &:valid~div {
+          cursor: pointer;
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  &.pcApp {
+    .callInvitationWrapper {
+      position: relative;
+      flex: 1 0 auto;
+      width: 100%;
+
+      .invitationModel {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        box-sizing: border-box;
+        width: 450px;
+        height: 425px;
+        padding: 30px 40px;
+        background: #ffffff;
+        border: 1px solid #e8eaef;
+        border-radius: 20px;
+        box-shadow: 0px 14px 24px 0px #eaecf1;
+        transform: translate(-50%, -50%);
+      }
+
+      .invitationUserHeader {
+        display: flex;
+        align-items: center;
+        margin-bottom: 54px;
+
+        .invitationAvatar {
+          width: 38px;
+          height: 38px;
+          margin-right: 12px;
+          color: #ffffff;
+          font-weight: 600;
+          font-size: 16px;
+          font-family: PingFangSC-Semibold, PingFang SC;
+          line-height: 38px;
+          text-align: center;
+          text-transform: uppercase;
+          background: #3a3d4a;
+          border-radius: 50%;
+          user-select: none;
+        }
+
+        .invitationUserInfo {
+          p {
+            color: #333333;
+            font-weight: 500;
+            font-size: 16px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            line-height: 22px;
+            user-select: none;
+          }
+
+          span {
+            color: #666666;
+            font-weight: 400;
+            font-size: 12px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            line-height: 17px;
+          }
+        }
+      }
+
+      .invitationTitle {
+        margin-bottom: 26px;
+        color: #333333;
+        font-weight: 600;
+        font-size: 22px;
+        font-family: PingFangSC-Semibold, PingFang SC;
+        line-height: 30px;
+      }
+
+      .inputPlaceholder {
+        display: none;
+      }
+
+      .invitationInput {
+        box-sizing: border-box;
+        width: 370px;
+        height: 46px;
+        margin-bottom: 38px;
+        padding: 10px 16px;
+        color: #333333;
+        font-weight: 500;
+        font-size: 16px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        line-height: 22px;
+        border: 2px solid #333333;
+        border-radius: 10px;
+
+        &::placeholder {
+          color: #ababb5;
+          font-weight: 500;
+          font-size: 16px;
+          font-family: PingFangSC-Medium, PingFang SC;
+          line-height: 22px;
+          outline: none;
+        }
+
+        &:focus {
+          outline: none;
+        }
+
+        &:valid~div {
+          cursor: pointer;
+          opacity: 1;
+        }
+      }
+
+      .invitationVideoCallBtn {
+        box-sizing: border-box;
+        width: 370px;
+        height: 46px;
+        margin-bottom: 14px;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 16px;
+        font-family: PingFangSC-Semibold, PingFang SC;
+        line-height: 46px;
+        text-align: center;
+        background: #0055ff;
+        border-radius: 10px;
+        cursor: no-drop;
+        opacity: 0.3;
+      }
+
+      .invitationVoiceCallBtn {
+        box-sizing: border-box;
+        width: 370px;
+        height: 46px;
+        color: #0055ff;
+        font-weight: 600;
+        font-size: 16px;
+        font-family: PingFangSC-Semibold, PingFang SC;
+        line-height: 46px;
+        text-align: center;
+        border: 2px solid #0055ff;
+        border-radius: 10px;
+        cursor: no-drop;
+        opacity: 0.3;
+      }
+    }
+
+    .toast {
+      position: absolute;
+      top: 74px;
+      left: 50%;
+      z-index: 10001;
+      padding: 7px 18px;
+      color: #ffffff;
+      font-size: 14px;
+      font-family: PingFang SC;
+      line-height: 19px;
+      background: rgba($color: #2a2a2a, $alpha: 0.7);
+      border-radius: 6px;
+      transform: translateX(-50%);
+    }
+  }
+}
+
+.mobileApp {
+  overflow-x: hidden;
+  background: #ffffff;
+
+  .mobileNav {
+    // position: absolute;
+    z-index: 102;
+    height: vw(108px);
+    padding: vw(27px) vw(30px);
+    background: #ffffff;
+
+    .mobileLOGO {
+      width: vw(248px);
+      height: vw(54px);
+      background-image: url(./assets/App_logo@2x.png);
+      background-size: contain;
+    }
+
+    .mobileLink {
+      a {
+        margin: 0;
+        padding: 0px;
+      }
+
+      a:not(:last-child) {
+        margin-right: vw(40px);
+      }
+
+      span {
+        width: vw(50px);
+        height: vw(50px);
+        margin-right: 0;
+      }
+
+      .lang_box {
+        span {
+          width: 80%;
+        }
+      }
+    }
+  }
+
+  .mobileMeeting {
+    // flex: 0;
+    margin-top: vw(50px);
+  }
+
+  .mobileServiceTips {
+    position: relative;
+    z-index: 101;
+    flex: 1;
+    box-sizing: border-box;
+    padding: vw(94px) vw(146px) vw(12px) vw(146px);
+    color: #ababb5;
+    // font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    font-size: vw(24px);
+    line-height: vw(33px);
+    white-space: nowrap;
+    background-color: #ffffff;
+  }
+
+  .mobileSettingsModel {
+    position: fixed;
+    z-index: 10000;
+    width: 100%;
+    height: 100%;
+    background: rgba($color: #000000, $alpha: 0.3);
+
+    .settingsWrapper {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      background: #ffffff;
+      border-radius: vw(46px) vw(46px) 0px 0px;
+
+      .settingsHeader {
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
+        justify-content: flex-end;
+        box-sizing: border-box;
+        height: vw(98px);
+        padding: vw(14px) vw(23px);
+        background: #ffffff;
+        border-radius: vw(46px) vw(46px) 0px 0px;
+
+        p {
+          color: #2a2a2a;
+          font-weight: 500;
+          font-size: vw(36px);
+          font-family: PingFangSC-Medium, PingFang SC;
+          line-height: vw(70px);
+        }
+
+        .settingsClose {
+          width: vw(70px);
+          height: vw(70px);
+          margin-right: vw(16px);
+          background: url("./assets/icon_close_down_m.png") no-repeat center/cover;
+          cursor: pointer;
+        }
+      }
+
+      .settingsBody {
+        box-sizing: border-box;
+        width: 100%;
+        padding-bottom: vw(48px);
+      }
+
+      .settingsModeItem {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: vw(29px) vw(26px) vw(29px) vw(36px);
+        cursor: pointer;
+
+        p {
+          color: #2a2a2a;
+          font-weight: 400;
+          font-size: vw(30px);
+          font-family: PingFangSC-Regular, PingFang SC;
+          line-height: vw(42px);
+        }
+
+        span {
+          width: vw(56px);
+          height: vw(56px);
+        }
+
+        &.settingsModeItemSelected {
+          p {
+            color: #0055ff;
+          }
+
+          span {
+            background: url("./assets/icon_checked_m.png") no-repeat center/cover;
+          }
+        }
+      }
+
+      .invitationInput {
+        box-sizing: border-box;
+        width: calc(100% - 29px);
+        height: vw(60px);
+        margin: 0 vw(32px);
+        padding: vw(23px) vw(28px);
+        color: #2a2a2a;
+        font-weight: 500;
+        font-size: vw(32px);
+        line-height: vw(32px);
+        border: vw(1px) solid #333333;
+        border-radius: vw(10px);
+
+        &::placeholder {
+          color: #ababb5;
+          font-weight: 500;
+          font-size: vw(32px);
+          line-height: vw(32px);
+          outline: none;
+        }
+
+        &:focus {
+          outline: none;
+        }
+
+        &:valid~div {
+          cursor: pointer;
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  &.callInvitation {
+    .callInvitationWrapper {
+      height: auto;
+      flex: 1 0 auto;
+
+      .invitationModel {
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+      }
+
+      .invitationUserHeader {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: vw(108px);
+        margin-bottom: vw(164px);
+
+        .invitationAvatar {
+          width: vw(65px);
+          height: vw(65px);
+          margin: 0 vw(18px) 0 vw(36px);
+          color: #ffffff;
+          font-weight: 600;
+          font-size: vw(27px);
+          font-family: PingFangSC-Semibold, PingFang SC;
+          line-height: vw(65px);
+          text-align: center;
+          background: #3a3d4a;
+          border-radius: 50%;
+          user-select: none;
+        }
+
+        .invitationUserInfo {
+          p {
+            color: #333333;
+            font-weight: 500;
+            font-size: vw(30px);
+            font-family: PingFangSC-Medium, PingFang SC;
+            line-height: vw(42px);
+            user-select: none;
+          }
+
+          span {
+            color: #666666;
+            font-weight: 400;
+            font-size: vw(20px);
+            font-family: PingFangSC-Regular, PingFang SC;
+            line-height: vw(28px);
+          }
+        }
+      }
+
+      .invitationTitle {
+        margin-bottom: vw(6px);
+        padding: vw(0px) vw(90px);
+        color: #333333;
+        font-weight: 600;
+        font-size: vw(44px);
+        font-family: PingFangSC-Semibold, PingFang SC;
+        line-height: vw(62px);
+      }
+
+      .inputPlaceholder {
+        margin: 0 vw(90px) vw(64px);
+        color: #ababb5;
+        font-weight: 400;
+        font-size: vw(28px);
+        font-family: PingFangSC-Regular, PingFang SC;
+        line-height: vw(40px);
+      }
+
+      .invitationInput {
+        box-sizing: border-box;
+        width: vw(570px);
+        height: vw(94px);
+        margin: 0 vw(90px);
+        margin-bottom: vw(64px);
+        padding: vw(23px) vw(28px);
+        color: #2a2a2a;
+        font-weight: 500;
+        font-size: vw(32px);
+        font-family: PingFangSC-Medium, PingFang SC;
+        line-height: vw(44px);
+        border: vw(2px) solid #333333;
+        border-radius: vw(18px);
+
+        &::placeholder {
+          color: #ababb5;
+          font-weight: 500;
+          font-size: vw(32px);
+          font-family: PingFangSC-Medium, PingFang SC;
+          line-height: vw(44px);
+          outline: none;
+        }
+
+        &:focus {
+          outline: none;
+        }
+
+        &:valid~div {
+          cursor: pointer;
+          opacity: 1;
+        }
+      }
+
+      .invitationVideoCallBtn {
+        width: vw(570px);
+        height: vw(100px);
+        margin-bottom: vw(32px);
+        margin-left: vw(90px);
+
+        color: #ffffff;
+        font-weight: 600;
+        font-size: vw(32px);
+        font-family: PingFangSC-Semibold, PingFang SC;
+        line-height: vw(100px);
+        text-align: center;
+        background: #0055ff;
+        border-radius: vw(20px);
+        cursor: no-drop;
+        opacity: 0.3;
+      }
+
+      .invitationVoiceCallBtn {
+        width: vw(570px);
+        height: vw(100px);
+        margin-left: vw(90px);
+        color: #0055ff;
+        font-weight: 600;
+        font-size: vw(32px);
+        font-family: PingFangSC-Semibold, PingFang SC;
+        line-height: vw(100px);
+        text-align: center;
+        border: vw(2px) solid #0055ff;
+        border-radius: vw(20px);
+        cursor: no-drop;
+        opacity: 0.3;
+      }
+    }
+
+    .mobileServiceTips {
+      // position: inherit;
+      // bottom: 0;
+      // left: 0;
+      // z-index: unset;
+      box-sizing: border-box;
+      // margin-top: vw(100px);
+      // margin-bottom: vw(12px);
+      // padding: 0;
+      color: #ababb5;
+      // font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      font-size: vw(24px);
+      line-height: vw(33px);
+      white-space: nowrap;
+      background-color: #ffffff;
+      // transform: none;
+    }
+  }
+
+  .toast {
+    position: absolute;
+    top: vw(24px);
+    left: 50%;
+    z-index: 10001;
+    max-width: 90vw;
+    padding: vw(14px) vw(30px);
+    overflow: hidden;
+    color: #ffffff;
+    font-size: vw(24px);
+    font-family: PingFang SC;
+    line-height: vw(33px);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background: rgba($color: #2a2a2a, $alpha: 0.7);
+    border-radius: vw(12px);
+    transform: translateX(-50%);
+  }
+}
+
+@media screen and (orientation: landscape) {
+  .mobileApp {
+    &.callInvitation {
+      .callInvitationWrapper {
+        height: auto;
+
+        .invitationUserHeader {
+          margin-bottom: vw(18px);
+        }
+
+        .invitationTitle,
+        .inputPlaceholder {
+          width: vw(570px);
+          margin: 0 auto;
+          padding: 0;
+        }
+
+        .invitationInput {
+          display: block;
+          margin: vw(64px) auto;
+        }
+
+        .invitationVideoCallBtn {
+          margin: 0 auto;
+        }
+
+        .invitationVoiceCallBtn {
+          margin: vw(32px) auto 0;
+        }
+      }
+
+      .mobileServiceTips {
+        position: relative;
+        bottom: 0;
+        left: 0;
+        margin-top: vw(100px);
+        margin-bottom: vw(12px);
+        padding: 0;
+        font-size: vw(20px);
+      }
+    }
+
+    .mobileServiceTips {
+      font-size: vw(18px);
+      line-height: vw(24px);
+    }
+  }
+}

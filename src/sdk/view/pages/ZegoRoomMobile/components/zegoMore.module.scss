@@ -1,0 +1,11 @@
+@import "../../../../var.scss";
+.more {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 94;
+  width: vw(46px);
+  height: vw(32px);
+  background-image: url(../../../../sdkMobileAssets/Room_video_more.png);
+  background-size: contain;
+}

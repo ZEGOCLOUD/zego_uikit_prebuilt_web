@@ -1,0 +1,112 @@
+@import "../../../../var.scss";
+.roomDetails {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  z-index: 202;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  // height: vw(484px);
+  padding-bottom: vw(34px);
+  background: #242736;
+  border-radius: vw(46px) vw(46px) 0px 0px;
+  .inviteHeader {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: vw(15px) vw(16px) vw(13px) vw(23px);
+    color: #ffffff;
+    font-weight: 400;
+    font-size: vw(36px);
+    // font-family: PingFangSC-Regular, PingFang SC;
+    line-height: vw(50px);
+    .inviteHide {
+      width: vw(70px);
+      height: vw(70px);
+      margin-right: vw(16px);
+      background-image: url(../../../../sdkMobileAssets/Room_member_hide@2x.png);
+      background-size: contain;
+    }
+  }
+
+  .inviteLinkWrapper {
+    display: flex;
+    flex-direction: column;
+    margin-top: vw(16px);
+    margin-bottom: vw(14px);
+    padding: 0 vw(32px);
+    .title {
+      margin-bottom: vw(16px);
+      color: #ffffff;
+      font-weight: 400;
+      font-size: vw(28px);
+      line-height: vw(40px);
+    }
+    .inviteLink {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      width: vw(690px);
+      height: vw(94px);
+      padding: vw(25px) 0 vw(27px) vw(29px);
+      overflow: hidden;
+      color: rgba(255, 255, 255, 0.9);
+
+      font-weight: 400;
+      font-size: vw(30px);
+      line-height: vw(42px);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      background: rgba(48, 51, 65, 0.7);
+      border: 0;
+      border-radius: vw(20px);
+      outline: none;
+      input {
+        width: 100%;
+        // color: rgba(255, 255, 255, 0.7);
+        color: #a4a4a4;
+        font-size: vw(30px);
+        line-height: vw(42px);
+        // background: #303341;
+        background: rgba(48, 51, 65, 0);
+        border: 0;
+        outline: none;
+      }
+    }
+    .copyLinkButton {
+      display: flex;
+      align-items: center;
+
+      width: vw(40px);
+      height: vw(40px);
+      margin-right: vw(25px);
+      margin-left: vw(16px);
+      color: #ffb763;
+      font-weight: 400;
+      font-size: vw(28px);
+      line-height: vw(40px);
+      background: url("../../../../sdkMobileAssets/icon_inner_copy@2x.png")
+        no-repeat center/cover;
+      cursor: pointer;
+    }
+  }
+}
+@media screen and (orientation: landscape) {
+  .roomDetails {
+    .inviteLinkWrapper {
+      box-sizing: border-box;
+      width: 100%;
+      padding-right: vw(30px);
+      padding-left: vw(30px);
+      .inviteLink {
+        width: 100%;
+      }
+    }
+  }
+}
