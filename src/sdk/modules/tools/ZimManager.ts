@@ -779,6 +779,7 @@ export class ZimManager {
 				resourcesID: notificationConfig?.resourcesID ?? "zegouikit_call",
 			};
 			config.pushConfig = pushConfig;
+			console.warn('[ZIMManager]sendInvitation enableNotifyWhenAppRunningInBackgroundOrQuit', config)
 		}
 		if (this.hasJoinedRoom) {
 			if (!canInvitingInCalling) {

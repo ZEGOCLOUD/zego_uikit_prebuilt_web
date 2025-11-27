@@ -91,13 +91,16 @@ export default class App extends React.PureComponent {
     showAudioVideoSettingsButton: sessionStorage.getItem("showAudioVideoSettingsButton") ? (sessionStorage.getItem("showAudioVideoSettingsButton") === "true" ? true : false) : true,
     showTextChat: sessionStorage.getItem("showTextChat") ? (sessionStorage.getItem("showTextChat") === "true" ? true : false) : true,
     showUserList: sessionStorage.getItem("showUserList") ? (sessionStorage.getItem("showUserList") === "true" ? true : false) : true,
+    resourceID: "zego_data",
+    appID: sessionStorage.getItem("appID") ? sessionStorage.getItem("appID") : "",
+    serverSecret: sessionStorage.getItem("serverSecret") ? sessionStorage.getItem("serverSecret") : "",
   };
   refuseBtn = React.createRef();
   acceptBtn = React.createRef();
   settingsEl = null;
   invitationInput: RefObject<HTMLInputElement> = React.createRef();
-  zp: ZegoUIKitPrebuilt;
-  toastTimer: NodeJS.Timer | null;
+  zp: ZegoUIKitPrebuilt | null = null;
+  toastTimer: NodeJS.Timer | null = null;
   clientHeight = 0;
   isAndroid = isAndroid();
   isIOS = isIOS();
@@ -243,7 +246,7 @@ export default class App extends React.PureComponent {
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
       console.warn("【Zego Demo】app call_invitation");
-      this.initCallInvitation(urlAppID ? urlAppID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken, backgroundProcess);
+      this.initCallInvitation(urlAppID || this.state.appID ? urlAppID || this.state.appID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken, backgroundProcess);
       this.state.showSettingsBtn = true;
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
@@ -592,9 +595,11 @@ export default class App extends React.PureComponent {
         appID,
       }));
     } else {
-      kitToken = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
-      // @ts-ignore
-      // kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(1056033799, '86d062c8ea82690db13fb132826d2d2a', 1, '1702', 'user_1702ss')
+      if (this.state.appID && this.state.serverSecret) {
+        kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(+appID, this.state.serverSecret, roomID, userID, "user_" + userID)
+      } else {
+        kitToken = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+      }
     }
     let createConfig: ZegoUIKitCreateConfig = {
       BackgroundProcessConfig: {
@@ -857,6 +862,24 @@ export default class App extends React.PureComponent {
   onInvitationInputChange(e: ChangeEvent<HTMLInputElement>) {
     e.target.value = e.target.value.replace(/[^\d,]/gi, "");
   }
+
+  onAppIDChange(e: ChangeEvent<HTMLInputElement>) {
+    sessionStorage.setItem("appID", e.target.value);
+    this.setState({
+      appID: e.target.value,
+    });
+  }
+  onServerSecretChange(e: ChangeEvent<HTMLInputElement>) {
+    sessionStorage.setItem("serverSecret", e.target.value);
+    this.setState({
+      serverSecret: e.target.value,
+    });
+  }
+  onResourceIDChange(e: ChangeEvent<HTMLInputElement>) {
+    this.setState({
+      resourceID: e.target.value,
+    })
+  }
   onWaitingUsersChange(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value.replace(/[^\d,]/gi, "");
     const waitingUsers = value.split(",");
@@ -887,6 +910,7 @@ export default class App extends React.PureComponent {
           callees: invitees,
           callType: type,
           timeout: 60,
+          notificationConfig: { resourcesID: this.state.resourceID }
         })
         .then((res) => {
           if (invitees.length === 1) {
@@ -1387,6 +1411,14 @@ export default class App extends React.PureComponent {
               </div>
               <div className={APP.settingsBody}>
                 <div className={APP.settingsModeList}>
+                  <input className={APP.invitationInput} type="text" placeholder={this.state.lang === "zh" ? "app ID" : 'app ID'}
+                    value={this.state.appID}
+                    onInput={this.onAppIDChange.bind(this)}
+                    onChange={this.onAppIDChange.bind(this)} />
+                  <input className={APP.invitationInput} type="text" placeholder={this.state.lang === "zh" ? "server secret" : 'server secret'}
+                    value={this.state.serverSecret}
+                    onInput={this.onServerSecretChange.bind(this)}
+                    onChange={this.onServerSecretChange.bind(this)} />
                   <div
                     className={`${APP.settingsModeItem} ${this.state.canInvitingInCalling
                       ? APP.settingsModeItemSelected
@@ -1446,6 +1478,10 @@ export default class App extends React.PureComponent {
                     <span></span>
                   </div>
                 </div>
+                <input className={APP.invitationInput} type="text" placeholder={this.state.lang === "zh" ? "资源 ID" : 'resource ID'}
+                  value={this.state.resourceID}
+                  onInput={this.onResourceIDChange.bind(this)}
+                  onChange={this.onResourceIDChange.bind(this)} />
                 <input
                   className={APP.invitationInput}
                   type="text"
