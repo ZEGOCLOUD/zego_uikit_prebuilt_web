@@ -792,10 +792,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (!this.props.core.status.videoRefuse || !this.props.core.status.audioRefuse) {
       try {
         let localStream: ZegoLocalStream | null = null;
+        const userAgent = navigator.userAgent;
         try {
           const solution = getVideoResolution(this.state.selectVideoResolution);
           let source: ZegoStreamOptions;
-          const userAgent = navigator.userAgent;
           if (/Samsung|SM-/i.test(userAgent)) {
             source = {
               camera: {
@@ -830,7 +830,9 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         } catch (error: any) {
           console.error('[ZegoRoomMobile]createStream error', error);
           // 有些设备不支持自定义分辨，创建流失败后就以默认分辨率再创建一次
-          if (JSON.stringify(error).includes("constrain")) {
+          // 有些三星手机chrome浏览器没有三星相关标识，无法走到上面的三星手机创建流，会报错1103065，此时重新尝试以默认分辨率创建流
+          if (JSON.stringify(error).includes("constrain") || (error?.errorCode === 1103065 && /Android/i.test(userAgent))) {
+            console.warn('[ZegoRoomMobile]createStream, 重新尝试以默认分辨率创建流');
             localStream = await this.props.core.createZegoStream({
               camera: {
                 video: !this.props.core.status.videoRefuse ? {
@@ -854,9 +856,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           }
           if (error?.errorCode === 1103065 || error?.errorCode === 1103061) {
             // 表示指定设备不可用于采集媒体流，可能是摄像头或麦克风被其他应用占用
-            ZegoToast({
-              content: this.props.core.intl.formatMessage({ id: "room.occupiedToast" }),
-            });
+            if (!localStream) {
+              ZegoToast({
+                content: this.props.core.intl.formatMessage({ id: "room.occupiedToast" }),
+              });
+            }
           }
         }
 
