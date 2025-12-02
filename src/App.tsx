@@ -23,6 +23,7 @@ import {
   isPc,
   getUrlParams,
   isIOS,
+  generateTokenForCallInvitation,
 } from "./util";
 import { ZegoSuperBoardManager } from "zego-superboard-web";
 import ZIM from "zego-zim-web";
@@ -90,14 +91,17 @@ export default class App extends React.PureComponent {
     showAudioVideoSettingsButton: sessionStorage.getItem("showAudioVideoSettingsButton") ? (sessionStorage.getItem("showAudioVideoSettingsButton") === "true" ? true : false) : true,
     showTextChat: sessionStorage.getItem("showTextChat") ? (sessionStorage.getItem("showTextChat") === "true" ? true : false) : true,
     showUserList: sessionStorage.getItem("showUserList") ? (sessionStorage.getItem("showUserList") === "true" ? true : false) : true,
-    showRoomDetailsButton: sessionStorage.getItem("showRoomDetailsButton") ? (sessionStorage.getItem("showRoomDetailsButton") === "true" ? true : false) : true,
+    resourceID: "zego_data",
+    appID: sessionStorage.getItem("appID") ? sessionStorage.getItem("appID") : "",
+    serverSecret: sessionStorage.getItem("serverSecret") ? sessionStorage.getItem("serverSecret") : "",
+    callRoomID: '',
   };
   refuseBtn = React.createRef();
   acceptBtn = React.createRef();
   settingsEl = null;
   invitationInput: RefObject<HTMLInputElement> = React.createRef();
-  zp: ZegoUIKitPrebuilt;
-  toastTimer: NodeJS.Timer | null;
+  zp: ZegoUIKitPrebuilt | null = null;
+  toastTimer: NodeJS.Timer | null = null;
   clientHeight = 0;
   isAndroid = isAndroid();
   isIOS = isIOS();
@@ -243,8 +247,9 @@ export default class App extends React.PureComponent {
     }
     if (process.env.REACT_APP_PATH === "call_invitation") {
       console.warn("【Zego Demo】app call_invitation");
-      this.initCallInvitation(urlAppID ? urlAppID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken, backgroundProcess);
+      this.initCallInvitation(urlAppID || this.state.appID ? urlAppID || this.state.appID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken, backgroundProcess);
       this.state.showSettingsBtn = true;
+      this.state.callRoomID = roomID;
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
         let token;
@@ -370,14 +375,15 @@ export default class App extends React.PureComponent {
           showAudioVideoSettingsButton: role === LiveRole.Audience ? false : this.state.showAudioVideoSettingsButton, // 是否显示音视频设置按钮,默认显示
           showTextChat: this.state.showTextChat,
           showUserList: this.state.showUserList,
-          showRoomDetailsButton: this.state.showRoomDetailsButton,
           // showScreenSharingButton: false,
 
           // showRoomTimer: true,
+          // showRoomDetailsButton: true,
           // autoHideFooter: false,
           // preJoinViewConfig: {
           //   title: "Join Room",
           // },
+          //   showRoomDetailsButton: false,
           // showLeavingView: true,
           // maxUsers,
           //   layout: "Auto",
@@ -591,9 +597,11 @@ export default class App extends React.PureComponent {
         appID,
       }));
     } else {
-      kitToken = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
-      // @ts-ignore
-      // kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(0, 'xxx', 1, '1702', 'user_1702ss')
+      if (this.state.appID && this.state.serverSecret) {
+        kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(+appID, this.state.serverSecret, roomID, userID, "user_" + userID)
+      } else {
+        kitToken = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+      }
     }
     let createConfig: ZegoUIKitCreateConfig = {
       BackgroundProcessConfig: {
@@ -856,6 +864,24 @@ export default class App extends React.PureComponent {
   onInvitationInputChange(e: ChangeEvent<HTMLInputElement>) {
     e.target.value = e.target.value.replace(/[^\d,]/gi, "");
   }
+
+  onAppIDChange(e: ChangeEvent<HTMLInputElement>) {
+    sessionStorage.setItem("appID", e.target.value);
+    this.setState({
+      appID: e.target.value,
+    });
+  }
+  onServerSecretChange(e: ChangeEvent<HTMLInputElement>) {
+    sessionStorage.setItem("serverSecret", e.target.value);
+    this.setState({
+      serverSecret: e.target.value,
+    });
+  }
+  onResourceIDChange(e: ChangeEvent<HTMLInputElement>) {
+    this.setState({
+      resourceID: e.target.value,
+    })
+  }
   onWaitingUsersChange(e: ChangeEvent<HTMLInputElement>) {
     const value = e.target.value.replace(/[^\d,]/gi, "");
     const waitingUsers = value.split(",");
@@ -886,13 +912,15 @@ export default class App extends React.PureComponent {
           callees: invitees,
           callType: type,
           timeout: 60,
+          notificationConfig: { resourcesID: this.state.resourceID },
+          roomID: this.state.callRoomID,
         })
         .then((res) => {
           if (invitees.length === 1) {
             res.errorInvitees.length &&
               this.showToast("The user dose not exist or is offline.");
           }
-          console.warn(res);
+          console.warn('sendCallInvitation res', res);
           this.inviter = {
             userID: this.state.userID,
             userName: this.state.userName,
@@ -1161,7 +1189,7 @@ export default class App extends React.PureComponent {
         {
           return (
             <>
-              {isPc() && (
+              {(
                 <div className={APP.settingsModeList}>
                   <div className={`${APP.settingsModeItem} ${this.state.showPreJoinView ? APP.settingsModeItemSelected : ""}`}
                     onClick={() => {
@@ -1185,15 +1213,6 @@ export default class App extends React.PureComponent {
                       this.setState({ turnOnMicrophoneWhenJoining: !this.state.turnOnMicrophoneWhenJoining });
                     }}>
                     <p title="修改后需要刷新页面">turnOnMicrophoneWhenJoining</p>
-                    <span></span>
-                  </div>
-
-                  <div className={`${APP.settingsModeItem} ${this.state.showRoomDetailsButton ? APP.settingsModeItemSelected : ""}`}
-                    onClick={() => {
-                      sessionStorage.setItem("showRoomDetailsButton", String(!this.state.showRoomDetailsButton));
-                      this.setState({ showRoomDetailsButton: !this.state.showRoomDetailsButton });
-                    }}>
-                    <p title="修改后需要刷新页面">showRoomDetailsButton</p>
                     <span></span>
                   </div>
                 </div>
@@ -1395,6 +1414,14 @@ export default class App extends React.PureComponent {
               </div>
               <div className={APP.settingsBody}>
                 <div className={APP.settingsModeList}>
+                  <input className={APP.invitationInput} type="text" placeholder={this.state.lang === "zh" ? "app ID" : 'app ID'}
+                    value={this.state.appID}
+                    onInput={this.onAppIDChange.bind(this)}
+                    onChange={this.onAppIDChange.bind(this)} />
+                  <input className={APP.invitationInput} type="text" placeholder={this.state.lang === "zh" ? "server secret" : 'server secret'}
+                    value={this.state.serverSecret}
+                    onInput={this.onServerSecretChange.bind(this)}
+                    onChange={this.onServerSecretChange.bind(this)} />
                   <div
                     className={`${APP.settingsModeItem} ${this.state.canInvitingInCalling
                       ? APP.settingsModeItemSelected
@@ -1454,6 +1481,10 @@ export default class App extends React.PureComponent {
                     <span></span>
                   </div>
                 </div>
+                <input className={APP.invitationInput} type="text" placeholder={this.state.lang === "zh" ? "资源 ID" : 'resource ID'}
+                  value={this.state.resourceID}
+                  onInput={this.onResourceIDChange.bind(this)}
+                  onChange={this.onResourceIDChange.bind(this)} />
                 <input
                   className={APP.invitationInput}
                   type="text"
