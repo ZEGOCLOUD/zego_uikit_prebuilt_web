@@ -1402,6 +1402,16 @@ export class ZegoCloudRTCCore {
 				}
 			}
 		)
+
+		ZegoCloudRTCCore._zg.on("deviceError", async (errorCode: number, deviceName: string) => {
+			console.warn('[ZegoCloudRTCCore]deviceError', errorCode, deviceName, this.localStreamInfo, this._zimManager?.callInfo.type)
+			if (errorCode === 1006006) {
+				// 非默认-蓝牙耳机断开后，重新选择麦克风设备
+				const micDevices = await this.getMicrophones();
+				console.warn('[ZegoCloudRTCCore]micDevices', micDevices)
+				ZegoCloudRTCCore._zg.useAudioDevice(this.localStream!, micDevices[0]?.deviceID)
+			}
+		})
 		// }
 		// 监听房间内ZIM text消息
 		// this._config.onInRoomTextMessageReceived &&

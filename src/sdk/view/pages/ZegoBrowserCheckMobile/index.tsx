@@ -198,12 +198,12 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 			if (!this.state.localStream) {
 				await this.createStream(this.state.videoOpen, audioOpen);
 			} else {
-				if (audioOpen) {
-					(this.state.localStream as ZegoLocalStream).playAudio();
-				} else {
-					console.warn('===stop audio', this.state.localStream);
-					(this.state.localStream as ZegoLocalStream).stopAudio();
-				}
+				// if (audioOpen) {
+				// 	(this.state.localStream as ZegoLocalStream).playAudio();
+				// } else {
+				// 	console.warn('===stop audio', this.state.localStream);
+				// 	(this.state.localStream as ZegoLocalStream).stopAudio();
+				// }
 				this.props.core.muteMicrophone(audioOpen);
 			}
 			this.setState({ audioOpen });
