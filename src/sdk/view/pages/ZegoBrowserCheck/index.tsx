@@ -355,11 +355,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       }
       const audioOpen = !this.state.audioOpen;
       if (this.state.localStream && this.state.localStream.audioCaptureStream) {
-        if (audioOpen) {
-          (this.state.localStream as ZegoLocalStream).playAudio();
-        } else {
-          (this.state.localStream as ZegoLocalStream).stopAudio();
-        }
+        // if (audioOpen) {
+        //   (this.state.localStream as ZegoLocalStream).playAudio();
+        // } else {
+        //   (this.state.localStream as ZegoLocalStream).stopAudio();
+        // }
         this.props.core.muteMicrophone(audioOpen);
       } else {
         if (this.state.localStream) {

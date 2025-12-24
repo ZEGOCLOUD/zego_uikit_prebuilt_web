@@ -89,6 +89,7 @@ export default class App extends React.PureComponent {
     showMyCameraToggleButton: sessionStorage.getItem("showMyCameraToggleButton") ? (sessionStorage.getItem("showMyCameraToggleButton") === "true" ? true : false) : true,
     showMyMicrophoneToggleButton: sessionStorage.getItem("showMyMicrophoneToggleButton") ? (sessionStorage.getItem("showMyMicrophoneToggleButton") === "true" ? true : false) : true,
     showAudioVideoSettingsButton: sessionStorage.getItem("showAudioVideoSettingsButton") ? (sessionStorage.getItem("showAudioVideoSettingsButton") === "true" ? true : false) : true,
+    showScreenSharingButton: sessionStorage.getItem("showScreenSharingButton") ? (sessionStorage.getItem("showScreenSharingButton") === "true" ? true : false) : true,
     showTextChat: sessionStorage.getItem("showTextChat") ? (sessionStorage.getItem("showTextChat") === "true" ? true : false) : true,
     showUserList: sessionStorage.getItem("showUserList") ? (sessionStorage.getItem("showUserList") === "true" ? true : false) : true,
     resourceID: "zego_data",
@@ -373,6 +374,7 @@ export default class App extends React.PureComponent {
           showMyCameraToggleButton: role === LiveRole.Audience ? false : this.state.showMyCameraToggleButton, // 是否显示控制自己的麦克风按钮,默认显示
           showMyMicrophoneToggleButton: role === LiveRole.Audience ? false : this.state.showMyMicrophoneToggleButton, // 是否显示控制自己摄像头按钮,默认显示
           showAudioVideoSettingsButton: role === LiveRole.Audience ? false : this.state.showAudioVideoSettingsButton, // 是否显示音视频设置按钮,默认显示
+          showScreenSharingButton: role === LiveRole.Audience ? false : this.state.showScreenSharingButton, // 是否显示屏幕分享按钮,默认显示
           showTextChat: this.state.showTextChat,
           showUserList: this.state.showUserList,
           // showScreenSharingButton: false,
@@ -1133,6 +1135,14 @@ export default class App extends React.PureComponent {
                             this.setState({ showAudioVideoSettingsButton: !this.state.showAudioVideoSettingsButton })
                           }}>
                           <p>showAudioVideoSettingsButton</p>
+                          <span></span>
+                        </div>
+                        <div className={`${APP.settingsModeItem} ${this.state.showScreenSharingButton ? APP.settingsModeItemSelected : ""}`}
+                          onClick={() => {
+                            sessionStorage.setItem("showScreenSharingButton", String(!this.state.showScreenSharingButton));
+                            this.setState({ showScreenSharingButton: !this.state.showScreenSharingButton })
+                          }}>
+                          <p>showScreenSharingButton</p>
                           <span></span>
                         </div>
                       </>
