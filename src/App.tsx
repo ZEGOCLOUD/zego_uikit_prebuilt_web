@@ -492,24 +492,23 @@ export default class App extends React.PureComponent {
           //   return { lv: "9" }
           // },
           // customMessageUI: (msg) => {
-          // 	const wrapper = document.createElement("div")
-          // 	wrapper.classList.add("custom-message-wrapper")
-          //     if (userID === msg.fromUser.userID) {
-          //         wrapper.classList.add("send-message")
-          //     }
-          //     wrapper.innerHTML = `<div class="msgNameWrapper">
+          //   const wrapper = document.createElement("div")
+          //   wrapper.classList.add("custom-message-wrapper")
+          //   if (userID === msg.fromUser.userID) {
+          //     wrapper.classList.add("send-message")
+          //   }
+          //   wrapper.innerHTML = `<div class="msgNameWrapper">
           // 					<span class="name">${msg.fromUser.userName}</span>
           // 					<span class="sendTime">
           // 						${new Date(msg.sendTime).getHours() >= 12 ? "PM" : "AM"}  ${msg.sendTime}
           // 					</span>
           // 				</div>
           // 				<p
-          // 					class="${msg.status === "SENDING" && 'loading'} ${
-          // 						msg.status === "FAILED" && 'error'
-          // 					}">
+          // 					class="${msg.status === "SENDING" && 'loading'} ${msg.status === "FAILED" && 'error'
+          //     }">
           // 					${msg.message}
           // 				</p>`
-          // 	return wrapper
+          //   return wrapper
           // },
           language: getUrlParams().get("lang") === "zh" ? ZegoUIKitLanguage.CHS : ZegoUIKitLanguage.ENGLISH,
           // leaveRoomDialogConfig: {
@@ -549,6 +548,11 @@ export default class App extends React.PureComponent {
           onMicrophoneStateUpdated: (state) => {
             console.warn('[config]onMicrophoneStateUpdated', state)
           },
+          onTokenWillExpire: async () => {
+            console.warn('[config]onTokenWillExpire');
+            const newToken = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+            zp.renewToken(newToken);
+          }
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"

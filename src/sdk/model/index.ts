@@ -285,6 +285,8 @@ export interface ZegoCloudRoomConfig {
 	onCameraStateUpdated?: (state: "ON" | "OFF") => void
 	// 麦克风状态更新回调·
 	onMicrophoneStateUpdated?: (state: "ON" | "OFF") => void
+	// 2.17.3
+	onTokenWillExpire?: () => void
 }
 
 export enum ZegoUserState {
