@@ -59,7 +59,7 @@ export default class ZegoVideo extends React.PureComponent<{
 	}
 	initVideo(el: HTMLElement | HTMLVideoElement) {
 		if (el) {
-			!this.videoRef && (this.videoRef = el as HTMLVideoElement);
+			this.videoRef = el as HTMLVideoElement;
 			if (this.props.userInfo?.streamList?.[0]?.media?.id && this.props.userInfo?.streamList?.[0]?.media?.active) {
 				const streamID = this.props.userInfo?.streamList?.[0]?.streamID;
 				const videoDom = document.getElementById(`${streamID}`);
@@ -281,7 +281,7 @@ export default class ZegoVideo extends React.PureComponent<{
 	render(): React.ReactNode {
 		const { formatMessage } = this.props.core.intl;
 		return (
-			this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV ?
+			(!this.props.userInfo?.streamList?.[0]?.media && this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) ?
 				<>
 					<video
 						autoPlay
@@ -292,7 +292,7 @@ export default class ZegoVideo extends React.PureComponent<{
 						playsInline={true}
 						ref={(el: HTMLVideoElement) => {
 							el && this.props.videoRefs?.(el);
-							!this.videoRef && (this.videoRef = el);
+							this.videoRef = el;
 						}}
 						onPause={() => {
 							this.setState({
@@ -364,7 +364,7 @@ export default class ZegoVideo extends React.PureComponent<{
 					className={this.props.classList}
 					ref={(el: HTMLDivElement) => {
 						el && this.props.videoRefs?.(el);
-						!this.videoRef && (this.videoRef = el);
+						this.videoRef = el;
 						// 对端屏幕共享流画面依赖该方法结束loading
 						this.props.onCanPlay && this.props.onCanPlay();
 					}}></div>

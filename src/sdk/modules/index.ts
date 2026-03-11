@@ -633,12 +633,15 @@ export class ZegoCloudRTCCore {
 		// 拉流需要变成RTC的
 		let _streamList = []
 		for (let streamInfo of Object.values(this.remoteStreamMap)) {
-			// 需要停止原来的L3拉流
+			// RealTimeLive模式下观众已经是RTC拉流，连麦时直接复用已有流
 			if (
-				streamInfo.media &&
-				this._config.scenario?.config?.liveStreamingMode !== LiveStreamingMode.RealTimeLive
+				this._config.scenario?.config?.liveStreamingMode ===
+				LiveStreamingMode.RealTimeLive
 			) {
-				ZegoCloudRTCCore._zg.stopPlayingStream(streamInfo.streamID)
+				if (streamInfo.media) {
+					_streamList.push(streamInfo);
+				}
+				continue;
 			}
 			try {
 				const stream = await this.zum.startPullStream(streamInfo.fromUser.userID, streamInfo.streamID)
@@ -1918,6 +1921,10 @@ export class ZegoCloudRTCCore {
 			)
 			this._roomExtraInfo = setRoomExtraInfo
 		}
+		this._roomExtraInfo = {
+			...this._roomExtraInfo,
+			live_status: "0",
+		};
 		this.hasPublishedStream = false
 
 		this._zimManager?.leaveRoom()
