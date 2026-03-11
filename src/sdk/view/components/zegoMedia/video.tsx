@@ -299,6 +299,10 @@ export default class ZegoVideo extends React.PureComponent<{
 								isPaused: true,
 							});
 							setTimeout(() => {
+								if (this.flvPlayer) {
+									// cdn模式下共享屏幕触发重新加载会报错
+									return;
+								}
 								(this.videoRef as HTMLVideoElement)?.load();
 								(this.videoRef as HTMLVideoElement)?.play();
 							}, 2000);
