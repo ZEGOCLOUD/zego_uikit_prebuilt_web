@@ -389,9 +389,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         }).length > (this.state.screenSharingUserList.length > 0 ? 0 : 1);
       if (this.isCDNLive) {
         // 拷贝一下userList
-        let userListCopy: ZegoCloudUserList = JSON.parse(
-          JSON.stringify(userList)
-        );
+        let userListCopy: ZegoCloudUserList = userList.map(u => ({ ...u, streamList: [...u.streamList] }));
         // 有流且有一个设备是打开状态的用户数
         const userNum = userListCopy.filter(
           (user) =>
@@ -681,6 +679,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               this.props.core._zimManager?._inRoomInviteMg.audienceAcceptInvitation();
               // TODO 角色变更，更新config，开始推流,
               await this.props.core.changeAudienceToCohostInLiveStream();
+              await new Promise<void>((resolve) => {
+                this.setState({
+                  cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
+                  micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
+                }, resolve);
+              });
               const res = await this.createStream();
               if (!res) {
                 this.props.core.changeCohostToAudienceInLiveStream();
@@ -753,6 +757,12 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       async (respond: 0 | 1 | 2 | 3) => {
         if (respond === 0) {
           await this.props.core.changeAudienceToCohostInLiveStream();
+          await new Promise<void>((resolve) => {
+            this.setState({
+              cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
+              micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
+            }, resolve);
+          });
           const res = await this.createStream();
           if (!res) {
             this.props.core.changeCohostToAudienceInLiveStream();

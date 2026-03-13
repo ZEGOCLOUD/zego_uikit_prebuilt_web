@@ -3,6 +3,9 @@ import CryptoJS from "crypto-js";
 import Fuse from "fuse.js";
 import { ZegoCloudUserList } from "./modules/tools/UserListManager";
 import React from 'react';
+import pkg from "./version.json";
+
+export const SDK_VERSION = pkg.version;
 
 export function randomNumber(len: number): number {
   let result = "";

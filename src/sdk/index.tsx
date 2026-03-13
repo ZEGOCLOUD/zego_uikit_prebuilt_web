@@ -22,7 +22,7 @@ import {
 	ZegoUIKitCreateConfig,
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
-import { generatePrebuiltToken, isPc } from "./util";
+import { generatePrebuiltToken, isPc, SDK_VERSION } from "./util";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 import { TracerConnect } from "./modules/tools/ZegoTracer";
 import { SpanEvent } from "./model/tracer";
@@ -65,7 +65,7 @@ export class ZegoUIKitPrebuilt {
 	constructor() {
 		this.express = ZegoCloudRTCCore._zg;
 		console.log('express version:', this.express.getVersion());
-		console.log('ZegoUIKitPrebuilt version: 2.17.1');
+		console.log('ZegoUIKitPrebuilt version:', SDK_VERSION);
 	}
 	get localStream() {
 		return ZegoUIKitPrebuilt.core?.localStream;
@@ -118,7 +118,7 @@ export class ZegoUIKitPrebuilt {
 		return ZegoUIKitPrebuilt._instance;
 	}
 	static getVersion(): string {
-		return '2.17.1' // SDK_VERSION;
+		return SDK_VERSION;
 	}
 
 	addPlugins(plugins?: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager; ZIM?: typeof ZIM }) {
