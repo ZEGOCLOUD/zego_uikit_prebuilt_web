@@ -95,6 +95,7 @@ export default class App extends React.PureComponent {
     resourceID: "zego_data",
     appID: sessionStorage.getItem("appID") ? sessionStorage.getItem("appID") : "",
     serverSecret: sessionStorage.getItem("serverSecret") ? sessionStorage.getItem("serverSecret") : "",
+    callRoomID: '',
   };
   refuseBtn = React.createRef();
   acceptBtn = React.createRef();
@@ -249,6 +250,7 @@ export default class App extends React.PureComponent {
       console.warn("【Zego Demo】app call_invitation");
       this.initCallInvitation(urlAppID || this.state.appID ? urlAppID || this.state.appID : this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, urlToken, backgroundProcess);
       this.state.showSettingsBtn = true;
+      this.state.callRoomID = roomID;
     } else {
       this.myMeeting = async (element: HTMLDivElement) => {
         let token;
@@ -550,8 +552,9 @@ export default class App extends React.PureComponent {
           },
           onTokenWillExpire: async () => {
             console.warn('[config]onTokenWillExpire');
-            const newToken = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
-            zp.renewToken(newToken);
+            // 重新获取token
+            const token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+            zp.renewToken(token);
           }
         }
         if (showNonVideoUser !== undefined) {
@@ -916,14 +919,15 @@ export default class App extends React.PureComponent {
           callees: invitees,
           callType: type,
           timeout: 60,
-          notificationConfig: { resourcesID: this.state.resourceID }
+          notificationConfig: { resourcesID: this.state.resourceID },
+          roomID: this.state.callRoomID,
         })
         .then((res) => {
           if (invitees.length === 1) {
             res.errorInvitees.length &&
               this.showToast("The user dose not exist or is offline.");
           }
-          console.warn(res);
+          console.warn('sendCallInvitation res', res);
           this.inviter = {
             userID: this.state.userID,
             userName: this.state.userName,
@@ -1200,7 +1204,7 @@ export default class App extends React.PureComponent {
         {
           return (
             <>
-              {isPc() && (
+              {(
                 <div className={APP.settingsModeList}>
                   <div className={`${APP.settingsModeItem} ${this.state.showPreJoinView ? APP.settingsModeItemSelected : ""}`}
                     onClick={() => {

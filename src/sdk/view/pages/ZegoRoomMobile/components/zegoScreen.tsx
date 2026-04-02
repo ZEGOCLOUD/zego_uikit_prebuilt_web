@@ -1,6 +1,7 @@
 import React from "react";
 import { ZegoScreenSharingLayoutProps } from "../../../../model";
 import ZegoAudio from "../../../components/zegoMedia/audio";
+import { isIOS } from "../../../../util";
 import ZegoSidebarCss from "./zegoSidebar.module.scss";
 import { ZegoUserOtherVideo, ZegoUserVideo } from "./zegoUserVideo";
 
@@ -64,8 +65,7 @@ export class ZegoScreen extends React.PureComponent<ZegoScreenSharingLayoutProps
           <ZegoUserVideo
             core={this.props.core}
             muted={
-              this.props?.selfInfo?.userID ===
-              this.props.screenSharingUser.userID
+              !isIOS() ? (this.props?.selfInfo?.userID === this.props.screenSharingUser.userID) : true
             }
             user={this.props.screenSharingUser}
             key={this.props.screenSharingUser.userID + "_video"}

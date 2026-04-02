@@ -580,6 +580,7 @@ export class ZimManager {
 		this._zim?.on("tokenWillExpire", (zim: ZIM, data: ZIMEventOfTokenWillExpireResult) => {
 			console.warn('[ZIMManager]tokenWillExpire', data, ZegoUIKitPrebuilt.core?._config);
 			this.config.onTokenWillExpire && this.config.onTokenWillExpire();
+			this.onTokenWillExpireCallback();
 		})
 	}
 
@@ -1060,6 +1061,13 @@ export class ZimManager {
 				func(this.callInfo.roomID);
 				this.expressConfig.roomID = this.callInfo.roomID;
 			});
+	}
+	private onTokenWillExpireCallback = () => { };
+	/** 通知UI层调用onTokenWillExpire */
+	onTokenWillExpire(func: () => void) {
+		func && (this.onTokenWillExpireCallback = () => {
+			func();
+		});
 	}
 	async callEnd() {
 		const { callID } = this.callInfo

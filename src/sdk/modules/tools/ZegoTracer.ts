@@ -1,6 +1,7 @@
 import { ZegoSpan, ZegoTracer } from 'zego-tracer';
 import { ZegoCloudRTCCore } from '..';
 import { SpanEvent } from '../../model/tracer';
+import { SDK_VERSION } from '../../util';
 
 interface SystemInfoInter {
     system: string;
@@ -191,7 +192,7 @@ export class TracerConnect {
                     user_id: userID,
                     platform: 'web',
                     platform_version: '',
-                    uikit_version: `zego_uikit: 2.17.3; zego_express: ${ZegoCloudRTCCore._zg.getVersion()};`,
+                    uikit_version: `zego_uikit: ${SDK_VERSION}; zego_express: ${ZegoCloudRTCCore._zg.getVersion()};`,
                 },
             });
             const startCommonField = new Map();

@@ -49,13 +49,13 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		const audioOpen = !!this.props.core._config.turnOnMicrophoneWhenJoining;
 		// 获取摄像头权限
 		//@ts-ignore
-		const cameraStatus = await navigator.permissions.query({ name: "camera" });
-		this.videoRefuse = cameraStatus.state.includes('denied');
+		const cameraStatus = await navigator.permissions?.query({ name: "camera" });
+		this.videoRefuse = cameraStatus?.state.includes('denied');
 
 		// 获取麦克风权限
 		//@ts-ignore
-		const micStatus = await navigator.permissions.query({ name: "microphone" });
-		this.audioRefuse = micStatus.state.includes('denied');
+		const micStatus = await navigator.permissions?.query({ name: "microphone" });
+		this.audioRefuse = micStatus?.state.includes('denied');
 
 		if (videoOpen || audioOpen) {
 			if (!this.videoRefuse || !this.audioRefuse) {

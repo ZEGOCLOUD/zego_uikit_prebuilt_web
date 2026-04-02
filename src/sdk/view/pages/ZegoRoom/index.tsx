@@ -404,7 +404,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			this.userUpdateCallBack();
 			if (this.isCDNLive) {
 				// CDN拉流最大限制6条，超过限制就不拉了
-				let userListCopy: ZegoCloudUserList = JSON.parse(JSON.stringify(userList));
+				let userListCopy: ZegoCloudUserList = userList.map(u => ({ ...u, streamList: [...u.streamList] }));
 				const userNum = userListCopy.filter(
 					(user) =>
 						user.streamList.length > 0 &&
@@ -645,6 +645,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						this.props.core._zimManager?._inRoomInviteMg.audienceAcceptInvitation();
 						// TODO 角色变更，更新config，开始推流,
 						await this.props.core.changeAudienceToCohostInLiveStream();
+						await new Promise<void>((resolve) => {
+							this.setState({
+								cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
+								micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
+							}, resolve);
+						});
 						const res = await this.createStream();
 						if (!res) {
 							this.props.core.changeCohostToAudienceInLiveStream();
@@ -699,6 +705,12 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.props.core._zimManager?._inRoomInviteMg.notifyHostRespondRequestCohost(async (respond: 0 | 1 | 2 | 3) => {
 			if (respond === 0) {
 				await this.props.core.changeAudienceToCohostInLiveStream();
+				await new Promise<void>((resolve) => {
+					this.setState({
+						cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
+						micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
+					}, resolve);
+				});
 				const res = await this.createStream();
 				if (!res) {
 					this.props.core.changeCohostToAudienceInLiveStream();
