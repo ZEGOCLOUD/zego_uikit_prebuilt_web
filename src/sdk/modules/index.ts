@@ -1415,6 +1415,11 @@ export class ZegoCloudRTCCore {
 				ZegoCloudRTCCore._zg.useAudioDevice(this.localStream!, micDevices[0]?.deviceID)
 			}
 		})
+
+		ZegoCloudRTCCore._zg.on("tokenWillExpire", async () => {
+			console.warn('[ZegoCloudRTCCore]tokenWillExpire');
+			this._config.onTokenWillExpire && this._config.onTokenWillExpire();
+		})
 		// }
 		// 监听房间内ZIM text消息
 		// this._config.onInRoomTextMessageReceived &&
@@ -1868,6 +1873,7 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.off("IMRecvCustomCommand")
 		ZegoCloudRTCCore._zg.off("publisherVideoEncoderChanged")
 		ZegoCloudRTCCore._zg.off("videoDeviceStateChanged")
+		ZegoCloudRTCCore._zg.off("tokenWillExpire")
 
 		ZegoCloudRTCCore._zg.setSoundLevelDelegate(false)
 		this.onNetworkStatusCallBack = () => { }
@@ -1956,6 +1962,9 @@ export class ZegoCloudRTCCore {
 		// 更新roomID
 		this._zimManager.onUpdateRoomID((roomID: string) => {
 			this._expressConfig.roomID = roomID
+		})
+		this._zimManager.onTokenWillExpire(() => {
+			this._config.onTokenWillExpire?.()
 		})
 	}
 	//   发送房间自定义消息
@@ -2541,27 +2550,35 @@ export class ZegoCloudRTCCore {
 
 	// 刷新token
 	renewToken(kitToken: string): boolean {
-		console.warn('[ZegoCloudRTCCore]renewToken');
+		console.warn('[ZegoCloudRTCCore]renewToken', this._zimManager);
 		const config = getConfig(kitToken);
 		let result: boolean = false;
-		this._zimManager?._zim?.renewToken(config!.token)
-			.then((res) => {
-				if (this._expressConfig.token) {
-					this._expressConfig.token = config?.token!;
-				}
-				console.warn('[ZegoCloudRTCCore]renewToken zim success11111', res)
-				if (this.status.loginRsp) {
-					const rtcRes = ZegoCloudRTCCore._zg.renewToken(config!.token)
-					console.warn('[ZegoCloudRTCCore]renewToken rtc success', rtcRes)
-					result = rtcRes;
-				} else {
-					result = true;
-				}
-			})
-			.catch((error) => {
-				console.warn('[ZegoCloudRTCCore]renewToken zim error', error)
-				result = false
-			});
+		if (this._zimManager) {
+			this._zimManager?._zim?.renewToken(config!.token)
+				.then((res) => {
+					if (this._expressConfig.token) {
+						this._expressConfig.token = config?.token!;
+					}
+					console.warn('[ZegoCloudRTCCore]renewToken zim success11111', res)
+					if (this.status.loginRsp) {
+						const rtcRes = ZegoCloudRTCCore._zg.renewToken(config!.token)
+						console.warn('[ZegoCloudRTCCore]renewToken rtc success', rtcRes)
+						result = rtcRes;
+					} else {
+						result = true;
+					}
+				})
+				.catch((error) => {
+					console.warn('[ZegoCloudRTCCore]renewToken zim error', error)
+					result = false
+				});
+		} else {
+			const rtcRes = ZegoCloudRTCCore._zg.renewToken(config!.token)
+			result = rtcRes;
+			if (rtcRes && this._expressConfig.token) {
+				this._expressConfig.token = config?.token!;
+			}
+		}
 		return result;
 	}
 

@@ -489,7 +489,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       const notSupportPhone =
         !isPc() &&
         isIOS() &&
-        (IsLowVersionSafari() || this.isCDNLive) &&
+        IsLowVersionSafari() &&
         this.state.zegoCloudUserList.filter((u) => {
           return (
             u.streamList.length > 0 &&
