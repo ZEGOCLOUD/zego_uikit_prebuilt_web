@@ -551,6 +551,12 @@ export default class App extends React.PureComponent {
           onMicrophoneStateUpdated: (state) => {
             console.warn('[config]onMicrophoneStateUpdated', state)
           },
+          onTokenWillExpire: async () => {
+            console.warn('[config]onTokenWillExpire');
+            // 重新获取token
+            const token = (await generateToken(this.state.lang === 'en' ? 1590146318 : 2013980891, userID, roomID, "user_" + userID)).token;
+            zp.renewToken(token);
+          }
         }
         if (showNonVideoUser !== undefined) {
           param.showNonVideoUser = showNonVideoUser === "true"

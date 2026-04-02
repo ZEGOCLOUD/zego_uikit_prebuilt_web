@@ -1957,6 +1957,9 @@ export class ZegoCloudRTCCore {
 		this._zimManager.onUpdateRoomID((roomID: string) => {
 			this._expressConfig.roomID = roomID
 		})
+		this._zimManager.onTokenWillExpire(() => {
+			this._config.onTokenWillExpire?.()
+		})
 	}
 	//   发送房间自定义消息
 	async sendInRoomCommand(message: string, userIDs: string[]): Promise<boolean> {
