@@ -9,6 +9,8 @@ import { isSafari, isPc, isIOS } from "../../../util";
 import ZegoVideoCss from "./index.module.scss";
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 import { ZegoCloudRTCCore } from "../../../modules";
+import { TracerConnect } from "../../../modules/tools/ZegoTracer";
+import { SpanEvent } from "../../../model/tracer";
 
 flvjs.LoggingControl.enableAll = false;
 
@@ -81,7 +83,6 @@ export default class ZegoVideo extends React.PureComponent<{
 	tryPlay() {
 		this.clearRetryTimers();
 		this.clearPauseTimer();
-		
 		// 增加防抖：500ms 内不重复发起 play 指令
 		const now = Date.now();
 		if (now - this.lastPlayAttemptTime < 500) return;
@@ -124,7 +125,6 @@ export default class ZegoVideo extends React.PureComponent<{
 		if (this.playRetryCount < 1) {
 			this.playRetryCount++;
 			console.warn(`[ZegoVideo] play failed, scheduled retry ${this.playRetryCount}/1 in 2s...`);
-			
 			this.clearRetryTimers();
 			this.playRetryTimer = setTimeout(() => {
 				console.warn(`[ZegoVideo] executing retry ${this.playRetryCount}`);
@@ -165,6 +165,11 @@ export default class ZegoVideo extends React.PureComponent<{
 		}
 	}
 	initHLSPlayer(el: HTMLVideoElement, url: string) {
+		const span = TracerConnect.createSpan(SpanEvent.videoMode, {
+			mode: 'hls',
+			which: 'peer',
+		});
+		span.end();
 		console.warn('[ZegoVideo] initHLSPlayer: URL =', url, this.props.muted);
 		el.srcObject = null;
 		el.muted = this.props.muted;
@@ -186,12 +191,22 @@ export default class ZegoVideo extends React.PureComponent<{
 				if (this.props.muted) {
 					// 本地预览流
 					console.warn('[video]initVideo 渲染本地流', this.props.userInfo);
+					const span = TracerConnect.createSpan(SpanEvent.videoMode, {
+						mode: 'rtc',
+						which: 'local',
+					});
+					span.end();
 					const media = this.props.userInfo.streamList[0]?.media as ZegoLocalStream;
 					media.playVideo(this.videoRef, { mirror: !isScreenSharing ? this.props.core._config.videoScreenConfig?.localMirror : false, objectFit: videoObjectFit })
 					if (media.videoCaptureStream && this.props.userInfo.streamList[0]?.cameraStatus === 'MUTE') {
 						this.props.core.enableVideoCaptureDevice(media, false);
 					}
 				} else {
+					const span = TracerConnect.createSpan(SpanEvent.videoMode, {
+						mode: 'rtc',
+						which: 'peer',
+					});
+					span.end();
 					// 连麦观众下麦，停止拉主播流又马上重新开始拉时，拉流还未成功时 createRemoteStreamView 会报错，拉流成功后还会继续渲染，暂不处理报错
 					console.warn('[video]initVideo 渲染对端流', this.props.core._config.videoScreenConfig);
 					try {
@@ -215,6 +230,7 @@ export default class ZegoVideo extends React.PureComponent<{
 				// }
 				this.destroyFlvPlayer()
 			} else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
+
 				(el as HTMLVideoElement).muted !== this.props.muted && ((el as HTMLVideoElement).muted = this.props.muted)
 				if ((el as any)?.sinkId !== this.context?.speakerId) {
 					(el as any)?.setSinkId?.(this.context?.speakerId || "")
@@ -230,7 +246,12 @@ export default class ZegoVideo extends React.PureComponent<{
 		}
 	}
 	initFLVPlayer(videoElement: HTMLVideoElement, url: string) {
-		console.warn('[ZegoVideo] initFLVPlayer: URL =', url);
+		const span = TracerConnect.createSpan(SpanEvent.videoMode, {
+			mode: 'flv',
+			which: 'peer',
+		});
+		span.end();
+		console.warn('[ZegoVideo] initFLVPlayer: URL =', url, this.props.userInfo.streamList?.[0]);
 		this.destroyFlvPlayer(); // 确保环境干净
 		// if (!flvjs.isSupported()) return
 		videoElement.srcObject = null
@@ -239,16 +260,15 @@ export default class ZegoVideo extends React.PureComponent<{
 		//   hasAudio = !this.props.isPureVideo;
 		//   hasVideo = !this.props.isPureAudio;
 		// } else {
-		hasVideo =
-			this.props.userInfo.streamList?.[0]?.hasVideo === undefined
-				? this.props.userInfo.streamList?.[0]?.cameraStatus === "OPEN"
-				: this.props.userInfo.streamList?.[0]?.hasVideo
-		hasAudio =
-			this.props.userInfo.streamList?.[0]?.hasAudio === undefined
-				? this.props.userInfo.streamList?.[0]?.micStatus === "OPEN"
-				: this.props.userInfo.streamList?.[0]?.hasAudio
+		hasVideo = this.props.userInfo.streamList?.[0]?.cameraStatus === "OPEN" ? true : false
+		// this.props.userInfo.streamList?.[0]?.hasVideo === undefined
+		// 	? this.props.userInfo.streamList?.[0]?.cameraStatus === "OPEN"
+		// 	: this.props.userInfo.streamList?.[0]?.hasVideo
+		hasAudio = this.props.userInfo.streamList?.[0]?.micStatus === "OPEN" ? true : false
+		// this.props.userInfo.streamList?.[0]?.hasAudio === undefined
+		// 	? this.props.userInfo.streamList?.[0]?.micStatus === "OPEN"
+		// 	: this.props.userInfo.streamList?.[0]?.hasAudio
 		// }
-
 		this.flvPlayer = flvjs.createPlayer({
 			type: "flv",
 			isLive: true,
@@ -425,14 +445,12 @@ export default class ZegoVideo extends React.PureComponent<{
 						onPause={() => {
 							console.warn('[ZegoVideo] Video element: pause event triggered');
 							if (this.state.isPaused || this.flvPlayer || (isIOS() && this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV)) return;
-							
 							this.clearPauseTimer();
 							this.pauseTimer = setTimeout(() => {
 								console.warn('[ZegoVideo] onPause Timer: reload video element');
 								this.tryLoad();
 								this.tryPlay();
 							}, 2000);
-							
 							this.setState({
 								isPaused: true,
 							});

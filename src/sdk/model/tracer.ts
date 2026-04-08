@@ -30,5 +30,7 @@ export enum SpanEvent {
     LiveStreamingHostStop = 'livestreaming/cohost/host/stop',
     LiveStreamingAudienceInvite = 'livestreaming/cohost/audience/invite',
     LiveStreamingAudienceReceived = 'livestreaming/cohost/audience/received',
-    LiveStreamingAudienceRespond = 'livestreaming/cohost/audience/respond'
+    LiveStreamingAudienceRespond = 'livestreaming/cohost/audience/respond',
+
+    videoMode = 'video/mode',
 }
