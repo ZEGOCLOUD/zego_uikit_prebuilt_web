@@ -25,6 +25,8 @@ export default class ZegoVideo extends React.PureComponent<{
 	isMixing?: boolean
 	isPureAudio?: boolean
 	isPureVideo?: boolean
+	cameraStatus?: string
+	media?: ZegoLocalStream | MediaStream | undefined
 }> {
 	static contextType?: React.Context<ShowManageType> = ShowManageContext
 	context!: React.ContextType<typeof ShowManageContext>
@@ -48,6 +50,7 @@ export default class ZegoVideo extends React.PureComponent<{
 	playRetryCount = 0;
 	playRetryTimer: NodeJS.Timeout | null = null;
 	lastPlayAttemptTime = 0;
+	lastFrameChangeTime = 0;
 	componentDidMount() {
 		this.initVideo(this.videoRef!)
 		window.addEventListener('ZegoVideoGlobalResume', this.handleGlobalResume);
@@ -137,9 +140,8 @@ export default class ZegoVideo extends React.PureComponent<{
 		}
 	}
 	componentDidUpdate(preProps: any) {
-		const { userInfo, muted } = this.props;
-		const { userInfo: preUserInfo, muted: preMuted } = preProps;
-
+		const { userInfo, muted, cameraStatus, media } = this.props;
+		const { userInfo: preUserInfo, muted: preMuted, cameraStatus: preCameraStatus, media: preMedia } = preProps;
 		// 只有关键属性变化时才触发初始化逻辑
 		if (
 			userInfo?.userID !== preUserInfo?.userID ||
@@ -147,7 +149,11 @@ export default class ZegoVideo extends React.PureComponent<{
 			userInfo?.streamList?.[0]?.streamID !== preUserInfo?.streamList?.[0]?.streamID ||
 			userInfo?.streamList?.[0]?.media !== preUserInfo?.streamList?.[0]?.media ||
 			userInfo?.streamList?.[0]?.urlsHttpsFLV !== preUserInfo?.streamList?.[0]?.urlsHttpsFLV ||
-			muted !== preMuted
+			muted !== preMuted ||
+			// 增加 cameraStatus 变化时的处理，cdn拉流时仅依赖flv的状态会出现不重新拉视频流的情况
+			cameraStatus !== preCameraStatus ||
+			// 增加 media 变化时的处理，cdn拉流且有屏幕共享流模式下连麦用户改为非连麦时，需要重新初始化视频流，userInfo?.streamList?.[0]?.media这个参数的变化不生效
+			media !== preMedia
 		) {
 			this.initVideo(this.videoRef!)
 		}
@@ -230,7 +236,6 @@ export default class ZegoVideo extends React.PureComponent<{
 				// }
 				this.destroyFlvPlayer()
 			} else if (this.props.userInfo?.streamList?.[0]?.urlsHttpsFLV) {
-
 				(el as HTMLVideoElement).muted !== this.props.muted && ((el as HTMLVideoElement).muted = this.props.muted)
 				if ((el as any)?.sinkId !== this.context?.speakerId) {
 					(el as any)?.setSinkId?.(this.context?.speakerId || "")
@@ -269,6 +274,7 @@ export default class ZegoVideo extends React.PureComponent<{
 		// 	? this.props.userInfo.streamList?.[0]?.micStatus === "OPEN"
 		// 	: this.props.userInfo.streamList?.[0]?.hasAudio
 		// }
+		console.log('[ZegoVideo] initFLVPlayer: hasAudio ,hasVideo', hasAudio, hasVideo);
 		this.flvPlayer = flvjs.createPlayer({
 			type: "flv",
 			isLive: true,
@@ -320,12 +326,18 @@ export default class ZegoVideo extends React.PureComponent<{
 			if (this.lastDecodedFrame !== currentFrames) {
 				// 画面正常：更新帧数并清除重试计时器
 				this.lastDecodedFrame = currentFrames;
+				this.lastFrameChangeTime = Date.now(); // 记录帧数变化的时间点
 				this.retryTime = 0;
 				if (this.retryTimer) {
 					clearTimeout(this.retryTimer);
 					this.retryTimer = null;
 				}
 			} else {
+				// 帧数无变化15s以内不去重新初始化，避免切换推流端摄像头时重复初始化和短时间掉帧重复初始化
+				if (Date.now() - this.lastFrameChangeTime < 15000) {
+					// console.warn(`[ZegoVideo] FLV Player: Frame frozen for ${Date.now() - this.lastFrameChangeTime}ms`);
+					return;
+				}
 				// 画面冻结：增加统计计数
 				this.retryTime += 1;
 

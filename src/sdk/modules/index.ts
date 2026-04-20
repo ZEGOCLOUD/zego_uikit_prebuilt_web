@@ -646,6 +646,8 @@ export class ZegoCloudRTCCore {
 			try {
 				const stream = await this.zum.startPullStream(streamInfo.fromUser.userID, streamInfo.streamID)
 				this.remoteStreamMap[streamInfo.streamID].media = stream
+				this.remoteStreamMap[streamInfo.streamID].urlsHttpsFLV = ""
+				this.remoteStreamMap[streamInfo.streamID].urlsHttpsHLS = ""
 				_streamList.push(this.remoteStreamMap[streamInfo.streamID])
 			} catch (error) {
 				console.error("【ZEGOCLOUD】change to  Cohost:", error)
