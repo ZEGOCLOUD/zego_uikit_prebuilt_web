@@ -303,6 +303,18 @@ export default class ZegoVideo extends React.PureComponent<{
 				}, 3000)
 			}
 		})
+		this.flvPlayer.on(flvjs.Events.METADATA_ARRIVED, (metadata: any) => {
+			console.log("✅ onMetaData 流已开始，数据正常", metadata);
+			// 屏幕共享窗口时由于创建flv参数hasAudio为true，但是实际没有音频，导致画面一直在等待音频而长时间黑屏，需要兜底改创建参数
+			if (this.props.userInfo.streamList?.[0]?.streamID.includes('_screensharing')) {
+				setTimeout(() => {
+					if (!this.audioConfirmed) {
+						console.log("⏰ 3秒未检测到音频 → 切换纯视频模式");
+						this.restartWithNoAudio();
+					}
+				}, 3000);
+			}
+		});
 		this.flvPlayer.on(flvjs.Events.MEDIA_INFO, (info: any) => {
 			// 判断是否有音频轨道（注意：有些流 hasAudio=true 但实际无数据）
 			const hasAudioTrack =
@@ -391,13 +403,6 @@ export default class ZegoVideo extends React.PureComponent<{
 		console.warn(`[ZegoVideo] FLV Player: Initialized with hasVideo=${hasVideo}, hasAudio=${hasAudio}`);
 		this.flvPlayer.attachMediaElement(videoElement)
 		this.tryLoad();
-		// 屏幕共享窗口时由于创建flv参数hasAudio为true，但是实际没有音频，导致画面一直在等待音频而长时间黑屏，需要兜底改创建参数
-		setTimeout(() => {
-			if (!this.audioConfirmed) {
-				console.log("⏰ 5秒未检测到音频 → 切换纯视频模式");
-				this.restartWithNoAudio();
-			}
-		}, 5000);
 	}
 
 	detectFlvHasAudio(url: string) {
@@ -426,6 +431,7 @@ export default class ZegoVideo extends React.PureComponent<{
 	}
 
 	confirmAudio(reason: string) {
+		if (!this.props.userInfo.streamList?.[0]?.streamID.includes('_screensharing')) return;
 		if (this.audioConfirmed) return;
 		this.audioConfirmed = true;
 		console.log(reason);
