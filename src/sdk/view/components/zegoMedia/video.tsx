@@ -51,6 +51,9 @@ export default class ZegoVideo extends React.PureComponent<{
 	playRetryTimer: NodeJS.Timeout | null = null;
 	lastPlayAttemptTime = 0;
 	lastFrameChangeTime = 0;
+	audioConfirmed: boolean = false;
+	flvUrl = "";
+
 	componentDidMount() {
 		this.initVideo(this.videoRef!)
 		window.addEventListener('ZegoVideoGlobalResume', this.handleGlobalResume);
@@ -184,7 +187,7 @@ export default class ZegoVideo extends React.PureComponent<{
 		this.tryLoad();
 		this.tryPlay();
 	}
-	initVideo(el: HTMLElement | HTMLVideoElement) {
+	async initVideo(el: HTMLElement | HTMLVideoElement) {
 		if (el) {
 			this.videoRef = el as HTMLVideoElement;
 			if (this.props.userInfo?.streamList?.[0]?.media?.id && this.props.userInfo?.streamList?.[0]?.media?.active) {
@@ -251,6 +254,7 @@ export default class ZegoVideo extends React.PureComponent<{
 		}
 	}
 	initFLVPlayer(videoElement: HTMLVideoElement, url: string) {
+		this.flvUrl = url;
 		const span = TracerConnect.createSpan(SpanEvent.videoMode, {
 			mode: 'flv',
 			which: 'peer',
@@ -299,9 +303,38 @@ export default class ZegoVideo extends React.PureComponent<{
 				}, 3000)
 			}
 		})
+		this.flvPlayer.on(flvjs.Events.MEDIA_INFO, (info: any) => {
+			// 判断是否有音频轨道（注意：有些流 hasAudio=true 但实际无数据）
+			const hasAudioTrack =
+				info.hasAudio === true ||
+				(info.audioCodec && info.audioCodec.length > 0) ||
+				(info.audioSampleRate && info.audioSampleRate > 0);
+
+			if (hasAudioTrack && !this.audioConfirmed) {
+				this.confirmAudio("✅ MEDIA_INFO 确认有音频");
+			}
+		});
+
+		this.flvPlayer.on(flvjs.Events.AUDIO_SPECIFIC_CONFIG, () => {
+			if (!this.audioConfirmed) {
+				this.confirmAudio("✅ AudioSpecificConfig 到达");
+			}
+		});
+
+		this.flvPlayer.on(flvjs.Events.AUDIO_GOP_DECODED, () => {
+			console.log('📊3[ZegoVideo] AUDIO_GOP_DECODED');
+			if (!this.audioConfirmed) {
+				this.confirmAudio("✅ 音频帧解码成功");
+			}
+		});
+
 		this.flvPlayer.on("statistics_info", (res: any) => {
 			const currentFrames = res.decodedFrames;
 			const isPaused = (this.videoRef as HTMLVideoElement)?.paused;
+
+			if (!this.audioConfirmed && res.receivedAudioBytes > 0) {
+				this.confirmAudio("✅ 统计信息收到音频数据");
+			}
 
 			// 初次启动或重启后，等到有第一帧数据再开始统计
 			if (this.lastDecodedFrame === 0) {
@@ -358,6 +391,66 @@ export default class ZegoVideo extends React.PureComponent<{
 		console.warn(`[ZegoVideo] FLV Player: Initialized with hasVideo=${hasVideo}, hasAudio=${hasAudio}`);
 		this.flvPlayer.attachMediaElement(videoElement)
 		this.tryLoad();
+		// 屏幕共享窗口时由于创建flv参数hasAudio为true，但是实际没有音频，导致画面一直在等待音频而长时间黑屏，需要兜底改创建参数
+		setTimeout(() => {
+			if (!this.audioConfirmed) {
+				console.log("⏰ 5秒未检测到音频 → 切换纯视频模式");
+				this.restartWithNoAudio();
+			}
+		}, 5000);
+	}
+
+	detectFlvHasAudio(url: string) {
+		return new Promise((resolve) => {
+			const xhr = new XMLHttpRequest();
+			xhr.open('GET', url, true);
+			xhr.responseType = 'arraybuffer';
+			xhr.setRequestHeader('Range', 'bytes=0-500'); // 只拉前500字节
+			xhr.onload = () => {
+				try {
+					const data = new Uint8Array(xhr.response);
+					// FLV 头部格式：
+					// 0-2: 'FLV'
+					// 3: 0x01
+					// 4: Flags (0x04=有音频, 0x01=有视频, 0x05=音视频都有)
+					const flag = data[4];
+					const hasAudio = (flag & 4) !== 0; // 第3位=音频
+					resolve(hasAudio);
+				} catch (e) {
+					resolve(false);
+				}
+			};
+			xhr.onerror = () => resolve(false);
+			xhr.send();
+		});
+	}
+
+	confirmAudio(reason: string) {
+		if (this.audioConfirmed) return;
+		this.audioConfirmed = true;
+		console.log(reason);
+		//   video.muted = false;
+	}
+
+	restartWithNoAudio() {
+		try {
+			this.flvPlayer.destroy();
+		} catch (e) { }
+
+		this.flvPlayer = flvjs.createPlayer({
+			type: 'flv',
+			url: this.flvUrl,
+			isLive: true,
+			hasAudio: false,
+			hasVideo: true
+		}, {
+			enableStashBuffer: false,
+			lazyLoad: false
+		});
+
+		this.flvPlayer.attachMediaElement(this.videoRef);
+		this.flvPlayer.load();
+		this.flvPlayer.play();
 	}
 
 	componentWillUnmount() {

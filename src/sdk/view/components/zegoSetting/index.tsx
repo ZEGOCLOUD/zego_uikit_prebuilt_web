@@ -124,6 +124,10 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
 
   async createVideoStream(): Promise<boolean> {
     try {
+      // 销毁之前创建的流
+      if (this.state.localVideoStream) {
+        this.props.core.destroyStream(this.state.localVideoStream);
+      }
       const config = getVideoResolution(
         this.state.selectVideoResolution as string
       );
