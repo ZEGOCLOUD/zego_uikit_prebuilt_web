@@ -613,8 +613,8 @@ export class ZegoCloudRTCCore {
 
 		config.turnOnMicrophoneWhenJoining = true
 		config.turnOnCameraWhenJoining = true
-		config.showMyCameraToggleButton = this._originConfig["sctb"] === 1
-		config.showMyMicrophoneToggleButton = this._originConfig["smtb"] === 1
+		config.showMyCameraToggleButton = this.originConfig["sctb"] != null ? this.originConfig["sctb"] === 1 : true
+		config.showMyMicrophoneToggleButton = this.originConfig["smtb"] != null ? this.originConfig["smtb"] === 1 : true
 		config.showAudioVideoSettingsButton = true
 		config.showScreenSharingButton = true
 		config.useFrontFacingCamera = true
