@@ -26,6 +26,7 @@ export default class ZegoVideo extends React.PureComponent<{
 	isPureAudio?: boolean
 	isPureVideo?: boolean
 	cameraStatus?: string
+	micStatus?: string
 	media?: ZegoLocalStream | MediaStream | undefined
 }> {
 	static contextType?: React.Context<ShowManageType> = ShowManageContext
@@ -143,8 +144,8 @@ export default class ZegoVideo extends React.PureComponent<{
 		}
 	}
 	componentDidUpdate(preProps: any) {
-		const { userInfo, muted, cameraStatus, media } = this.props;
-		const { userInfo: preUserInfo, muted: preMuted, cameraStatus: preCameraStatus, media: preMedia } = preProps;
+		const { userInfo, muted, cameraStatus, micStatus, media } = this.props;
+		const { userInfo: preUserInfo, muted: preMuted, cameraStatus: preCameraStatus, micStatus: preMicStatus, media: preMedia, } = preProps;
 		// 只有关键属性变化时才触发初始化逻辑
 		if (
 			userInfo?.userID !== preUserInfo?.userID ||
@@ -153,8 +154,9 @@ export default class ZegoVideo extends React.PureComponent<{
 			userInfo?.streamList?.[0]?.media !== preUserInfo?.streamList?.[0]?.media ||
 			userInfo?.streamList?.[0]?.urlsHttpsFLV !== preUserInfo?.streamList?.[0]?.urlsHttpsFLV ||
 			muted !== preMuted ||
-			// 增加 cameraStatus 变化时的处理，cdn拉流时仅依赖flv的状态会出现不重新拉视频流的情况
+			// 增加 cameraStatus/micStatus 变化时的处理，cdn拉流时仅依赖flv的状态会出现不重新拉视频流的情况
 			cameraStatus !== preCameraStatus ||
+			micStatus !== preMicStatus ||
 			// 增加 media 变化时的处理，cdn拉流且有屏幕共享流模式下连麦用户改为非连麦时，需要重新初始化视频流，userInfo?.streamList?.[0]?.media这个参数的变化不生效
 			media !== preMedia
 		) {
