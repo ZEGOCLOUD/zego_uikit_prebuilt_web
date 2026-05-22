@@ -710,6 +710,14 @@ export class ZegoCloudRTCCore {
 					_streamList.push(this.remoteStreamMap[key])
 				}
 				_streamList.length > 0 && this.onRemoteMediaUpdateCallBack?.("UPDATE", _streamList)
+			} else if (this._config.scenario?.config?.enableVideoMixing) {
+				let _streamList = []
+				for (let key in this.remoteStreamMap) {
+					ZegoCloudRTCCore._zg.stopPlayingStream(key)
+					this.remoteStreamMap[key].media = undefined
+					_streamList.push(this.remoteStreamMap[key])
+				}
+				_streamList.length > 0 && this.onRemoteMediaUpdateCallBack?.("UPDATE", _streamList)
 			}
 		} catch (error) {
 			console.error(error)
@@ -1013,7 +1021,9 @@ export class ZegoCloudRTCCore {
 
 	set roomExtraInfo(value: { [index: string]: any }) {
 		if (this._currentPage === "Room") {
-			if (this._roomExtraInfo.live_status === "0" && value.live_status === "1") {
+			const oldRoomExtraInfo = this._roomExtraInfo;
+			if (oldRoomExtraInfo.live_status === "0" && value.live_status === "1") {
+				this._roomExtraInfo = value;
 				// 开始直播
 				this.setMixUser()
 				this._config.onLiveStart &&
@@ -1021,7 +1031,8 @@ export class ZegoCloudRTCCore {
 						userID: this._expressConfig.userID,
 						userName: this._expressConfig.userID,
 					})
-			} else if (this._roomExtraInfo.live_status === "1" && value.live_status === "0") {
+			} else if (oldRoomExtraInfo.live_status === "1" && value.live_status === "0") {
+				this._roomExtraInfo = value;
 				// 停止直播
 				this.clearMixUser()
 				this._zimManager?._inRoomInviteMg?.audienceCancelRequest()
@@ -1031,13 +1042,14 @@ export class ZegoCloudRTCCore {
 						userID: this._expressConfig.userID,
 						userName: this._expressConfig.userID,
 					})
-			} else if (this._roomExtraInfo.live_status === "1" && value.live_status === "1"
+			} else if (oldRoomExtraInfo.live_status === "1" && value.live_status === "1"
 				&& this._config.scenario?.config?.role === LiveRole.Audience) {
 				// 直播状态未变化，可能主播离开房间
 				// 解决主播离开重新进房，观众无法拉到流问题
 				return;
+			} else {
+				this._roomExtraInfo = value;
 			}
-			this._roomExtraInfo = value;
 			this.zum.setLiveStates(this._roomExtraInfo.live_status);
 			this.onRoomLiveStateUpdateCallBack?.(this._roomExtraInfo.live_status)
 			this.onRoomMixingStateUpdateCallBack?.(this._roomExtraInfo.isMixing)
@@ -1939,7 +1951,9 @@ export class ZegoCloudRTCCore {
 		this.status.loginRsp = false
 		setTimeout(() => {
 			try {
-				ZegoCloudRTCCore._zg.logoutRoom();
+				(ZegoCloudRTCCore._zg.logoutRoom() as any)?.catch?.((err: any) => {
+					console.warn("【ZEGOCLOUD】logoutRoom async rejection caught:", err);
+				});
 				const span = TracerConnect.createSpan(SpanEvent.LogoutRoom, {
 					room_id: this._expressConfig.roomID,
 					error: 0
@@ -2134,7 +2148,7 @@ export class ZegoCloudRTCCore {
 									size: 14,
 									transparency: 0,
 									color: 16777215,
-									border: true,
+									border: false,
 									borderColor: 8421505,
 								},
 								left: 20,
@@ -2142,6 +2156,11 @@ export class ZegoCloudRTCCore {
 							},
 							cornerRadius: 10,
 							renderMode: 1,
+						}
+						if (user.cameraStatus === "MUTE") {
+							config.imageInfo = {
+								url: "https://resource.zegocloud.com/office/sdk_static/mixing_video_bg.jpg",
+							}
 						}
 
 						inputList.push(config)
@@ -2198,7 +2217,7 @@ export class ZegoCloudRTCCore {
 							size: 14,
 							transparency: 0,
 							color: 16777215,
-							border: true,
+							border: false,
 							borderColor: 8421505,
 						},
 						left: 20,
@@ -2231,7 +2250,7 @@ export class ZegoCloudRTCCore {
 								size: 14,
 								transparency: 0,
 								color: 16777215,
-								border: true,
+								border: false,
 								borderColor: 8421505,
 							},
 							left: 20,
@@ -2278,7 +2297,7 @@ export class ZegoCloudRTCCore {
 								size: 14,
 								transparency: 0,
 								color: 16777215,
-								border: true,
+								border: false,
 								borderColor: 8421505,
 							},
 							left: 20,
@@ -2317,7 +2336,7 @@ export class ZegoCloudRTCCore {
 								size: 14,
 								transparency: 0,
 								color: 16777215,
-								border: true,
+								border: false,
 								borderColor: 8421505,
 							},
 							left: 20,
@@ -2364,7 +2383,7 @@ export class ZegoCloudRTCCore {
 									size: 14,
 									transparency: 0,
 									color: 16777215,
-									border: true,
+									border: false,
 									borderColor: 8421505,
 								},
 								left: 20,
