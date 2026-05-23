@@ -88,8 +88,6 @@ export class ZegoMixPlayer extends React.PureComponent<{
             this.videoEl = el;
           }}
           isMixing={true}
-        //   isPureAudio={this.props.isPureAudio}
-        //   isPureVideo={this.props.isPureVideo}
         ></ZegoVideo>
         {/* {this.props.userInfo.streamList?.[0]?.media && (
           <ZegoAudio muted={false} userInfo={this.state.audioUser}></ZegoAudio>

@@ -950,7 +950,7 @@ export class ZegoCloudRTCCore {
 		if (streamID.indexOf("_screensharing") > -1) {
 			// 停止屏幕共享，更新混流
 			this.localScreensharingStreamInfo = {} as any
-			this.startAndUpdateMixinTask()
+			this.throttleStartAndUpdateMixinTask()
 		}
 		return ZegoCloudRTCCore._zg.stopPublishingStream(streamID)
 	}
@@ -998,24 +998,24 @@ export class ZegoCloudRTCCore {
 
 	async enableVideoCaptureDevice(localStream: MediaStream | ZegoLocalStream, enable: boolean): Promise<boolean> {
 		this.localStreamInfo.cameraStatus = !enable ? "MUTE" : "OPEN"
-		this.startAndUpdateMixinTask()
+		this.throttleStartAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.enableVideoCaptureDevice(localStream, enable)
 	}
 
 	// 开关正在推流的流画面
 	async mutePublishStreamVideo(localStream: MediaStream | ZegoLocalStream, mute: boolean): Promise<boolean> {
 		this.localStreamInfo.cameraStatus = mute ? "MUTE" : "OPEN"
-		this.startAndUpdateMixinTask()
+		this.throttleStartAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.mutePublishStreamVideo(localStream, mute)
 	}
 	async mutePublishStreamAudio(localStream: MediaStream, enable: boolean): Promise<boolean> {
 		this.localStreamInfo.micStatus = enable ? "MUTE" : "OPEN"
-		this.startAndUpdateMixinTask()
+		this.throttleStartAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.mutePublishStreamAudio(localStream, enable)
 	}
 	async muteMicrophone(enable: boolean): Promise<boolean> {
 		this.localStreamInfo.micStatus = enable ? "MUTE" : "OPEN"
-		this.startAndUpdateMixinTask()
+		this.throttleStartAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.muteMicrophone(enable)
 	}
 
@@ -1077,7 +1077,7 @@ export class ZegoCloudRTCCore {
 				this._roomExtraInfo = setRoomExtraInfo
 				if (value.live_status === "1" && this.roomExtraInfo.isMixing === "1") {
 					// TODO:开播时 主播离开房间，自己变成主播，刷新混流
-					this.startAndUpdateMixinTask()
+					this.throttleStartAndUpdateMixinTask()
 				}
 			}
 		} else if (this._currentPage === "BrowserCheckPage" || this._currentPage === "RejoinRoom") {
@@ -1106,7 +1106,7 @@ export class ZegoCloudRTCCore {
 		if (res.errorCode === 0) {
 			this.roomExtraInfo = setRoomExtraInfo
 			if (status === "live") {
-				this.startAndUpdateMixinTask(this._config.scenario?.config?.role === LiveRole.Host)
+				this.throttleStartAndUpdateMixinTask(this._config.scenario?.config?.role === LiveRole.Host)
 			} else {
 				this.stopMixerTask(this._config.scenario?.config?.role === LiveRole.Host)
 			}
@@ -1336,7 +1336,7 @@ export class ZegoCloudRTCCore {
 				// 推流成功后开始混流
 				if (this.roomExtraInfo.live_status === "1") {
 					// 直播后再开始混流
-					this.startAndUpdateMixinTask()
+					this.throttleStartAndUpdateMixinTask()
 				} else {
 					// 直播未开始，先标记已经有推流了
 					this.hasPublishedStream = true

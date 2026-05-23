@@ -1377,13 +1377,15 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
 
   getAllUser(): ZegoCloudUserList {
+    const isAudience = this.props.core._config.scenario?.config?.role === LiveRole.Audience;
+    const shouldIncludeLocalStream = !isAudience || this.props.core.hasPublishedStream;
     return [
       {
         userID: this.props.core._expressConfig.userID,
         userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
         avatar: this.props.core._expressConfig.avatar,
-        streamList: [
+        streamList: shouldIncludeLocalStream ? [
           {
             media: this.state.localStream!,
             fromUser: {
@@ -1395,20 +1397,22 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             state: "PLAYING",
             streamID: this.localStreamID,
           },
-        ],
+        ] : [],
       },
       ...this.state.zegoCloudUserList,
     ];
   }
 
   getAllMemberList(): ZegoCloudUserList {
+    const isAudience = this.props.core._config.scenario?.config?.role === LiveRole.Audience;
+    const shouldIncludeLocalStream = !isAudience || this.props.core.hasPublishedStream;
     return [
       {
         userID: this.props.core._expressConfig.userID,
         userName: this.props.core._expressConfig.userName,
         pin: this.localUserPin,
         avatar: this.props.core._expressConfig.avatar,
-        streamList: [
+        streamList: shouldIncludeLocalStream ? [
           {
             media: this.state.localStream!,
             fromUser: {
@@ -1420,7 +1424,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             state: "PLAYING",
             streamID: this.localStreamID,
           },
-        ],
+        ] : [],
       },
       ...this.state.memberList,
     ];
