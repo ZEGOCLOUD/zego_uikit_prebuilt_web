@@ -653,7 +653,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						});
 						const res = await this.createStream();
 						if (!res) {
-							this.props.core.changeCohostToAudienceInLiveStream();
+							this.cohostToBeAudience();
 						}
 					},
 					onCancel: () => {
@@ -713,7 +713,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 				});
 				const res = await this.createStream();
 				if (!res) {
-					this.props.core.changeCohostToAudienceInLiveStream();
+					this.cohostToBeAudience();
 				}
 			} else if (respond === 1) {
 				ZegoToast({
@@ -861,7 +861,14 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			console.error(error);
 		}
 	}
-	async toggleMic() {
+	private isTogglingMic: boolean = false;
+
+	async toggleMic(): Promise<boolean> {
+		if (this.isTogglingMic) {
+			console.warn('[ZEGOCLOUD] toggleMic is currently in progress, skipping rapid click');
+			return Promise.resolve(false);
+		}
+
 		console.warn('[ZEGOCLOUD] toggleMic', this.state.localStream, this.state.localStream?.getVideoTracks(), this.state.micOpen);
 		const { formatMessage } = this.props.core.intl;
 		if (this.props.core.status.audioRefuse) {
@@ -876,64 +883,79 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			return Promise.resolve(false);
 		}
 
+		this.isTogglingMic = true;
+		const targetMicOpen = !this.state.micOpen; // 同步捕获目标状态，防止异步期间 state 被意外篡改
+
 		let result;
-		if (this.state.localStream && this.state.localStream.getAudioTracks().length > 0) {
-			result = await this.props.core.muteMicrophone(this.state.micOpen);
-			try {
-				await this.props.core.setStreamExtraInfo(
-					this.localStreamID as string,
-					JSON.stringify({
-						isCameraOn: this.state.cameraOpen,
-						isMicrophoneOn: !this.state.micOpen,
-						hasVideo: !this.props.core.status.videoRefuse,
-						hasAudio: !this.props.core.status.audioRefuse,
-					})
-				);
-			} catch (error: any) {
-				console.log('setStreamExtraInfo error', error);
+		try {
+			if (this.state.localStream && this.state.localStream.getAudioTracks().length > 0) {
+				result = await this.props.core.muteMicrophone(!targetMicOpen);
+				try {
+					await this.props.core.setStreamExtraInfo(
+						this.localStreamID as string,
+						JSON.stringify({
+							isCameraOn: this.state.cameraOpen,
+							isMicrophoneOn: targetMicOpen,
+							hasVideo: !this.props.core.status.videoRefuse,
+							hasAudio: !this.props.core.status.audioRefuse,
+						})
+					);
+				} catch (error: any) {
+					console.log('setStreamExtraInfo error', error);
+				}
+				if (result) {
+					this.setState(
+						{
+							micOpen: targetMicOpen,
+						},
+						() => {
+							this.computeByResize(this.state.cameraOpen || this.state.micOpen);
+							ZegoToast({
+								content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.state.micOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+							});
+							this.props.core._config.onMicrophoneStateUpdated && this.props.core._config.onMicrophoneStateUpdated(this.state.micOpen ? 'ON' : 'OFF');
+						}
+					);
+				}
+			} else {
+				// 授权权限后开启麦克风，创建流
+				// 存在纯视频流，需要停止重新创建
+				if (this.state.localStream) {
+					this.stopPublish();
+				}
+				if (targetMicOpen) {
+					const micDevices = await this.props.core.getMicrophones();
+					// 防止设备移出后，再次使用缓存设备ID
+					const mic = micDevices.filter(
+						(device) => device.deviceID === sessionStorage.getItem("selectMic")
+					);
+					this.state.selectMic = mic[0]?.deviceID || micDevices[0]?.deviceID || undefined;
+				}
+				this.setState({ micOpen: targetMicOpen }, async () => {
+					this.computeByResize(this.state.cameraOpen || this.state.micOpen);
+					result = await this.createStream();
+					ZegoToast({
+						content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.state.micOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+					});
+					this.props.core._config.onMicrophoneStateUpdated && this.props.core._config.onMicrophoneStateUpdated(this.state.micOpen ? 'ON' : 'OFF');
+				})
 			}
-			result &&
-				this.setState(
-					{
-						micOpen: !this.state.micOpen,
-					},
-					() => {
-						this.computeByResize(this.state.cameraOpen || this.state.micOpen);
-						ZegoToast({
-							content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.state.micOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
-						});
-						this.props.core._config.onMicrophoneStateUpdated && this.props.core._config.onMicrophoneStateUpdated(this.state.micOpen ? 'ON' : 'OFF');
-					}
-				);
-		} else {
-			// 授权权限后开启麦克风，创建流
-			// 存在纯视频流，需要停止重新创建
-			if (this.state.localStream) {
-				this.stopPublish();
-			}
-			if (!this.state.selectMic) {
-				const micDevices = await this.props.core.getMicrophones();
-				// 防止设备移出后，再次使用缓存设备ID
-				const mic = micDevices.filter(
-					(device) => device.deviceID === sessionStorage.getItem("selectMic")
-				);
-				this.state.selectMic = mic[0]?.deviceID || micDevices[0]?.deviceID || undefined;
-			}
-			this.setState({ micOpen: !this.state.micOpen }, async () => {
-				this.computeByResize(this.state.cameraOpen || this.state.micOpen);
-				result = await this.createStream();
-				ZegoToast({
-					content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.state.micOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
-				});
-				this.props.core._config.onMicrophoneStateUpdated && this.props.core._config.onMicrophoneStateUpdated(this.state.micOpen ? 'ON' : 'OFF');
-			})
+		} finally {
+			this.isTogglingMic = false;
 		}
 
 		return !!result;
 	}
 
+	private isTogglingCamera: boolean = false;
+
 	async toggleCamera(): Promise<boolean> {
-		console.warn('[ZEGOCLOUD] toggleCamera', this.state.localStream, this.state.localStream?.getVideoTracks(), this.state.cameraOpen)
+		if (this.isTogglingCamera) {
+			console.warn('[ZEGOCLOUD] toggleCamera is currently in progress, skipping rapid click');
+			return Promise.resolve(false);
+		}
+
+		console.warn('[ZEGOCLOUD] toggleCamera', this.state.localStream, this.state.localStream?.getVideoTracks()?.length, this.state.cameraOpen)
 		const { formatMessage } = this.props.core.intl;
 		if (this.props.core.status.videoRefuse) {
 			ZegoModelShow(
@@ -947,60 +969,68 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			return Promise.resolve(false);
 		}
 
+		this.isTogglingCamera = true;
+		const targetCameraOpen = !this.state.cameraOpen; // 同步捕获目标状态，防止异步期间 state 被意外篡改
+
 		let result;
-		if (this.state.localStream && this.state.localStream.getVideoTracks().length > 0) {
-			result = await this.props.core.mutePublishStreamVideo(this.state.localStream, this.state.cameraOpen);
-			// 关闭时需要停止采集摄像头
-			await this.props.core.enableVideoCaptureDevice(this.state.localStream, !this.state.cameraOpen);
-			try {
-				await this.props.core.setStreamExtraInfo(
-					this.localStreamID as string,
-					JSON.stringify({
-						isCameraOn: !this.state.cameraOpen,
-						isMicrophoneOn: this.state.micOpen,
-						hasVideo: !this.props.core.status.videoRefuse,
-						hasAudio: !this.props.core.status.audioRefuse,
-					})
-				);
-			} catch (error: any) {
-				console.log('setStreamExtraInfo error', error);
-			}
-			result &&
-				this.setState(
-					{
-						cameraOpen: !this.state.cameraOpen,
-					},
-					() => {
-						this.computeByResize(this.state.cameraOpen || this.state.micOpen);
-						ZegoToast({
-							content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.state.cameraOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
-						});
-						this.props.core._config.onCameraStateUpdated && this.props.core._config.onCameraStateUpdated(this.state.cameraOpen ? 'ON' : 'OFF');
-					}
-				);
-		} else {
-			// 授权权限后开启摄像头，创建流
-			// 存在纯音频流，需要停止重新创建
-			if (this.state.localStream) {
-				this.stopPublish();
-			}
-			if (!this.state.selectCamera) {
-				const cameraDevices = await this.props.core.getCameras();
-				const cam = cameraDevices.filter(
-					(device) => device.deviceID === sessionStorage.getItem("selectCamera")
-				);
-				this.state.selectCamera = (cam && cam[0]?.deviceID) ||
-					(cameraDevices && cameraDevices[0]?.deviceID) ||
-					undefined;
-			}
-			this.setState({ cameraOpen: !this.state.cameraOpen }, async () => {
-				this.computeByResize(this.state.cameraOpen || this.state.micOpen);
-				result = await this.createStream();
-				ZegoToast({
-					content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.state.cameraOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+		try {
+			if (this.state.localStream && this.state.localStream.getVideoTracks().length > 0) {
+				result = await this.props.core.mutePublishStreamVideo(this.state.localStream, !targetCameraOpen);
+				// 关闭时需要停止采集摄像头
+				await this.props.core.enableVideoCaptureDevice(this.state.localStream, targetCameraOpen);
+				try {
+					await this.props.core.setStreamExtraInfo(
+						this.localStreamID as string,
+						JSON.stringify({
+							isCameraOn: targetCameraOpen,
+							isMicrophoneOn: this.state.micOpen,
+							hasVideo: !this.props.core.status.videoRefuse,
+							hasAudio: !this.props.core.status.audioRefuse,
+						})
+					);
+				} catch (error: any) {
+					console.log('setStreamExtraInfo error', error);
+				}
+				if (result) {
+					this.setState(
+						{
+							cameraOpen: targetCameraOpen,
+						},
+						() => {
+							this.computeByResize(this.state.cameraOpen || this.state.micOpen);
+							ZegoToast({
+								content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.state.cameraOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+							});
+							this.props.core._config.onCameraStateUpdated && this.props.core._config.onCameraStateUpdated(this.state.cameraOpen ? 'ON' : 'OFF');
+						}
+					);
+				}
+			} else {
+				// 授权权限后开启摄像头，创建流
+				// 存在纯音频流，需要停止重新创建
+				if (this.state.localStream) {
+					this.stopPublish();
+				}
+				if (targetCameraOpen) {
+					const cameraDevices = await this.props.core.getCameras();
+					const cam = cameraDevices.filter(
+						(device) => device.deviceID === sessionStorage.getItem("selectCamera")
+					);
+					this.state.selectCamera = (cam && cam[0]?.deviceID) ||
+						(cameraDevices && cameraDevices[0]?.deviceID) ||
+						undefined;
+				}
+				this.setState({ cameraOpen: targetCameraOpen }, async () => {
+					this.computeByResize(this.state.cameraOpen || this.state.micOpen);
+					result = await this.createStream();
+					ZegoToast({
+						content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.state.cameraOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+					});
+					this.props.core._config.onCameraStateUpdated && this.props.core._config.onCameraStateUpdated(this.state.cameraOpen ? 'ON' : 'OFF');
 				});
-				this.props.core._config.onCameraStateUpdated && this.props.core._config.onCameraStateUpdated(this.state.cameraOpen ? 'ON' : 'OFF');
-			});
+			}
+		} finally {
+			this.isTogglingCamera = false;
 		}
 		return !!result;
 	}
@@ -1967,6 +1997,8 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.setState({
 			showLayoutSettings: false,
 			showSettings: false,
+			cameraOpen: false,
+			micOpen: false,
 		});
 		this.props.core.changeCohostToAudienceInLiveStream();
 	}

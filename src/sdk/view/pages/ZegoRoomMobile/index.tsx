@@ -687,7 +687,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
               });
               const res = await this.createStream();
               if (!res) {
-                this.props.core.changeCohostToAudienceInLiveStream();
+                this.cohostToBeAudience();
               }
             } else {
               this.props.core._zimManager?._inRoomInviteMg.audienceRefuseInvitation();
@@ -765,7 +765,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           });
           const res = await this.createStream();
           if (!res) {
-            this.props.core.changeCohostToAudienceInLiveStream();
+            this.cohostToBeAudience();
           }
         } else if (respond === 1) {
           ZegoToast({
@@ -1308,10 +1308,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   }
   private cohostToBeAudience() {
     this.stopPublish();
-    // this.setState({
-    //   showLayoutSettings: false,
-    //   showSettings: false,
-    // });
+    this.setState({
+      cameraOpen: false,
+      micOpen: false,
+    });
     this.props.core.changeCohostToAudienceInLiveStream();
   }
   async handleRequestCohost() {
