@@ -10,7 +10,7 @@
     "typescript",
     "typescriptreact"
   ],
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.formatOnType": false,
   "i18n-ally.localesPaths": ["lang"],
   "cSpell.words": ["devdependencies"],
