@@ -1666,7 +1666,7 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 						</div>
 					);
 				} else if (
-					hasVideo &&
+					(hasVideo || this.getScreenSharingUser.length > 0) &&
 					this.props.core._config.scenario.config.enableVideoMixing &&
 					this.props.core._config.scenario.config.role === LiveRole.Audience
 				) {

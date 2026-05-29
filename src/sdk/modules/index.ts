@@ -1179,6 +1179,7 @@ export class ZegoCloudRTCCore {
 				ZegoLogger.warn(moduleName, 'roomStreamUpdate', roomID, streamList, updateType, extendedData);
 				if (updateType === "ADD") {
 					this.mixStreamDomain = changeCDNUrlOrigin(streamList[0]?.urlsFLV?.replace(/[^/]+$/, "") || "")
+					ZegoLogger.warn(moduleName, `[DIAGNOSTIC] mixStreamDomain updated in roomStreamUpdate to: ${this.mixStreamDomain}`);
 					this.waitingHandlerStreams.add = [...this.waitingHandlerStreams.add, ...streamList]
 
 					this.waitingHandlerStreams.delete = this.waitingHandlerStreams.delete.filter((stream) => {
@@ -2515,6 +2516,7 @@ export class ZegoCloudRTCCore {
 		if (this._config.scenario.config.liveStreamingMode === LiveStreamingMode.LiveStreaming) {
 			stream.urlsHttpsFLV = `${this.mixStreamDomain}${stream.streamID}.flv`
 			stream.urlsHttpsHLS = `${this.mixStreamDomain}${stream.streamID}.m3u8`
+			ZegoLogger.warn(moduleName, `[DIAGNOSTIC] setMixUser: Generated FLV URL ${stream.urlsHttpsFLV} using mixStreamDomain=${this.mixStreamDomain}`);
 		} else {
 			try {
 				const media = await this.zum.startPullStream(this.roomExtraInfo.host, stream.streamID)
@@ -2534,6 +2536,7 @@ export class ZegoCloudRTCCore {
 			streamList: [],
 		}
 		stream && this.mixUser.streamList.push(stream)
+		this.subscribeUserListCallBack && this.subscribeUserListCallBack([...this.zum.remoteUserList])
 	}
 
 	clearMixUser() {
@@ -2542,6 +2545,7 @@ export class ZegoCloudRTCCore {
 			ZegoCloudRTCCore._zg.stopPlayingStream(this.mixUser.streamList[0].streamID)
 		}
 		this.mixUser.streamList = []
+		this.subscribeUserListCallBack && this.subscribeUserListCallBack([...this.zum.remoteUserList])
 	}
 	// 更新通话中邀请用户配置
 	updateCallingInvitationListConfig(config: CallingInvitationListConfig) {
