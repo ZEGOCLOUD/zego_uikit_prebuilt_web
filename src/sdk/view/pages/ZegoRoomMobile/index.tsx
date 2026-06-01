@@ -1956,10 +1956,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     if (
       this.props.core._config.scenario?.mode === ScenarioModel.LiveStreaming
     ) {
-      const hasVideo = [
+      const allStreamList = [
         ...this.getAllUser(),
         ...this.state.screenSharingUserList,
-      ].some((u) => {
+      ];
+      const hasVideo = allStreamList.some((u) => {
         if (u.streamList) {
           return u.streamList.some((s) => {
             return s.cameraStatus === "OPEN" || s.micStatus === "OPEN";
@@ -1978,7 +1979,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
             </div>
           );
         } else if (
-          (hasVideo || this.state.screenSharingUserList.length > 0) &&
+          hasVideo &&
           this.props.core._config.scenario.config.enableVideoMixing &&
           this.props.core._config.scenario.config.role === LiveRole.Audience
         ) {

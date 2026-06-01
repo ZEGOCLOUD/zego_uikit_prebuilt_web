@@ -1925,6 +1925,7 @@ export class ZegoCloudRTCCore {
 		}
 		this.remoteStreamMap = {}
 		this.clearMixUser()
+		this._lastMixStreamConfigStr = "";
 
 		this.waitingHandlerStreams = { add: [], delete: [] }
 		if (this.isHost()) {
@@ -2083,6 +2084,10 @@ export class ZegoCloudRTCCore {
 
 	async stopMixerTask(isHost = false): Promise<ZegoServerResponse | undefined> {
 		const taskID = `${this._expressConfig.roomID}__task`
+		
+		// 清空缓存
+		this._lastMixStreamConfigStr = "";
+
 		if ((this.isHost() || isHost) && this.roomExtraInfo.isMixing === "1") {
 			const setRoomExtraInfo = {
 				...this.roomExtraInfo,
@@ -2095,9 +2100,6 @@ export class ZegoCloudRTCCore {
 			)
 			this._roomExtraInfo = setRoomExtraInfo
 			const res = await ZegoCloudRTCCore._zg.stopMixerTask(taskID)
-			
-			// 停止混流后，清空上次配置缓存
-			this._lastMixStreamConfigStr = "";
 			
 			ZegoLogger.warn(moduleName, "stopMixerTask", "stopMixerTask result:", res)
 			return res
