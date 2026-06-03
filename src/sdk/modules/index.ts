@@ -768,6 +768,9 @@ export class ZegoCloudRTCCore {
 		if (checkCamera || String(this._zimManager?.callInfo.type) !== '0') {
 			try {
 				await navigator.mediaDevices.getUserMedia({ video: true }).then(async (stream) => {
+					// 用完流必须销毁，否则硬件会被锁死在默认的 640x480 分辨率！
+					stream.getTracks().forEach(track => track.stop());
+
 					const cameras = await this.getCameras();
 					ZegoLogger.warn(moduleName, 'deviceCheck camera', cameras);
 					if (cameras.length < 1) {
@@ -793,6 +796,7 @@ export class ZegoCloudRTCCore {
 		// if (this.props.core._config.turnOnMicrophoneWhenJoining) {
 		try {
 			await navigator.mediaDevices.getUserMedia({ audio: true }).then(async (stream) => {
+				stream.getTracks().forEach(track => track.stop()); // 用完流必须销毁
 				const mics = await this.getMicrophones();
 				if (mics.length < 1) {
 					this.status.audioRefuse = true
@@ -1864,6 +1868,7 @@ export class ZegoCloudRTCCore {
 		})
 		this.subscribeUserListCallBack && this.subscribeUserListCallBack([...this.zum.remoteUserList])
 		this.subscribeScreenStreamCallBack && this.subscribeScreenStreamCallBack([...this.zum.remoteScreenStreamList])
+		this.throttleStartAndUpdateMixinTask()
 	}
 	// 往UI层抛出需要展示提示的错误
 	private coreErrorCallback!: (errCode: number, errMsg: string) => void
