@@ -56,7 +56,8 @@ import { TracerConnect } from "./tools/ZegoTracer"
 import { SpanEvent } from "../model/tracer"
 import { ZegoLogger } from "./tools/ZegoLogger";
 
-const moduleName = "ZegoCloudRTCCore"
+const zgLogger = ZegoLogger.getLogger('ZegoCloudRTCCore');
+
 // declare const SDK_VERSION: string;
 export class ZegoCloudRTCCore {
 	static _instance: ZegoCloudRTCCore
@@ -87,7 +88,7 @@ export class ZegoCloudRTCCore {
 	isScreenPortrait: boolean = true;
 	static getInstance(kitToken: string, createConfig?: ZegoUIKitCreateConfig, cloudProxyConfig?: { proxyList: { hostName: string, port?: number }[] }): ZegoCloudRTCCore {
 		const config = getConfig(kitToken);
-		ZegoLogger.warn(moduleName, 'createConfig', createConfig?.BackgroundProcessConfig, config);
+		zgLogger.warn(SpanEvent.CoreEvent, 'createConfig', createConfig?.BackgroundProcessConfig, config);
 		if (!ZegoCloudRTCCore._instance && config) {
 			// 开启云代理
 			createConfig?.cloudProxyConfig && (ZegoExpressEngine.setCloudProxyConfig(createConfig.cloudProxyConfig.proxyList, config.token, true));
@@ -382,7 +383,7 @@ export class ZegoCloudRTCCore {
 		this.originConfig = { ...config }
 		if (config.scenario && config.scenario.mode === ScenarioModel.LiveStreaming) {
 			if (config.showNonVideoUser === true) {
-				ZegoLogger.error(moduleName, "have be false scenario.mode is LiveStreaming!!")
+				zgLogger.error(SpanEvent.CoreEvent, "have be false scenario.mode is LiveStreaming!!")
 				return false
 			}
 			config.videoCodec = "H264"
@@ -396,7 +397,7 @@ export class ZegoCloudRTCCore {
 					config.showMyCameraToggleButton === false &&
 					config.showAudioVideoSettingsButton === false
 				) {
-					ZegoLogger.error(moduleName, "Host could turn on at least one of the camera and the microphone!!")
+					zgLogger.error(SpanEvent.CoreEvent, "Host could turn on at least one of the camera and the microphone!!")
 					return false
 				}
 			} else if (config.scenario.config && config.scenario.config.role === LiveRole.Audience) {
@@ -410,7 +411,7 @@ export class ZegoCloudRTCCore {
 					config.useFrontFacingCamera === true ||
 					(!!config.layout && config.layout !== "Grid")
 				) {
-					ZegoLogger.error(moduleName, "Audience cannot configure camera and microphone related params")
+					zgLogger.error(SpanEvent.CoreEvent, "Audience cannot configure camera and microphone related params")
 					return false
 				}
 			}
@@ -515,24 +516,23 @@ export class ZegoCloudRTCCore {
 			if (config.screenSharingConfig.resolution === ScreenSharingResolution.Custom) {
 				const { width, height, frameRate, maxBitRate } = config.screenSharingConfig
 				if (!width || !height || !frameRate || !maxBitRate) {
-					ZegoLogger.error(moduleName,
-						"Please configure 'width', 'height', 'frameRate' and 'maxBitRate' for custom screen sharing resolution"
+					zgLogger.error(SpanEvent.CoreEvent, "Please configure 'width', 'height', 'frameRate' and 'maxBitRate' for custom screen sharing resolution"
 					)
 					return false
 				}
 				if (height < 360 && width < 640) {
 					config.screenSharingConfig.resolution = ScreenSharingResolution._360P
 					// width height too small, it will cause screen sharing failed
-					ZegoLogger.warn(moduleName, "The minimum value of 'width' and 'height' are 640 and 360")
+					zgLogger.warn(SpanEvent.CoreEvent, "The minimum value of 'width' and 'height' are 640 and 360")
 				}
 				if (width > 3840 && height > 2160) {
 					config.screenSharingConfig.resolution = ScreenSharingResolution._4K
 					// width height too large, it will cause screen sharing failed
-					ZegoLogger.warn(moduleName, "The maximum value of 'width' and 'height' are 3840 and 2160")
+					zgLogger.warn(SpanEvent.CoreEvent, "The maximum value of 'width' and 'height' are 3840 and 2160")
 				}
 				if (maxBitRate > 10000) {
 					config.screenSharingConfig.maxBitRate = 10000
-					ZegoLogger.warn(moduleName, "The maximum value of 'maxBitRate' is 10000")
+					zgLogger.warn(SpanEvent.CoreEvent, "The maximum value of 'maxBitRate' is 10000")
 				}
 			}
 		}
@@ -652,7 +652,7 @@ export class ZegoCloudRTCCore {
 				this.remoteStreamMap[streamInfo.streamID].urlsHttpsHLS = ""
 				_streamList.push(this.remoteStreamMap[streamInfo.streamID])
 			} catch (error) {
-				ZegoLogger.error(moduleName, "change to Cohost:", error)
+				zgLogger.error(SpanEvent.CoreEvent, "change to Cohost:", error)
 			}
 		}
 		this.onRemoteMediaUpdateCallBack &&
@@ -697,6 +697,7 @@ export class ZegoCloudRTCCore {
 					// 重新拉流
 					if (this.isCDNLive) {
 						if (!this.mixStreamDomain) {
+							zgLogger.error(SpanEvent.CoreEvent, "notSupportCDNLive", "mixStreamDomain is empty");
 							this.coreErrorCallback(CoreError.notSupportCDNLive, "urlsFLV is empty")
 						}
 						// CDN拉流
@@ -725,7 +726,7 @@ export class ZegoCloudRTCCore {
 				_streamList.length > 0 && this.onRemoteMediaUpdateCallBack?.("UPDATE", _streamList)
 			}
 		} catch (error) {
-			ZegoLogger.error(moduleName, 'changeCohostToAudienceInLiveStream', error)
+			zgLogger.error(SpanEvent.CoreEvent, 'changeCohostToAudienceInLiveStream', error)
 		}
 	}
 	// 兼容处理LiveStreamingMode
@@ -736,7 +737,7 @@ export class ZegoCloudRTCCore {
 		return LiveStreamingMode.RealTimeLive
 	}
 	async checkWebRTC(): Promise<boolean> {
-		ZegoLogger.warn(moduleName, 'checkWebRTC start')
+		zgLogger.warn(SpanEvent.CoreEvent, 'checkWebRTC start')
 		try {
 			if (!this.isCDNLive) {
 				const webRTC = await ZegoCloudRTCCore._zg.checkSystemRequirements("webRTC");
@@ -753,7 +754,7 @@ export class ZegoCloudRTCCore {
 			}
 			return true
 		} catch (error) {
-			ZegoLogger.warn(moduleName, 'checkWebRTC error', error)
+			zgLogger.warn(SpanEvent.CoreEvent, 'checkWebRTC error', error)
 			return false
 		}
 
@@ -762,7 +763,7 @@ export class ZegoCloudRTCCore {
 	// 检查摄像头麦克风权限
 	async deviceCheck(checkCamera = false) {
 		// 检查摄像头
-		ZegoLogger.warn(moduleName, 'deviceCheck', this._config.scenario?.mode, this._zimManager?.callInfo.type, this.status.videoRefuse, this.status.audioRefuse);
+		zgLogger.warn(SpanEvent.CoreEvent, 'deviceCheck', this._config.scenario?.mode, this._zimManager?.callInfo.type, this.status.videoRefuse, this.status.audioRefuse);
 		// if (this.props.core._config.turnOnCameraWhenJoining) {
 		// 语音通话不询问摄像头权限
 		if (checkCamera || String(this._zimManager?.callInfo.type) !== '0') {
@@ -772,7 +773,7 @@ export class ZegoCloudRTCCore {
 					stream.getTracks().forEach(track => track.stop());
 
 					const cameras = await this.getCameras();
-					ZegoLogger.warn(moduleName, 'deviceCheck camera', cameras);
+					zgLogger.warn(SpanEvent.CoreEvent, 'deviceCheck camera', cameras);
 					if (cameras.length < 1) {
 						this.status.videoRefuse = true
 					} else {
@@ -780,7 +781,7 @@ export class ZegoCloudRTCCore {
 					}
 				})
 					.catch((error) => {
-						ZegoLogger.warn(moduleName, 'getUserMedia video error', error);
+						zgLogger.warn(SpanEvent.CoreEvent, 'getUserMedia video error', error);
 						this.status.videoRefuse = true;
 					});
 			} catch (error) {
@@ -805,7 +806,7 @@ export class ZegoCloudRTCCore {
 				}
 			})
 				.catch((error) => {
-					ZegoLogger.warn(moduleName, 'getUserMedia audio error', error);
+					zgLogger.warn(SpanEvent.CoreEvent, 'getUserMedia audio error', error);
 					this.status.audioRefuse = true;
 				});
 		} catch (error) {
@@ -866,11 +867,12 @@ export class ZegoCloudRTCCore {
 	}
 
 	async createZegoStream(source?: ZegoStreamOptions, preview?: boolean): Promise<ZegoLocalStream> {
+		zgLogger.info(SpanEvent.CoreCreateStream, { source, preview });
 		const localStream = await ZegoCloudRTCCore._zg.createZegoStream(source);
 
 		// ai降噪配置
 		if (ZegoCloudRTCCore._instance.AiDenoiseConfig) {
-			ZegoLogger.warn(moduleName, 'open aiDenoise', ZegoCloudRTCCore._instance.AiDenoiseConfig)
+			zgLogger.warn(SpanEvent.CoreEvent, 'open aiDenoise', ZegoCloudRTCCore._instance.AiDenoiseConfig)
 			await ZegoCloudRTCCore._zg.setAiDenoiseMode(localStream, ZegoCloudRTCCore._instance.AiDenoiseConfig.mode);
 			await ZegoCloudRTCCore._zg.enableAiDenoise(localStream, true);
 		}
@@ -881,15 +883,15 @@ export class ZegoCloudRTCCore {
 					ZegoCloudRTCCore._zg.initBackgroundModule &&
 						await ZegoCloudRTCCore._zg.initBackgroundModule(0, `./assets`)
 							.then(() => {
-								ZegoLogger.log(moduleName, "初始化背景处理模块成功");
+								zgLogger.log(SpanEvent.CoreEvent, "初始化背景处理模块成功");
 								ZegoCloudRTCCore._instance.BackgroundProcessConfig!.initialized = true;
 							});
 				} catch (err) {
 					// 控制台打印初始化背景处理模块错误
-					ZegoLogger.error(moduleName, "初始化背景模块失败", err);
+					zgLogger.error(SpanEvent.CoreEvent, "初始化背景模块失败", err);
 				}
 			}
-			ZegoLogger.warn(moduleName, 'open backgroundProcess', localStream, ZegoCloudRTCCore._instance.BackgroundProcessConfig)
+			zgLogger.warn(SpanEvent.CoreEvent, 'open backgroundProcess', localStream, ZegoCloudRTCCore._instance.BackgroundProcessConfig)
 			if (ZegoCloudRTCCore._instance.BackgroundProcessConfig.blurDegree) {
 				ZegoCloudRTCCore._zg.setBackgroundBlurOptions(localStream, {
 					blurDegree: ZegoCloudRTCCore._instance.BackgroundProcessConfig.blurDegree  // 虚化等级 1、2	、3，等级越大，虚化程度越高
@@ -982,17 +984,20 @@ export class ZegoCloudRTCCore {
 	}
 
 	useCameraDevice(media: ZegoLocalStream | MediaStream, deviceID: string): Promise<ZegoServerResponse> {
+		zgLogger.info(SpanEvent.CoreUseCameraDevice, { deviceID });
 		this.status.cameraDeviceID = deviceID;
 		this.eventEmitter.emit("cameraDeviceChanged", deviceID);
 		return ZegoCloudRTCCore._zg.useVideoDevice(media, deviceID);
 	}
 
 	useMicrophoneDevice(media: MediaStream | ZegoLocalStream, deviceID: string): Promise<ZegoServerResponse> {
+		zgLogger.info(SpanEvent.CoreUseMicDevice, { deviceID });
 		this.status.micDeviceID = deviceID;
 		return ZegoCloudRTCCore._zg.useAudioDevice(media, deviceID)
 	}
 
 	async useSpeakerDevice(media: HTMLMediaElement, deviceID: string): Promise<ZegoServerResponse> {
+		zgLogger.info(SpanEvent.CoreUseSpeakerDevice, { deviceID });
 		if (!media.srcObject) {
 			return Promise.resolve({ errorCode: -1 })
 		}
@@ -1006,6 +1011,7 @@ export class ZegoCloudRTCCore {
 	}
 
 	async enableVideoCaptureDevice(localStream: MediaStream | ZegoLocalStream, enable: boolean): Promise<boolean> {
+		zgLogger.info(SpanEvent.CoreEnableVideo, { enable });
 		this.localStreamInfo.cameraStatus = !enable ? "MUTE" : "OPEN"
 		this.startAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.enableVideoCaptureDevice(localStream, enable)
@@ -1013,16 +1019,19 @@ export class ZegoCloudRTCCore {
 
 	// 开关正在推流的流画面
 	async mutePublishStreamVideo(localStream: MediaStream | ZegoLocalStream, mute: boolean): Promise<boolean> {
+		zgLogger.info(SpanEvent.CoreMuteVideo, { mute });
 		this.localStreamInfo.cameraStatus = mute ? "MUTE" : "OPEN"
 		this.startAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.mutePublishStreamVideo(localStream, mute)
 	}
 	async mutePublishStreamAudio(localStream: MediaStream, enable: boolean): Promise<boolean> {
+		zgLogger.info(SpanEvent.CoreMuteAudio, { enable });
 		this.localStreamInfo.micStatus = enable ? "MUTE" : "OPEN"
 		this.startAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.mutePublishStreamAudio(localStream, enable)
 	}
 	async muteMicrophone(enable: boolean): Promise<boolean> {
+		zgLogger.info(SpanEvent.CoreMuteMic, { enable });
 		this.localStreamInfo.micStatus = enable ? "MUTE" : "OPEN"
 		this.startAndUpdateMixinTask()
 		return ZegoCloudRTCCore._zg.muteMicrophone(enable)
@@ -1180,10 +1189,10 @@ export class ZegoCloudRTCCore {
 				streamList: ZegoStreamList[],
 				extendedData?: string
 			) => {
-				ZegoLogger.warn(moduleName, 'roomStreamUpdate', roomID, streamList, updateType, extendedData);
+				zgLogger.warn(SpanEvent.CoreEvent, 'roomStreamUpdate', roomID, streamList, updateType, extendedData);
 				if (updateType === "ADD") {
 					this.mixStreamDomain = changeCDNUrlOrigin(streamList[0]?.urlsFLV?.replace(/[^/]+$/, "") || "")
-					ZegoLogger.warn(moduleName, `[DIAGNOSTIC] mixStreamDomain updated in roomStreamUpdate to: ${this.mixStreamDomain}`);
+					zgLogger.warn(SpanEvent.CoreEvent, `[DIAGNOSTIC] mixStreamDomain updated in roomStreamUpdate to: ${this.mixStreamDomain}`);
 					this.waitingHandlerStreams.add = [...this.waitingHandlerStreams.add, ...streamList]
 
 					this.waitingHandlerStreams.delete = this.waitingHandlerStreams.delete.filter((stream) => {
@@ -1226,20 +1235,18 @@ export class ZegoCloudRTCCore {
 
 					this.waitingHandlerStreams.delete = [...this.waitingHandlerStreams.delete, ...streamList]
 				}
-				// ZegoLogger.error(moduleName, "roomStreamUpdate", this.waitingHandlerStreams);
 			}
 		)
 		ZegoCloudRTCCore._zg.on("roomExtraInfoUpdate", (roomID: string, roomExtraInfoList: ZegoRoomExtraInfo[]) => {
-			ZegoLogger.warn(moduleName, "roomExtraInfoUpdate", roomID, roomExtraInfoList, JSON.stringify(this.roomExtraInfo));
+			zgLogger.info(SpanEvent.CoreEvent, "roomExtraInfoUpdate", { roomID, roomExtraInfoList });
 			roomExtraInfoList.forEach((info) => {
 				if (info.key === this.extraInfoKey) {
 					this.roomExtraInfo = JSON.parse(info.value);
-					ZegoLogger.warn(moduleName, "roomExtraInfoUpdate", this.roomExtraInfo);
 				}
 			})
 		})
 		ZegoCloudRTCCore._zg.on("remoteCameraStatusUpdate", (streamID: string, status: "OPEN" | "MUTE") => {
-			ZegoLogger.warn(moduleName, "remoteCameraStatusUpdate", streamID, status)
+			zgLogger.warn(SpanEvent.CoreEvent, "remoteCameraStatusUpdate", streamID, status)
 			// 小程序的回调会默认打开，不用这个回调去判断摄像头开关状态
 			// if (this.remoteStreamMap[streamID]) {
 			// 	this.remoteStreamMap[streamID].cameraStatus = status
@@ -1248,7 +1255,7 @@ export class ZegoCloudRTCCore {
 			// }
 		})
 		ZegoCloudRTCCore._zg.on("remoteMicStatusUpdate", (streamID: string, status: "OPEN" | "MUTE") => {
-			ZegoLogger.warn(moduleName, "remoteMicStatusUpdate", streamID, status)
+			zgLogger.warn(SpanEvent.CoreEvent, "remoteMicStatusUpdate", streamID, status)
 			// 小程序的回调会默认打开，不用这个回调去判断麦克风开关状态
 			// if (this.remoteStreamMap[streamID]) {
 			// 	this.remoteStreamMap[streamID].micStatus = status
@@ -1257,13 +1264,14 @@ export class ZegoCloudRTCCore {
 			// }
 		})
 		ZegoCloudRTCCore._zg.on("playerStateUpdate", (streamInfo: ZegoPlayerState) => {
-			ZegoLogger.warn(moduleName, 'playerStateUpdate', streamInfo, this.remoteStreamMap)
+			zgLogger.warn(SpanEvent.CoreEvent, 'playerStateUpdate', streamInfo)
 			if (this.remoteStreamMap[streamInfo.streamID]) {
 				this.remoteStreamMap[streamInfo.streamID].state = streamInfo.state
 				this.onRemoteMediaUpdateCallBack &&
 					this.onRemoteMediaUpdateCallBack("UPDATE", [this.remoteStreamMap[streamInfo.streamID]])
 			}
 			if (streamInfo.errorCode === 1104038) {
+				zgLogger.error(SpanEvent.CoreEvent, "notSupportStandardLive", streamInfo.extendedData);
 				this.coreErrorCallback(CoreError.notSupportStandardLive, streamInfo.extendedData)
 			}
 			if (streamInfo.errorCode === 1104039 && streamInfo.streamID.includes("__mix")) {
@@ -1277,7 +1285,7 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.on(
 			"roomUserUpdate",
 			(roomID: string, updateType: "DELETE" | "ADD", userList: ZegoUser[]) => {
-				ZegoLogger.warn(moduleName, "roomUserUpdate", updateType, userList)
+				zgLogger.warn(SpanEvent.CoreEvent, "roomUserUpdate", updateType, userList)
 				if (updateType === "DELETE") {
 					this._zimManager?._inRoomInviteMg.clearInviteWhenUserLeave(userList)
 				}
@@ -1301,14 +1309,14 @@ export class ZegoCloudRTCCore {
 		ZegoCloudRTCCore._zg.on("IMRecvCustomCommand", (roomID: string, fromUser: ZegoUser, command: string) => {
 			try {
 				const commandData = JSON.parse(command)
-				ZegoLogger.warn(moduleName, "IMRecvCustomCommand", commandData)
+				zgLogger.warn(SpanEvent.CoreEvent, "IMRecvCustomCommand", commandData)
 				if (
 					Object.keys(commandData).includes("zego_remove_user") &&
 					commandData["zego_remove_user"].includes(this._expressConfig.userID)
 				) {
 					// 被移除房间的通知
 					// 通知UI层leaveRoom
-					ZegoLogger.warn(moduleName, 'IMRecvCustomCommand zego_remove_user', fromUser);
+					zgLogger.warn(SpanEvent.CoreEvent, 'IMRecvCustomCommand zego_remove_user', fromUser);
 					this.onKickedOutRoomCallback && this.onKickedOutRoomCallback()
 					return
 				}
@@ -1378,10 +1386,10 @@ export class ZegoCloudRTCCore {
 			this.onScreenSharingEndedCallBack && this.onScreenSharingEndedCallBack(stream)
 		})
 		ZegoCloudRTCCore._zg.on("publisherVideoEncoderChanged", (fromCodecID: ZegoVideoCodecID, toCodecID: ZegoVideoCodecID, streamID: string) => {
-			ZegoLogger.warn(moduleName, 'publisherVideoEncoderChanged', fromCodecID, toCodecID, streamID)
+			zgLogger.warn(SpanEvent.CoreEvent, 'publisherVideoEncoderChanged', fromCodecID, toCodecID, streamID)
 		})
 		ZegoCloudRTCCore._zg.on("videoDeviceStateChanged", async (updateType: 'DELETE' | 'ADD', deviceInfo: { deviceName: string; deviceID: string; }) => {
-			ZegoLogger.warn(moduleName, 'videoDeviceStateChanged', updateType, deviceInfo, this.status.cameraDeviceID);
+			zgLogger.warn(SpanEvent.CoreEvent, 'videoDeviceStateChanged', updateType, deviceInfo, this.status.cameraDeviceID);
 			if (updateType === 'DELETE') {
 				const { cameraDeviceID } = this.status;
 				if (cameraDeviceID === deviceInfo.deviceID) {
@@ -1394,7 +1402,7 @@ export class ZegoCloudRTCCore {
 		if (this.zegoSuperBoard) {
 			// 监听远端新增白板
 			this.zegoSuperBoard.on("remoteSuperBoardSubViewAdded", async (uniqueID: string) => {
-				ZegoLogger.warn(moduleName, 'remoteSuperBoardSubViewAdded', uniqueID, this._roomExtraInfo.live_status);
+				zgLogger.warn(SpanEvent.CoreEvent, 'remoteSuperBoardSubViewAdded', uniqueID, this._roomExtraInfo.live_status);
 				await this.zegoSuperBoard.querySuperBoardSubViewList()
 				this.zegoSuperBoard.setToolType(1)
 				this.zegoSuperBoard.setBrushColor("#333333")
@@ -1420,24 +1428,24 @@ export class ZegoCloudRTCCore {
 			"streamExtraInfoUpdate",
 			(roomID: string, streamList: { streamID: string; user: ZegoUser; extraInfo: string }[]) => {
 				if (roomID === this._expressConfig.roomID) {
-					ZegoLogger.warn(moduleName, "streamExtraInfoUpdate", streamList)
+					zgLogger.warn(SpanEvent.CoreEvent, "streamExtraInfoUpdate", streamList)
 					this.streamExtraInfoUpdateCallBack(streamList)
 				}
 			}
 		)
 
 		ZegoCloudRTCCore._zg.on("deviceError", async (errorCode: number, deviceName: string) => {
-			ZegoLogger.warn(moduleName, 'deviceError', errorCode, deviceName, this.localStreamInfo, this._zimManager?.callInfo.type)
+			zgLogger.warn(SpanEvent.CoreEvent, 'deviceError', errorCode, deviceName, this.localStreamInfo, this._zimManager?.callInfo.type)
 			if (errorCode === 1006006) {
 				// 非默认-蓝牙耳机断开后，重新选择麦克风设备
 				const micDevices = await this.getMicrophones();
-				ZegoLogger.warn(moduleName, 'micDevices', micDevices)
+				zgLogger.warn(SpanEvent.CoreEvent, 'micDevices', micDevices)
 				ZegoCloudRTCCore._zg.useAudioDevice(this.localStream!, micDevices[0]?.deviceID)
 			}
 		})
 
 		ZegoCloudRTCCore._zg.on("tokenWillExpire", async () => {
-			ZegoLogger.warn(moduleName, 'tokenWillExpire');
+			zgLogger.warn(SpanEvent.CoreEvent, 'tokenWillExpire');
 			this._config.onTokenWillExpire && this._config.onTokenWillExpire();
 		})
 		// }
@@ -1482,13 +1490,13 @@ export class ZegoCloudRTCCore {
 						maxMemberCount: ZegoCloudRTCCore._instance._config.maxUsers,
 					}
 				)
-				const span = TracerConnect.createSpan(SpanEvent.LoginRoom, {
+				TracerConnect.updateRoomID(ZegoCloudRTCCore._instance._expressConfig.roomID)
+				zgLogger.info(SpanEvent.LoginRoom, {
 					room_id: ZegoCloudRTCCore._instance._expressConfig.roomID,
 					error: 0,
 					msg: '',
 					start_time: Date.now(),
 				})
-				span.end();
 				if (
 					this._config.scenario?.mode === ScenarioModel.LiveStreaming &&
 					this._config.scenario.config?.role === LiveRole.Host &&
@@ -1540,14 +1548,14 @@ export class ZegoCloudRTCCore {
 				// @ts-ignore 日志上报
 				ZegoCloudRTCCore._zg.logger.info("zu.jr " + JSON.stringify(this.originConfig))
 			} catch (error) {
-				ZegoLogger.error(moduleName, 'login error', error)
+				zgLogger.error(SpanEvent.CoreEvent, 'login error', error)
 			}
 		})
 		this._zimManager?.enterRoom();
 		try {
 			ZegoCloudRTCCore._zg.setSoundLevelDelegate(true, 300)
 		} catch (error) {
-			ZegoLogger.error(moduleName, 'setSoundLevelDelegate error', error)
+			zgLogger.error(SpanEvent.CoreEvent, 'setSoundLevelDelegate error', error)
 		}
 		this.streamUpdateTimer(this.waitingHandlerStreams)
 		return resp
@@ -1558,7 +1566,7 @@ export class ZegoCloudRTCCore {
 		delete: ZegoStreamList[]
 	}): Promise<void> {
 		if (!this.status.loginRsp) {
-			ZegoLogger.warn(moduleName, "logoutRoom,stop streamUpdateTimer")
+			zgLogger.warn(SpanEvent.CoreEvent, "logoutRoom,stop streamUpdateTimer")
 			return
 		}
 		if (this._currentPage === "Room") {
@@ -1577,10 +1585,9 @@ export class ZegoCloudRTCCore {
 						extraInfo = JSON.parse(streamInfo.extraInfo)
 					} catch (err) { }
 					try {
-						ZegoLogger.log(moduleName, 'isCDNLive', this.isCDNLive);
 						if (this.isCDNLive) {
-							ZegoLogger.log(moduleName, 'streaminfo', streamInfo);
 							if (!streamInfo.urlsFLV) {
+								zgLogger.error(SpanEvent.CoreEvent, "notSupportCDNLive", "streamInfo.urlsFLV is empty");
 								this.coreErrorCallback(CoreError.notSupportCDNLive, "urlsFLV is empty")
 							}
 							// CDN拉流
@@ -1596,6 +1603,12 @@ export class ZegoCloudRTCCore {
 								hasAudio: extraInfo.hasAudio,
 								hasVideo: extraInfo.hasVideo,
 							}
+							zgLogger.info(SpanEvent.PullStream, { 
+								streamID: streamInfo.streamID, 
+								type: 'cdn', 
+								urlsHttpsFLV: this.remoteStreamMap[streamInfo.streamID]?.urlsHttpsFLV, 
+								urlsHttpsHLS: this.remoteStreamMap[streamInfo.streamID]?.urlsHttpsHLS 
+							});
 						} else {
 							const stream = await this.zum.startPullStream(streamInfo.user.userID, streamInfo.streamID)
 							this.remoteStreamMap[streamInfo.streamID] = {
@@ -1606,14 +1619,16 @@ export class ZegoCloudRTCCore {
 								state: "PLAYING",
 								streamID: streamInfo.streamID,
 							}
+							zgLogger.info(SpanEvent.PullStream, { streamID: streamInfo.streamID, type: 'rtc' });
 							this._config.onStreamUpdate && this._config.onStreamUpdate(streamInfo.streamID);
 						}
 
 						_streamList.push(this.remoteStreamMap[streamInfo.streamID])
 					} catch (error: any) {
-						ZegoLogger.warn(moduleName, "startPlayingStream error:", error)
+						zgLogger.warn(SpanEvent.CoreEvent, "startPlayingStream error:", error)
 						// 未开通L3服务
 						if (error?.errorCode === 110438) {
+							zgLogger.error(SpanEvent.CoreEvent, "notSupportStandardLive", error?.extendedData);
 							this.coreErrorCallback(CoreError.notSupportStandardLive, error?.extendedData)
 						}
 					}
@@ -1630,6 +1645,7 @@ export class ZegoCloudRTCCore {
 					const streamInfo = _waitingHandlerStreams.delete[i]
 					this.remoteStreamMap[streamInfo.streamID] &&
 						_streamList.push(this.remoteStreamMap[streamInfo.streamID])
+					zgLogger.info(SpanEvent.CoreEvent, "stopPullStream", { streamID: streamInfo.streamID, userID: streamInfo.user.userID });
 					await this.zum.stopPullStream(streamInfo.user.userID, streamInfo.streamID)
 					delete this.remoteStreamMap[streamInfo.streamID]
 				}
@@ -1707,7 +1723,7 @@ export class ZegoCloudRTCCore {
 			...{ videoCodec: this._config.videoCodec, enableAutoSwitchVideoCodec: true },
 		})
 		if (res) {
-			ZegoLogger.warn(moduleName, `startPublishingStream success, time: ${new Date().getTime()}, streamID: ${streamID}`)
+			zgLogger.info(SpanEvent.PublishStream, { streamID, streamType, extraInfo });
 		}
 		return res && streamID
 	}
@@ -1777,8 +1793,7 @@ export class ZegoCloudRTCCore {
 
 				// 页面渲染
 				setTimeout(() => {
-					ZegoLogger.warn(moduleName, 
-						"roomUserUpdate",
+					zgLogger.warn(SpanEvent.CoreEvent, "roomUserUpdate",
 						[...this.zum.remoteUserList],
 						[...this.zum.remoteUserList].length
 					)
@@ -1844,7 +1859,7 @@ export class ZegoCloudRTCCore {
 		// 流附加消息解析
 		streamList.forEach((stream) => {
 			const extraInfo = JSON.parse(stream.extraInfo)
-			ZegoLogger.warn(moduleName, "extraInfo", extraInfo)
+			zgLogger.warn(SpanEvent.CoreEvent, "extraInfo", extraInfo)
 			if (extraInfo.isCameraOn !== undefined) {
 				this.zum.updateStreamInfo(
 					stream.user.userID,
@@ -1959,20 +1974,19 @@ export class ZegoCloudRTCCore {
 		setTimeout(() => {
 			try {
 				(ZegoCloudRTCCore._zg.logoutRoom() as any)?.catch?.((err: any) => {
-					ZegoLogger.warn(moduleName, "logoutRoom async rejection caught:", err);
+					zgLogger.warn(SpanEvent.CoreEvent, "logoutRoom async rejection caught:", err);
 				});
-				const span = TracerConnect.createSpan(SpanEvent.LogoutRoom, {
+				TracerConnect.updateRoomID()
+				zgLogger.info(SpanEvent.LogoutRoom, {
 					room_id: this._expressConfig.roomID,
 					error: 0
 				})
-				span.end();
 			} catch (error) {
-				const span = TracerConnect.createSpan(SpanEvent.LogoutRoom, {
+				zgLogger.info(SpanEvent.LogoutRoom, {
 					room_id: this._expressConfig.roomID,
 					error: -1,
 					message: error,
 				})
-				span.end();
 			}
 		}, 300)
 	}
@@ -2000,7 +2014,7 @@ export class ZegoCloudRTCCore {
 		if (res.errorCode === 0) {
 			return true
 		} else {
-			ZegoLogger.error(moduleName, "sendInRoomCommand error:", res.errorCode)
+			zgLogger.error(SpanEvent.CoreEvent, "sendInRoomCommand error:", res.errorCode)
 			return false
 		}
 	}
@@ -2042,7 +2056,7 @@ export class ZegoCloudRTCCore {
 		)
 		const inputList = this.getMixStreamInput(width, height)
 		if (!inputList.length) {
-            ZegoLogger.warn(moduleName, "startMixerTask", "Mix stream input list is empty");
+            zgLogger.warn(SpanEvent.CoreEvent, "startMixerTask", "Mix stream input list is empty");
             return { errorCode: 1 };
         }
 
@@ -2051,12 +2065,12 @@ export class ZegoCloudRTCCore {
 		try {
 			configStr = JSON.stringify(inputList);
 			if (this._lastMixStreamConfigStr && this._lastMixStreamConfigStr === configStr) {
-				ZegoLogger.info(moduleName, "startMixerTask", "Mix stream layout is unchanged, skipping network request.");
+				zgLogger.info(SpanEvent.CoreEvent, "startMixerTask", "Mix stream layout is unchanged, skipping network request.");
 				return { errorCode: 0, extendedData: "diff_skipped" };
 			}
 		} catch (error) {
 			// 兜底：如果存在极端的无法序列化的对象，直接降级放行，保证原本业务不中断
-			ZegoLogger.warn(moduleName, "startMixerTask", "JSON stringify inputList failed:", error);
+			zgLogger.warn(SpanEvent.CoreEvent, "startMixerTask", "JSON stringify inputList failed:", error);
 		}
 
 		const config: ZegoMixStreamConfig = {
@@ -2072,17 +2086,17 @@ export class ZegoCloudRTCCore {
 				outputHeight: height,
 			},
 		}
-		ZegoLogger.info(moduleName, "startMixerTask", "Starting mixer task with config:", config);
+		zgLogger.info(SpanEvent.CoreEvent, "startMixerTask", "Starting mixer task with config:", config);
 		try {
 			const res = await ZegoCloudRTCCore._zg.startMixerTask(config);
-            ZegoLogger.info(moduleName, "startMixerTask", "result:", res);
+            zgLogger.info(SpanEvent.CoreEvent, "startMixerTask", "result:", res);
 			if (res.errorCode === 0) {
 				// 只有混流真正成功时，才更新本地记录
 				this._lastMixStreamConfigStr = configStr;
 			}
             return res;
 		} catch (error) {
-			ZegoLogger.error(moduleName, "startMixerTask", "Failed to start mixer task:", error);
+			zgLogger.error(SpanEvent.CoreEvent, "startMixerTask", "Failed to start mixer task:", error);
 			return { errorCode: 1 }
 		}
 	}
@@ -2106,7 +2120,7 @@ export class ZegoCloudRTCCore {
 			this._roomExtraInfo = setRoomExtraInfo
 			const res = await ZegoCloudRTCCore._zg.stopMixerTask(taskID)
 			
-			ZegoLogger.warn(moduleName, "stopMixerTask", "stopMixerTask result:", res)
+			zgLogger.warn(SpanEvent.CoreEvent, "stopMixerTask", "stopMixerTask result:", res)
 			return res
 		}
 	}
@@ -2458,20 +2472,20 @@ export class ZegoCloudRTCCore {
 
 	async _executeStartAndUpdateMixinTask(isHost: boolean) {
 		if (!this.isHost() && !isHost) {
-			ZegoLogger.warn(moduleName, "startAndUpdateMixinTask", "not host can not start mixer task");
+			zgLogger.warn(SpanEvent.CoreEvent, "startAndUpdateMixinTask", "not host can not start mixer task");
 			return
 		}
 		if (!(this._config.scenario?.config?.enableVideoMixing && this.roomExtraInfo.live_status === "1")) {
-			ZegoLogger.warn(moduleName, "startAndUpdateMixinTask", "not enableVideoMixing or not live_status");
+			zgLogger.warn(SpanEvent.CoreEvent, "startAndUpdateMixinTask", "not enableVideoMixing or not live_status");
 			return
 		}
 
 		const res = await this.startMixerTask()
 		if (res?.errorCode !== 0) {
-            ZegoLogger.warn(moduleName, "startAndUpdateMixinTask", "startMixerTask failed", res);
+            zgLogger.warn(SpanEvent.CoreEvent, "startAndUpdateMixinTask", "startMixerTask failed", res);
             return;
         }
-        ZegoLogger.info(moduleName, "startAndUpdateMixinTask", "startMixerTask succeeded", res);
+        zgLogger.info(SpanEvent.CoreEvent, "startAndUpdateMixinTask", "startMixerTask succeeded", res);
 		if (this.roomExtraInfo.isMixing !== "1") {
 			const setRoomExtraInfo = {
 				...this.roomExtraInfo,
@@ -2490,7 +2504,7 @@ export class ZegoCloudRTCCore {
         // Enqueue the task to prevent race conditions during frequent toggling
         this.mixinTaskQueue = this.mixinTaskQueue.then(() => {
             return this._executeStartAndUpdateMixinTask(isHost).catch((err) => {
-                ZegoLogger.error(moduleName, "startAndUpdateMixinTask", "Error in mixin task queue", err);
+                zgLogger.error(SpanEvent.CoreEvent, "startAndUpdateMixinTask", "Error in mixin task queue", err);
             });
         });
         return this.mixinTaskQueue;
@@ -2523,7 +2537,7 @@ export class ZegoCloudRTCCore {
 		if (this._config.scenario.config.liveStreamingMode === LiveStreamingMode.LiveStreaming) {
 			stream.urlsHttpsFLV = `${this.mixStreamDomain}${stream.streamID}.flv`
 			stream.urlsHttpsHLS = `${this.mixStreamDomain}${stream.streamID}.m3u8`
-			ZegoLogger.warn(moduleName, `[DIAGNOSTIC] setMixUser: Generated FLV URL ${stream.urlsHttpsFLV} using mixStreamDomain=${this.mixStreamDomain}`);
+			zgLogger.warn(SpanEvent.CoreEvent, `[DIAGNOSTIC] setMixUser: Generated FLV URL ${stream.urlsHttpsFLV} using mixStreamDomain=${this.mixStreamDomain}`);
 		} else {
 			try {
 				const media = await this.zum.startPullStream(this.roomExtraInfo.host, stream.streamID)
@@ -2533,7 +2547,7 @@ export class ZegoCloudRTCCore {
 					stream = null as any
 				}
 			} catch (error) {
-				ZegoLogger.error(moduleName, "setMixUser", "startPullStream error", error)
+				zgLogger.error(SpanEvent.CoreEvent, "setMixUser", "startPullStream error", error)
 			}
 		}
 		this.mixUser = {
@@ -2548,6 +2562,7 @@ export class ZegoCloudRTCCore {
 
 	clearMixUser() {
 		if (!this.mixUser?.streamList?.length) return
+		zgLogger.info(SpanEvent.CoreEvent, "clearMixUser", { streamID: this.mixUser.streamList[0].streamID });
 		if (this._config.scenario?.config?.liveStreamingMode !== LiveStreamingMode.LiveStreaming) {
 			ZegoCloudRTCCore._zg.stopPlayingStream(this.mixUser.streamList[0].streamID)
 		}
@@ -2574,7 +2589,7 @@ export class ZegoCloudRTCCore {
 	rotateToLandscape() {
 		const roomDom = document.querySelector('.ZegoRoomMobile_ZegoRoom') as HTMLDivElement;
 		if (!roomDom) {
-			ZegoLogger.error(moduleName, 'rotateToLandscape', "please join Room !!");
+			zgLogger.error(SpanEvent.CoreEvent, 'rotateToLandscape', "please join Room !!");
 			return;
 		}
 		const width = roomDom?.clientWidth;
@@ -2599,7 +2614,7 @@ export class ZegoCloudRTCCore {
 	rotateToPortrait() {
 		const roomDom = document.querySelector('.ZegoRoomMobile_ZegoRoom') as HTMLDivElement;
 		if (!roomDom) {
-			ZegoLogger.error(moduleName, 'rotateToPortrait', "please join Room !!");
+			zgLogger.error(SpanEvent.CoreEvent, 'rotateToPortrait', "please join Room !!");
 			return;
 		}
 		const width = roomDom?.clientWidth;
@@ -2624,7 +2639,7 @@ export class ZegoCloudRTCCore {
 
 	// 刷新token
 	renewToken(kitToken: string): boolean {
-		ZegoLogger.warn(moduleName, 'renewToken', 'start');
+		zgLogger.warn(SpanEvent.CoreEvent, 'renewToken', 'start');
 		const config = getConfig(kitToken);
 		let result: boolean = false;
 		if (this._zimManager) {
@@ -2633,17 +2648,17 @@ export class ZegoCloudRTCCore {
 					if (this._expressConfig.token) {
 						this._expressConfig.token = config?.token!;
 					}
-					ZegoLogger.warn(moduleName, 'renewToken', 'zim success', res)
+					zgLogger.warn(SpanEvent.CoreEvent, 'renewToken', 'zim success', res)
 					if (this.status.loginRsp) {
 						const rtcRes = ZegoCloudRTCCore._zg.renewToken(config!.token)
-						ZegoLogger.warn(moduleName, 'renewToken', 'rtc success', rtcRes)
+						zgLogger.warn(SpanEvent.CoreEvent, 'renewToken', 'rtc success', rtcRes)
 						result = rtcRes;
 					} else {
 						result = true;
 					}
 				})
 				.catch((error) => {
-					ZegoLogger.warn(moduleName, 'renewToken', 'zim error', error)
+					zgLogger.warn(SpanEvent.CoreEvent, 'renewToken', 'zim error', error)
 					result = false
 				});
 		} else {
@@ -2666,11 +2681,11 @@ export class ZegoCloudRTCCore {
 				}
 				return res;
 			} catch (error: ZegoServerResponse | any) {
-				ZegoLogger.log(moduleName, 'closeBackgroundProcess', 'error', error);
+				zgLogger.log(SpanEvent.CoreEvent, 'closeBackgroundProcess', 'error', error);
 				return error;
 			}
 		} else {
-			ZegoLogger.warn(moduleName, 'closeBackgroundProcess', 'localStream is null');
+			zgLogger.warn(SpanEvent.CoreEvent, 'closeBackgroundProcess', 'localStream is null');
 			return { errorCode: -1, extendedData: 'localStream is null' };
 		}
 	}
@@ -2679,19 +2694,19 @@ export class ZegoCloudRTCCore {
 	async openBackgroundProcess(): Promise<ZegoServerResponse> {
 		if (this.localStream) {
 			try {
-				ZegoLogger.log(moduleName, 'openBackgroundProcess', 'start');
+				zgLogger.log(SpanEvent.CoreEvent, 'openBackgroundProcess', 'start');
 				const res = await ZegoCloudRTCCore._zg.enableBackgroundProcess(this.localStream, true, 0);
-				ZegoLogger.log(moduleName, 'openBackgroundProcess', 'end', res);
+				zgLogger.log(SpanEvent.CoreEvent, 'openBackgroundProcess', 'end', res);
 				if (res.errorCode === 0) {
 					ZegoCloudRTCCore._instance.BackgroundProcessConfig!.enabled = true;
 				}
 				return res;
 			} catch (error: ZegoServerResponse | any) {
-				ZegoLogger.warn(moduleName, 'openBackgroundProcess', 'error', error);
+				zgLogger.warn(SpanEvent.CoreEvent, 'openBackgroundProcess', 'error', error);
 				return error;
 			}
 		} else {
-			ZegoLogger.warn(moduleName, 'openBackgroundProcess', 'localStream is null');
+			zgLogger.warn(SpanEvent.CoreEvent, 'openBackgroundProcess', 'localStream is null');
 			return { errorCode: -1, extendedData: 'localStream is null' };
 		}
 	}

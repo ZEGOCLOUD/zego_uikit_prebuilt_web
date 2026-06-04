@@ -61,6 +61,11 @@ import { FormattedMessage } from "react-intl";
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 import { ZegoInvitationList } from "./components/zegoInvitationList";
 import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity.web";
+import { ZegoLogger } from '../../../modules/tools/ZegoLogger';
+
+import { SpanEvent } from '../../../model/tracer';
+
+const zgLogger = ZegoLogger.getLogger('ZegoRoomMobile');
 
 type LayOutStatus = "ONE_VIDEO" | "INVITE" | "USER_LIST" | "MESSAGE" | "LAYOUT" | "MANAGE" | "WHITEBOARD" | "INVITE_LIST";
 export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
@@ -536,9 +541,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                   : -1
                 : preState.liveCountdown,
           };
-        },
-        () => {
-          //   console.error("【ZEGOCLOUD】 liveStatus", this.state.liveStatus);
         }
       );
     });
@@ -608,7 +610,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           && this.props.core._config.scenario?.config?.role === LiveRole.Audience
           && !this.props.core._config.showRequestToCohostButton) return;
         await this.props.core.deviceCheck();
-        console.warn('[ZegoRoomMobile]deviceCheck', this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
+        zgLogger.warn(SpanEvent.RoomDeviceCheck, this.props.core.status.videoRefuse, this.props.core.status.audioRefuse);
         // 语音通话时未授权摄像头不弹弹框提示
         if (this.props.core._zimManager?.callInfo.type === 0) {
           if (this.props.core.status.audioRefuse) {
@@ -789,7 +791,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     );
   }
   async createStream(): Promise<boolean> {
-    console.warn('[ZegoRoomMobile]createStream, videoRefuse:', this.props.core._config.turnOnCameraWhenJoining, this.props.core.status.videoRefuse, this.state.cameraOpen);
+    zgLogger.warn(SpanEvent.RoomCreateStream, {
+      turnOnCameraWhenJoining: this.props.core._config.turnOnCameraWhenJoining,
+      videoRefuse: this.props.core.status.videoRefuse,
+      cameraOpen: this.state.cameraOpen,
+    });
     if (
       !this.props.core._config.turnOnCameraWhenJoining &&
       !this.props.core._config.turnOnMicrophoneWhenJoining &&
@@ -838,11 +844,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           localStream = await this.props.core.createZegoStream(source);
           this.props.core.localStream = localStream;
         } catch (error: any) {
-          console.error('[ZegoRoomMobile]createStream error', error);
+          zgLogger.error(SpanEvent.RoomCreateStream, 'error', error);
           // 有些设备不支持自定义分辨，创建流失败后就以默认分辨率再创建一次
           // 有些三星手机chrome浏览器没有三星相关标识，无法走到上面的三星手机创建流，会报错1103065，此时重新尝试以默认分辨率创建流
           if (JSON.stringify(error).includes("constrain") || (error?.errorCode === 1103065 && /Android/i.test(userAgent))) {
-            console.warn('[ZegoRoomMobile]createStream, 重新尝试以默认分辨率创建流');
+            zgLogger.warn(SpanEvent.RoomCreateStream, 'retry with default resolution');
             localStream = await this.props.core.createZegoStream({
               camera: {
                 video: !this.props.core.status.videoRefuse ? {
@@ -908,7 +914,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           }
         } catch (error) {
           // 推流失败就销毁创建的流
-          console.error("【ZEGOCLOUD】publishStream failed:", error);
+          zgLogger.error(SpanEvent.RoomPublishStream, 'failed:', error);
           this.props.core.destroyStream(localStream);
           this.setState({
             localStream: null,
@@ -918,8 +924,8 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
         return true;
       } catch (error: any) {
-        console.error(
-          "【ZEGOCLOUD】createStream or publishLocalStream failed,Reason: ",
+        zgLogger.error(
+          "createStream or publishLocalStream failed,Reason: ",
           JSON.stringify(error)
         );
         if (error?.errorCode === 1103065 || error?.errorCode === 1103061) {
@@ -958,7 +964,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       });
       this.localStreamID = "";
     } catch (error) {
-      console.error(error);
+      zgLogger.error(SpanEvent.RoomPublishStream, 'Stop publish error:', error);
     }
   }
   async toggleMic() {
@@ -1005,7 +1011,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           })
         );
       } catch (error: any) {
-        console.log('setStreamExtraInfo error', error);
+        zgLogger.log(SpanEvent.RoomSetStreamExtraInfo, error);
       }
     }
 
@@ -1076,7 +1082,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           })
         );
       } catch (error: any) {
-        console.log('setStreamExtraInfo error', error);
+        zgLogger.log(SpanEvent.RoomSetStreamExtraInfo, error);
       }
     }
     this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
@@ -1157,7 +1163,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       // await this.props.core.replaceTrack(this.state.localStream, videoTrack);
       // await this.props.core.replaceTrack(this.state.localStream, audioTrack);
     } catch (error) {
-      console.error("【ZEGOCLOUD】switch camera failed!", error);
+      zgLogger.error(SpanEvent.RoomCameraChange, 'switch camera failed!', error);
     }
 
     this.faceModel = targetModel ? 1 : 0;
@@ -1217,7 +1223,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       if (this.props.core._config.sendMessageChannel) {
         if (this.props.core._config.sendMessageChannel === "ZIM") {
           resp = await this.props.core._zimManager?.sendTextMessage(message);
-          console.log('mytag sendMessage', resp)
+          zgLogger.log(SpanEvent.RoomSendMessage, resp)
           this.props.core._config.onSendMessageResult && this.props.core._config.onSendMessageResult(resp);
         } else {
           resp = await this.props.core.sendRoomMessage(message);
@@ -1242,7 +1248,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
           });
       }
     } catch (err) {
-      console.error("【ZEGOCLOUD】sendMessage failed!", JSON.stringify(err));
+      zgLogger.error(SpanEvent.RoomSendMessage, 'failed!', JSON.stringify(err));
     }
     this.setState((state: { messageList: ZegoBroadcastMessageInfo2[] }) => {
       const _messageList = state.messageList.map((msg) => {
@@ -1251,7 +1257,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         }
         return msg;
       });
-      console.log(_messageList);
       return {
         messageList: _messageList,
       };
@@ -1571,7 +1576,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         res = await this.toggleCamera();
 
         res && (this._selectedUser.streamList[0].cameraStatus = "MUTE");
-        console.warn(this._selectedUser);
+
       } else if (this._selectedUser.streamList?.[0]?.cameraStatus === "OPEN") {
         res = await this.props.core.turnRemoteCameraOff(
           this._selectedUser.userID
@@ -1660,7 +1665,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         unreadInviteList: this.state.unreadInviteList,
       });
       this.props.core.zum.setCoconnection(this._selectedUser.userID, false);
-      console.warn("DisagreeRequestCohost", res);
+      zgLogger.warn(SpanEvent.RoomRespondCohost, 'DisagreeRequestCohost', res);
     },
     [UserListMenuItemType.AgreeRequestCohost]: async () => {
       const res =
@@ -1678,10 +1683,10 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         unreadInviteList: this.state.unreadInviteList,
       });
       this.props.core.zum.setCoconnection(this._selectedUser.userID, true);
-      console.warn("AgreeRequestCohost", res);
+      zgLogger.warn(SpanEvent.RoomRespondCohost, 'AgreeRequestCohost', res);
     },
     [UserListMenuItemType.BanSendingMessages]: async () => {
-      console.warn('BanSendingMessages', this.props.core._expressConfig.userID, this.props.core._zimManager?.banList);
+      zgLogger.warn(SpanEvent.RoomBanMessages, this.props.core._expressConfig.userID, this.props.core._zimManager?.banList);
       const banList = this.props.core._zimManager?.banList;
       const selectedUser = this._selectedUser.userID;
       if (banList && !banList.some((userID) => userID === selectedUser)) {
@@ -1693,7 +1698,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       }
     },
     [UserListMenuItemType.CancelBanSendingMessages]: async () => {
-      console.warn('CancelBanSendingMessages', this.props.core._expressConfig.userID, this.props.core._zimManager?.banList);
+      zgLogger.warn(SpanEvent.RoomBanMessages, 'CancelBanSendingMessages', this.props.core._expressConfig.userID, this.props.core._zimManager?.banList);
       const banList = this.props.core._zimManager?.banList;
       const selectedUser = this._selectedUser.userID;
       if (banList) {
@@ -2079,7 +2084,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
                     zegoSuperBoardView,
                   });
                 } catch (error: any) {
-                  console.error("createAndPublishWhiteboard", error);
+                  zgLogger.error(SpanEvent.RoomWhiteboardSharing, 'createAndPublishWhiteboard error', error);
                   ZegoModelShow(
                     {
                       header: formatMessage({ id: "global.notice" }),
@@ -2388,7 +2393,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       });
       this.isCreatingWhiteboardSharing = false;
     } catch (error) {
-      console.error(error);
+      zgLogger.error(SpanEvent.RoomWhiteboardSharing, 'Close whiteboard sharing error:', error);
     }
   }
   startRoomTimer() {

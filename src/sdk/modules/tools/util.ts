@@ -1,5 +1,9 @@
 import type { ZegoBarrageMessageInfo, ZegoBroadcastMessageInfo } from "zego-express-engine-webrtm/sdk/code/zh/ZegoExpressEntity";
 import { ZegoUIKitMessageType, ZegoSignalingInRoomTextMessage } from '../../model';
+import { SpanEvent } from '../../model/tracer';
+import { ZegoLogger } from './ZegoLogger';
+
+const zgLogger = ZegoLogger.getLogger('Util');
 export function generateVideoView(isVideo: boolean, userID: string): HTMLMediaElement {
 	const mediaDom = document.createElement(isVideo ? "video" : "audio");
 	mediaDom.id = "zego-video-" + userID;
@@ -19,7 +23,7 @@ export function getConfig(token: string) {
 			token: token.split("#")[0] as string,
 		};
 	} else {
-		console.error("【ZEGOCLOUD】kitToken error");
+		zgLogger.error(SpanEvent.CoreEvent, "kitToken error");
 	}
 }
 
@@ -39,9 +43,9 @@ function fallbackCopyTextToClipboard(text: string) {
 	try {
 		var successful = document.execCommand("copy");
 		var msg = successful ? "successful" : "unsuccessful";
-		console.log("【ZEGOCLOUD】 Fallback: Copying text command was " + msg);
+		zgLogger.log(SpanEvent.CoreEvent, "Fallback: Copying text command was " + msg);
 	} catch (err) {
-		console.error("【ZEGOCLOUD】Fallback: Oops, unable to copy", err);
+		zgLogger.error(SpanEvent.CoreEvent, "Fallback: Oops, unable to copy", err);
 	}
 
 	document.body.removeChild(textArea);
@@ -53,10 +57,10 @@ export function copy(text: string) {
 	}
 	navigator.clipboard.writeText(text).then(
 		function () {
-			console.log("【ZEGOCLOUD】Async: Copying to clipboard was successful!");
+			zgLogger.log(SpanEvent.CoreEvent, "Async: Copying to clipboard was successful!");
 		},
 		function (err) {
-			console.error("【ZEGOCLOUD】 Async: Could not copy text: ", err);
+			zgLogger.error(SpanEvent.CoreEvent, "Async: Could not copy text: ", err);
 		}
 	);
 }

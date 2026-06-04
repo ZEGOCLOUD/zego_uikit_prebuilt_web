@@ -8,6 +8,10 @@ import {
   ZegoCloudRemoteMedia,
 } from "../../model";
 import { isPc } from "../../util";
+import { SpanEvent } from '../../model/tracer';
+import { ZegoLogger } from './ZegoLogger';
+
+const zgLogger = ZegoLogger.getLogger('UserListManager');
 export type ZegoCloudUserList = ZegoCloudUser[];
 
 export type ZegoCloudUser = ZegoUser & {
@@ -156,7 +160,7 @@ export class ZegoCloudUserListManager {
               false
             );
           } catch (error) {
-            console.error("【ZEGOCLOUD】openVideo failed:", error);
+            zgLogger.error(SpanEvent.UserListManagerEvent, "openVideo failed:", error);
           }
 
           user.overScreenMuteVideo = false;
@@ -175,7 +179,7 @@ export class ZegoCloudUserListManager {
               true
             );
           } catch (error) {
-            console.error("muteVideo failed:", error);
+            zgLogger.error(SpanEvent.UserListManagerEvent, "muteVideo failed:", error);
           }
           user.overScreenMuteVideo = true;
         }
@@ -209,7 +213,6 @@ export class ZegoCloudUserListManager {
               this.userOrderList.findIndex((uid) => uid === a.userID)
             );
           });
-          //   console.error("【ZEGOCLOUD】 repeat u ser add!!");
         }
       });
     } else if (updateType === "DELETE") {
@@ -224,7 +227,7 @@ export class ZegoCloudUserListManager {
       });
     }
 
-    console.warn("【ZEGOCLOUD】userUpdate", updateType, this.remoteUserList);
+    zgLogger.warn(SpanEvent.UserListManagerEvent, "userUpdate", updateType, this.remoteUserList);
     const res = await this.updateStream();
     return res;
   }
@@ -242,7 +245,7 @@ export class ZegoCloudUserListManager {
         }
       })
       .forEach((stream) => {
-        console.warn("【ZEGOCLOUD】mainStreamUpdate", updateType, streamList);
+        zgLogger.warn(SpanEvent.UserListManagerEvent, "mainStreamUpdate", updateType, streamList);
         // 已经在列表中才处理删除和更新，否则只处理新增
         if (
           this.remoteUserList.some((u) => u.userID === stream.fromUser.userID)
@@ -298,7 +301,6 @@ export class ZegoCloudUserListManager {
           return true;
         } else {
           return false;
-          // console.warn("【ZEGOCLOUD】screenStreamUpdate stream empty", s);
         }
       })
       .forEach((stream) => {
@@ -376,7 +378,7 @@ export class ZegoCloudUserListManager {
               this.remoteUserList[u_index].streamList[s_index].media = stream;
             }
           } catch (error) {
-            console.warn("【ZEGOCLOUD】 playStream failed ,ignore continue !!");
+            zgLogger.warn(SpanEvent.UserListManagerEvent, " playStream failed ,ignore continue !!");
           }
         }
       } else {
