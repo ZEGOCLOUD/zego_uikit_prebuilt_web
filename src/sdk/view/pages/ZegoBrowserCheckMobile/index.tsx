@@ -8,6 +8,10 @@ import { ZegoLoading } from "./components/ZegoLoading";
 import { isAndroid, isIOS } from "../../../util";
 import { FormattedMessage } from "react-intl";
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
+import { ZegoLogger } from '../../../modules/tools/ZegoLogger';
+import { SpanEvent } from '../../../model/tracer';
+
+const zgLogger = ZegoLogger.getLogger('ZegoBrowserCheckMobile');
 export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp> {
 	state = {
 		localStream: undefined,
@@ -49,13 +53,13 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		const audioOpen = !!this.props.core._config.turnOnMicrophoneWhenJoining;
 		// 获取摄像头权限
 		//@ts-ignore
-		const cameraStatus = await navigator.permissions.query({ name: "camera" });
-		this.videoRefuse = cameraStatus.state.includes('denied');
+		const cameraStatus = await navigator.permissions?.query({ name: "camera" });
+		this.videoRefuse = cameraStatus?.state.includes('denied');
 
 		// 获取麦克风权限
 		//@ts-ignore
-		const micStatus = await navigator.permissions.query({ name: "microphone" });
-		this.audioRefuse = micStatus.state.includes('denied');
+		const micStatus = await navigator.permissions?.query({ name: "microphone" });
+		this.audioRefuse = micStatus?.state.includes('denied');
 
 		if (videoOpen || audioOpen) {
 			if (!this.videoRefuse || !this.audioRefuse) {
@@ -91,7 +95,12 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 		this.videoRefuse = cameraDevices && cameraDevices[0]?.deviceID ? false : true;
 		this.audioRefuse = micDevices && micDevices[0]?.deviceID ? false : true;
 
-		console.warn("[ZegoBrowserCheck]createstream", this.videoRefuse, this.audioRefuse)
+		zgLogger.warn(SpanEvent.BrowserCheckCreateStream, {
+			videoRefuse: this.videoRefuse,
+			audioRefuse: this.audioRefuse,
+			videoOpen,
+			audioOpen,
+		})
 		let localStream: ZegoLocalStream | undefined;
 		try {
 			if (videoOpen) {
@@ -113,18 +122,18 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 			this.setState({
 				isVideoOpening: false,
 			});
-			console.error("【ZEGOCLOUD】toggleStream/createStream failed !!", JSON.stringify(error));
+			zgLogger.error(SpanEvent.BrowserCheckToggleStreamFailed, JSON.stringify(error));
 			if (error && error.errorCode === 1103064) {
 				//@ts-ignore
 				navigator.permissions.query({ name: "microphone" }).then(permissionStatus => {
-					console.log('麦克风权限状态:', permissionStatus.state);
+					zgLogger.log(SpanEvent.BrowserCheckMicPermission, permissionStatus.state);
 					if (permissionStatus.state === 'granted') {
 						this.audioRefuse = false;
 					}
 				});
 				//@ts-ignore
 				navigator.permissions.query({ name: "camera" }).then(permissionStatus => {
-					console.log('摄像头权限状态:', permissionStatus.state);
+					zgLogger.log(SpanEvent.BrowserCheckCameraPermission, permissionStatus.state);
 					if (permissionStatus.state === 'granted') {
 						this.videoRefuse = false;
 					}
@@ -198,12 +207,6 @@ export class ZegoBrowserCheckMobile extends React.Component<ZegoBrowserCheckProp
 			if (!this.state.localStream) {
 				await this.createStream(this.state.videoOpen, audioOpen);
 			} else {
-				if (audioOpen) {
-					(this.state.localStream as ZegoLocalStream).playAudio();
-				} else {
-					console.warn('===stop audio', this.state.localStream);
-					(this.state.localStream as ZegoLocalStream).stopAudio();
-				}
 				this.props.core.muteMicrophone(audioOpen);
 			}
 			this.setState({ audioOpen });

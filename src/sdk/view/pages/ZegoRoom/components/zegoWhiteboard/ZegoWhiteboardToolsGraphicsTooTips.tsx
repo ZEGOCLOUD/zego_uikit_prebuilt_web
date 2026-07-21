@@ -18,7 +18,6 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
     const path: HTMLElement[] = ev.path || ev.composedPath();
     if (
       !path.some((item) => {
-        console.log(item.className);
         return (
           item.className &&
           item.className.includes("ZegoWhiteboardToolsGraphicsTooTips")
@@ -63,9 +62,6 @@ export class ZegoWhiteboardToolsGraphicsTooTips extends React.PureComponent<{
           ? ZegoWhiteboardToolsGraphicsTooTipsCss.twoRows
           : ""
           } ZegoWhiteboardToolsGraphicsTooTips`}
-        ref={(el) => {
-          // console.error("graphicsTools", el);
-        }}
       >
         <div
           className={ZegoWhiteboardToolsGraphicsTooTipsCss.graphicsTools_react}

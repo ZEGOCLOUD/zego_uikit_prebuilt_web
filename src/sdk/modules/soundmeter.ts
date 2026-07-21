@@ -1,4 +1,8 @@
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
+import { SpanEvent } from '../model/tracer';
+import { ZegoLogger } from './tools/ZegoLogger';
+
+const zgLogger = ZegoLogger.getLogger('Soundmeter');
 
 export interface SoundLevel {
   instant: number;
@@ -37,7 +41,7 @@ export class SoundMeter {
     };
   }
   connectToStreamSource(source: ZegoLocalStream, callback: Function) {
-    console.log("SoundMeter connecting", source);
+    zgLogger.log(SpanEvent.CoreEvent, "SoundMeter connecting", source);
     try {
       this.type = "Stream";
       this.mic = this.context.createMediaStreamSource(source.audioCaptureStream!);
@@ -47,14 +51,14 @@ export class SoundMeter {
         callback(null);
       }
     } catch (e) {
-      console.error(e);
+      zgLogger.error(SpanEvent.CoreEvent, "soundmeter", e);
       if (typeof callback !== "undefined") {
         callback(e);
       }
     }
   }
   connectToElementSource(source: HTMLMediaElement, callback: Function) {
-    console.log("connectToElementSource SoundMeter connecting");
+    zgLogger.log(SpanEvent.CoreEvent, "connectToElementSource SoundMeter connecting");
     try {
       this.type = "Element";
       if (!this.mic) {
@@ -67,14 +71,14 @@ export class SoundMeter {
         callback(null);
       }
     } catch (e) {
-      console.error(e);
+      zgLogger.error(SpanEvent.CoreEvent, "soundmeter", e);
       if (typeof callback !== "undefined") {
         callback(e);
       }
     }
   }
   stop() {
-    console.log("SoundMeter stopping");
+    zgLogger.log(SpanEvent.CoreEvent, "SoundMeter stopping");
     if (this.type === "Element") {
       this.mic?.disconnect(this.script);
       this.script?.disconnect(this.context.destination);

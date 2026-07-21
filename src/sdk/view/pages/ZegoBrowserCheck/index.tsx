@@ -7,6 +7,10 @@ import { ZegoModelShow } from "../../components/zegoModel";
 import { getVideoResolution, throttle } from "../../../util";
 import { FormattedMessage } from "react-intl";
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web"
+import { ZegoLogger } from '../../../modules/tools/ZegoLogger';
+import { SpanEvent } from '../../../model/tracer';
+
+const zgLogger = ZegoLogger.getLogger('ZegoBrowserCheck');
 
 export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
   state = {
@@ -57,7 +61,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     this.onResize();
     window.addEventListener("resize", this.throttleResize.bind(this), false);
     this.props.core.zg.on("videoDeviceStateChanged", async (updateType: 'DELETE' | 'ADD', deviceInfo: { deviceName: string; deviceID: string; }) => {
-      console.warn('[ZegoCloudRTCCore]videoDeviceStateChanged]', updateType, deviceInfo);
+      zgLogger.warn(SpanEvent.BrowserCheckVideoDeviceStateChanged, updateType, deviceInfo);
       if (updateType === 'DELETE') {
         const { selectCamera } = this.state;
         if (selectCamera === deviceInfo.deviceID) {
@@ -226,7 +230,7 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
     audioOpen: boolean
   ): Promise<ZegoLocalStream | undefined> {
     let localStream: ZegoLocalStream | undefined;
-    console.warn('[ZegoBrowserCheck]createstream', videoOpen, audioOpen, this.state.selectCamera, this.state);
+    zgLogger.warn(SpanEvent.BrowserCheckCreateStream, videoOpen, audioOpen, this.state.selectCamera, this.state);
     try {
       // 开关摄像头时才提示
       if (videoOpen) {
@@ -249,21 +253,21 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
         videoBitrate: solution.bitrate
       }, true);
     } catch (error: any) {
-      console.error(
-        "【ZEGOCLOUD】createStream failed !!",
+      zgLogger.error(
+        SpanEvent.BrowserCheckToggleStreamFailed,
         JSON.stringify(error)
       );
       if (error && error.errorCode === 1103064) {
         //@ts-ignore
         navigator.permissions.query({ name: "microphone" }).then(permissionStatus => {
-          console.log('麦克风权限状态:', permissionStatus.state);
+          zgLogger.log(SpanEvent.BrowserCheckMicPermission, permissionStatus.state);
           if (permissionStatus.state === 'granted') {
             this.audioRefuse = false;
           }
         });
         //@ts-ignore
         navigator.permissions.query({ name: "camera" }).then(permissionStatus => {
-          console.log('摄像头权限状态:', permissionStatus.state);
+          zgLogger.log(SpanEvent.BrowserCheckCameraPermission, permissionStatus.state);
           if (permissionStatus.state === 'granted') {
             this.videoRefuse = false;
           }
@@ -355,11 +359,11 @@ export class ZegoBrowserCheck extends React.Component<ZegoBrowserCheckProp> {
       }
       const audioOpen = !this.state.audioOpen;
       if (this.state.localStream && this.state.localStream.audioCaptureStream) {
-        if (audioOpen) {
-          (this.state.localStream as ZegoLocalStream).playAudio();
-        } else {
-          (this.state.localStream as ZegoLocalStream).stopAudio();
-        }
+        // if (audioOpen) {
+        //   (this.state.localStream as ZegoLocalStream).playAudio();
+        // } else {
+        //   (this.state.localStream as ZegoLocalStream).stopAudio();
+        // }
         this.props.core.muteMicrophone(audioOpen);
       } else {
         if (this.state.localStream) {

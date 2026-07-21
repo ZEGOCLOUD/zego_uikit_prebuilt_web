@@ -1,3 +1,6 @@
+import { ZegoLogger } from './modules/tools/ZegoLogger';
+
+const zgLogger = ZegoLogger.getLogger('FingerGestureUtil');
 /**
  * 获取中点坐标
  * @param {object} a 第一个点坐标
@@ -47,8 +50,8 @@ export class FingerGestureUtils {
     callBack: (x: number, y: number, scale: number) => void
   ) {
     if (!dom || !callBack) {
-      console.error(
-        "【ZEGOCLOUD】call addDomListener: parameter dom and callBack are required"
+      zgLogger.error(
+        "call addDomListener: parameter dom and callBack are required"
       );
       return;
     }

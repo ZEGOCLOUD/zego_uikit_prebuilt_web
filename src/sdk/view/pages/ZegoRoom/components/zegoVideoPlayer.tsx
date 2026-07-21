@@ -98,6 +98,9 @@ export class VideoPlayer extends React.PureComponent<{
           onCanPlay={() => {
             this.props.onCanPlay && this.props.onCanPlay();
           }}
+          micStatus={this.props.userInfo?.streamList?.[0]?.micStatus}
+          cameraStatus={this.props.userInfo?.streamList?.[0]?.cameraStatus}
+          media={this.props.userInfo?.streamList?.[0]?.media}
         ></ZegoVideo>
         {this.avatarConfig.visiblity &&
           <div

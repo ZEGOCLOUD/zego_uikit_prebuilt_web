@@ -4,6 +4,9 @@ import Fuse from "fuse.js";
 import { ZegoCloudUserList } from "./modules/tools/UserListManager";
 import React from 'react';
 
+declare const __VERSION__: string;
+export const SDK_VERSION = typeof __VERSION__ !== "undefined" ? __VERSION__ : (process.env.REACT_APP_VERSION || "unknown");
+
 export function randomNumber(len: number): number {
   let result = "";
   let chars = "123456789",

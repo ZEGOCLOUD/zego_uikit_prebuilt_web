@@ -54,7 +54,6 @@ export class ZegoUserList extends React.Component<{
 		this.setState({
 			searchList: result.map((_) => _.item),
 		})
-		console.warn(result)
 	}, 300)
 	onInput(e: React.FormEvent<HTMLInputElement>) {
 		this.setState({

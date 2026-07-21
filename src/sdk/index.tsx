@@ -22,10 +22,13 @@ import {
 	ZegoUIKitCreateConfig,
 } from "./model/index";
 import { ZegoCloudRTCCore } from "./modules/index";
-import { generatePrebuiltToken, isPc } from "./util";
+import { generatePrebuiltToken, isPc, SDK_VERSION } from "./util";
 import { ZegoCloudRTCKitComponent } from "./view/index";
 import { TracerConnect } from "./modules/tools/ZegoTracer";
 import { SpanEvent } from "./model/tracer";
+import { ZegoLogger } from './modules/tools/ZegoLogger';
+
+const zgLogger = ZegoLogger.getLogger('ZegoUIKitPrebuilt');
 export class ZegoUIKitPrebuilt {
 	static core: ZegoCloudRTCCore | undefined;
 	static _instance: ZegoUIKitPrebuilt;
@@ -64,8 +67,8 @@ export class ZegoUIKitPrebuilt {
 	public express: ZegoExpressEngine | undefined;
 	constructor() {
 		this.express = ZegoCloudRTCCore._zg;
-		console.log('express version:', this.express.getVersion());
-		console.log('ZegoUIKitPrebuilt version: 2.17.1');
+		zgLogger.log(SpanEvent.KitCheckWebRTC, 'express version:', this.express.getVersion());
+		zgLogger.log(SpanEvent.KitCheckWebRTC, 'ZegoUIKitPrebuilt version:', SDK_VERSION);
 	}
 	get localStream() {
 		return ZegoUIKitPrebuilt.core?.localStream;
@@ -107,18 +110,17 @@ export class ZegoUIKitPrebuilt {
 		if (!ZegoUIKitPrebuilt.core && kitToken) {
 			ZegoUIKitPrebuilt.core = ZegoCloudRTCCore.getInstance(kitToken, createConfig);
 			ZegoUIKitPrebuilt._instance = new ZegoUIKitPrebuilt();
-			const span = TracerConnect.createSpan(SpanEvent.Create, {
+			zgLogger.info(SpanEvent.Create, {
 				error: 0,
 				msg: '',
 				start_time: startTime,
 				elapsed_time_sdk: Date.now() - startTime,
 			})
-			span.end();
 		}
 		return ZegoUIKitPrebuilt._instance;
 	}
 	static getVersion(): string {
-		return '2.17.1' // SDK_VERSION;
+		return SDK_VERSION;
 	}
 
 	addPlugins(plugins?: { ZegoSuperBoardManager?: typeof ZegoSuperBoardManager; ZIM?: typeof ZIM }) {
@@ -127,7 +129,7 @@ export class ZegoUIKitPrebuilt {
 		if (ZegoUIKitPrebuilt.core?._zimManager) {
 			ZegoUIKitPrebuilt.core?._zimManager.notifyJoinRoom(
 				(type: ZegoInvitationType, config: ZegoCloudRoomConfig, mode: ScenarioModel) => {
-					console.warn("notifyJoinRoom", type, config);
+					zgLogger.warn(SpanEvent.KitCheckWebRTC, "notifyJoinRoom", type, config);
 					if (config.autoLeaveRoomWhenOnlySelfInRoom === undefined) {
 						config.autoLeaveRoomWhenOnlySelfInRoom = mode === ScenarioModel.OneONoneCall;
 					}
@@ -160,16 +162,16 @@ export class ZegoUIKitPrebuilt {
 
 	joinRoom(roomConfig?: ZegoCloudRoomConfig) {
 		if (!ZegoUIKitPrebuilt.core) {
-			console.error("【ZEGOCLOUD】 please call init first !!");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, "please call init first !!");
 			return;
 		}
 		if (this.hasJoinedRoom) {
-			console.error("【ZEGOCLOUD】joinRoom repeat !!");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, "joinRoom repeat !!");
 			return;
 		}
 		let div: any;
 		if (!roomConfig || !roomConfig.container) {
-			console.warn("【ZEGOCLOUD】joinRoom/roomConfig/container required !!");
+			zgLogger.warn(SpanEvent.KitCheckWebRTC, "joinRoom/roomConfig/container required !!");
 			div = document.createElement("div");
 			div.style.position = "fixed";
 			div.style.width = "100%";
@@ -191,10 +193,9 @@ export class ZegoUIKitPrebuilt {
 		}
 
 		const result = ZegoUIKitPrebuilt.core.setConfig(roomConfig);
-		const span = TracerConnect.createSpan(SpanEvent.RoomConfig, {
+		zgLogger.info(SpanEvent.RoomConfig, {
 			room_config: ZegoUIKitPrebuilt.core.originConfig,
 		})
-		span.end();
 		if (result) {
 			this.root = ReactDOM.createRoot(roomConfig.container as HTMLDivElement);
 			this.root.render(
@@ -207,20 +208,18 @@ export class ZegoUIKitPrebuilt {
 						this.hasJoinedRoom = false;
 						ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(false)
 						div && div.remove();
-						const span = TracerConnect.createSpan(SpanEvent.Unmount, {});
-						span.end();
+						zgLogger.info(SpanEvent.Unmount, {});
 					}}></ZegoCloudRTCKitComponent>
 			);
 			this.hasJoinedRoom = true;
 			ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(true)
 		} else {
-			console.error("【ZEGOCLOUD】joinRoom parameter error !!");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, "joinRoom parameter error !!");
 		}
 	}
 
 	destroy() {
-		const span = TracerConnect.createSpan(SpanEvent.Destory, {})
-		span.end();
+		zgLogger.info(SpanEvent.Destory, {})
 		ZegoUIKitPrebuilt.core?.leaveRoom?.();
 		ZegoUIKitPrebuilt.core?._zimManager?.updateJoinRoomState?.(false)
 		ZegoUIKitPrebuilt.core = undefined;
@@ -233,7 +232,7 @@ export class ZegoUIKitPrebuilt {
 	}
 	setCallInvitationConfig(config?: ZegoCallInvitationConfig): void {
 		if (!ZegoUIKitPrebuilt.core?._zimManager) {
-			console.error("【ZEGOCLOUD】Please add ZIM plugin first");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, "Please add ZIM plugin first");
 			return;
 		}
 		if (!config) return;
@@ -249,21 +248,21 @@ export class ZegoUIKitPrebuilt {
 		notificationConfig?: ZegoSignalingPluginNotificationConfig;
 	}): Promise<{ errorInvitees: ZegoUser[] }> {
 		if (!ZegoUIKitPrebuilt.core?._zimManager) {
-			console.error("【ZEGOCLOUD】Please add ZIM plugin first");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, "Please add ZIM plugin first");
 			return Promise.reject("ZEGOCLOUD】Please add ZIM plugin first");
 		}
 		const { callees, callType, timeout = 60, roomID, data = "", notificationConfig } = params;
 		if (!Array.isArray(callees) || callees.length < 1) {
-			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callees !!");
+			return Promise.reject("sendCallInvitation params error: callees !!");
 		} else if (callees.length > 9) {
-			return Promise.reject("【ZEGOCLOUD】Maximum number of users exceeded");
+			return Promise.reject("Maximum number of users exceeded");
 		}
 		if (callType !== ZegoInvitationType.VideoCall && callType !== ZegoInvitationType.VoiceCall) {
-			return Promise.reject("【ZEGOCLOUD】sendCallInvitation params error: callType !!");
+			return Promise.reject("sendCallInvitation params error: callType !!");
 		}
 		if (roomID && typeof roomID !== 'string') return Promise.reject("room ID should be string");
 
-		const span = TracerConnect.createSpan(SpanEvent.CallInvite, {
+		zgLogger.info(SpanEvent.CallInvite, {
 			call_id: '',
 			callees,
 			type: callType,
@@ -272,7 +271,6 @@ export class ZegoUIKitPrebuilt {
 			timeout,
 			notification_config: notificationConfig
 		})
-		span.end();
 		return ZegoUIKitPrebuilt.core._zimManager.sendInvitation({
 			invitees: callees,
 			type: callType,
@@ -288,11 +286,11 @@ export class ZegoUIKitPrebuilt {
 	}
 	async sendInRoomCustomCommand(command: object, priority = 1): Promise<ZegoSignalingInRoomCommandMessage> {
 		if (!ZegoUIKitPrebuilt.core?._zimManager?._zim) {
-			console.error("【ZEGOCLOUD】Please add ZIM plugin first");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, "Please add ZIM plugin first");
 			return Promise.reject("ZEGOCLOUD】Please add ZIM plugin first");
 		}
 		if (typeof command !== "object" || command === null) {
-			return Promise.reject("【ZEGOCLOUD】sendInRoomCustomCommand params error: command !!");
+			return Promise.reject("sendInRoomCustomCommand params error: command !!");
 		}
 		return await ZegoUIKitPrebuilt.core._zimManager.sendInRoomCustomMessage(command, priority);
 	}
@@ -304,7 +302,7 @@ export class ZegoUIKitPrebuilt {
 	// 设置语言
 	setLanguage(language: ZegoUIKitLanguage): void {
 		if (!ZegoUIKitPrebuilt.core) {
-			console.error("【ZEGOCLOUD】 please call init first !!");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, " please call init first !!");
 			return;
 		}
 		ZegoUIKitPrebuilt.core._config.language = language;
@@ -312,20 +310,20 @@ export class ZegoUIKitPrebuilt {
 		ZegoUIKitPrebuilt.core?.eventEmitter.emit("lang", language);
 
 		if (!ZegoUIKitPrebuilt.core?._zimManager) {
-			console.error("【ZEGOCLOUD】Please add ZIM plugin first");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, "Please add ZIM plugin first");
 			return;
 		}
 		// call
 		ZegoUIKitPrebuilt.core._zimManager.config.language = language;
 		ZegoUIKitPrebuilt.core._zimManager.changeIntl();
-		console.warn("【ZEGOCLOUD】setLanguage", language, ZegoUIKitPrebuilt.core);
+		zgLogger.warn(SpanEvent.KitCheckWebRTC, "setLanguage", language, ZegoUIKitPrebuilt.core);
 	}
 
 	// 获取 call kit 房间ID
 	getRoomID(): string {
 		if (!ZegoUIKitPrebuilt.core) {
-			console.error("【ZEGOCLOUD】 please call init first !!");
-			return "【ZEGOCLOUD】 please call init first !!";
+			zgLogger.error(SpanEvent.KitCheckWebRTC, " please call init first !!");
+			return " please call init first !!";
 		}
 		return ZegoUIKitPrebuilt.core._expressConfig.roomID;
 	}
@@ -333,7 +331,7 @@ export class ZegoUIKitPrebuilt {
 	// 更新通话中邀请用户配置
 	updateCallingInvitationListConfig(config: CallingInvitationListConfig) {
 		if (!ZegoUIKitPrebuilt.core) {
-			console.error("【ZEGOCLOUD】 please call init first !!");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, " please call init first !!");
 			return;
 		}
 		ZegoUIKitPrebuilt.core.updateCallingInvitationListConfig(config);
@@ -341,7 +339,7 @@ export class ZegoUIKitPrebuilt {
 
 	rotateToLandscape() {
 		if (!ZegoUIKitPrebuilt.core) {
-			console.error("【ZEGOCLOUD】 please call init first !!");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, " please call init first !!");
 			return;
 		}
 		ZegoUIKitPrebuilt.core.rotateToLandscape();
@@ -349,7 +347,7 @@ export class ZegoUIKitPrebuilt {
 
 	rotateToPortrait() {
 		if (!ZegoUIKitPrebuilt.core) {
-			console.error("【ZEGOCLOUD】 please call init first !!");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, " please call init first !!");
 			return;
 		}
 		ZegoUIKitPrebuilt.core.rotateToPortrait();
@@ -362,14 +360,14 @@ export class ZegoUIKitPrebuilt {
 		if (ZegoUIKitPrebuilt.core?.BackgroundProcessConfig!.initialized) {
 			return await ZegoUIKitPrebuilt.core?.closeBackgroundProcess();
 		} else {
-			console.error("【ZEGOCLOUD】please init background process first !!");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, "please init background process first !!");
 		}
 	}
 	async openBackgroundProcess() {
 		if (ZegoUIKitPrebuilt.core?.BackgroundProcessConfig!.initialized) {
 			return await ZegoUIKitPrebuilt.core?.openBackgroundProcess();
 		} else {
-			console.error("【ZEGOCLOUD】please init background process first !!");
+			zgLogger.error(SpanEvent.KitCheckWebRTC, "please init background process first !!");
 		}
 	}
 }

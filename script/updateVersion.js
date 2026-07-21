@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const _package = require('../public/package.json');
+
 const version = process.argv.slice(-1)[0];
 
 function isValidVersion(version) {
@@ -16,15 +16,22 @@ if (!isValidVersion(version)) {
 }
 
 function updateVersion(version) {
-  const _path = path.resolve(__dirname, `../public/package.json`);
-  _package.version = version;
-  fs.writeFile(_path, JSON.stringify(_package, null, 2), 'utf8', (err) => {
-    if (err) {
-      console.error(`version: ${version} update fail`)
-    } else {
-      console.log(`version: ${version} update success`)
-    }
-  });
+  // 1. Update public/package.json
+  const publicPkgPath = path.resolve(__dirname, `../public/package.json`);
+  const publicPkg = JSON.parse(fs.readFileSync(publicPkgPath, 'utf8'));
+  publicPkg.version = version;
+  fs.writeFileSync(publicPkgPath, JSON.stringify(publicPkg, null, 2), 'utf8');
+  console.log(`public/package.json version: ${version} update success`);
+
+  // // 2. Update ZegoUIKitPrebuilt/package.json
+  // const prebuiltPkgPath = path.resolve(__dirname, `../ZegoUIKitPrebuilt/package.json`);
+  // if (fs.existsSync(prebuiltPkgPath)) {
+  //   const prebuiltPkg = JSON.parse(fs.readFileSync(prebuiltPkgPath, 'utf8'));
+  //   prebuiltPkg.version = version;
+  //   fs.writeFileSync(prebuiltPkgPath, JSON.stringify(prebuiltPkg, null, 2), 'utf8');
+  //   console.log(`ZegoUIKitPrebuilt/package.json version: ${version} update success`);
+  // }
+
 }
 
 updateVersion(version)

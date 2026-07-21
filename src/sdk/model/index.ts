@@ -92,6 +92,8 @@ export enum VideoMixinOutputResolution {
 	_540P = "540p",
 	_720P = "720p",
 	_1080P = "1080p",
+	_2K = "2k",
+	_4K = "4k",
 }
 
 export enum ConsoleLevel {
@@ -285,6 +287,8 @@ export interface ZegoCloudRoomConfig {
 	onCameraStateUpdated?: (state: "ON" | "OFF") => void
 	// 麦克风状态更新回调·
 	onMicrophoneStateUpdated?: (state: "ON" | "OFF") => void
+	// 2.17.5 房间设置增加token过期回调
+	onTokenWillExpire?: () => void
 }
 
 export enum ZegoUserState {

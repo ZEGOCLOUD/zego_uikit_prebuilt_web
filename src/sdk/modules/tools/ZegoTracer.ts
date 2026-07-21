@@ -1,6 +1,7 @@
 import { ZegoSpan, ZegoTracer } from 'zego-tracer';
 import { ZegoCloudRTCCore } from '..';
 import { SpanEvent } from '../../model/tracer';
+import { SDK_VERSION } from '../../util';
 
 interface SystemInfoInter {
     system: string;
@@ -135,7 +136,6 @@ export class TracerConnect {
     }
 
     public static createTracer(appID: number, token: string, userID: string): void {
-        console.warn('===createTracer', appID, token, userID);
         this.init(appID, token, userID);
         // server.getDomain().then((domain) => {
         //     this.tracer?.setConfig({
@@ -146,6 +146,19 @@ export class TracerConnect {
 
     private static init(appID: number, token: string, userID: string): void {
         if (!this.tracer) {
+            this.currentResources = {
+                product: this.PRODUCT,
+                system: this.systemInfo.system,
+                browser: this.systemInfo.browser,
+                user_agent: this.systemInfo.ua,
+                device_id: this.getDeviceId(),
+                appid: +appID,
+                user_id: userID,
+                platform: 'web',
+                platform_version: '',
+                uikit_version: `zego_uikit: ${SDK_VERSION}; zego_express: ${ZegoCloudRTCCore._zg.getVersion()};`,
+            };
+
             this.tracer = new ZegoTracer();
             this.tracer.init({
                 product: this.PRODUCT,
@@ -156,11 +169,8 @@ export class TracerConnect {
                 serverUrl: "wss://weblogger-wss.coolzcloud.com/zglog/tlog", //"wss://weblogger-wss-alpha.coolacloud.com/zglog/tlog",
                 levels: [0, 10, 30, 50, 80],
                 spanStart: (span: any) => {
-                    console.warn('spanStart', span);
                 },
                 spanBeforeEnd: (span: any) => {
-                    console.warn('spanBeforeEnd', span);
-                    console.warn('duration', span.duration);
 
                     const attributes: any = {};
                     const stringify: any = {};
@@ -179,20 +189,8 @@ export class TracerConnect {
                 },
                 spanEnd: (span: any) => {
                     // 这里也可执行动态模块
-                    console.warn('spanEnd', span);
                 },
-                resources: {
-                    product: this.PRODUCT,
-                    system: this.systemInfo.system,
-                    browser: this.systemInfo.browser,
-                    user_agent: this.systemInfo.ua,
-                    device_id: this.getDeviceId(),
-                    appid: +appID,
-                    user_id: userID,
-                    platform: 'web',
-                    platform_version: '',
-                    uikit_version: `zego_uikit: 2.17.1; zego_express: ${ZegoCloudRTCCore._zg.getVersion()};`,
-                },
+                resources: this.currentResources,
             });
             const startCommonField = new Map();
             startCommonField.set('userID', userID);
@@ -201,11 +199,26 @@ export class TracerConnect {
         }
     }
 
-    public static unInit(): void {
-        this.tracer = null;
+    private static currentResources: any = {};
+
+    public static updateRoomID(roomID?: string) {
+        if (!this.tracer) return;
+        if (roomID) {
+            this.currentResources.room_id = roomID;
+        } else {
+            delete this.currentResources.room_id;
+        }
+        if (typeof this.tracer.setResource === 'function') {
+            this.tracer.setResource(this.currentResources);
+        }
     }
 
-    public static createSpan(event: SpanEvent, option: Record<string, any>): ZegoSpan {
+    public static unInit(): void {
+        this.tracer = null;
+        this.currentResources = {};
+    }
+
+    public static createSpan(event: SpanEvent | string, option: Record<string, any>): ZegoSpan {
         return this.tracer!.createSpan(0, event, {
             kind: 2,
             attributes: option,

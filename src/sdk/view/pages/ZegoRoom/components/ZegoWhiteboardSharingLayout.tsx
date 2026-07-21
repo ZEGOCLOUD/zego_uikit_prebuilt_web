@@ -210,7 +210,6 @@ export class ZegoWhiteboardSharingLayout extends React.PureComponent<ZegoWhitebo
                       })
                       .catch((error: any) => {
                         ZegoLoadingHide();
-                        console.error("onAddImage:", error);
                         if (error.code === 60022) {
                           ZegoToast({
                             content:

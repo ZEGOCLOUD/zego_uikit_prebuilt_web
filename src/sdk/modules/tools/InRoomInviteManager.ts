@@ -10,8 +10,10 @@ import {
   ZegoInvitationType,
   ZegoUser,
 } from "../../model";
-import { TracerConnect } from "./ZegoTracer";
 import { SpanEvent } from "../../model/tracer";
+import { ZegoLogger } from './ZegoLogger';
+
+const zgLogger = ZegoLogger.getLogger('InRoomInviteManager');
 
 export default class InRoomInviteManager {
   _zim: ZIM;
@@ -90,28 +92,26 @@ export default class InRoomInviteManager {
           type: ZegoInvitationType.InviteToCoHost,
         });
       }
-      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostInvite, {
+      zgLogger.info(SpanEvent.LiveStreamingHostInvite, {
         call_id: res.callID,
         audience_id: inviteeID,
         error_userlist: JSON.stringify(res.errorUserList),
         error_count: res.errorUserList.length,
         extended_data: JSON.stringify(extendedData),
       })
-      span.end();
       return {
         code: res.errorUserList.length, // 0：正常， 1：用户不在线，2：重复邀请，3：发送失败
         msg: "",
       };
     } catch (error) {
       this.inviteToCoHostInfoMap.delete(inviteeID);
-      console.error("【ZEGOCLOUD】inviteJoinToCohost failed:", error);
-      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostInvite, {
+      zgLogger.error(SpanEvent.InRoomInviteManagerEvent, "inviteJoinToCohost failed:", error);
+      zgLogger.info(SpanEvent.LiveStreamingHostInvite, {
         audience_id: inviteeID,
         extended_data: JSON.stringify(extendedData),
         error: (error as any).code || -1,
         msg: (error as any).message || ""
       })
-      span.end();
       return {
         code: 3,
         msg: JSON.stringify(error),
@@ -153,23 +153,21 @@ export default class InRoomInviteManager {
       } else {
         this.requestCohostInfo = {} as InRoomInvitationInfo;
       }
-      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceInvite, {
+      zgLogger.info(SpanEvent.LiveStreamingAudienceInvite, {
         call_id: res.callID,
         room_id: this.expressConfig.roomID
       })
-      span.end()
       return {
         code: res.errorUserList.length,
         msg: res.errorUserList.length > 0 ? "The host has left the room" : "",
       };
     } catch (error: any) {
-      console.error("【ZEGOCLOUD】requestCohost failed:", error);
+      zgLogger.error(SpanEvent.InRoomInviteManagerEvent, "requestCohost failed:", error);
       this.requestCohostInfo = {} as InRoomInvitationInfo;
-      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceInvite, {
+      zgLogger.info(SpanEvent.LiveStreamingAudienceInvite, {
         error: 3,
         msg: error?.message || JSON.stringify(error)
       })
-      span.end()
       return {
         code: 3,
         msg: error?.message || JSON.stringify(error),
@@ -177,12 +175,11 @@ export default class InRoomInviteManager {
     }
   }
   async removeCohost(inviteeID: string) {
-    console.warn('[inRoomInviteManager]removeCohost', inviteeID, this.receivedRequestInfo);
-    const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostStop, {
+    zgLogger.warn(SpanEvent.InRoomInviteManagerEvent, '[inRoomInviteManager]removeCohost', inviteeID, this.receivedRequestInfo);
+    zgLogger.info(SpanEvent.LiveStreamingHostStop, {
       // call_id: 
       room_id: this.expressConfig.roomID
     })
-    span.end();
     const extendedData = JSON.stringify({
       inviter_name: this.expressConfig.userName,
       type: ZegoInvitationType.RemoveCoHost,
@@ -203,20 +200,18 @@ export default class InRoomInviteManager {
       await this._zim?.callAccept(callID || this.receivedInviteInfo.callID, {
         extendedData: "",
       });
-      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+      zgLogger.info(SpanEvent.LiveStreamingAudienceRespond, {
         call_id: callID || this.receivedInviteInfo.callID,
         action: 'accept'
       })
-      span.end();
     } catch (error) {
-      console.error("【ZEGOCLOUD】inRoom acceptInvitation failed", error);
-      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+      zgLogger.error(SpanEvent.InRoomInviteManagerEvent, "inRoom acceptInvitation failed", error);
+      zgLogger.info(SpanEvent.LiveStreamingAudienceRespond, {
         call_id: callID || this.receivedInviteInfo.callID,
         action: 'accept',
         error: (error as any).code || -1,
         msg: (error as any).message || ""
       })
-      span.end();
     }
     this.receivedInviteInfo = {} as InRoomInvitationReceivedInfo;
   }
@@ -236,20 +231,18 @@ export default class InRoomInviteManager {
       await this._zim?.callReject(callID || this.receivedInviteInfo.callID, {
         extendedData,
       });
-      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+      zgLogger.info(SpanEvent.LiveStreamingAudienceRespond, {
         call_id: callID || this.receivedInviteInfo.callID,
         action: 'refuse'
       })
-      span.end();
     } catch (error) {
-      console.error("【ZEGOCLOUD】inRoom refuseInvitation", error);
-      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+      zgLogger.error(SpanEvent.InRoomInviteManagerEvent, "inRoom refuseInvitation", error);
+      zgLogger.info(SpanEvent.LiveStreamingAudienceRespond, {
         call_id: callID || this.receivedInviteInfo.callID,
         action: 'refuse',
         error: (error as any).code || -1,
         msg: (error as any).message || ""
       })
-      span.end();
     }
     clear && (this.receivedInviteInfo = {} as InRoomInvitationReceivedInfo);
   }
@@ -265,13 +258,12 @@ export default class InRoomInviteManager {
       );
       this.notifyRequestCohostTimeoutCallback();
       this.requestCohostInfo = {} as InRoomInvitationInfo;
-      const span = TracerConnect.createSpan(SpanEvent.LiveStreamingAudienceRespond, {
+      zgLogger.info(SpanEvent.LiveStreamingAudienceRespond, {
         call_id: this.requestCohostInfo.callID,
         action: 'accept'
       })
-      span.end();
     } catch (error) {
-      console.error("【ZEGOCLOUD】inRoom cancelInvitation", error);
+      zgLogger.error(SpanEvent.InRoomInviteManagerEvent, "inRoom cancelInvitation", error);
     }
   }
   async hostAcceptRequest(
@@ -279,11 +271,10 @@ export default class InRoomInviteManager {
   ): Promise<{ code: number; msg?: string }> {
     if (!this.receivedRequestInfo.has(userID))
       return { code: 0, msg: "success" };
-    const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+    zgLogger.info(SpanEvent.LiveStreamingHostRespond, {
       call_id: this.receivedRequestInfo.get(userID)!.callID,
       action: "accept"
     })
-    span.end();
     try {
       await this._zim?.callAccept(
         this.receivedRequestInfo.get(userID)!.callID,
@@ -294,7 +285,7 @@ export default class InRoomInviteManager {
       this.receivedRequestInfo.delete(userID);
       return { code: 0, msg: "success" };
     } catch (error: any) {
-      console.error("【ZEGOCLOUD】inRoom acceptInvitation failed", error);
+      zgLogger.error(SpanEvent.InRoomInviteManagerEvent, "inRoom acceptInvitation failed", error);
       if (error?.code === 6000276) {
         // callID 不存在或已超时
         this.receivedRequestInfo.delete(userID);
@@ -310,11 +301,10 @@ export default class InRoomInviteManager {
   ): Promise<{ code: number; msg?: string }> {
     if (!this.receivedRequestInfo.has(userID))
       return { code: 0, msg: "success" };
-    const span = TracerConnect.createSpan(SpanEvent.LiveStreamingHostRespond, {
+    zgLogger.info(SpanEvent.LiveStreamingHostRespond, {
       call_id: this.receivedRequestInfo.get(userID)!.callID,
       action: "refuse"
     })
-    span.end();
     try {
       await this._zim?.callReject(
         this.receivedRequestInfo.get(userID)!.callID,
@@ -325,7 +315,7 @@ export default class InRoomInviteManager {
       this.receivedRequestInfo.delete(userID);
       return { code: 0, msg: "success" };
     } catch (error: any) {
-      console.error("【ZEGOCLOUD】inRoom hostRefuseRequest", error);
+      zgLogger.error(SpanEvent.InRoomInviteManagerEvent, "inRoom hostRefuseRequest", error);
       if (error?.code === 6000276) {
         // callID 不存在或已超时
         this.receivedRequestInfo.delete(userID);
@@ -348,7 +338,7 @@ export default class InRoomInviteManager {
       );
       this.inviteToCoHostInfoMap.delete(userID);
     } catch (error) {
-      console.error("【ZEGOCLOUD】inRoom hostCancelInvitation", error);
+      zgLogger.error(SpanEvent.InRoomInviteManagerEvent, "inRoom hostCancelInvitation", error);
     }
   }
   hostCancelAllInvitation() {

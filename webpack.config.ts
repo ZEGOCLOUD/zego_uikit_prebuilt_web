@@ -114,7 +114,7 @@ const config: webpack.Configuration = {
 		new webpack.DefinePlugin({
 			SDK_ENV: JSON.stringify(true),
 			"process.env.REACT_APP_MOBILE": JSON.stringify("no"),
-			// SDK_VERSION: JSON.stringify(version),
+			__VERSION__: JSON.stringify(version),
 		}),
 		new CleanWebpackPlugin(),
 		new FileManagerPlugin({

@@ -225,7 +225,7 @@ declare interface ZegoCloudRoomConfig {
 	// Screen rotation Button
 	showRotatingScreenButton?: boolean;
 	// Screen rotation notification
-	onScreenRotation?: () => void
+	onScreenRotation?: (currentScreen: 'landscape' | 'portrait') => void
 	// User status updated
 	onUserStateUpdated?: (status: ZegoUserState) => void
 	// Member view config
@@ -238,9 +238,14 @@ declare interface ZegoCloudRoomConfig {
 	// 2.15.0
 	// 背景虚化及虚拟背景开关按钮
 	showBackgroundProcessButton?: boolean
-	onLocalStreamCreated?: (stream) => void
 	// 2.16.0
 	onStreamUpdate?: (streamId: string) => void
+	// 2.17.0
+	onLocalStreamUpdated?: (state: "created" | "published" | "stopped", streamId: string, stream?) => void
+	onScreenSharingStreamUpdated?: (state: "created" | "published" | "closed", streamId: string, stream?) => void
+	onWhiteboardUpdated?: (state: "created" | "closed", whiteboardId: string) => void
+	onCameraStateUpdated?: (state: "ON" | "OFF") => void
+	onMicrophoneStateUpdated?: (state: "ON" | "OFF") => void
 }
 
 export enum ZegoUserState {
