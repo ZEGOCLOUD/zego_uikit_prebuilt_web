@@ -62,6 +62,7 @@ import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStr
 import { ZegoInvitationList } from "./components/zegoInvitationList";
 import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity.web";
 import { ZegoLogger } from '../../../modules/tools/ZegoLogger';
+import { setupPermissionMonitor, cleanupPermissionMonitor, PermissionMonitorResult, rebuildStreamForDevice } from '../utils/permissionMonitor';
 
 import { SpanEvent } from '../../../model/tracer';
 
@@ -154,6 +155,11 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
   iosLimitationNoticed = 0;
   showNotSupported = 0;
 
+  private permissionMonitorResult: PermissionMonitorResult = {
+    cameraPermissionStatus: null,
+    micPermissionStatus: null,
+  };
+
   roomTimer: NodeJS.Timer | null = null;
   roomTimeNum = 0;
   setViewportMetaTimer: NodeJS.Timer | null = null;
@@ -226,7 +232,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       this.props.core.destroyStream(this.state.localStream);
     this.props.core.localStream = undefined;
     this.props.core.eventEmitter.off("cancelCall", this.forceUpdateView)
-
+    cleanupPermissionMonitor(this.permissionMonitorResult);
   }
   componentDidUpdate(
     preProps: ZegoBrowserCheckProp,
@@ -269,6 +275,16 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   async initSDK() {
     const { formatMessage } = this.props.core.intl;
+    this.permissionMonitorResult = await setupPermissionMonitor({
+      core: this.props.core,
+      getLocalStream: () => this.state.localStream,
+      getCameraOpen: () => this.state.cameraOpen,
+      getMicOpen: () => this.state.micOpen,
+      setState: this.setState.bind(this),
+      stopPublish: () => this.stopPublish(),
+      createStream: () => this.createStream(),
+      showToast: (content: string) => ZegoToast({ content }),
+    });
     this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
       this.setState({
         isNetworkPoor: level > 2,
@@ -884,22 +900,20 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
         if (!this.props.core.status.videoRefuse) {
           await this.props.core.mutePublishStreamVideo(
             localStream,
-            !this.props.core._config.turnOnCameraWhenJoining
+            !this.state.cameraOpen
           );
         }
         if (!this.props.core.status.audioRefuse) {
           await this.props.core.muteMicrophone(
-            !this.props.core._config.turnOnMicrophoneWhenJoining
+            !this.state.micOpen
           );
         }
         this.setState({
           localStream,
-          cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
-          micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
         });
         const extraInfo = JSON.stringify({
-          isCameraOn: !!this.props.core._config.turnOnCameraWhenJoining,
-          isMicrophoneOn: this.props.core._config.turnOnMicrophoneWhenJoining,
+          isCameraOn: this.state.cameraOpen,
+          isMicrophoneOn: this.state.micOpen,
           hasVideo: !this.props.core.status.videoRefuse,
           hasAudio: !this.props.core.status.audioRefuse,
         });
@@ -995,6 +1009,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.micStatus = -1;
 
     let result;
+    const targetMicOpen = !this.state.micOpen;
     if (
       this.state.localStream &&
       this.state.localStream.getAudioTracks().length > 0
@@ -1013,22 +1028,42 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       } catch (error: any) {
         zgLogger.log(SpanEvent.RoomSetStreamExtraInfo, error);
       }
-    }
-
-    this.micStatus = !this.state.micOpen ? 1 : 0;
-    if (result) {
-      ZegoToast({
-        content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.micStatus ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
-      });
-      result &&
-        this.setState(
-          {
-            micOpen: !!this.micStatus,
+      this.micStatus = targetMicOpen ? 1 : 0;
+      if (result) {
+        ZegoToast({
+          content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.micStatus ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+        });
+        result &&
+          this.setState(
+            {
+              micOpen: !!this.micStatus,
+            },
+            () => {
+              this.handleLayoutChange(this.state.userLayoutStatus);
+            }
+          );
+      }
+    } else {
+      // 授权权限后开启麦克风，创建流
+      // 存在纯视频流，需要停止重新创建
+      result = await rebuildStreamForDevice(
+        {
+          getLocalStream: () => this.state.localStream,
+          setState: this.setState.bind(this),
+          stopPublish: () => this.stopPublish(),
+          createStream: () => this.createStream(),
+          showToast: (content: string) => ZegoToast({ content }),
+          refreshDevice: async () => {
+            // Mobile 端使用 facingMode，不需要刷新设备列表
           },
-          () => {
-            this.handleLayoutChange(this.state.userLayoutStatus);
-          }
-        );
+          onLayoutUpdate: () => this.handleLayoutChange(this.state.userLayoutStatus),
+          onStateCallback: this.props.core._config.onMicrophoneStateUpdated,
+        },
+        'micOpen',
+        targetMicOpen,
+        this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (targetMicOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+      );
+      this.micStatus = targetMicOpen ? 1 : 0;
     }
     return !!result;
   }
@@ -1061,6 +1096,7 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     this.cameraStatus = -1;
 
     let result;
+    const targetCameraOpen = !this.state.cameraOpen;
     if (
       this.state.localStream &&
       this.state.localStream.getVideoTracks().length > 0
@@ -1084,21 +1120,42 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
       } catch (error: any) {
         zgLogger.log(SpanEvent.RoomSetStreamExtraInfo, error);
       }
-    }
-    this.cameraStatus = !this.state.cameraOpen ? 1 : 0;
-    if (result) {
-      ZegoToast({
-        content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.cameraStatus ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
-      });
-      result &&
-        this.setState(
-          {
-            cameraOpen: !!this.cameraStatus,
+      this.cameraStatus = targetCameraOpen ? 1 : 0;
+      if (result) {
+        ZegoToast({
+          content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.cameraStatus ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+        });
+        result &&
+          this.setState(
+            {
+              cameraOpen: !!this.cameraStatus,
+            },
+            () => {
+              this.handleLayoutChange(this.state.userLayoutStatus);
+            }
+          );
+      }
+    } else {
+      // 授权权限后开启摄像头，创建流
+      // 存在纯音频流，需要停止重新创建
+      result = await rebuildStreamForDevice(
+        {
+          getLocalStream: () => this.state.localStream,
+          setState: this.setState.bind(this),
+          stopPublish: () => this.stopPublish(),
+          createStream: () => this.createStream(),
+          showToast: (content: string) => ZegoToast({ content }),
+          refreshDevice: async () => {
+            // Mobile 端使用 facingMode，不需要刷新设备列表
           },
-          () => {
-            this.handleLayoutChange(this.state.userLayoutStatus);
-          }
-        );
+          onLayoutUpdate: () => this.handleLayoutChange(this.state.userLayoutStatus),
+          onStateCallback: this.props.core._config.onCameraStateUpdated,
+        },
+        'cameraOpen',
+        targetCameraOpen,
+        this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (targetCameraOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+      );
+      this.cameraStatus = targetCameraOpen ? 1 : 0;
     }
     return !!result;
   }

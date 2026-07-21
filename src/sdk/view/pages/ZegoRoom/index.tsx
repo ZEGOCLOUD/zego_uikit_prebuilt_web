@@ -41,6 +41,7 @@ import { FormattedMessage } from "react-intl";
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
 import { ZegoInvitationList } from './components/zegoInvitationList'
 import { ZegoLogger } from '../../../modules/tools/ZegoLogger';
+import { setupPermissionMonitor, cleanupPermissionMonitor, PermissionMonitorResult, rebuildStreamForDevice } from '../utils/permissionMonitor';
 
 import { SpanEvent } from '../../../model/tracer';
 
@@ -138,8 +139,10 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 	inviteModelRoot: any = null;
 	whiteboardID = "";
 
-	private cameraPermissionStatus: PermissionStatus | null = null;
-	private micPermissionStatus: PermissionStatus | null = null;
+	private permissionMonitorResult: PermissionMonitorResult = {
+		cameraPermissionStatus: null,
+		micPermissionStatus: null,
+	};
 
 	get showHeader(): boolean {
 		return !!(
@@ -244,73 +247,20 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 		this.state.localStream && this.props.core.destroyStream(this.state.localStream);
 		this.props.core.localStream = undefined;
 		this.props.core.eventEmitter.off("cancelCall", this.forceUpdateView);
-		if (this.micPermissionStatus) {
-			this.micPermissionStatus.onchange = null;
-		}
-		if (this.cameraPermissionStatus) {
-			this.cameraPermissionStatus.onchange = null;
-		}
+		cleanupPermissionMonitor(this.permissionMonitorResult);
 	}
 	async initSDK() {
 		const { formatMessage } = this.props.core.intl;
-		//@ts-ignore
-		const cameraStatus = await navigator.permissions.query({ name: "camera" });
-		this.cameraPermissionStatus = cameraStatus;
-		//@ts-ignore
-		const micStatus = await navigator.permissions.query({ name: "microphone" });
-		this.micPermissionStatus = micStatus;
-		// 没有检测页直接进房，videoRefuse 和 audioRefuse 为 undefined，初始化时重新赋值
-		if (this.props.core.status.videoRefuse === undefined || this.props.core.status.audioRefuse === undefined) {
-			this.props.core.status.videoRefuse = cameraStatus.state.includes('denied');
-			this.props.core.status.audioRefuse = micStatus.state.includes('denied');
-			this.setState({
-				cameraOpen: !!this.props.core._config.turnOnCameraWhenJoining && !this.props.core.status.videoRefuse,
-				micOpen: !!this.props.core._config.turnOnMicrophoneWhenJoining && !this.props.core.status.audioRefuse,
-			})
-		}
-		cameraStatus.onchange = async () => {
-			if (cameraStatus.state === 'granted') {
-				this.props.core.status.videoRefuse = false;
-			} else {
-				// this.state.cameraOpen && await this.toggleCamera();
-				this.setState({
-					cameraOpen: false,
-				}, () => {
-					ZegoToast({
-						content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + this.props.core.intl.formatMessage({ id: "room.off" }),
-					});
-					this.props.core._config.onCameraStateUpdated && this.props.core._config.onCameraStateUpdated(this.state.cameraOpen ? 'ON' : 'OFF');
-				})
-				this.state.localStream && this.stopPublish();
-				this.props.core.status.videoRefuse = true;
-				if (!this.props.core.status.audioRefuse) {
-					// 音视频流, camera权限没了，音视频流会卡住，需重新创建纯音频流
-					await this.createStream();
-				}
-			}
-		}
-
-		micStatus.onchange = async () => {
-			if (micStatus.state === 'granted') {
-				this.props.core.status.audioRefuse = false;
-			} else {
-				// this.state.micOpen && await this.toggleMic();
-				this.setState({
-					micOpen: false,
-				}, () => {
-					ZegoToast({
-						content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + this.props.core.intl.formatMessage({ id: "room.off" }),
-					});
-					this.props.core._config.onMicrophoneStateUpdated && this.props.core._config.onMicrophoneStateUpdated(this.state.micOpen ? 'ON' : 'OFF');
-				})
-				this.state.localStream && this.stopPublish();
-				this.props.core.status.audioRefuse = true;
-				if (!this.props.core.status.videoRefuse) {
-					// 音视频流, mic权限没了，音视频流会卡住，需重新创建纯视频流
-					await this.createStream();
-				}
-			}
-		}
+		this.permissionMonitorResult = await setupPermissionMonitor({
+			core: this.props.core,
+			getLocalStream: () => this.state.localStream,
+			getCameraOpen: () => this.state.cameraOpen,
+			getMicOpen: () => this.state.micOpen,
+			setState: this.setState.bind(this),
+			stopPublish: () => this.stopPublish(),
+			createStream: () => this.createStream(),
+			showToast: (content: string) => ZegoToast({ content }),
+		});
 		this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
 			this.setState({
 				isNetworkPoor: level > 2,
@@ -925,25 +875,30 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} else {
 				// 授权权限后开启麦克风，创建流
 				// 存在纯视频流，需要停止重新创建
-				if (this.state.localStream) {
-					this.stopPublish();
-				}
-				if (targetMicOpen) {
-					const micDevices = await this.props.core.getMicrophones();
-					// 防止设备移出后，再次使用缓存设备ID
-					const mic = micDevices.filter(
-						(device) => device.deviceID === sessionStorage.getItem("selectMic")
-					);
-					this.state.selectMic = mic[0]?.deviceID || micDevices[0]?.deviceID || undefined;
-				}
-				this.setState({ micOpen: targetMicOpen }, async () => {
-					this.computeByResize(this.state.cameraOpen || this.state.micOpen);
-					result = await this.createStream();
-					ZegoToast({
-						content: this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (this.state.micOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
-					});
-					this.props.core._config.onMicrophoneStateUpdated && this.props.core._config.onMicrophoneStateUpdated(this.state.micOpen ? 'ON' : 'OFF');
-				})
+				result = await rebuildStreamForDevice(
+					{
+						getLocalStream: () => this.state.localStream,
+						setState: this.setState.bind(this),
+						stopPublish: () => this.stopPublish(),
+						createStream: () => this.createStream(),
+						showToast: (content: string) => ZegoToast({ content }),
+						refreshDevice: async () => {
+							if (targetMicOpen) {
+								const micDevices = await this.props.core.getMicrophones();
+								// 防止设备移出后，再次使用缓存设备ID
+								const mic = micDevices.filter(
+									(device) => device.deviceID === sessionStorage.getItem("selectMic")
+								);
+								this.state.selectMic = mic[0]?.deviceID || micDevices[0]?.deviceID || undefined;
+							}
+						},
+						onLayoutUpdate: () => this.computeByResize(this.state.cameraOpen || this.state.micOpen),
+						onStateCallback: this.props.core._config.onMicrophoneStateUpdated,
+					},
+					'micOpen',
+					targetMicOpen,
+					this.props.core.intl.formatMessage({ id: "room.microphoneStatus" }) + (targetMicOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+				);
 			}
 		} finally {
 			this.isTogglingMic = false;
@@ -1013,26 +968,31 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 			} else {
 				// 授权权限后开启摄像头，创建流
 				// 存在纯音频流，需要停止重新创建
-				if (this.state.localStream) {
-					this.stopPublish();
-				}
-				if (targetCameraOpen) {
-					const cameraDevices = await this.props.core.getCameras();
-					const cam = cameraDevices.filter(
-						(device) => device.deviceID === sessionStorage.getItem("selectCamera")
-					);
-					this.state.selectCamera = (cam && cam[0]?.deviceID) ||
-						(cameraDevices && cameraDevices[0]?.deviceID) ||
-						undefined;
-				}
-				this.setState({ cameraOpen: targetCameraOpen }, async () => {
-					this.computeByResize(this.state.cameraOpen || this.state.micOpen);
-					result = await this.createStream();
-					ZegoToast({
-						content: this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (this.state.cameraOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
-					});
-					this.props.core._config.onCameraStateUpdated && this.props.core._config.onCameraStateUpdated(this.state.cameraOpen ? 'ON' : 'OFF');
-				});
+				result = await rebuildStreamForDevice(
+					{
+						getLocalStream: () => this.state.localStream,
+						setState: this.setState.bind(this),
+						stopPublish: () => this.stopPublish(),
+						createStream: () => this.createStream(),
+						showToast: (content: string) => ZegoToast({ content }),
+						refreshDevice: async () => {
+							if (targetCameraOpen) {
+								const cameraDevices = await this.props.core.getCameras();
+								const cam = cameraDevices.filter(
+									(device) => device.deviceID === sessionStorage.getItem("selectCamera")
+								);
+								this.state.selectCamera = (cam && cam[0]?.deviceID) ||
+									(cameraDevices && cameraDevices[0]?.deviceID) ||
+									undefined;
+							}
+						},
+						onLayoutUpdate: () => this.computeByResize(this.state.cameraOpen || this.state.micOpen),
+						onStateCallback: this.props.core._config.onCameraStateUpdated,
+					},
+					'cameraOpen',
+					targetCameraOpen,
+					this.props.core.intl.formatMessage({ id: "room.cameraStatus" }) + (targetCameraOpen ? this.props.core.intl.formatMessage({ id: "room.on" }) : this.props.core.intl.formatMessage({ id: "room.off" })),
+				);
 			}
 		} finally {
 			this.isTogglingCamera = false;
