@@ -92,6 +92,8 @@ export enum VideoMixinOutputResolution {
 	_540P = "540p",
 	_720P = "720p",
 	_1080P = "1080p",
+	_2K = "2k",
+	_4K = "4k",
 }
 
 export enum ConsoleLevel {

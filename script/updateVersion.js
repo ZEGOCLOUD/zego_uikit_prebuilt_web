@@ -23,19 +23,15 @@ function updateVersion(version) {
   fs.writeFileSync(publicPkgPath, JSON.stringify(publicPkg, null, 2), 'utf8');
   console.log(`public/package.json version: ${version} update success`);
 
-  // 2. Update ZegoUIKitPrebuilt/package.json
-  const prebuiltPkgPath = path.resolve(__dirname, `../ZegoUIKitPrebuilt/package.json`);
-  if (fs.existsSync(prebuiltPkgPath)) {
-    const prebuiltPkg = JSON.parse(fs.readFileSync(prebuiltPkgPath, 'utf8'));
-    prebuiltPkg.version = version;
-    fs.writeFileSync(prebuiltPkgPath, JSON.stringify(prebuiltPkg, null, 2), 'utf8');
-    console.log(`ZegoUIKitPrebuilt/package.json version: ${version} update success`);
-  }
+  // // 2. Update ZegoUIKitPrebuilt/package.json
+  // const prebuiltPkgPath = path.resolve(__dirname, `../ZegoUIKitPrebuilt/package.json`);
+  // if (fs.existsSync(prebuiltPkgPath)) {
+  //   const prebuiltPkg = JSON.parse(fs.readFileSync(prebuiltPkgPath, 'utf8'));
+  //   prebuiltPkg.version = version;
+  //   fs.writeFileSync(prebuiltPkgPath, JSON.stringify(prebuiltPkg, null, 2), 'utf8');
+  //   console.log(`ZegoUIKitPrebuilt/package.json version: ${version} update success`);
+  // }
 
-  // 3. Update src/sdk/version.json
-  const versionJsonPath = path.resolve(__dirname, `../src/sdk/version.json`);
-  fs.writeFileSync(versionJsonPath, JSON.stringify({ version: version }, null, 2), 'utf8');
-  console.log(`src/sdk/version.json version: ${version} update success`);
 }
 
 updateVersion(version)

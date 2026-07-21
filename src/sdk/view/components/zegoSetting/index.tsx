@@ -14,6 +14,10 @@ import { FormattedMessage } from "react-intl";
 import { isPc } from "../../../util";
 import { ZegoStreamOptions } from "zego-express-engine-webrtc/sdk/src/common/zego.entity.web"
 import ZegoLocalStream from "zego-express-engine-webrtc/sdk/code/zh/ZegoLocalStream.web";
+import { ZegoLogger } from '../../../modules/tools/ZegoLogger';
+import { SpanEvent } from '../../../model/tracer';
+
+const zgLogger = ZegoLogger.getLogger('ZegoSetting');
 export class ZegoSettings extends React.Component<ZegoSettingsProps> {
   state: {
     visible: boolean;
@@ -124,6 +128,10 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
 
   async createVideoStream(): Promise<boolean> {
     try {
+      // 销毁之前创建的流
+      if (this.state.localVideoStream) {
+        this.props.core.destroyStream(this.state.localVideoStream);
+      }
       const config = getVideoResolution(
         this.state.selectVideoResolution as string
       );
@@ -138,13 +146,14 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
         },
       };
       const localVideoStream = await this.props.core.createZegoStream(source, true);
+      zgLogger.info(SpanEvent.SettingCreateVideoStreamSuccess, { source });
       this.setState({
         localVideoStream,
       });
       return true;
     } catch (error) {
-      console.error(
-        "【ZEGOCLOUD】settings/localVideoStream failed !!",
+      zgLogger.error(
+        SpanEvent.SettingLocalVideoStreamFailed,
         JSON.stringify(error)
       );
       this.props.core._config.turnOnCameraWhenJoining = false;
@@ -161,6 +170,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
         },
       };
       const localAudioStream = await this.props.core.createZegoStream(source, true);
+      zgLogger.info(SpanEvent.SettingCreateAudioStreamSuccess, { source });
       this.setState(
         {
           localAudioStream,
@@ -172,8 +182,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
 
       return true;
     } catch (error) {
-      console.error(
-        "【ZEGOCLOUD】settings/localAudioStream failed !!",
+      zgLogger.error(
+        SpanEvent.SettingLocalAudioStreamFailed,
         JSON.stringify(error)
       );
       this.props.core._config.turnOnMicrophoneWhenJoining = false;
@@ -201,6 +211,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     });
   }
   async toggleMic(deviceID: string) {
+    zgLogger.info(SpanEvent.SettingToggleMic, { deviceID });
     if (!this.state.localAudioStream) return;
     const res = await this.props.core.useMicrophoneDevice(
       this.state.localAudioStream,
@@ -215,10 +226,12 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     }
   }
   async toggleSpeaker(deviceID: string) {
+    zgLogger.info(SpanEvent.SettingToggleSpeaker, { deviceID });
     this.setState({ selectSpeaker: deviceID });
     this.props.onSpeakerChange(deviceID);
   }
   async toggleCamera(deviceID: string) {
+    zgLogger.info(SpanEvent.SettingToggleCamera, { deviceID });
     if (!this.state.localVideoStream) return;
     const res = await this.props.core.useCameraDevice(
       this.state.localVideoStream,
@@ -230,6 +243,7 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
     }
   }
   async toggleVideoResolution(level: string) {
+    zgLogger.info(SpanEvent.SettingToggleResolution, { level });
     this.createVideoStream();
     this.setState({ selectVideoResolution: level });
     this.props.onVideoResolutionChange(level);
@@ -254,8 +268,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
           dom.play();
           this.speakerSounder.connectToElementSource(dom, (error: any) => {
             if (error) {
-              console.error(
-                "[zegocloud] captureSpeakerVolume!!!",
+              zgLogger.error(
+                SpanEvent.SettingCaptureSpeakerVolumeError,
                 JSON.stringify(error)
               );
             }
@@ -294,8 +308,8 @@ export class ZegoSettings extends React.Component<ZegoSettingsProps> {
       this.state.localAudioStream,
       (error: any) => {
         if (error) {
-          console.error(
-            "[zegocloud] captureMicVolume!!!",
+          zgLogger.error(
+            SpanEvent.SettingCaptureMicVolumeError,
             JSON.stringify(error)
           );
         }

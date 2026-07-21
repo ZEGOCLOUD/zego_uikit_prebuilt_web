@@ -21,7 +21,6 @@ function convertDomNodeToReactElement(domNode: Element) {
 			props['className'] = attr.value
 		} else if (attr.name === 'onclick') {
 			const func = JSON.parse(attr.value);
-			console.log('===click', func);
 			// @ts-ignore
 			props['onClick'] = new Function(...func.attr, func.functionBody)
 		} else {
@@ -84,7 +83,6 @@ export class ZegoUserList extends React.PureComponent<{
 		this.setState({
 			searchList: result.map((_) => _.item),
 		})
-		console.warn(result)
 	}, 300)
 	onInput(e: React.FormEvent<HTMLInputElement>) {
 		this.setState({

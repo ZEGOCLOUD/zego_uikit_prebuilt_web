@@ -35,7 +35,6 @@ export class ZegoWhiteboardToolsTextTooTips extends React.PureComponent<{
     const path: HTMLElement[] = ev.path || ev.composedPath();
     if (
       !path.some((item) => {
-        console.log(item.className);
         return (
           item.className &&
           item.className.includes("ZegoWhiteboardToolsTextToolTips")
