@@ -126,6 +126,23 @@ export class TracerConnect {
     private static domain = 'imzego.com';
     private static stringifyWhitelist = ['e_time_s', 'error', 'elapsed_time', 'game_id', 'room_id'];
 
+    /**
+     * 安全序列化：处理循环引用，避免 JSON.stringify 抛出异常
+     * 遇到循环引用时用 "[Circular]" 占位符代替
+     */
+    private static safeStringify(obj: any): string {
+        const seen = new WeakSet();
+        return JSON.stringify(obj, (_key, value) => {
+            if (typeof value === 'object' && value !== null) {
+                if (seen.has(value)) {
+                    return '[Circular]';
+                }
+                seen.add(value);
+            }
+            return value;
+        });
+    }
+
     static getDeviceId(): string {
         let deviceId = localStorage.getItem(`device`);
         if (!deviceId) {
@@ -181,7 +198,7 @@ export class TracerConnect {
                             stringify[k] = span.attributes[k];
                         }
                     });
-                    attributes['detail'] = JSON.stringify(stringify);
+                    attributes['detail'] = this.safeStringify(stringify);
                     // if (!attributes.hasOwnProperty('elapsed_time')) {
                     //     attributes['elapsed_time'] = span._duration;
                     // }
