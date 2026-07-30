@@ -2654,7 +2654,6 @@ export class ZegoRoom extends React.PureComponent<ZegoBrowserCheckProp> {
 										selectCamera: deviceID,
 									},
 									async () => {
-										zgLogger.log(SpanEvent.RoomCameraChange, this.state.localStream);
 										if (this.state.localStream) {
 											await this.props.core.useCameraDevice(this.state.localStream, deviceID)
 											this.setState({

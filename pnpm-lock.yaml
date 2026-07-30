@@ -45,11 +45,11 @@ importers:
         specifier: ^6.0.4
         version: 6.8.9(react@18.3.1)(typescript@4.9.5)
       zego-express-engine-webrtc:
-        specifier: ^3.7.4
-        version: 3.7.4
+        specifier: 3.10.0
+        version: 3.10.0
       zego-superboard-web:
-        specifier: ^2.16.1
-        version: 2.19.1
+        specifier: 2.20.0
+        version: 2.20.0
       zego-tracer:
         specifier: file:libs/zego-tracer
         version: file:libs/zego-tracer
@@ -1631,6 +1631,7 @@ packages:
 
   '@ungap/structured-clone@1.2.1':
     resolution: {integrity: sha512-fEzPV3hSkSMltkw152tJKNARhOupqbH96MZWyRjNaYZOMIzbrTeQDG+MTc6Mr2pgzFQzFxAfmhGDNP5QK++2ZA==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@webassemblyjs/ast@1.14.1':
     resolution: {integrity: sha512-nuBEDgQfm1ccRp/8bCQrx1frohyufl4JlbMMZ4P1wpeOfDhF6FQkxZJ1b/e+PLwr6X1Nhw6OLme5usuBWYBvuQ==}
@@ -4973,6 +4974,10 @@ packages:
     resolution: {integrity: sha512-5kQWPaJHi1WoCpjTGszzQ32PG2F4+wRY6BmAT4Vfw56Q2FZ4YZzK20xUYQH4YkfehY1e6QSICrJquM6xXZNcrw==}
     hasBin: true
 
+  protobufjs@7.4.0:
+    resolution: {integrity: sha512-mRUWCc3KUU4w1jU8sGxICXH/gNS94DvI1gxqDvBzhj1JpcsimQkYiOJfwsPUykUI5ZaspFbSgmBLER8IrQ3tqw==}
+    engines: {node: '>=12.0.0'}
+
   proxy-addr@2.0.7:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
@@ -6258,20 +6263,20 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zego-express-engine-webrtc@3.7.4:
-    resolution: {integrity: sha512-7S2DT9CtdymOOPmKvn3j4lCzhy8Mm0g6Dggp3YRheOBxWQs4TSQkKHUVLsWqDkWZzGDRG1z6DpbkCLVtTf3i+A==}
+  zego-express-engine-webrtc@3.10.0:
+    resolution: {integrity: sha512-IQIP2NJL7cXJu7+3uQPQp/R0llKZFWoOx3pLgBrr8OF+5K7tnyJs/TUkZvdrQyBhT0sd7EBK1dHdWjLoG+vcvA==}
 
   zego-express-engine-webrtm@2.5.0:
     resolution: {integrity: sha512-vCbXaYhSiV83Ly26ICM/xZfPkjSeHoVI8b8fCIv/G0B4NwqeWtcldUciv7IqEPYzOV/asjvLIqJDUJzmI5Pm+g==}
 
-  zego-express-logger@1.4.10:
-    resolution: {integrity: sha512-x4uO6+4R9ipI94feDxycVABibU7OehI0BdRUSY83IaIjpooiBKGSP5wN3SKbnF4XZmLMNR8AAn0qF1JDVvlGKg==}
+  zego-express-logger@1.4.14:
+    resolution: {integrity: sha512-z0F3nYBTbE4LsOhqaR8leSPScsLOJ4J1vRZW3ibZ+XIdyknLs+nuqZtX4JpFB2jo7n6MCQRbl4/GZV+hq/CVhQ==}
 
   zego-express-logger@1.4.6:
     resolution: {integrity: sha512-sS/Gm0U7YLPbwxEfBzkCzyzY4UE9dcHmQ1/jh2YSYLeblxMxIZTehSiXoXEAtHbkO2rNCJw5RYPGEVZ7BWNZfA==}
 
-  zego-superboard-web@2.19.1:
-    resolution: {integrity: sha512-rhB1mBzMhMWjz6Km4N3rHPzh6cCMxmQRfpK7DblYtFxwCynU1KcoZ260PiUvHqgvJPMklSpvVNjXGHpJ46pW/Q==}
+  zego-superboard-web@2.20.0:
+    resolution: {integrity: sha512-Nf3/fT4PO/ok+hU/FUFsP0fHZ9xIAi4kegY20SxOuxyJ5QhoSLqQAGxnnFOBrf6Y8nSHIoK2cTdj7rlj9aQN1w==}
 
   zego-tracer@file:libs/zego-tracer:
     resolution: {directory: libs/zego-tracer, type: directory}
@@ -12055,6 +12060,21 @@ snapshots:
       '@types/node': 16.18.123
       long: 4.0.0
 
+  protobufjs@7.4.0:
+    dependencies:
+      '@protobufjs/aspromise': 1.1.2
+      '@protobufjs/base64': 1.1.2
+      '@protobufjs/codegen': 2.0.4
+      '@protobufjs/eventemitter': 1.1.0
+      '@protobufjs/fetch': 1.1.0
+      '@protobufjs/float': 1.0.2
+      '@protobufjs/inquire': 1.1.0
+      '@protobufjs/path': 1.1.2
+      '@protobufjs/pool': 1.1.0
+      '@protobufjs/utf8': 1.1.0
+      '@types/node': 16.18.123
+      long: 5.2.0
+
   proxy-addr@2.0.7:
     dependencies:
       forwarded: 0.2.0
@@ -13676,13 +13696,12 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zego-express-engine-webrtc@3.7.4:
+  zego-express-engine-webrtc@3.10.0:
     dependencies:
       localforage: 1.10.0
       long: 5.2.0
-      pako: 2.1.0
-      protobufjs: 6.11.2
-      zego-express-logger: 1.4.10
+      protobufjs: 7.4.0
+      zego-express-logger: 1.4.14
 
   zego-express-engine-webrtm@2.5.0:
     dependencies:
@@ -13692,7 +13711,7 @@ snapshots:
       protobufjs: 6.11.2
       zego-express-logger: 1.4.6
 
-  zego-express-logger@1.4.10:
+  zego-express-logger@1.4.14:
     dependencies:
       pako: 2.1.0
 
@@ -13700,7 +13719,7 @@ snapshots:
     dependencies:
       pako: 2.1.0
 
-  zego-superboard-web@2.19.1: {}
+  zego-superboard-web@2.20.0: {}
 
   zego-tracer@file:libs/zego-tracer:
     dependencies:
