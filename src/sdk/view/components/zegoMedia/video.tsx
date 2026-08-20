@@ -223,7 +223,13 @@ export default class ZegoVideo extends React.PureComponent<{
 						const remoteView = this.props.core.createRemoteStreamView(this.props.userInfo.streamList[0].media as MediaStream);
 						remoteView.play(this.videoRef, { mirror: !isScreenSharing ? this.props.core._config.videoScreenConfig?.pullStreamMirror : false, objectFit: videoObjectFit });
 						// 首页切换扬声器之后进房渲染view需要切换
-						this.props.core.status?.speakerDeviceID && remoteView.useAudioOutputDevice(this.props.core.status.speakerDeviceID || 'default');
+						if (this.props.core.status?.speakerDeviceID && this.props.core.status?.speakerDeviceID !== 'default') {
+							zgLogger.log(SpanEvent.MediaVideoEvent, 'useAudioOutputDevice', this.props.core.status.speakerDeviceID)
+							remoteView.useAudioOutputDevice(this.props.core.status.speakerDeviceID)
+								.catch((error: any) => {
+									zgLogger.log(SpanEvent.MediaVideoEvent, 'useAudioOutputDevice error', error);
+								})
+						}
 						// 存储 zegoStreamView
 						this.props.core.remoteStreamMap[this.props.userInfo.streamList[0].streamID].view = remoteView;
 					} catch (error) {
