@@ -1810,6 +1810,9 @@ export class ZegoCloudRTCCore {
 	private onRoomLiveStateUpdateCallBack!: (live: "1" | "0") => void
 	onRoomLiveStateUpdate(func: (live: "1" | "0") => void) {
 		this.onRoomLiveStateUpdateCallBack = func
+		// Room attributes can arrive before the room view finishes its async setup.
+		// Replay the current state so a late subscriber cannot remain at its default value.
+		func(this._roomExtraInfo.live_status)
 	}
 	private onRoomMixingStateUpdateCallBack!: (isMixing: "1" | "0") => void
 	onRoomMixingStateUpdate(func: (isMixing: "1" | "0") => void) {

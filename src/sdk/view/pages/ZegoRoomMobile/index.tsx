@@ -275,16 +275,6 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
 
   async initSDK() {
     const { formatMessage } = this.props.core.intl;
-    this.permissionMonitorResult = await setupPermissionMonitor({
-      core: this.props.core,
-      getLocalStream: () => this.state.localStream,
-      getCameraOpen: () => this.state.cameraOpen,
-      getMicOpen: () => this.state.micOpen,
-      setState: this.setState.bind(this),
-      stopPublish: () => this.stopPublish(),
-      createStream: () => this.createStream(),
-      showToast: (content: string) => ZegoToast({ content }),
-    });
     this.props.core.onNetworkStatusQuality((roomID: string, level: number) => {
       this.setState({
         isNetworkPoor: level > 2,
@@ -615,6 +605,17 @@ export class ZegoRoomMobile extends React.PureComponent<ZegoBrowserCheckProp> {
     );
     this.props.core.onKickedOutRoom(() => {
       this.confirmLeaveRoom(true);
+    });
+    // Device permission setup must not delay registration of room listeners.
+    this.permissionMonitorResult = await setupPermissionMonitor({
+      core: this.props.core,
+      getLocalStream: () => this.state.localStream,
+      getCameraOpen: () => this.state.cameraOpen,
+      getMicOpen: () => this.state.micOpen,
+      setState: this.setState.bind(this),
+      stopPublish: () => this.stopPublish(),
+      createStream: () => this.createStream(),
+      showToast: (content: string) => ZegoToast({ content }),
     });
     const logInRsp = await this.props.core.enterRoom();
     let massage = "";

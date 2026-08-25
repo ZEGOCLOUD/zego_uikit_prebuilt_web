@@ -61,10 +61,20 @@ function initPermissionState(
 export async function setupPermissionMonitor(
 	ctx: PermissionMonitorContext,
 ): Promise<PermissionMonitorResult> {
-	//@ts-ignore
-	const cameraStatus: PermissionStatus = await navigator.permissions.query({ name: "camera" });
-	//@ts-ignore
-	const micStatus: PermissionStatus = await navigator.permissions.query({ name: "microphone" });
+	let cameraStatus: PermissionStatus;
+	let micStatus: PermissionStatus;
+	try {
+		//@ts-ignore
+		cameraStatus = await navigator.permissions.query({ name: "camera" });
+		//@ts-ignore
+		micStatus = await navigator.permissions.query({ name: "microphone" });
+	} catch (_error) {
+		// Permission monitoring is best-effort and must not block room initialization.
+		return {
+			cameraPermissionStatus: null,
+			micPermissionStatus: null,
+		};
+	}
 
 	initPermissionState(ctx, cameraStatus, micStatus);
 
