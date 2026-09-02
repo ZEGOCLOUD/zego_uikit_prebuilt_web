@@ -404,8 +404,8 @@ export class ZegoCloudRTCCore {
 				if (
 					config.turnOnMicrophoneWhenJoining === true ||
 					config.turnOnCameraWhenJoining === true ||
-					config.showMyCameraToggleButton === true ||
-					config.showMyMicrophoneToggleButton === true ||
+					// config.showMyCameraToggleButton === true ||
+					// config.showMyMicrophoneToggleButton === true ||
 					config.showAudioVideoSettingsButton === true ||
 					config.showScreenSharingButton === true ||
 					config.useFrontFacingCamera === true ||
@@ -615,8 +615,9 @@ export class ZegoCloudRTCCore {
 
 		config.turnOnMicrophoneWhenJoining = true
 		config.turnOnCameraWhenJoining = true
-		config.showMyCameraToggleButton = this._originConfig["sctb"] === 1
-		config.showMyMicrophoneToggleButton = this._originConfig["smtb"] === 1
+		// 未配置时默认显示按钮；显式配置 false 时隐藏
+		config.showMyCameraToggleButton = this._originConfig["sctb"] !== 0
+		config.showMyMicrophoneToggleButton = this._originConfig["smtb"] !== 0
 		config.showAudioVideoSettingsButton = true
 		config.showScreenSharingButton = true
 		config.useFrontFacingCamera = true
