@@ -200,7 +200,7 @@ export default class ZegoVideo extends React.PureComponent<{
 				if (isRender) return;
 				const isScreenSharing = this.props.userInfo.streamList[0]?.streamID.includes('_screensharing') ? true : false;
 				const videoObjectFit = !isScreenSharing ? this.props.core._config.videoScreenConfig?.objectFit : 'contain';
-				if (this.props.muted) {
+				if (this.props.muted && typeof (this.props.userInfo?.streamList?.[0]?.media as any)?.playVideo === 'function') {
 					// 本地预览流
 					zgLogger.warn(SpanEvent.MediaVideoEvent, '[video] initVideo localStream', this.props.userInfo);
 					zgLogger.info(SpanEvent.videoMode, {
